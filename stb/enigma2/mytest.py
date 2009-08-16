@@ -45,8 +45,8 @@ from Tools.Directories import InitFallbackFiles, resolveFilename, SCOPE_PLUGINS,
 from Components.config import config, configfile, ConfigText, ConfigYesNo
 InitFallbackFiles()
 
-profile("ReloadProfiles")
-eDVBDB.getInstance().reloadBouquets()
+#profile("ReloadProfiles")
+#eDVBDB.getInstance().reloadBouquets()
 
 config.misc.radiopic = ConfigText(default = resolveFilename(SCOPE_SKIN_IMAGE)+"radio.mvi")
 config.misc.isNextRecordTimerAfterEventActionAuto = ConfigYesNo(default=False)
@@ -56,36 +56,36 @@ def useTransponderTimeChanged(configElement):
 	enigma.eDVBLocalTimeHandler.getInstance().setUseDVBTime(configElement.value)
 config.misc.useTransponderTime.addNotifier(useTransponderTimeChanged)
 
-profile("Twisted")
-try:
-	import twisted.python.runtime
-	twisted.python.runtime.platform.supportsThreads = lambda: False
+#profile("Twisted")
+#try:
+#	import twisted.python.runtime
+#	twisted.python.runtime.platform.supportsThreads = lambda: False
+#
+#	import e2reactor
+#	e2reactor.install()
+#
+#	from twisted.internet import reactor
+#
+#	def runReactor():
+#		reactor.run(installSignalHandlers=False)
+#except ImportError:
+#	print "twisted not available"
+#	def runReactor():
+#		runMainloop()
 
-	import e2reactor
-	e2reactor.install()
-
-	from twisted.internet import reactor
-
-	def runReactor():
-		reactor.run(installSignalHandlers=False)
-except ImportError:
-	print "twisted not available"
-	def runReactor():
-		runMainloop()
-
-profile("LOAD:Plugin")
+#profile("LOAD:Plugin")
 
 # initialize autorun plugins and plugin menu entries
-from Components.PluginComponent import plugins
+#from Components.PluginComponent import plugins
 
-profile("LOAD:Wizard")
-from Screens.Wizard import wizardManager
-from Screens.DefaultWizard import *
-from Screens.StartWizard import *
-from Screens.TutorialWizard import *
-import Screens.Rc
+#profile("LOAD:Wizard")
+#from Screens.Wizard import wizardManager
+#from Screens.DefaultWizard import *
+#from Screens.StartWizard import *
+#from Screens.TutorialWizard import *
+#import Screens.Rc
 from Tools.BoundFunction import boundFunction
-from Plugins.Plugin import PluginDescriptor
+#from Plugins.Plugin import PluginDescriptor
 
 profile("misc")
 had = dict()
@@ -159,8 +159,8 @@ class Session:
 
 		self.screen = SessionGlobals(self)
 
-		for p in plugins.getPlugins(PluginDescriptor.WHERE_SESSIONSTART):
-			p(reason=0, session=self)
+#		for p in plugins.getPlugins(PluginDescriptor.WHERE_SESSIONSTART):
+#			p(reason=0, session=self)
 
 	def processDelay(self):
 		callback = self.current_dialog.callback
@@ -286,10 +286,6 @@ class Session:
 
 		self.pushCurrent()
 		dlg = self.current_dialog = self.instantiateDialog(screen, *arguments, **kwargs)
-#+++>
-		if dlg is None:
-			return
-#+++<
 		dlg.isTmp = True
 		dlg.callback = None
 		self.execBegin()
@@ -347,12 +343,12 @@ class PowerKey:
 
 	def shutdown(self):
 		print "PowerOff - Now!"
-		if not Screens.Standby.inTryQuitMainloop and self.session.current_dialog and self.session.current_dialog.ALLOW_SUSPEND:
-			self.session.open(Screens.Standby.TryQuitMainloop, 1)
+		#if not Screens.Standby.inTryQuitMainloop and self.session.current_dialog and self.session.current_dialog.ALLOW_SUSPEND:
+		self.session.open(Screens.Standby.TryQuitMainloop, 1)
 
 	def powerlong(self):
-		if Screens.Standby.inTryQuitMainloop or (self.session.current_dialog and not self.session.current_dialog.ALLOW_SUSPEND):
-			return
+		#if Screens.Standby.inTryQuitMainloop or (self.session.current_dialog and not self.session.current_dialog.ALLOW_SUSPEND):
+		#	return
 
 		self.standbyblocked = 1
 		action = config.usage.on_long_powerpress.value
@@ -413,54 +409,85 @@ class AutoScartControl:
 			else:
 				self.scartDialog.switchToTV()
 
-profile("Load:CI")
-from enigma import eDVBCIInterfaces
-from Screens.Ci import CiHandler
+#profile("Load:CI")
+#from enigma import eDVBCIInterfaces
+#from Screens.Ci import CiHandler
 
 profile("Load:VolumeControl")
 from Components.VolumeControl import VolumeControl
 
 def runScreenTest():
 	profile("readPluginList")
-	plugins.readPluginList(resolveFilename(SCOPE_PLUGINS))
+	from Components.PluginComponent import plugins
+	plugins.readPluginCategoryList(resolveFilename(SCOPE_PLUGINS), "System")
 
 	profile("Init:Session")
 	nav = Navigation(config.misc.isNextRecordTimerAfterEventActionAuto.value)
 	session = Session(desktop = getDesktop(0), summary_desktop = getDesktop(1), navigation = nav)
 
-	CiHandler.setSession(session)
+#	CiHandler.setSession(session)
 
-	screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
+#	screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
 
-	profile("wizards")
-	screensToRun += wizardManager.getWizards()
+#	profile("wizards")
+#	screensToRun += wizardManager.getWizards()
 
-	screensToRun.append((100, Screens.InfoBar.InfoBar))
+#	screensToRun = []
+#	screensToRun.append((100, Screens.InfoBar.InfoBar))
 
-	screensToRun.sort()
+#	screensToRun.sort()
 
 	ePythonConfigQuery.setQueryFunc(configfile.getResolvedKey)
 
-#	eDVBCIInterfaces.getInstance().setDescrambleRules(0 # Slot Number
-#		,(	["1:0:1:24:4:85:C00000:0:0:0:"], #service_list
-#			["PREMIERE"], #provider_list,
-#			[] #caid_list
-#		));
+#	def runNextScreen(session, screensToRun, *result):
+#		if result:
+#			quitMainloop(*result)
+#			return
+#
+#		screen = screensToRun[0][1]
+#
+#		if screensToRun:
+#			session.openWithCallback(boundFunction(runNextScreen, session, screensToRun[1:]), screen)
+#		else:
+#			session.open(screen)
+#
+#	runNextScreen(session, screensToRun)
 
-	def runNextScreen(session, screensToRun, *result):
-		if result:
-			quitMainloop(*result)
-			return
+	from Screens.DMC_MainMenu import DMC_MainMenu
+	session.open(DMC_MainMenu)
 
-		screen = screensToRun[0][1]
+	print "11111111111111111111"
 
-		if screensToRun:
-			session.openWithCallback(boundFunction(runNextScreen, session, screensToRun[1:]), screen)
-		else:
-			session.open(screen)
+	#now we got an menu and can init the rest
+	import Components.Network
+	Components.Network.InitNetwork()
 
-	runNextScreen(session, screensToRun)
+	from enigma import eDVBCIInterfaces
+	from Screens.Ci import CiHandler
 
+	import Screens.Ci
+	Screens.Ci.InitCiConfig()
+	CiHandler.setSession(session)
+
+#	try:
+#		import twisted.python.runtime
+#		twisted.python.runtime.platform.supportsThreads = lambda: False
+#	
+#		import e2reactor
+#		e2reactor.install()
+#	
+#		from twisted.internet import reactor
+#	
+#		def runReactor():
+#			reactor.run(installSignalHandlers=False)
+#	except ImportError:
+#		print "twisted not available"
+#		def runReactor():
+#			runMainloop()
+
+#profile("LOAD:Plugin")
+
+# initialize autorun plugins and plugin menu entries
 	profile("Init:VolumeControl")
 	vol = VolumeControl(session)
 	profile("Init:PowerKey")
@@ -469,9 +496,17 @@ def runScreenTest():
 	# we need session.scart to access it from within menu.xml
 	session.scart = AutoScartControl(session)
 
+	print "222222222222222222222"
+
 	profile("RunReactor")
 	profile_final()
-	runReactor()
+#	runReactor()
+
+	print "333333333333333333333"
+
+	runMainloop()
+
+	print "4444444444444444444444"
 
 	profile("wakeup")
 	from time import time, strftime, localtime
@@ -479,9 +514,10 @@ def runScreenTest():
 	#get currentTime
 	nowTime = time()
 	wakeupList = [
-		x for x in ((session.nav.RecordTimer.getNextRecordingTime(), 0, session.nav.RecordTimer.isNextRecordAfterEventActionAuto()),
-					(session.nav.RecordTimer.getNextZapTime(), 1),
-					(plugins.getNextWakeupTime(), 2))
+		x for x in 	((session.nav.RecordTimer.getNextRecordingTime(), 0, session.nav.RecordTimer.isNextRecordAfterEventActionAuto()),
+					(session.nav.RecordTimer.getNextZapTime(), 1)#,
+					#(plugins.getNextWakeupTime(), 2)
+				)
 		if x[0] != -1
 	]
 	wakeupList.sort()
@@ -489,19 +525,10 @@ def runScreenTest():
 	if wakeupList:
 		from time import strftime
 		startTime = wakeupList[0]
-#--->
-#	       if (startTime[0] - nowTime) < 330: # no time to switch box back on
-#		       wptime = nowTime + 30  # so switch back on in 30 seconds
-#	       else:
-#		       wptime = startTime[0] - 300
-#---<
-#+++>
-		if (startTime[0] - nowTime) < 60: # no time to switch box back on
+		if (startTime[0] - nowTime) < 330: # no time to switch box back on
 			wptime = nowTime + 30  # so switch back on in 30 seconds
 		else:
-			wptime = startTime[0] - 60 # wake up 60 seconds in advance
-#+++<
-
+			wptime = startTime[0] - 300
 		if not config.misc.useTransponderTime.value:
 			print "dvb time sync disabled... so set RTC now to current linux time!", strftime("%Y/%m/%d %H:%M", localtime(nowTime))
 			setRTCtime(nowTime)
@@ -518,6 +545,8 @@ def runScreenTest():
 
 	profile("configfile.save")
 	configfile.save()
+
+	plugins.shutdown()
 
 	return 0
 
@@ -545,13 +574,13 @@ profile("keymapparser")
 import keymapparser
 keymapparser.readKeymap(config.usage.keymap.value)
 
-profile("Network")
-import Components.Network
-Components.Network.InitNetwork()
+#profile("Network")
+#import Components.Network
+#Components.Network.InitNetwork()
 
-profile("LCD")
-import Components.Lcd
-Components.Lcd.InitLcd()
+#profile("LCD")
+#import Components.Lcd
+#Components.Lcd.InitLcd()
 
 profile("SetupDevices")
 import Components.SetupDevices
@@ -561,9 +590,9 @@ profile("RFMod")
 import Components.RFmod
 Components.RFmod.InitRFmod()
 
-profile("Init:CI")
-import Screens.Ci
-Screens.Ci.InitCiConfig()
+#profile("Init:CI")
+#import Screens.Ci
+#Screens.Ci.InitCiConfig()
 
 #from enigma import dump_malloc_stats
 #t = eTimer()
@@ -574,7 +603,7 @@ Screens.Ci.InitCiConfig()
 try:
 	runScreenTest()
 
-	plugins.shutdown()
+#	plugins.shutdown()
 
 	from Components.ParentalControl import parentalControl
 	parentalControl.save()

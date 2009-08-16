@@ -31,6 +31,67 @@ class PluginComponent:
 			if x == PluginDescriptor.WHERE_AUTOSTART:
 				plugin(reason=1)
 
+	def readPluginCategoryList(self, directory, category):
+		"""enumerates plugins"""
+
+		new_plugins = [ ]
+
+		directory_category = directory + category
+		if not os_path.isdir(directory_category):
+			return
+
+		open(directory_category + "/__init__.py", "a").close()
+		for pluginname in os_listdir(directory_category):
+			print pluginname
+			path = directory_category + "/" + pluginname
+			print path
+			if os_path.isdir(path):
+				if fileExists(path + "/plugin.pyc") or fileExists(path + "/plugin.py"):
+					print "fileExists"
+					try:
+						plugin = my_import('.'.join(["Plugins", category, pluginname, "plugin"]))
+
+						if not plugin.__dict__.has_key("Plugins"):
+							print "Plugin %s doesn't have 'Plugin'-call." % (pluginname)
+							continue
+
+						plugins = plugin.Plugins(path=path)
+					except Exception, exc:
+						print "Plugin ", category + "/" + pluginname, "failed to load:", exc
+						print_exc(file=stdout)
+						print "skipping plugin."
+						self.warnings.append( (category + "/" + pluginname, str(exc)) )
+						continue
+
+					# allow single entry not to be a list
+					if not isinstance(plugins, list):
+						plugins = [ plugins ]
+
+					for p in plugins:
+						p.updateIcon(path)
+						new_plugins.append(p)
+
+					if fileExists(path + "/keymap.xml"):
+						try:
+							keymapparser.readKeymap(path + "/keymap.xml")
+						except Exception, exc:
+							print "keymap for plugin %s/%s failed to load: " % (c, pluginname), exc
+							self.warnings.append( (category + "/" + pluginname, str(exc)) )
+
+		# build a diff between the old list of plugins and the new one
+		# internally, the "fnc" argument will be compared with __eq__
+		plugins_added = [p for p in new_plugins if p not in self.pluginList]
+		plugins_removed = [p for p in self.pluginList if not p.internal and p not in new_plugins]
+
+		print "end"
+
+		for p in plugins_removed:
+			self.removePlugin(p)
+
+		for p in plugins_added:
+			self.addPlugin(p)
+
+
 	def readPluginList(self, directory):
 		"""enumerates plugins"""
 
@@ -44,9 +105,12 @@ class PluginComponent:
 				continue
 			open(directory_category + "/__init__.py", "a").close()
 			for pluginname in os_listdir(directory_category):
+				print pluginname
 				path = directory_category + "/" + pluginname
+				print path
 				if os_path.isdir(path):
 					if fileExists(path + "/plugin.pyc") or fileExists(path + "/plugin.py"):
+						print "fileExists"
 						try:
 							plugin = my_import('.'.join(["Plugins", c, pluginname, "plugin"]))
 
@@ -81,6 +145,8 @@ class PluginComponent:
 		# internally, the "fnc" argument will be compared with __eq__
 		plugins_added = [p for p in new_plugins if p not in self.pluginList]
 		plugins_removed = [p for p in self.pluginList if not p.internal and p not in new_plugins]
+
+		print "end"
 
 		for p in plugins_removed:
 			self.removePlugin(p)
