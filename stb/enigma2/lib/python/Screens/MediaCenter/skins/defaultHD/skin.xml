@@ -131,7 +131,7 @@
 				position="530,280" 
 				size="238,156" 
 				alphatest="on" >
-				<convert type="MenuEntryCompare">menu_poster</convert>
+				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -176,7 +176,7 @@
 				position="410,440" 
 				size="238,156" 
 				alphatest="on" >
-				<convert type="MenuEntryCompare">menu_poster</convert>
+				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -199,7 +199,7 @@
 				position="420,500" 
 				size="218,25" 
 				font="Regular;25" >
-				<convert type="MenuEntryCompare">menu_poster</convert>
+				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -212,7 +212,7 @@
 				position="650,440" 
 				size="238,156" 
 				alphatest="on"  >
-				<convert type="MenuEntryCompare">menu_poster</convert>
+				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -235,7 +235,7 @@
 				position="660,500" 
 				size="218,25" 
 				font="Regular;25" >
-				<convert type="MenuEntryCompare">menu_poster</convert>
+				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -325,7 +325,7 @@
 		</screen>
 
 		<!-- DMC PosterDemo -->
-		<screen name="DMC_PosterDemo" position="0,0" size="1280,720" title="Media Center - PosterDemo" flags="wfNoBorder" backgroundColor="#ff000000" >
+		<screen name="DMC_Movies" position="0,0" size="1280,720" title="Media Center - PosterDemo" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/fanart_overlay_720-fs8.png" />
 

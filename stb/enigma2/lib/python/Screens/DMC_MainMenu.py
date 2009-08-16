@@ -73,7 +73,7 @@ class DMC_MainMenu(Screen):
 
 	
 		list = []
-		list.append(("Movies", "DMC_Movies", "menu_movies", "50"))
+		list.append(("Movies", "DMC_Watch", "menu_watch", "50"))
 		list.append(("TV", "InfoBar", "menu_tv", "50"))
 		list.append(("Settings", "MC_Settings", "menu_settings", "50"))
 		list.append(("Pictures", "MC_PictureViewer", "menu_pictures", "50"))
@@ -114,13 +114,13 @@ class DMC_MainMenu(Screen):
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
 				if selection[1] == "DMC_Movies":
-					self.session.open(DMC_PosterDemo)
+					self.session.open(DMC_Movies)
 				elif selection[1] == "DMC_Series":
 					self.session.open(DMC_Series)
 		else:
 			selection = self["menu"].getCurrent()
 			if selection is not None:
-				if selection[1] == "DMC_Movies":
+				if selection[1] == "DMC_Watch":
 					self["menuWatch"].setIndex(1)
 					self.Watch = True;
 				elif selection[1] == "MC_AudioPlayer":

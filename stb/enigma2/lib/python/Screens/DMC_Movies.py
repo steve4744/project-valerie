@@ -43,6 +43,19 @@ class DMC_Movies(Screen, HelpableScreen):
 		list = []
 		self.moviedb = {}
 
+		filter = []
+		filter.append("Tag")
+		filter.append("Plot")
+		filter.append("Directors")
+		filter.append("Writers")
+		filter.append("Genres")
+		filter.append("Year")
+		filter.append("Runtime")
+		filter.append("Popularity")
+		filter.append("ImdbId")
+		filter.append("Title")
+		filter.append("Path")
+
 		try:
 			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
 			movies = db.split("\n----END----\n")
@@ -56,17 +69,16 @@ class DMC_Movies(Screen, HelpableScreen):
 					for line in lines: 
 						#print "Line: ", line
 						if ":" in line: 
-						    key, d[key] = (s.strip() for s in line.split(":", 1)) 
-						elif "key" in locals(): 
-						    d[key] += "\n%s" % line.strip()
+						    key, text = (s.strip() for s in line.split(":", 1)) 
+
+						if key in filter: 
+							d[key] = text
+
 					#print d
 					self.moviedb[d["ImdbId"]] = d
 					list.append((d["Title"], d["ImdbId"], "menu_globalsettings", "50"))
 			
-			
-		
 
-			
 		except OSError, e: 
 			print "OSError: ", e
 
@@ -101,8 +113,8 @@ class DMC_Movies(Screen, HelpableScreen):
 				"down": (self.down, "List down"),
 			}, -2)
 
-		eStillPicture.getInstance().showSinglePic("/hdd/movies/" + list[0][1] + "_backdrop.m1v")
-		#self["poster"].instance.setPixmapFromFile("/hdd/movies/" + selection[1] + "_poster-fs8.png")
+		eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + list[0][1] + "_backdrop.m1v")
+		#self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 		self["title"].setText(list[0][0])
 		self["tag"].setText(self.moviedb[list[0][1]]["Tag"])
 		self["shortDescription"].setText(self.moviedb[list[0][1]]["Plot"])
@@ -124,8 +136,8 @@ class DMC_Movies(Screen, HelpableScreen):
 		self["listview"].up()
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			eStillPicture.getInstance().showSinglePic("/hdd/movies/" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/movies/" + selection[1] + "_poster-fs8.png")
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 			self["title"].setText(selection[0])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
 			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
@@ -145,8 +157,8 @@ class DMC_Movies(Screen, HelpableScreen):
 		self["listview"].down()
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			eStillPicture.getInstance().showSinglePic("/hdd/movies/" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/movies/" + selection[1] + "_poster-fs8.png")
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 			self["title"].setText(selection[0])	
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])	
 			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
