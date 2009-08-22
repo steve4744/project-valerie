@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<results for="Terminator" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+    <opensearch:Query searchTerms="Terminator"/>
+    <opensearch:totalResults>6</opensearch:totalResults>
+    <moviematches>
+        <movie>
+            <score>1.0</score>
+            <popularity>33</popularity>
+            <title>Terminator Salvation</title>
+            <alternative_title>Terminator 4</alternative_title>
+            <type>movie</type>
+            <id>534</id>
+            <imdb>tt0438488</imdb>
+            <url>http://www.themoviedb.org/movie/534</url>
+            <short_overview>John Connor is the man fated to lead the human resistance against Skynet and its army of Terminators. But the future that Connor was raised to believe in is altered in part by the appearance of Marcus Wright. As Skynet prepares its final onslaught, they embark on an odyssey that takes them into the heart of Skynet&apos;s operations.</short_overview>
+            <release>2009-05-21</release>
+            <poster size="original">http://images.themoviedb.org/posters/1077/Terminator_Salvation_f01923b8.jpg</poster>
+            <poster size="thumb">http://images.themoviedb.org/posters/1077/Terminator_Salvation_f01923b8_thumb.jpg</poster>
+            <poster size="mid">http://images.themoviedb.org/posters/1077/Terminator_Salvation_f01923b8_mid.jpg</poster>
+            <poster size="cover">http://images.themoviedb.org/posters/1077/Terminator_Salvation_f01923b8_cover.jpg</poster>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/35120/Salvation_Fanart.jpg</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/35120/Salvation_Fanart_thumb.jpg</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/35120/Salvation_Fanart_poster.jpg</backdrop>
+        </movie>
+        <movie>
+            <score>0.569245755672455</score>
+            <popularity>23</popularity>
+            <title>Terminator 2: Judgment Day</title>
+            <alternative_title>Terminator 2</alternative_title>
+            <type>movie</type>
+            <id>280</id>
+            <imdb>tt0103064</imdb>
+            <url>http://www.themoviedb.org/movie/280</url>
+            <short_overview>It has been ten long years since a Terminator failed to kill Sarah Connor and her unborn son, John. Now, Skynet has sent back another Terminator. This one being more advanced than the last one. John Connor, who is now ten years old, is the target. The future John sends back a replica of the Terminator that tried to kill him back in time to 1995. It&apos;s Terminator vs. Terminator.</short_overview>
+            <release>1991-07-03</release>
+            <poster size="original">http://images.themoviedb.org/posters/42832/T2.jpg</poster>
+            <poster size="thumb">http://images.themoviedb.org/posters/42832/T2_thumb.jpg</poster>
+            <poster size="mid">http://images.themoviedb.org/posters/42832/T2_mid.jpg</poster>
+            <poster size="cover">http://images.themoviedb.org/posters/42832/T2_cover.jpg</poster>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/10124/Terminator2_1920x1080.jpg</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/10124/Terminator2_1920x1080_thumb.jpg</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/10124/Terminator2_1920x1080_poster.jpg</backdrop>
+        </movie>
+        <movie>
+            <score>0.245629906654358</score>
+            <popularity>6</popularity>
+            <title>Terminator</title>
+            <alternative_title>Terminator 1984</alternative_title>
+            <type>movie</type>
+            <id>218</id>
+            <imdb>tt0088247</imdb>
+            <url>http://www.themoviedb.org/movie/218</url>
+            <short_overview>In the year 2029, the rulers of Earth, to ensure their success, decide to reshape the future by changing the past. They send The Terminator back in time to the year 1984 to destroy the mother of a future rebel leader - Sarah Connor, who doesn&apos;t realize the awesome role her unborn child will play in the decades to come.   </short_overview>
+            <release>1984-10-26</release>
+            <poster size="original">http://images.themoviedb.org/posters/42828/terminator_poster.jpg</poster>
+            <poster size="thumb">http://images.themoviedb.org/posters/42828/terminator_poster_thumb.jpg</poster>
+            <poster size="mid">http://images.themoviedb.org/posters/42828/terminator_poster_mid.jpg</poster>
+            <poster size="cover">http://images.themoviedb.org/posters/42828/terminator_poster_cover.jpg</poster>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/20/tt0088247.jpg</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/20/tt0088247_poster.jpg</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/20/tt0088247_thumb.jpg</backdrop>
+        </movie>
+        <movie>
+            <score>0.136657252907753</score>
+            <popularity>5</popularity>
+            <title>Terminator 3: Rise of the Machines</title>
+            <alternative_title>Terminator 3</alternative_title>
+            <type>movie</type>
+            <id>296</id>
+            <imdb>tt0181852</imdb>
+            <url>http://www.themoviedb.org/movie/296</url>
+            <short_overview>John Connor is now in his 20&apos;s. After his mother passed away, he begun a life as a drifter, and deep down, knew what he, his mother and the T-800 had done at Cyberdyne only delaying the completion of Skynet. A female terminator called T-X or Terminatrix, sent back from 2032 to assassinate the future rebel leader, John Connor and the human resistance sent a T-850 to stop her.</short_overview>
+            <release>2003-07-02</release>
+            <poster size="original">http://images.themoviedb.org/posters/4629/Terminator_3_-_Rise_of_the_Machines.jpg</poster>
+            <poster size="thumb">http://images.themoviedb.org/posters/4629/Terminator_3_-_Rise_of_the_Machines_thumb.jpg</poster>
+            <poster size="mid">http://images.themoviedb.org/posters/4629/Terminator_3_-_Rise_of_the_Machines_mid.jpg</poster>
+            <poster size="cover">http://images.themoviedb.org/posters/4629/Terminator_3_-_Rise_of_the_Machines_cover.jpg</poster>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/1403/tt0181852.jpg</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/1403/tt0181852_poster.jpg</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/1403/tt0181852_thumb.jpg</backdrop>
+        </movie>
+        <movie>
+            <score>0.100303776562214</score>
+            <popularity>2</popularity>
+            <title>Terminator</title>
+            <alternative_title>The Terminator Collection</alternative_title>
+            <type>movie_series</type>
+            <id>528</id>
+            <imdb></imdb>
+            <url>http://www.themoviedb.org/movie/528</url>
+            <short_overview>The Terminator series are the science-fiction films about the fight in time between the human rebel alliance and the artificial intelligent machines called Skynet. The Terminator is sent back in time to destroy the future rebel leader’s mother and then in later films to protect him from more advanced machines.</short_overview>
+            <release>2009-05-21</release>
+            <poster size="original">http://images.themoviedb.org/posters/35422/Terminator_Collection_German-_cdcovers_cc_-front.jpg</poster>
+            <poster size="thumb">http://images.themoviedb.org/posters/35422/Terminator_Collection_German-_cdcovers_cc_-front_thumb.jpg</poster>
+            <poster size="mid">http://images.themoviedb.org/posters/35422/Terminator_Collection_German-_cdcovers_cc_-front_mid.jpg</poster>
+            <poster size="cover">http://images.themoviedb.org/posters/35422/Terminator_Collection_German-_cdcovers_cc_-front_cover.jpg</poster>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/37835/Terminator_Trilogy_bg.JPG</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/37835/Terminator_Trilogy_bg_thumb.JPG</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/37835/Terminator_Trilogy_bg_poster.JPG</backdrop>
+        </movie>
+        <movie>
+            <score>0.0137686422094703</score>
+            <popularity>2</popularity>
+            <title>Terminator: The Sarah Connor Chronicles</title>
+            <alternative_title></alternative_title>
+            <type>series</type>
+            <id>12856</id>
+            <imdb></imdb>
+            <url>http://www.themoviedb.org/movie/12856</url>
+            <short_overview></short_overview>
+            <release>2008-09-08</release>
+            <backdrop size="original">http://images.themoviedb.org/backdrops/27953/80344-19.jpg</backdrop>
+            <backdrop size="mid">http://images.themoviedb.org/backdrops/27953/80344-19_poster.jpg</backdrop>
+            <backdrop size="thumb">http://images.themoviedb.org/backdrops/27953/80344-19_thumb.jpg</backdrop>
+        </movie>
+    </moviematches>
+</results>
