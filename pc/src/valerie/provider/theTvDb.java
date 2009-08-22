@@ -39,7 +39,7 @@ public class theTvDb extends provider {
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
 
-    private String APIKEY = "TODO:GET+ID";
+    private String APIKEY = "3A042860EF9F9160";
     private String apiSearch = "http://www.thetvdb.com/api/GetSeries.php?seriesname=";
     private String apiSearchEpisode = "http://www.thetvdb.com/api/" + APIKEY + "/series/<seriesid>/default/<season>/<episode>/7.xml";
     private String apiArt = "http://www.thetvdb.com/banners/";
