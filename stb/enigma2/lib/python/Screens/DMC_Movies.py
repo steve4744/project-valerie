@@ -113,8 +113,8 @@ class DMC_Movies(Screen, HelpableScreen):
 				"down": (self.down, "List down"),
 			}, -2)
 
-		eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + list[0][1] + "_backdrop.m1v")
-		#self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+		eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + list[0][1] + "_backdrop.m1v")
+		#self["poster"].setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
 		self["title"].setText(list[0][0])
 		self["tag"].setText(self.moviedb[list[0][1]]["Tag"])
 		self["shortDescription"].setText(self.moviedb[list[0][1]]["Plot"])
@@ -136,8 +136,8 @@ class DMC_Movies(Screen, HelpableScreen):
 		self["listview"].up()
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
 			self["title"].setText(selection[0])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
 			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
@@ -157,8 +157,8 @@ class DMC_Movies(Screen, HelpableScreen):
 		self["listview"].down()
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
 			self["title"].setText(selection[0])	
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])	
 			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
