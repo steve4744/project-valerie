@@ -119,24 +119,26 @@ class DMC_Series(Screen, HelpableScreen):
 				"down": (self.down, "List down"),
 			}, -2)
 
-		eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + self.serieslist[0][1] + "_backdrop.m1v")
-		#self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
-		self["title"].setText(self.serieslist[0][0])
-		self["tag"].setText(self.moviedb[self.serieslist[0][1]]["Tag"])
-		self["shortDescription"].setText(self.moviedb[self.serieslist[0][1]]["Plot"])
-		self["director"].setText(self.moviedb[self.serieslist[0][1]]["Directors"])
-		self["writer"].setText(self.moviedb[self.serieslist[0][1]]["Writers"])
-		self["genre"].setText(self.moviedb[self.serieslist[0][1]]["Genres"])
-		self["year"].setText(self.moviedb[self.serieslist[0][1]]["Year"])
-		self["runtime"].setText(self.moviedb[self.serieslist[0][1]]["Runtime"])
+		print "count: ", self.serieslist.count
+		if self.serieslist.count > 0:
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/" + self.serieslist[0][1] + "_backdrop.m1v")
+			#self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+			self["title"].setText(self.serieslist[0][0])
+			self["tag"].setText(self.moviedb[self.serieslist[0][1]]["Tag"])
+			self["shortDescription"].setText(self.moviedb[self.serieslist[0][1]]["Plot"])
+			self["director"].setText(self.moviedb[self.serieslist[0][1]]["Directors"])
+			self["writer"].setText(self.moviedb[self.serieslist[0][1]]["Writers"])
+			self["genre"].setText(self.moviedb[self.serieslist[0][1]]["Genres"])
+			self["year"].setText(self.moviedb[self.serieslist[0][1]]["Year"])
+			self["runtime"].setText(self.moviedb[self.serieslist[0][1]]["Runtime"])
 
-		#for i in range(int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
-		#	stars = "star" + str(i)
-		#	print stars
-		#	self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
-#
-#		for i in range(10 - int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
-#			self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+			#for i in range(int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
+			#	stars = "star" + str(i)
+			#	print stars
+			#	self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
+	#
+	#		for i in range(10 - int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
+	#			self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
 					
 	def up(self):
 		self["listview"].up()
@@ -227,7 +229,7 @@ class DMC_Series(Screen, HelpableScreen):
 				filter.append("Episode")
 
 				try:
-					db = open("/hdd/valerie/episodedb.txt").read()[:-1]
+					db = open("/hdd/valerie/episodes/" + selection[1] + ".txt").read()[:-1]
 					movies = db.split("\n----END----\n")
 			
 
@@ -245,9 +247,9 @@ class DMC_Series(Screen, HelpableScreen):
 									d[key] = text
 
 							#print d
-							if d["TheTvDb"] == selection[1]:
-								self.episodesdb[d["Season"]+"x"+d["Episode"]] = d
-								episodeslist.append((d["Season"]+"x"+d["Episode"] + ": " + d["Title"], d["Season"]+"x"+d["Episode"], "menu_globalsettings", "50"))
+							#if d["TheTvDb"] == selection[1]:
+							self.episodesdb[d["Season"]+"x"+d["Episode"]] = d
+							episodeslist.append((d["Season"]+"x"+d["Episode"] + ": " + d["Title"], d["Season"]+"x"+d["Episode"], "menu_globalsettings", "50"))
 			
 				except OSError, e: 
 					print "OSError: ", e
