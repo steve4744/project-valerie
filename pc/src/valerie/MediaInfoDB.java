@@ -50,6 +50,18 @@ public class MediaInfoDB {
         return info;
     }
 
+    public MediaInfo getMediaInfoForSeries(int thetvdbId) {
+        MediaInfo info = null;
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).isSeries && ((MediaInfo)element).TheTvDb == thetvdbId) {
+                info = (MediaInfo)element;
+                break;
+            }
+        }
+
+        return info;
+    }
+
     public int getMediaInfoMoviesCount() {
         int counter = 0;
         for(Object element : DB.values())

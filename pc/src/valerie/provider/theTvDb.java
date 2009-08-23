@@ -46,6 +46,10 @@ public class theTvDb extends provider {
     private String apiSeriesByID = "http://www.thetvdb.com/data/series/<seriesid>/";
 
     private void getSeriesById(MediaInfo info) {
+
+        if(info.TheTvDb == 0)
+            return;
+
        Document xml = null;
        try {
            String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
@@ -148,7 +152,7 @@ public class theTvDb extends provider {
 
     private void getEpisode(MediaInfo info) {
 
-        if( info.TheTvDb == 0)
+        if( info.TheTvDb == 0 || info.Episode == 0 || info.Season == 0)
             return;
 
            Document xml = null;

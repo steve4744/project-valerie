@@ -5,7 +5,6 @@
 
 package valerie.tools;
 
-import valerie.*;
 import java.io.File;
 
 /**
@@ -20,7 +19,7 @@ public class mencoder {
                 File fInput = new File(Input);
                 File fOutput = new File(fInput.getName());
 
-                new FileUtils().copyFile(fInput, fOutput);
+                FileUtils.copyFile(fInput, fOutput);
 
                 String cmd = "bin\\mencoder mf://" + fOutput.getName() + " -mf type=jpg -ovc lavc -lavcopts vcodec=mpeg2video -oac copy -o " +  Output + " -vf scale=1024:576";
                 Process process = Runtime.getRuntime().exec(cmd);
@@ -39,6 +38,9 @@ public class mencoder {
 
                 new File(Output).delete();
             }
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+
+        }
     }
 }

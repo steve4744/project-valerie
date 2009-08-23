@@ -41,7 +41,7 @@ public class MediaInfo {
     public int Season = 0;
     public int Episode = 0;
     public int TheTvDb = 0;
-    public int ref = -1;
+    //public int ref = -1;
     public boolean Ignoring = true;
 
     public void getDataById() {
@@ -76,7 +76,7 @@ public class MediaInfo {
                 "ImdbId: " + Imdb + "\n" +
                 "Title: " + Title + "\n" +
                 "Year: " + Year + "\n" +
-                "Filename: " + Filename + "\n" +
+                //"Filename: " + Filename + "\n" +
                 "Path: " + Path + "\n" +
                 "Directors: " + Directors + "\n" +
                 "Writers: " + Writers + "\n" +

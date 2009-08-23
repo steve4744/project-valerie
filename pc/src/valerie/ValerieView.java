@@ -1028,24 +1028,37 @@ public class ValerieView extends FrameView {
         try {
             Writer fwMovie = new FileWriter( "db/moviedb.txt" );
             Writer fwSeries = new FileWriter( "db/seriesdb.txt" );
-            Writer fwEpisode = new FileWriter( "db/episodedb.txt" );
+
+            File episodes = new File("db/episodes");
+            if(episodes.exists()) {
+                for(File episode : episodes.listFiles())
+                    episode.delete();
+            }
+
+            episodes.mkdir();
+
+            //Writer fwEpisode = new FileWriter( "db/episodedb.txt" );
             fwMovie.write("Created on " + Calendar.getInstance().getTime() + "\n");
             fwSeries.write("Created on " + Calendar.getInstance().getTime() + "\n");
-            fwEpisode.write("Created on " + Calendar.getInstance().getTime() + "\n");
+            //fwEpisode.write("Created on " + Calendar.getInstance().getTime() + "\n");
             for(MediaInfo movie : movies) {
                 if(!movie.Ignoring) {
                     if(movie.isMovie)
                         fwMovie.append(movie.toString());
                     else if(movie.isSeries)
                         fwSeries.append(movie.toString());
-                    else if(movie.isEpisode)
+                    else if(movie.isEpisode) {
+                        Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
+                        fwEpisode.close();
+                    }
                 }
             }
             fwMovie.close();
             fwSeries.close();
-            fwEpisode.close();
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+        }
     }
 
     @Action
@@ -1432,8 +1445,10 @@ public class ValerieView extends FrameView {
             movie.DataProvider = new valerie.provider.theTvDb();
             movie.ArtProvider = new valerie.provider.theTvDb();
 
+            MediaInfo Series;
+
             if(database.getMediaInfoForSeries(movie.SearchString) == null) {
-                MediaInfo Series = movie.clone();
+                Series = movie.clone();
                 Series.isSeries = true;
                 Series.isEpisode = false;
                 Series.getDataByTitle();
@@ -1442,12 +1457,13 @@ public class ValerieView extends FrameView {
                 if(Series.Title.length() > 0) {
                     Series.Ignoring = false;
 
-                    database.addMediaInfo(Series);
+                     if(database.getMediaInfoForSeries(Series.TheTvDb) == null)
+                        database.addMediaInfo(Series);
                 }
-            }
+            } else
+                Series = database.getMediaInfoForSeries(movie.SearchString);
 
             MediaInfo Episode = null;
-            MediaInfo Series = database.getMediaInfoForSeries(movie.SearchString);
 
             if(Series != null) {
                 Episode = Series.clone();
@@ -1457,8 +1473,6 @@ public class ValerieView extends FrameView {
                 Episode.Path = movie.Path;
                 Episode.Season = movie.Season;
                 Episode.Episode = movie.Episode;
-
-                Episode.ref = Series.ID;
 
             } else return;
 
@@ -1495,7 +1509,18 @@ public class ValerieView extends FrameView {
 
             new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/moviedb.txt", "/hdd/valerie");
             new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/seriesdb.txt", "/hdd/valerie");
-            new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/episodedb.txt", "/hdd/valerie");
+
+            File episodes = new File("db/episodes");
+            if (!(episodes.exists())) {
+              Logger.print("No such Folder \"db/episodes\"!");
+            }
+            else {
+              String[] entries = episodes.list();
+
+              for (int i = 0; i < entries.length; ++i) {
+                  new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
+              }
+            }
 
             File folder = new File("converted");
             if (!(folder.exists())) {
@@ -1539,7 +1564,12 @@ public class ValerieView extends FrameView {
             Logger.setProgress(0);
 
             MediaInfo[] movies = database.getMediaInfo();
+
+            int moviesSize = movies.length;
+            int moviesIterator = 0;
+
             for(MediaInfo movie : movies) {
+                 Logger.setProgress((moviesIterator++*100)/moviesSize);
                 if(movie.isMovie)
                     getMediaArtMovie(movie);
                 if(movie.isSeries)
@@ -1597,16 +1627,19 @@ public class ValerieView extends FrameView {
             Logger.print(movie.Filename + " : Got title \"" + movie.Title +"\". Downloading and Converting backdrops");
 
             if(movie.Backdrop.length() > 0) {
-                File checkIfFileJPEGAlreadyExists = new File( "download/tt" + movie.Imdb + "_backdrop.jpg" );
-                if(checkIfFileJPEGAlreadyExists != null && checkIfFileJPEGAlreadyExists.exists()) {
-                }
-                else {
+                File downloaded = new File( "download/tt" + movie.Imdb + "_backdrop.jpg" );
+
+                //Check if already downloaded
+                if(downloaded == null || !downloaded.exists()) {
                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/tt" + movie.Imdb + "_backdrop.jpg");
                 }
 
-                if(checkIfFileJPEGAlreadyExists != null && checkIfFileJPEGAlreadyExists.exists()) {
-                    File checkIfFileMVIlreadyExists = new File( "converted/tt" + movie.Imdb + "_backdrop.m1v" );
-                    if(checkIfFileMVIlreadyExists == null || !checkIfFileMVIlreadyExists.exists())
+
+                if(downloaded != null && downloaded.exists()) {
+                    File converted = new File( "converted/tt" + movie.Imdb + "_backdrop.m1v" );
+
+                    //check if file already converted
+                    if(converted == null || !converted.exists())
                         new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v");
                 }
             }
