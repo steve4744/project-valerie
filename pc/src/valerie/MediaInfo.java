@@ -58,6 +58,61 @@ public class MediaInfo {
         Filename = path[path.length - 1];
     }
 
+    public MediaInfo() {
+    }
+
+    public void reparse(String entry) {
+
+        try {
+            String lines[] = entry.split("\n");
+
+            for(String line : lines) {
+                if(line.contains(": ")) {
+                    String keys[] = line.split(": ", 2);
+
+                    if(keys.length != 2)
+                        System.out.println("123");
+
+                    if(keys[0].equals("TheTvDb"))
+                        TheTvDb = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("ImdbId"))
+                        Imdb = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("Title"))
+                        Title = keys[1];
+                    else if(keys[0].equals("Year"))
+                        Year = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("Path"))
+                        Path = keys[1];
+                    else if(keys[0].equals("Directors"))
+                        Directors = keys[1];
+                    else if(keys[0].equals("Writers"))
+                        Writers = keys[1];
+                    else if(keys[0].equals("Plot"))
+                        Plot = keys[1];
+                    else if(keys[0].equals("Runtime"))
+                        Runtime = keys[1];
+                    else if(keys[0].equals("Genres"))
+                        Genres = keys[1];
+                    else if(keys[0].equals("Tag"))
+                        Tag = keys[1];
+                    else if(keys[0].equals("Popularity"))
+                        Popularity = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("Season"))
+                        Season = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("Episode"))
+                        Episode = Integer.valueOf(keys[1]);
+                }
+            }
+
+            if(Path.length() > 0) {
+                String[] path = Path.split("/");
+                Filename = path[path.length - 1];
+            }
+        }catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+    }
+
     public void checkStrings() {
 
         Title = Title.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");

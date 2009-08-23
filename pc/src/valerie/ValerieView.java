@@ -17,7 +17,9 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.Calendar;
@@ -1061,14 +1063,107 @@ public class ValerieView extends FrameView {
         }
     }
 
+    public void loadArchive () {
+        try {
+            BufferedReader frMovie = new BufferedReader( new FileReader("db/moviedb.txt"));
+            String moviedb = "";
+            String line;
+            while((line = frMovie.readLine()) != null)
+                moviedb += line + "\n";
+
+            String movies[] = moviedb.split("---BEGIN---\n");
+            for(String movie : movies) {
+                MediaInfo info = new MediaInfo();
+                info.reparse(movie);
+                info.isMovie = true;
+
+                //ignore the entry as long as we havent confirmed that it still exists
+                info.Ignoring = true;
+                if(info.Title.length() > 0)
+                    database.addMediaInfo(info);
+            }
+
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+        }
+
+
+        try {
+            BufferedReader frMovie = new BufferedReader( new FileReader("db/seriesdb.txt"));
+            String moviedb = "";
+            String line;
+            while((line = frMovie.readLine()) != null)
+                moviedb += line + "\n";
+
+            String movies[] = moviedb.split("---BEGIN---\n");
+            for(String movie : movies) {
+                MediaInfo info = new MediaInfo();
+                info.reparse(movie);
+                info.isSeries = true;
+
+                //ignore the entry as long as we havent confirmed that it still exists
+                info.Ignoring = true;
+                if(info.Title.length() > 0)
+                    database.addMediaInfo(info);
+            }
+
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+        }
+
+        try {
+            MediaInfo infos[] = database.getMediaInfo();
+            for(MediaInfo info : infos) {
+                if(info.isSeries) {
+                    BufferedReader frMovie = new BufferedReader( new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
+                    String moviedb = "";
+                    String line;
+                    while((line = frMovie.readLine()) != null)
+                        moviedb += line + "\n";
+
+                    String movies[] = moviedb.split("---BEGIN---\n");
+                    for(String movie : movies) {
+                        MediaInfo movieinfo = new MediaInfo();
+                        movieinfo.reparse(movie);
+                        movieinfo.isEpisode = true;
+
+                        //ignore the entry as long as we havent confirmed that it still exists
+                        movieinfo.Ignoring = true;
+                        if(movieinfo.Title.length() > 0)
+                            database.addMediaInfo(movieinfo);
+                    }
+                }
+            }
+        } catch(Exception ex) {
+            System.out.println(ex.toString());
+        }
+    }
+
+    @Action
+    public void addLine() {
+        DefaultTableModel dModel = (DefaultTableModel) jTablePathsSeries.getModel();
+        dModel.setRowCount(dModel.getRowCount() + 1);
+        dModel.setValueAt(false, dModel.getRowCount()-1, 0);
+    }
+
+    @Action
+    public void connectNetwork() {
+
+        boxInfo = new valerie.tools.BoxInfoParser().parse(new valerie.tools.Network().sendBroadcast());
+        jLabelConnectionStatus.setText(boxInfo.toShortString());
+    }
+
     @Action
     public Task syncFilelist() {
 
         savePathsTables();
 
+        //clear database
+        database.clear();
+
+        loadArchive();
         return new SyncFilelistTask(getApplication());
     }
-
     private class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void> {
         SyncFilelistTask(org.jdesktop.application.Application app) {
             // Runs on the EDT.  Copy GUI state that
@@ -1082,10 +1177,6 @@ public class ValerieView extends FrameView {
             // Your Task's code here.  This method runs
             // on a background thread, so don't reference
             // the Swing GUI from here.
-
-            //clear database
-            database.clear();
-
             Logger.setWorking(true);
             Logger.setProgress(0);
 
@@ -1133,6 +1224,14 @@ public class ValerieView extends FrameView {
                     movie.isMovie = true;
 
                     Logger.print(movie.Filename + " : Parsing");
+
+                    //Check if we already have this Movie in our Archiv!
+                    //if so we dont need to extra inject it.
+                    MediaInfo archiveEntry = null;
+                    if((archiveEntry = database.getMediaInfoByPath(movie.Path)) != null) {
+                        archiveEntry.Ignoring = false;
+                        continue;
+                    }
 
                     //FileFilter
                     Pattern p = Pattern.compile("tt\\d{7}");
@@ -1235,6 +1334,15 @@ public class ValerieView extends FrameView {
                     movie.isEpisode = true;
 
                     Logger.print(movie.Filename + " : Parsing");
+
+                     //Check if we already have this Movie in our Archiv!
+                    //if so we dont need to extra inject it.
+                    MediaInfo archiveEntry = null;
+                    if((archiveEntry = database.getMediaInfoByPath(movie.Path)) != null) {
+                        archiveEntry.Ignoring = false;
+                        continue;
+                    }
+
 
                     Pattern p = Pattern.compile("tt\\d{7}");
                     Matcher m = p.matcher(movie.Filename);
@@ -1345,24 +1453,9 @@ public class ValerieView extends FrameView {
     }
 
     @Action
-    public void addLine() {
-        DefaultTableModel dModel = (DefaultTableModel) jTablePathsSeries.getModel();
-        dModel.setRowCount(dModel.getRowCount() + 1);
-        dModel.setValueAt(false, dModel.getRowCount()-1, 0);
-    }
-
-    @Action
-    public void connectNetwork() {
-
-        boxInfo = new valerie.tools.BoxInfoParser().parse(new valerie.tools.Network().sendBroadcast());
-        jLabelConnectionStatus.setText(boxInfo.toShortString());
-    }
-
-    @Action
     public Task parseFilelist() {
         return new ParseFilelistTask(getApplication());
     }
-
     private class ParseFilelistTask extends org.jdesktop.application.Task<Object, Void> {
         ParseFilelistTask(org.jdesktop.application.Application app) {
             // Runs on the EDT.  Copy GUI state that
@@ -1413,9 +1506,6 @@ public class ValerieView extends FrameView {
 
                 Logger.print(movie.Filename + " : Using \"" + movie.SearchString +"\" to get title");
 
-                if(movie.SearchString.length() == 0)
-                    continue;
-
                 if(movie.isMovie)
                     getMediaInfoMovie(movie);
                 else if(movie.isEpisode)
@@ -1432,10 +1522,14 @@ public class ValerieView extends FrameView {
             movie.DataProvider = new valerie.provider.Imdb();
             movie.ArtProvider = new valerie.provider.theMovieDb();
 
-            movie.getDataByTitle();
+            //if we have no searchstring, than the movie was importet from the archive and we dont need to reparse
+            if(movie.SearchString.length() > 0)
+                movie.getDataByTitle();
 
-            if(movie.Title.length() > 0)
+            if(movie.Title.length() > 0) {
                 movie.Ignoring = false;
+                //database.addMediaInfo(movie);
+            }
 
             database.addMediaInfo(movie);
          }
@@ -1445,101 +1539,55 @@ public class ValerieView extends FrameView {
             movie.DataProvider = new valerie.provider.theTvDb();
             movie.ArtProvider = new valerie.provider.theTvDb();
 
-            MediaInfo Series;
+            if(!movie.isSeries && movie.SearchString.length() >  0) {
+                MediaInfo Series;
 
-            if(database.getMediaInfoForSeries(movie.SearchString) == null) {
-                Series = movie.clone();
-                Series.isSeries = true;
-                Series.isEpisode = false;
-                Series.getDataByTitle();
-                Series.Filename = "";
+                if(database.getMediaInfoForSeries(movie.SearchString) == null) {
+                    Series = movie.clone();
+                    Series.isSeries = true;
+                    Series.isEpisode = false;
+                    Series.getDataByTitle();
+                    Series.Filename = "";
 
-                if(Series.Title.length() > 0) {
-                    Series.Ignoring = false;
+                    if(Series.Title.length() > 0) {
+                        Series.Ignoring = false;
 
-                     if(database.getMediaInfoForSeries(Series.TheTvDb) == null)
-                        database.addMediaInfo(Series);
-                }
-            } else
-                Series = database.getMediaInfoForSeries(movie.SearchString);
+                         if(database.getMediaInfoForSeries(Series.TheTvDb) == null)
+                            database.addMediaInfo(Series);
+                    }
+                } else
+                    Series = database.getMediaInfoForSeries(movie.SearchString);
 
-            MediaInfo Episode = null;
+                MediaInfo Episode = null;
 
-            if(Series != null) {
-                Episode = Series.clone();
-                Episode.isSeries = false;
-                Episode.isEpisode = true;
-                Episode.Filename = movie.Filename;
-                Episode.Path = movie.Path;
-                Episode.Season = movie.Season;
-                Episode.Episode = movie.Episode;
+                if(Series != null) {
+                    Episode = Series.clone();
+                    Episode.isSeries = false;
+                    Episode.isEpisode = true;
+                    Episode.Filename = movie.Filename;
+                    Episode.Path = movie.Path;
+                    Episode.Season = movie.Season;
+                    Episode.Episode = movie.Episode;
 
-            } else return;
+                } else return;
 
-            Episode.getDataByTitle();
+                Episode.getDataByTitle();
 
 
-            Episode.ArtProvider = Episode.DataProvider;
+                Episode.ArtProvider = Episode.DataProvider;
 
-            if(Episode.Title.length() > 0)
-                Episode.Ignoring = false;
+                if(Episode.Title.length() > 0)
+                    Episode.Ignoring = false;
 
-            database.addMediaInfo(Episode);
-        }
+                if(Episode.Title.length() > 0)
+                    Episode.Ignoring = false;
+                database.addMediaInfo(Episode);
 
-        
-    }
-
-    @Action
-    public Task uploadFiles() {
-        return new UploadFilesTask(getApplication());
-    }
-
-    private class UploadFilesTask extends org.jdesktop.application.Task<Object, Void> {
-        UploadFilesTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to UploadFilesTask fields, here.
-            super(app);
-        }
-        @Override protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-
-            new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/moviedb.txt", "/hdd/valerie");
-            new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/seriesdb.txt", "/hdd/valerie");
-
-            File episodes = new File("db/episodes");
-            if (!(episodes.exists())) {
-              Logger.print("No such Folder \"db/episodes\"!");
+            } else {
+                if(movie.Title.length() > 0)
+                        movie.Ignoring = false;
+                database.addMediaInfo(movie);
             }
-            else {
-              String[] entries = episodes.list();
-
-              for (int i = 0; i < entries.length; ++i) {
-                  new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
-              }
-            }
-
-            File folder = new File("converted");
-            if (!(folder.exists())) {
-              Logger.print("No such Folder \"converted\"!");
-            }
-            else {
-              String[] entries = folder.list();
-
-              for (int i = 0; i < entries.length; ++i) {
-                  new valerie.tools.Network().sendFile(boxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
-              }
-            }
-
-
-            return null;  // return your result
-        }
-        @Override protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
         }
     }
 
@@ -1547,7 +1595,6 @@ public class ValerieView extends FrameView {
     public Task getArt() {
         return new GetArtTask(getApplication());
     }
-
     private class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         GetArtTask(org.jdesktop.application.Application app) {
             // Runs on the EDT.  Copy GUI state that
@@ -1706,8 +1753,57 @@ public class ValerieView extends FrameView {
         }
     }
 
+    @Action
+    public Task uploadFiles() {
+        return new UploadFilesTask(getApplication());
+    }
+    private class UploadFilesTask extends org.jdesktop.application.Task<Object, Void> {
+        UploadFilesTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to UploadFilesTask fields, here.
+            super(app);
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/moviedb.txt", "/hdd/valerie");
+            new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/seriesdb.txt", "/hdd/valerie");
+
+            File episodes = new File("db/episodes");
+            if (!(episodes.exists())) {
+              Logger.print("No such Folder \"db/episodes\"!");
+            }
+            else {
+              String[] entries = episodes.list();
+
+              for (int i = 0; i < entries.length; ++i) {
+                  new valerie.tools.Network().sendFile(boxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
+              }
+            }
+
+            File folder = new File("converted");
+            if (!(folder.exists())) {
+              Logger.print("No such Folder \"converted\"!");
+            }
+            else {
+              String[] entries = folder.list();
+
+              for (int i = 0; i < entries.length; ++i) {
+                  new valerie.tools.Network().sendFile(boxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+              }
+            }
 
 
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
 
 
     private valerie.tools.BoxInfo boxInfo;

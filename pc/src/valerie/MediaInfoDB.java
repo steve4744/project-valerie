@@ -28,6 +28,18 @@ public class MediaInfoDB {
         return (MediaInfo) DB.get(id);
     }
 
+    public MediaInfo getMediaInfoByPath(String path) {
+
+        MediaInfo info = null;
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).Path.equals(path)) {
+                info = (MediaInfo)element;
+                break;
+            }
+        }
+        return info;
+    }
+
     public MediaInfo[] getMediaInfo() {
         MediaInfo[] list = new MediaInfo[DB.size()];
         int iterator = 0;
