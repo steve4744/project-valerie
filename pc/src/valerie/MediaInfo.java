@@ -19,11 +19,17 @@ public class MediaInfo {
     public provider ArtProvider;
 
     public int ID = 0;
+
+    public boolean isArchiv = false;
+    public boolean needsUpdate = false;
+
     public boolean isMovie = false;
     public boolean isSeries = false;
     public boolean isEpisode = false;
     public String Filename = "";
     public String Path = "";
+
+    //TODO: change Searchstring to regex, as a series could hava multiple possible searchstrings
     public String SearchString = "";
     public String Title = "";
     public int Year = 0;
@@ -125,7 +131,7 @@ public class MediaInfo {
     }
 
     public String toString() {
-        if(Imdb > 0)
+        //if(Imdb > 0)
         return  "---BEGIN---\n" +
                 (isEpisode||isSeries?("TheTvDb: " + TheTvDb + "\n"):"") +
                 "ImdbId: " + Imdb + "\n" +
@@ -143,8 +149,8 @@ public class MediaInfo {
                 (isEpisode?("Season: " + Season + "\n"):"") +
                 (isEpisode?("Episode: " + Episode + "\n"):"") +
                 "----END----\n\n";
-        else
-            return "";
+        //else
+        //    return "";
     }
 
     @Override
@@ -152,7 +158,7 @@ public class MediaInfo {
         MediaInfo rtv = new MediaInfo(Filename);
 
         rtv.DataProvider = DataProvider;
-        rtv. ArtProvider = ArtProvider;
+        rtv.ArtProvider = ArtProvider;
 
         rtv.isMovie = isMovie;
         rtv.isSeries = isSeries;
@@ -176,8 +182,10 @@ public class MediaInfo {
         rtv.Season = Season;
         rtv.Episode = Episode;
         rtv.TheTvDb = TheTvDb;
-        rtv.Ignoring = Ignoring;
 
+        rtv.Ignoring = Ignoring;
+        rtv.isArchiv = isArchiv;
+        rtv.needsUpdate = needsUpdate;
         return rtv;
     }
 

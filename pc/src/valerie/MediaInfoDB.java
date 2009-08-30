@@ -5,6 +5,7 @@
 
 package valerie;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -28,6 +29,12 @@ public class MediaInfoDB {
         return (MediaInfo) DB.get(id);
     }
 
+    public void deleteMediaInfo(int id) {
+
+        DB.remove(id);
+    }
+
+
     public MediaInfo getMediaInfoByPath(String path) {
 
         MediaInfo info = null;
@@ -46,6 +53,60 @@ public class MediaInfoDB {
         for(Object element : DB.values()) {
             list[iterator++] = (MediaInfo)element;
         }
+
+        return list;
+    }
+
+
+
+    public MediaInfo[] getMediaInfoEpisodes() {
+        ArrayList vector = new ArrayList();
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).isEpisode)
+                vector.add((MediaInfo)element);
+        }
+
+        MediaInfo[] list = new MediaInfo[vector.size()];
+        vector.toArray(list);
+
+        return list;
+    }
+
+    public MediaInfo[] getMediaInfoSeries() {
+        ArrayList vector = new ArrayList();
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).isSeries)
+                vector.add((MediaInfo)element);
+        }
+
+        MediaInfo[] list = new MediaInfo[vector.size()];
+        vector.toArray(list);
+
+        return list;
+    }
+
+    public MediaInfo[] getMediaInfoEpisodes(int thetvdbId) {
+        ArrayList vector = new ArrayList();
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDb == thetvdbId)
+                vector.add((MediaInfo)element);
+        }
+
+        MediaInfo[] list = new MediaInfo[vector.size()];
+        vector.toArray(list);
+
+        return list;
+    }
+
+     public MediaInfo[] getMediaInfoEpisodesUnspecified() {
+        ArrayList vector = new ArrayList();
+        for(Object element : DB.values()) {
+            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDb == 0)
+                vector.add((MediaInfo)element);
+        }
+
+        MediaInfo[] list = new MediaInfo[vector.size()];
+        vector.toArray(list);
 
         return list;
     }

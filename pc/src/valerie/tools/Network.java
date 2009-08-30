@@ -51,26 +51,26 @@ public class Network {
             socket.setBroadcast(true);
             InetAddress Adr = InetAddress.getByName("255.255.255.255");
             Integer Port = 5450;
-            Integer WaitMilliSeconds = 1000;
+            Integer WaitMilliSeconds = 100;
             DatagramPacket Send = new DatagramPacket(SendBuf, SendBuf.length, Adr, Port);
             socket.setSoTimeout(WaitMilliSeconds);
             socket.send(Send);
 
-            DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
-            //do
+            //DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
+            do
             {//warten auf Antworten
+                DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
                 socket.receive(Recieve);
-                rtv = new String(Recieve.getData());
 
-                rtv = rtv.trim();
+                rtv += new String(Recieve.getData()).trim();
 
-                rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";";
+                rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
 
                 System.out.println(rtv);
 
                 //We only want the Boxinfo an the BoxIP for now.
                 //break;
-            }// while(!socket.isClosed());
+            } while(!socket.isClosed());
             socket.close();
         } catch(Exception ex) {
             System.out.println(ex.toString());
