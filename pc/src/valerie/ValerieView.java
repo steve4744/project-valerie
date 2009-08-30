@@ -929,7 +929,8 @@ public class ValerieView extends FrameView {
                 //ignore the entry as long as we havent confirmed that it still exists
                 info.Ignoring = true;
                 if (info.Title.length() > 0) {
-                    database.addMediaInfo(info);
+                    if(database.getMediaInfoByPath(info.Path) == null)
+                        database.addMediaInfo(info);
                 }
             }
 
@@ -957,7 +958,8 @@ public class ValerieView extends FrameView {
                 //As this isnt represented by any file we have to set ignoring to false
                 info.Ignoring = false;
                 if (info.Title.length() > 0) {
-                    database.addMediaInfo(info);
+                    if(database.getMediaInfoForSeries(info.TheTvDb) == null)
+                        database.addMediaInfo(info);
                 }
             }
 
@@ -987,7 +989,8 @@ public class ValerieView extends FrameView {
                         //ignore the entry as long as we havent confirmed that it still exists
                         movieinfo.Ignoring = true;
                         if (movieinfo.Title.length() > 0) {
-                            database.addMediaInfo(movieinfo);
+                            if(database.getMediaInfoByPath(movieinfo.Path) == null)
+                                database.addMediaInfo(movieinfo);
                         }
                     }
                 }
@@ -1457,8 +1460,14 @@ public class ValerieView extends FrameView {
                         Series.needsUpdate = false;
 
                         //check if this is a duplicate
-                        if (database.getMediaInfoForSeries(Series.TheTvDb) == null) {
+                        MediaInfo duplicate = database.getMediaInfoForSeries(Series.TheTvDb);
+                        if (duplicate == null) {
                             database.addMediaInfo(Series);
+                        } else {
+                            if(duplicate.SearchString.length() > 0)
+                                duplicate.SearchString = duplicate.SearchString.substring(0, duplicate.SearchString.length()) + "|" + movie.SearchString + ")";
+                            else
+                                duplicate.SearchString =  "(" + movie.SearchString + ")";
                         }
                     }
                 } else {
@@ -1472,6 +1481,7 @@ public class ValerieView extends FrameView {
                     Episode.isSeries = false;
                     Episode.isEpisode = true;
                     Episode.Filename = movie.Filename;
+                    Episode.SearchString = movie.SearchString;
                     Episode.Path = movie.Path;
                     Episode.Season = movie.Season;
                     Episode.Episode = movie.Episode;

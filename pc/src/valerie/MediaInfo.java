@@ -138,7 +138,7 @@ public class MediaInfo {
                 "Title: " + Title + "\n" +
                 "Year: " + Year + "\n" +
                 //"Filename: " + Filename + "\n" +
-                "Path: " + Path + "\n" +
+                (!isSeries?("Path: " + Path + "\n"):"") +
                 "Directors: " + Directors + "\n" +
                 "Writers: " + Writers + "\n" +
                 "Plot: " + Plot + "\n" +
