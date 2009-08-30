@@ -248,8 +248,8 @@ class DMC_Series(Screen, HelpableScreen):
 
 							#print d
 							#if d["TheTvDb"] == selection[1]:
-							self.episodesdb[d["Season"]+"x"+d["Episode"]] = d
-							episodeslist.append((d["Season"]+"x"+d["Episode"] + ": " + d["Title"], d["Season"]+"x"+d["Episode"], "menu_globalsettings", "50"))
+							self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
+							episodeslist.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
 			
 				except OSError, e: 
 					print "OSError: ", e
