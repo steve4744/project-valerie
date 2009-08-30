@@ -61,7 +61,7 @@
 				pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/hover_my weather-fs8.png" 
 				position="119,300" 
 				size="100,100" 
-				alphatest="on"
+				alphatest="blend"
 			/>
 
 			<eLabel text="My Weather" 
@@ -101,7 +101,7 @@
 				pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/hover_my music-fs8.png" 
 				position="359,300" 
 				size="100,100" 
-				alphatest="on"
+				alphatest="blend"
 			/>
 
 			<eLabel text="Listen" 
@@ -141,7 +141,7 @@
 				pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/hover_my videos-fs8.png" 
 				position="599,300" 
 				size="100,100" 
-				alphatest="on"
+				alphatest="blend"
 			/>
 
 			<eLabel text="Watch" 
@@ -268,7 +268,7 @@
 				pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/hover_my tv-fs8.png" 
 				position="839,300" 
 				size="100,100" 
-				alphatest="on"
+				alphatest="blend"
 			/>
 
 			<eLabel text="My TV" 
@@ -308,7 +308,7 @@
 				pixmap="/usr/lib/enigma2/python/Screens/MediaCenter/skins/monochrome/hover_settings-fs8.png" 
 				position="1079,300" 
 				size="100,100" 
-				alphatest="on"
+				alphatest="blend"
 			/>
 
 			<eLabel text="Options" 
