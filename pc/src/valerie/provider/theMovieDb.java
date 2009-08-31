@@ -32,7 +32,7 @@ public class theMovieDb extends provider {
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
-    private String APIKEY = "cc25933c4094ca50635f94574491f320";
+    private String APIKEY = "7bcd34bb47bc65d20a49b6b446a32866";
     private String apiImdbLookup = "http://api.themoviedb.org/2.0/Movie.imdbLookup?api_key=" + APIKEY + "&imdb_id=";
     private String apiSearch = "http://api.themoviedb.org/2.0/Movie.search?api_key=" + APIKEY + "&title=";
     private String apiGetInfo = "http://api.themoviedb.org/2.0/Movie.getInfo?api_key=" + APIKEY + "=";
