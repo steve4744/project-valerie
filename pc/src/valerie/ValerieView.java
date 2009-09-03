@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -32,6 +34,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -194,6 +198,8 @@ public class ValerieView extends FrameView {
         jButtonArt = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
         jButtonUpload = new javax.swing.JButton();
+        jComboBoxBoxinfo = new javax.swing.JComboBox();
+        jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane = new javax.swing.JTabbedPane();
         jPanelMovies = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -209,6 +215,7 @@ public class ValerieView extends FrameView {
         }
         ;
         jPanelSeries = new javax.swing.JPanel();
+        jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane6 = new javax.swing.JScrollPane();
         jTableSeries = new javax.swing.JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
@@ -233,7 +240,7 @@ public class ValerieView extends FrameView {
             }
         }
         ;
-        jComboBoxBoxinfo = new javax.swing.JComboBox();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaDescription = new javax.swing.JTextArea();
         jPanelThumbs = new javax.swing.JPanel();
@@ -311,12 +318,26 @@ public class ValerieView extends FrameView {
         jButtonUpload.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonUpload);
 
+        jComboBoxBoxinfo.setBackground(resourceMap.getColor("jComboBoxBoxinfo.background")); // NOI18N
+        jComboBoxBoxinfo.setName("jComboBoxBoxinfo"); // NOI18N
+        jComboBoxBoxinfo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxBoxinfoItemStateChanged(evt);
+            }
+        });
+
+        jSplitPane1.setDividerLocation(400);
+        jSplitPane1.setDividerSize(10);
+        jSplitPane1.setName("jSplitPane1"); // NOI18N
+        jSplitPane1.setOneTouchExpandable(true);
+
         jTabbedPane.setName("jTabbedPane"); // NOI18N
 
         jPanelMovies.setName("jPanelMovies"); // NOI18N
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
+        jTableFilelist.setAutoCreateRowSorter(true);
         jTableFilelist.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null}
@@ -340,6 +361,12 @@ public class ValerieView extends FrameView {
                 return canEdit [columnIndex];
             }
         });
+        List <RowSorter.SortKey> sortKeysMovies
+        = new ArrayList<RowSorter.SortKey>();
+        sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+        sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+
+        jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);
         jTableFilelist.setName("jTableFilelist"); // NOI18N
         jTableFilelist.getTableHeader().setReorderingAllowed(false);
         jTableFilelist.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -363,6 +390,7 @@ public class ValerieView extends FrameView {
         jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
         jTableFilelist.getColumnModel().getColumn(3).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(3).setPreferredWidth(30);
+        jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
         jTableFilelist.getColumnModel().getColumn(4).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
         jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title6")); // NOI18N
@@ -371,17 +399,11 @@ public class ValerieView extends FrameView {
         jPanelMovies.setLayout(jPanelMoviesLayout);
         jPanelMoviesLayout.setHorizontalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelMoviesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
         );
         jPanelMoviesLayout.setVerticalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelMoviesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -389,8 +411,15 @@ public class ValerieView extends FrameView {
         jPanelSeries.setName("jPanelSeries"); // NOI18N
         jPanelSeries.setPreferredSize(new java.awt.Dimension(586, 667));
 
+        jSplitPane2.setDividerLocation(250);
+        jSplitPane2.setDividerSize(8);
+        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        jSplitPane2.setName("jSplitPane2"); // NOI18N
+        jSplitPane2.setOneTouchExpandable(true);
+
         jScrollPane6.setName("jScrollPane6"); // NOI18N
 
+        jTableSeries.setAutoCreateRowSorter(true);
         jTableSeries.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null}
@@ -414,6 +443,11 @@ public class ValerieView extends FrameView {
                 return canEdit [columnIndex];
             }
         });
+        List <RowSorter.SortKey> sortKeysSeries
+        = new ArrayList<RowSorter.SortKey>();
+        sortKeysSeries.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+
+        jTableSeries.getRowSorter().setSortKeys(sortKeysSeries);
         jTableSeries.setName("jTableSeries"); // NOI18N
         jTableSeries.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -432,8 +466,11 @@ public class ValerieView extends FrameView {
         jTableSeries.getColumnModel().getColumn(1).setPreferredWidth(10);
         jTableSeries.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableSeries.columnModel.title1")); // NOI18N
 
+        jSplitPane2.setTopComponent(jScrollPane6);
+
         jScrollPane5.setName("jScrollPane5"); // NOI18N
 
+        jTableFilelistEpisodes.setAutoCreateRowSorter(true);
         jTableFilelistEpisodes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null}
@@ -457,6 +494,13 @@ public class ValerieView extends FrameView {
                 return canEdit [columnIndex];
             }
         });
+        List <RowSorter.SortKey> sortKeysEpisodes
+        = new ArrayList<RowSorter.SortKey>();
+        sortKeysEpisodes.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+        sortKeysEpisodes.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
+        sortKeysEpisodes.add(new RowSorter.SortKey(4, SortOrder.ASCENDING));
+
+        jTableFilelistEpisodes.getRowSorter().setSortKeys(sortKeysEpisodes);
         jTableFilelistEpisodes.setName("jTableFilelistEpisodes"); // NOI18N
         jTableFilelistEpisodes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -487,36 +531,24 @@ public class ValerieView extends FrameView {
         jTableFilelistEpisodes.getColumnModel().getColumn(5).setPreferredWidth(10);
         jTableFilelistEpisodes.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
 
+        jSplitPane2.setRightComponent(jScrollPane5);
+
         javax.swing.GroupLayout jPanelSeriesLayout = new javax.swing.GroupLayout(jPanelSeries);
         jPanelSeries.setLayout(jPanelSeriesLayout);
         jPanelSeriesLayout.setHorizontalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSeriesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelSeriesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
 
-        jComboBoxBoxinfo.setBackground(resourceMap.getColor("jComboBoxBoxinfo.background")); // NOI18N
-        jComboBoxBoxinfo.setName("jComboBoxBoxinfo"); // NOI18N
-        jComboBoxBoxinfo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jComboBoxBoxinfoItemStateChanged(evt);
-            }
-        });
+        jSplitPane1.setLeftComponent(jTabbedPane);
+
+        jPanel1.setName("jPanel1"); // NOI18N
 
         jScrollPane3.setName("jScrollPane3"); // NOI18N
 
@@ -548,7 +580,7 @@ public class ValerieView extends FrameView {
             .addGroup(jPanelThumbsLayout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29))
         );
@@ -562,24 +594,33 @@ public class ValerieView extends FrameView {
                 .addContainerGap())
         );
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+            .addComponent(jPanelThumbs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jSplitPane1.setRightComponent(jPanel1);
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 697, Short.MAX_VALUE)
-                        .addGap(121, 121, 121)
-                        .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jPanelThumbs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE))))
+                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+                .addGap(121, 121, 121)
+                .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1095, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -590,14 +631,7 @@ public class ValerieView extends FrameView {
                         .addContainerGap()
                         .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
-                        .addGap(11, 11, 11)
-                        .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jTabbedPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE))
-                .addContainerGap())
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -645,15 +679,15 @@ public class ValerieView extends FrameView {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1152, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1095, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1132, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1075, Short.MAX_VALUE)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(845, Short.MAX_VALUE)
+                .addContainerGap(788, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -797,10 +831,10 @@ public class ValerieView extends FrameView {
         jTableFilelistEpisodes.setEnabled(false);
 
         ///
-        jTableSeries.setValueAt("Show all", iteratorSeries, 0);
+        jTableSeries.setValueAt("_Show all_", iteratorSeries, 0);
         jTableSeries.setValueAt(-1, iteratorSeries, 1);
         iteratorSeries++;
-        jTableSeries.setValueAt("Show unspecified", iteratorSeries, 0);
+        jTableSeries.setValueAt("_Show unspecified_", iteratorSeries, 0);
         jTableSeries.setValueAt(-2, iteratorSeries, 1);
         iteratorSeries++;
         ///
@@ -831,6 +865,11 @@ public class ValerieView extends FrameView {
         jTableFilelist.setEnabled(true);
         jTableSeries.setEnabled(true);
         jTableFilelistEpisodes.setEnabled(true);
+
+        jTableFilelist.getRowSorter().allRowsChanged();
+        jTableSeries.getRowSorter().allRowsChanged();
+        jTableFilelistEpisodes.getRowSorter().allRowsChanged();
+
         isUpdating = false;
     }
 
@@ -864,6 +903,9 @@ public class ValerieView extends FrameView {
         }
 
         jTableFilelistEpisodes.setEnabled(true);
+
+        jTableFilelistEpisodes.getRowSorter().allRowsChanged();
+
         isUpdating = false;
     }
 
@@ -1761,6 +1803,7 @@ public class ValerieView extends FrameView {
     private javax.swing.JLabel jLabelPoster;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelMovies;
     private javax.swing.JPanel jPanelSeries;
     private javax.swing.JPanel jPanelThumbs;
@@ -1772,6 +1815,8 @@ public class ValerieView extends FrameView {
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JTable jTableFilelist;
     private javax.swing.JTable jTableFilelistEpisodes;
