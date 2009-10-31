@@ -71,4 +71,10 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+        <target name="-post-jar">
+            <exec dir="." executable="release.bat">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
 </project>
