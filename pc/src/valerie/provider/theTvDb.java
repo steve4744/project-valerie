@@ -176,8 +176,12 @@ public class theTvDb extends provider {
                     info.Plot = ePlot.getText();
 
                org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
-               if(eImdb != null && eImdb.getText().length() > 2)
-                    info.Imdb = Integer.valueOf(eImdb.getText().substring(2));
+               if(eImdb != null && eImdb.getText().length() > 2) {
+                   String vImdb = eImdb.getText().substring(2);
+                   if(vImdb.endsWith("/"))
+                       vImdb = vImdb.substring(0, vImdb.length()-1);
+                    info.Imdb = Integer.valueOf(vImdb);
+               }
 
                /*org.jdom.Element eID = eMovie.getChild("id");
                if(eID != null)
