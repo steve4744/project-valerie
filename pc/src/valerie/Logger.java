@@ -28,6 +28,16 @@ public class Logger {
             ((OutputHandler)out).setWorking(s);
     }
 
+    public static void setBlocked(boolean s) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).setBlocked(s);
+    }
+
+    public static void printBlocked(String s) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).printBlocked(s);
+    }
+
     public static void setProgress(int s) {
         for(Object out : outputHandlers)
             ((OutputHandler)out).setProgress(s);

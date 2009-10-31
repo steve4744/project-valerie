@@ -12,5 +12,7 @@ package valerie;
 public class OutputHandler {
     public void print(String s) { }
     public void setWorking(boolean s) { }
+    public void setBlocked(boolean s) { }
+    public void printBlocked(String s) { }
     public void setProgress(int s) { }
 }

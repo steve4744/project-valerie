@@ -353,6 +353,8 @@ public class Settings extends javax.swing.JDialog {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelImportManagment.setVisible(false);
+        } else if(path.length == 1) {
+
         } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);

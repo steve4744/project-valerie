@@ -202,7 +202,7 @@
                               <Table columnCount="5" rowCount="1">
                                 <Column editable="true" title="Use" type="java.lang.Boolean"/>
                                 <Column editable="false" title="Title" type="java.lang.String"/>
-                                <Column editable="true" title="SearchString" type="java.lang.String"/>
+                                <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                 <Column editable="false" title="Year" type="java.lang.String"/>
                                 <Column editable="false" title="ID" type="java.lang.String"/>
                               </Table>
@@ -367,7 +367,7 @@
                                   <Table columnCount="6" rowCount="1">
                                     <Column editable="true" title="Use" type="java.lang.Boolean"/>
                                     <Column editable="false" title="Title" type="java.lang.String"/>
-                                    <Column editable="true" title="SearchString" type="java.lang.String"/>
+                                    <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                     <Column editable="true" title="S" type="java.lang.Integer"/>
                                     <Column editable="true" title="E" type="java.lang.Integer"/>
                                     <Column editable="false" title="ID" type="java.lang.String"/>
@@ -686,6 +686,74 @@
             <Property name="name" type="java.lang.String" value="progressBar" noResource="true"/>
           </Properties>
         </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JFrame" name="statusPopup">
+      <Properties>
+        <Property name="alwaysOnTop" type="boolean" value="true"/>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[220, 50]"/>
+        </Property>
+        <Property name="modalExclusionType" type="java.awt.Dialog$ModalExclusionType" editor="org.netbeans.modules.form.editors.EnumEditor">
+          <Value id="APPLICATION_EXCLUDE"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="statusPopup" noResource="true"/>
+        <Property name="resizable" type="boolean" value="false"/>
+        <Property name="undecorated" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                <LineBorder/>
+              </Border>
+            </Property>
+            <Property name="alignmentX" type="float" value="2.0"/>
+            <Property name="alignmentY" type="float" value="2.0"/>
+            <Property name="name" type="java.lang.String" value="jPanel2" noResource="true"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="Center"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="animatedBar">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="2" name="E:\Documents\Valerie\pc\src\valerie\resources\ajax-loader_transparent.gif"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="animatedBar.text"/>
+                <Property name="name" type="java.lang.String" value="animatedBar" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="Center"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+            <Component class="javax.swing.JLabel" name="descLabel">
+              <Properties>
+                <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Tahoma" size="18" style="0"/>
+                </Property>
+                <Property name="horizontalAlignment" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" resourceKey="descLabel.text"/>
+                <Property name="name" type="java.lang.String" value="descLabel" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
   </NonVisualComponents>

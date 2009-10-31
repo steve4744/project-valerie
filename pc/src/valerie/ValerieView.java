@@ -42,6 +42,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import valerie.tools.DebugOutput;
+
 /**
  * The application's main frame.
  */
@@ -49,12 +51,43 @@ public class ValerieView extends FrameView {
 
     class UIOutputHandler extends OutputHandler {
 
+        //StatusPopup popup = null;
+
+        UIOutputHandler()
+        {
+            super();
+
+            //popup = new StatusPopup(null, true);
+        }
+
         public void print(String s) {
             statusMessageLabel.setText(s);
         }
 
+        public void printBlocked(String s) {
+            statusMessageLabel.setText(s);
+            statusPopup.setTitle(s);
+            descLabel.setText(s);
+        }
+
         public void setWorking(boolean s) {
+            jButtonConnect.setEnabled(!s);
             jButtonSync.setEnabled(!s);
+            jButtonParse.setEnabled(!s);
+            jButtonArt.setEnabled(!s);
+            jButtonUpload.setEnabled(!s);
+        }
+
+        public void setBlocked(boolean s) {
+            setWorking(s);
+
+            //statusPopup.setSize(300,300);
+            //statusPopup.setModal(true);
+            mainPanel.setEnabled(!s);
+            //statusPopup.getRootPane().add(animatedBar);
+            statusPopup.setLocationRelativeTo(mainPanel);
+            statusPopup.validate();
+            statusPopup.setVisible(s);
         }
 
         public void setProgress(int s) {
@@ -164,7 +197,6 @@ public class ValerieView extends FrameView {
             }
         }
 
-
         jTableFilelistEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
     }
 
@@ -258,6 +290,10 @@ public class ValerieView extends FrameView {
         statusMessageLabel = new javax.swing.JLabel();
         statusAnimationLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
+        statusPopup = new javax.swing.JFrame();
+        jPanel2 = new javax.swing.JPanel();
+        animatedBar = new javax.swing.JLabel();
+        descLabel = new javax.swing.JLabel();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -343,7 +379,7 @@ public class ValerieView extends FrameView {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "SearchString", "Year", "ID"
+                "Use", "Title", "Searchstring", "Year", "ID"
             }
         ) {
             Class[] types = new Class [] {
@@ -476,7 +512,7 @@ public class ValerieView extends FrameView {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "SearchString", "S", "E", "ID"
+                "Use", "Title", "Searchstring", "S", "E", "ID"
             }
         ) {
             Class[] types = new Class [] {
@@ -703,6 +739,32 @@ public class ValerieView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
+        statusPopup.setAlwaysOnTop(true);
+        statusPopup.setMinimumSize(new java.awt.Dimension(220, 50));
+        statusPopup.setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+        statusPopup.setName("statusPopup"); // NOI18N
+        statusPopup.setResizable(false);
+        statusPopup.setUndecorated(true);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel2.setAlignmentX(2.0F);
+        jPanel2.setAlignmentY(2.0F);
+        jPanel2.setName("jPanel2"); // NOI18N
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        animatedBar.setIcon(new javax.swing.ImageIcon("E:\\Documents\\Valerie\\pc\\src\\valerie\\resources\\ajax-loader_transparent.gif")); // NOI18N
+        animatedBar.setText(resourceMap.getString("animatedBar.text")); // NOI18N
+        animatedBar.setName("animatedBar"); // NOI18N
+        jPanel2.add(animatedBar, java.awt.BorderLayout.CENTER);
+
+        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        descLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        descLabel.setText(resourceMap.getString("descLabel.text")); // NOI18N
+        descLabel.setName("descLabel"); // NOI18N
+        jPanel2.add(descLabel, java.awt.BorderLayout.NORTH);
+
+        statusPopup.getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+
         setComponent(mainPanel);
         setMenuBar(menuBar);
         setStatusBar(statusPanel);
@@ -803,18 +865,30 @@ public class ValerieView extends FrameView {
     }//GEN-LAST:event_jTableSeriesKeyPressed
 
     private void jComboBoxBoxinfoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxBoxinfoItemStateChanged
+        DebugOutput.printl("->");
+
+        //Logger.setBlocked(true);
+        //Logger.printBlocked("Loading Archive");
+
         selectedBoxInfo = jComboBoxBoxinfo.getSelectedIndex();
         //clear database
         database.clear();
 
         loadArchive();
         updateTables();
+
+        //Logger.printBlocked("Finished");
+        //Logger.setBlocked(false);
+
+        DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
     MediaInfoDB database = new MediaInfoDB();
 
     boolean isUpdating = false;
 
     public void updateTables() {
+        DebugOutput.printl("->");
+
         MediaInfo[] movies = database.getMediaInfo();
 
         ((DefaultTableModel) jTableFilelist.getModel()).setRowCount(database.getMediaInfoMoviesCount());
@@ -841,16 +915,20 @@ public class ValerieView extends FrameView {
 
         for (MediaInfo movie : movies) {
             if (movie.isMovie) {
+                jTableFilelist.setValueAt(!movie.Ignoring, iteratorMovies, 0);
+
                 jTableFilelist.setValueAt(movie.SearchString, iteratorMovies, 2);
                 jTableFilelist.setValueAt(movie.Title, iteratorMovies, 1);
+
                 jTableFilelist.setValueAt(movie.Year, iteratorMovies, 3);
-                jTableFilelist.setValueAt(!movie.Ignoring, iteratorMovies, 0);
                 jTableFilelist.setValueAt(movie.ID, iteratorMovies, 4);
                 iteratorMovies++;
             } else if (movie.isEpisode) {
                 jTableFilelistEpisodes.setValueAt(!movie.Ignoring, iteratorEpisodes, 0);
-                jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
+
                 jTableFilelistEpisodes.setValueAt(movie.SearchString, iteratorEpisodes, 2);
+                jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
+
                 jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
                 jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
                 jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
@@ -871,6 +949,8 @@ public class ValerieView extends FrameView {
         jTableFilelistEpisodes.getRowSorter().allRowsChanged();
 
         isUpdating = false;
+
+        DebugOutput.printl("<-");
     }
 
     public void updateTablesEpisodes(int id) {
@@ -894,8 +974,9 @@ public class ValerieView extends FrameView {
         int iteratorEpisodes = 0;
         for (MediaInfo movie : movies) {
             jTableFilelistEpisodes.setValueAt(!movie.Ignoring, iteratorEpisodes, 0);
-            jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
             jTableFilelistEpisodes.setValueAt(movie.SearchString, iteratorEpisodes, 2);
+            jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
+
             jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
             jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
             jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
@@ -952,6 +1033,11 @@ public class ValerieView extends FrameView {
     }
 
     public void loadArchive() {
+        DebugOutput.printl("->");
+
+        Logger.setBlocked(true);
+        Logger.printBlocked("Loading Archive");
+
         try {
             BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
             String moviedb = "";
@@ -1040,19 +1126,54 @@ public class ValerieView extends FrameView {
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
+
+        Logger.printBlocked("Finished");
+        Logger.setBlocked(false);
+
+        DebugOutput.printl("<-");
     }
 
     @Action
-    public void connectNetwork() {
-        jComboBoxBoxinfo.removeAllItems();
-        boxInfos = new valerie.tools.BoxInfoParser().parse(new valerie.tools.Network().sendBroadcast());
-        if (boxInfos != null) {
+    public Task connectNetwork() {
+        return new ConnectNetworkTask(getApplication());
+    }
+
+    private class ConnectNetworkTask extends org.jdesktop.application.Task<Object, Void> {
+        ConnectNetworkTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ConnectNetworkTask fields, here.
+            super(app);
+            
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            DebugOutput.printl("->");
+            jComboBoxBoxinfo.removeAllItems();
+            boxInfos = new valerie.tools.BoxInfoParser().parse(new valerie.tools.Network().sendBroadcast());
+
+            if (boxInfos != null) {
             selectedBoxInfo = 0;
-            for (valerie.tools.BoxInfo info : boxInfos) {
-                jComboBoxBoxinfo.addItem(info.toShortString());
+            for (int i = 0; i < boxInfos.length; i++) { //valerie.tools.BoxInfo info : boxInfos) {
+            //TODO: FIX THIS
+            //DebugOutput.printl("Bug in ComboBox, " +
+            //"it takes way to long to populate a Combobox");
+            String vInfo = boxInfos[i].toShortString();
+            jComboBoxBoxinfo.addItem (vInfo);
+            }
+            jComboBoxBoxinfo.setSelectedIndex(selectedBoxInfo);
             }
 
-            jComboBoxBoxinfo.setSelectedIndex(0);
+            DebugOutput.printl("<-");
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
         }
     }
 
@@ -1076,7 +1197,13 @@ public class ValerieView extends FrameView {
             // Your Task's code here.  This method runs
             // on a background thread, so don't reference
             // the Swing GUI from here.
-            Logger.setWorking(true);
+
+            if(boxInfos == null)
+                return null;
+
+            Logger.setBlocked(true);
+            Logger.printBlocked("Syncing Filelist");
+
             Logger.setProgress(0);
 
             searchMovies();
@@ -1091,8 +1218,8 @@ public class ValerieView extends FrameView {
                     database.addMediaInfo(info);
             }
 
-            Logger.print("Finished");
-            Logger.setWorking(false);
+            Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
             Logger.setProgress(0);
 
             return null;  // return your result
@@ -1104,13 +1231,29 @@ public class ValerieView extends FrameView {
             // the result computed by doInBackground().
 
             updateTables();
+            //if(jTableFilelist.getRowCount() > 1)
+            //    jTableFilelist.setRowSelectionInterval(1, 1);
+
+            if(jTableSeries.getRowCount() > 1)
+                jTableSeries.setRowSelectionInterval(1, 1);
+
+            jTableSeriesMouseClicked(null);
         }
 
         private void searchMovies() {
             String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
 
             for (int row = 0; row < paths.length; row++) {
-                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\" -type f\n");
+                String filterString = "";
+                String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
+                String[] filters = filter.split("\\|");
+                if(filters.length > 0)
+                    filterString += " -name \"*." + filters[0] + "\"";
+
+                for(int i = 1; i < filters.length; i++)
+                    filterString += " -o -name \"*." + filters[i] + "\"";
+
+                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
 
                 for (int i = 0; i < entries.length; i++) {
                     Float progress = (float) i * 100;
@@ -1226,7 +1369,18 @@ public class ValerieView extends FrameView {
             String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
 
             for (int row = 0; row < paths.length; row++) {
-                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\" -type f\n");
+                String filterString = "";
+                String filter = new valerie.tools.Properties().getPropertyString("FILTER_SERIES");
+                String[] filters = filter.split("\\|");
+                if(filters.length > 0)
+                    filterString += " -name \"*." + filters[0] + "\"";
+
+                for(int i = 1; i < filters.length; i++)
+                    filterString += " -o -name \"*." + filters[i] + "\"";
+
+                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
+
+                //String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\" -type f\n");
 
                 for (int i = 0; i < entries.length; i++) {
                     Float progress = (float) i * 100;
@@ -1402,13 +1556,14 @@ public class ValerieView extends FrameView {
             // on a background thread, so don't reference
             // the Swing GUI from here.
 
-            Logger.setWorking(true);
+            Logger.setBlocked(true);
+            Logger.printBlocked("Parse Filelist");
             Logger.setProgress(0);
 
             getMediaInfo();
 
-            Logger.print("Finished");
-            Logger.setWorking(false);
+            Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
             Logger.setProgress(0);
 
             return null;  // return your result
@@ -1574,7 +1729,8 @@ public class ValerieView extends FrameView {
             // on a background thread, so don't reference
             // the Swing GUI from here.
 
-            Logger.setWorking(true);
+            Logger.setBlocked(true);
+            Logger.printBlocked("Getting Arts");
             Logger.setProgress(0);
 
             MediaInfo[] movies = database.getMediaInfo();
@@ -1592,8 +1748,8 @@ public class ValerieView extends FrameView {
                 }
             }
 
-            Logger.print("Finished");
-            Logger.setWorking(false);
+            Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
             Logger.setProgress(0);
 
             return null;  // return your result
@@ -1744,6 +1900,9 @@ public class ValerieView extends FrameView {
             // on a background thread, so don't reference
             // the Swing GUI from here.
 
+            Logger.setBlocked(true);
+            Logger.printBlocked("Uploading");
+
             new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "db/moviedb.txt", "/hdd/valerie");
             new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "db/seriesdb.txt", "/hdd/valerie");
 
@@ -1770,6 +1929,10 @@ public class ValerieView extends FrameView {
             }
 
 
+
+            Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
+
             return null;  // return your result
         }
 
@@ -1793,6 +1956,8 @@ public class ValerieView extends FrameView {
     private valerie.tools.BoxInfo[] boxInfos;
     private int selectedBoxInfo = -1;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel animatedBar;
+    private javax.swing.JLabel descLabel;
     private javax.swing.JButton jButtonArt;
     private javax.swing.JButton jButtonConnect;
     private javax.swing.JButton jButtonParse;
@@ -1804,6 +1969,7 @@ public class ValerieView extends FrameView {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanelMovies;
     private javax.swing.JPanel jPanelSeries;
     private javax.swing.JPanel jPanelThumbs;
@@ -1829,6 +1995,7 @@ public class ValerieView extends FrameView {
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private javax.swing.JFrame statusPopup;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
     private final Timer busyIconTimer;
