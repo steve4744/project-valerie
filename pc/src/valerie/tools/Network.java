@@ -16,6 +16,8 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+//import valerie.tools.DebugOutput;
+
 /**
  *
  * @author Admin
@@ -24,6 +26,8 @@ public class Network {
 
     public String sendBroadcast()
     {
+        DebugOutput.printl("->");
+
         String rtv = "";
 
         byte[] RecieveBuf = new byte [256];
@@ -51,7 +55,7 @@ public class Network {
             socket.setBroadcast(true);
             InetAddress Adr = InetAddress.getByName("255.255.255.255");
             Integer Port = 5450;
-            Integer WaitMilliSeconds = 100;
+            Integer WaitMilliSeconds = 50;
             DatagramPacket Send = new DatagramPacket(SendBuf, SendBuf.length, Adr, Port);
             socket.setSoTimeout(WaitMilliSeconds);
             socket.send(Send);
@@ -66,23 +70,23 @@ public class Network {
 
                 rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
 
-                System.out.println(rtv);
+                DebugOutput.printl(rtv.trim());
 
                 //We only want the Boxinfo an the BoxIP for now.
                 //break;
             } while(!socket.isClosed());
             socket.close();
         } catch(Exception ex) {
-            System.out.println(ex.toString());
+            DebugOutput.printl(ex.toString());
         }
 
-         System.out.println("Success");
+        DebugOutput.printl("<-");
 
-         return rtv;
+        return rtv;
     }
 
     public void sendFile(InetAddress addr, String file, String  directory) {
-
+        DebugOutput.printl("->");
         try {
             Socket clientSocket = new Socket(addr, 5451);
 
@@ -124,23 +128,28 @@ public class Network {
                 bLength[3] = (byte)(iByte3%0x100);
                 dataOutput.write(bLength, 0, bLength.length);
 
+                DebugOutput.print("sending:"); // console confirmation of transfer
                 while ((numread = in.read(buffer))>=0) {
                     dataOutput.write(buffer, 0, numread);
-                    System.out.println("sending..." + numread); // console confirmation of transfer
+                    DebugOutput.print("."); // console confirmation of transfer
                 }
+                DebugOutput.printl("");
             }
 
             in.close();
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
-            System.out.println(ex.toString());
+            DebugOutput.print(ex.toString());
         }
+
+        DebugOutput.printl("<-");
     }
 
     String rtvBuffer = "";
 
     public String[] sendCMD(InetAddress addr, String cmd) {
+        DebugOutput.printl("->");
 
         ArrayList list = new ArrayList();
         try {
@@ -163,11 +172,10 @@ public class Network {
             Integer iByte0 = (iLength % 0x100) >> 8;
             Integer iByte1 = iLength & 0xFF;
             byte[] bLength = new byte[2];
-            bLength[0] = (byte)(iByte0%0xFF);
-            bLength[1] = (byte)(iByte1%0xFF);
+            bLength[0] = (byte)(iByte1%0xFF);
+            bLength[1] = (byte)(iByte0%0xFF);
             dataOutput.write(bLength, 0, bLength.length);
             dataOutput.write(bName, 0, bName.length);
-
             
             while(dataInput.read(bLength, 0, 2) > 0) {
                 iByte0 =  bLength[0] & 0xFF;
@@ -180,8 +188,10 @@ public class Network {
                 
                 String sData = new String(bData);
                 sData = sData.substring(0, iLength-1);
-                    System.out.printf("[%03d] %s\n", iLength, sData);
-                    list.add(sData);
+
+                //System.out.printf("[%03d] %s\n", iLength, sData);
+
+                list.add(sData);
             }
 
             dataOutput.close();
@@ -189,6 +199,8 @@ public class Network {
         } catch(Exception ex) {
             System.out.println(ex.toString());
         }
+
+        DebugOutput.printl("<-");
 
         return (String []) list.toArray (new String [list.size ()]);
     }
