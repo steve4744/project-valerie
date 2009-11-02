@@ -3,7 +3,9 @@
  */
 package valerie;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import valerie.tools.pngquant;
 import valerie.tools.mencoder;
 import java.awt.Graphics;
@@ -81,10 +83,14 @@ public class ValerieView extends FrameView {
         public void setBlocked(boolean s) {
             setWorking(s);
 
-            //statusPopup.setSize(300,300);
-            //statusPopup.setModal(true);
-            mainPanel.setEnabled(!s);
-            //statusPopup.getRootPane().add(animatedBar);
+            //mainPanel.getParent()
+            Container rootPane = mainPanel.getParent().getParent().getParent();
+            Container frame = rootPane.getParent();
+            frame.setEnabled(!s);
+
+            //if(frame.isVisible() == false)
+            //    statusPopup.
+
             statusPopup.setLocationRelativeTo(mainPanel);
             statusPopup.validate();
             statusPopup.setVisible(s);
@@ -167,6 +173,35 @@ public class ValerieView extends FrameView {
         loadArchive();
         updateTables();
 
+        class TableChangedMovies implements TableModelListener {
+
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    if(!isUpdating) {
+                        System.out.println(e.getSource());
+
+                        int row = e.getFirstRow();
+                        int column = e.getColumn();
+
+                        if (column == 0 || column == 2) {
+                            TableModel model = jTableFilelist.getModel();
+                            int id = ((Integer) model.getValueAt(row, 4)).intValue();
+                            boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
+                            String searchstring = ((String) model.getValueAt(row, 2));
+
+                            MediaInfo toUpdate = database.getMediaInfoById(id);
+                            toUpdate.Ignoring = !use;
+                            toUpdate.SearchString = searchstring;
+                            toUpdate.needsUpdate = true;
+
+                            model.setValueAt(toUpdate.needsUpdate, row, 5);
+                        }
+                    }
+                }
+            }
+        }
+        jTableFilelist.getModel().addTableModelListener(new TableChangedMovies());
+
         class TableChangedEpisodes implements TableModelListener {
 
             public void tableChanged(TableModelEvent e) {
@@ -191,6 +226,8 @@ public class ValerieView extends FrameView {
                             toUpdate.Season = season;
                             toUpdate.Episode = episode;
                             toUpdate.needsUpdate = true;
+
+                            model.setValueAt(toUpdate.needsUpdate, row, 6);
                         }
                     }
                 }
@@ -241,6 +278,13 @@ public class ValerieView extends FrameView {
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
                     jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());
+
+                    if(!super.isRowSelected(rowIndex)) {
+                        if(getValueAt(rowIndex, 5).toString() == "true")
+                        jc.setBackground(Color.orange);
+                        else
+                        jc.setBackground(null/*Color.white*/);
+                    }
                 }
                 return c;
             }
@@ -267,7 +311,15 @@ public class ValerieView extends FrameView {
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
                     jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());
+
+                    if(!super.isRowSelected(rowIndex)) {
+                        if(getValueAt(rowIndex, 6).toString() == "true")
+                        jc.setBackground(Color.orange);
+                        else
+                        jc.setBackground(null/*Color.white*/);
+                    }
                 }
+
                 return c;
             }
         }
@@ -376,17 +428,17 @@ public class ValerieView extends FrameView {
         jTableFilelist.setAutoCreateRowSorter(true);
         jTableFilelist.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null}
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "Year", "ID"
+                "Use", "Title", "Searchstring", "Year", "ID", "Update"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, false, false
+                true, false, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -430,6 +482,9 @@ public class ValerieView extends FrameView {
         jTableFilelist.getColumnModel().getColumn(4).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
         jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title6")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(5).setResizable(false);
+        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(1);
+        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
 
         javax.swing.GroupLayout jPanelMoviesLayout = new javax.swing.GroupLayout(jPanelMovies);
         jPanelMovies.setLayout(jPanelMoviesLayout);
@@ -509,17 +564,17 @@ public class ValerieView extends FrameView {
         jTableFilelistEpisodes.setAutoCreateRowSorter(true);
         jTableFilelistEpisodes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "S", "E", "ID"
+                "Use", "Title", "Searchstring", "S", "E", "ID", "Update"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, true, true, false
+                true, false, true, true, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -566,6 +621,9 @@ public class ValerieView extends FrameView {
         jTableFilelistEpisodes.getColumnModel().getColumn(5).setResizable(false);
         jTableFilelistEpisodes.getColumnModel().getColumn(5).setPreferredWidth(10);
         jTableFilelistEpisodes.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
+        jTableFilelistEpisodes.getColumnModel().getColumn(6).setResizable(false);
+        jTableFilelistEpisodes.getColumnModel().getColumn(6).setPreferredWidth(1);
+        jTableFilelistEpisodes.getColumnModel().getColumn(6).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
 
         jSplitPane2.setRightComponent(jScrollPane5);
 
@@ -739,9 +797,8 @@ public class ValerieView extends FrameView {
                 .addGap(3, 3, 3))
         );
 
-        statusPopup.setAlwaysOnTop(true);
         statusPopup.setMinimumSize(new java.awt.Dimension(220, 50));
-        statusPopup.setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+        statusPopup.setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         statusPopup.setName("statusPopup"); // NOI18N
         statusPopup.setResizable(false);
         statusPopup.setUndecorated(true);
@@ -757,7 +814,7 @@ public class ValerieView extends FrameView {
         animatedBar.setName("animatedBar"); // NOI18N
         jPanel2.add(animatedBar, java.awt.BorderLayout.CENTER);
 
-        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18));
         descLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descLabel.setText(resourceMap.getString("descLabel.text")); // NOI18N
         descLabel.setName("descLabel"); // NOI18N
@@ -867,18 +924,12 @@ public class ValerieView extends FrameView {
     private void jComboBoxBoxinfoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxBoxinfoItemStateChanged
         DebugOutput.printl("->");
 
-        //Logger.setBlocked(true);
-        //Logger.printBlocked("Loading Archive");
-
         selectedBoxInfo = jComboBoxBoxinfo.getSelectedIndex();
         //clear database
         database.clear();
 
         loadArchive();
         updateTables();
-
-        //Logger.printBlocked("Finished");
-        //Logger.setBlocked(false);
 
         DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
@@ -922,6 +973,9 @@ public class ValerieView extends FrameView {
 
                 jTableFilelist.setValueAt(movie.Year, iteratorMovies, 3);
                 jTableFilelist.setValueAt(movie.ID, iteratorMovies, 4);
+
+                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 5);
+
                 iteratorMovies++;
             } else if (movie.isEpisode) {
                 jTableFilelistEpisodes.setValueAt(!movie.Ignoring, iteratorEpisodes, 0);
@@ -932,6 +986,9 @@ public class ValerieView extends FrameView {
                 jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
                 jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
                 jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
+
+                jTableFilelistEpisodes.setValueAt(movie.needsUpdate, iteratorEpisodes, 6);
+
                 iteratorEpisodes++;
             } else if (movie.isSeries) {
                 jTableSeries.setValueAt(movie.Title, iteratorSeries, 0);
@@ -980,6 +1037,9 @@ public class ValerieView extends FrameView {
             jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
             jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
             jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
+
+            jTableFilelistEpisodes.setValueAt(movie.needsUpdate, iteratorEpisodes, 6);
+
             iteratorEpisodes++;
         }
 
@@ -1562,6 +1622,12 @@ public class ValerieView extends FrameView {
 
             getMediaInfo();
 
+            //Redraw Menu Tables
+            updateTables();
+
+            //Save to txt
+            saveTables();
+
             Logger.printBlocked("Finished");
             Logger.setBlocked(false);
             Logger.setProgress(0);
@@ -1573,9 +1639,6 @@ public class ValerieView extends FrameView {
         protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
-
-            updateTables();
-            saveTables();
         }
 
         private void getMediaInfo() {

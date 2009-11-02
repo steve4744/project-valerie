@@ -17,11 +17,15 @@ public class MediaInfoDB {
     Hashtable DB = new Hashtable();
     int IDCounter = 0;
 
-    public void addMediaInfo(MediaInfo info) {
+    public boolean addMediaInfo(MediaInfo info) {
         info.checkStrings();
         info.ID = IDCounter;
         DB.put(IDCounter, info);
         IDCounter++;
+
+        
+
+        return true;
     }
 
     public MediaInfo getMediaInfoById(int id) {

@@ -199,12 +199,13 @@
                           <Properties>
                             <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysMovies &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);">
-                              <Table columnCount="5" rowCount="1">
+                              <Table columnCount="6" rowCount="1">
                                 <Column editable="true" title="Use" type="java.lang.Boolean"/>
                                 <Column editable="false" title="Title" type="java.lang.String"/>
                                 <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                 <Column editable="false" title="Year" type="java.lang.String"/>
                                 <Column editable="false" title="ID" type="java.lang.String"/>
+                                <Column editable="false" title="Update" type="java.lang.Boolean"/>
                               </Table>
                             </Property>
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -234,6 +235,11 @@
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
+                                <Column maxWidth="-1" minWidth="-1" prefWidth="1" resizable="false">
+                                  <Title resourceKey="jTableFilelist.columnModel.title5"/>
+                                  <Editor/>
+                                  <Renderer/>
+                                </Column>
                               </TableColumnModel>
                             </Property>
                             <Property name="name" type="java.lang.String" value="jTableFilelist" noResource="true"/>
@@ -246,7 +252,7 @@
                             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableFilelistKeyPressed"/>
                           </Events>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                if(getValueAt(rowIndex, 5).toString() == &quot;true&quot;)&#xa;                jc.setBackground(Color.orange);&#xa;                else&#xa;                jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
@@ -364,13 +370,14 @@
                               <Properties>
                                 <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysEpisodes &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(4, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelistEpisodes.getRowSorter().setSortKeys(sortKeysEpisodes);">
-                                  <Table columnCount="6" rowCount="1">
+                                  <Table columnCount="7" rowCount="1">
                                     <Column editable="true" title="Use" type="java.lang.Boolean"/>
                                     <Column editable="false" title="Title" type="java.lang.String"/>
                                     <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                     <Column editable="true" title="S" type="java.lang.Integer"/>
                                     <Column editable="true" title="E" type="java.lang.Integer"/>
                                     <Column editable="false" title="ID" type="java.lang.String"/>
+                                    <Column editable="false" title="Update" type="java.lang.Boolean"/>
                                   </Table>
                                 </Property>
                                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -405,6 +412,11 @@
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
+                                    <Column maxWidth="-1" minWidth="-1" prefWidth="1" resizable="false">
+                                      <Title resourceKey="jTableFilelistEpisodes.columnModel.title6"/>
+                                      <Editor/>
+                                      <Renderer/>
+                                    </Column>
                                   </TableColumnModel>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="jTableFilelistEpisodes" noResource="true"/>
@@ -417,7 +429,7 @@
                                 <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableFilelistEpisodesKeyPressed"/>
                               </Events>
                               <AuxValues>
-                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;            if(getValueAt(rowIndex, 6).toString() == &quot;true&quot;)&#xa;            jc.setBackground(Color.orange);&#xa;            else&#xa;            jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                               </AuxValues>
                             </Component>
                           </SubComponents>
@@ -690,12 +702,11 @@
     </Container>
     <Container class="javax.swing.JFrame" name="statusPopup">
       <Properties>
-        <Property name="alwaysOnTop" type="boolean" value="true"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[220, 50]"/>
         </Property>
         <Property name="modalExclusionType" type="java.awt.Dialog$ModalExclusionType" editor="org.netbeans.modules.form.editors.EnumEditor">
-          <Value id="APPLICATION_EXCLUDE"/>
+          <Value id="TOOLKIT_EXCLUDE"/>
         </Property>
         <Property name="name" type="java.lang.String" value="statusPopup" noResource="true"/>
         <Property name="resizable" type="boolean" value="false"/>
@@ -739,7 +750,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="descLabel">
               <Properties>
-                <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="18" style="0"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
