@@ -1,6 +1,8 @@
 /* 
  * e2control.c
  *
+ * Copyright (C) 2004 Marcus Metzler <mocm@metzlerbros.de>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -35,7 +37,7 @@
 
 
 #define MAX_CHARS_UDP 256
-#define MAX_CHARS_TCP 2048
+#define MAX_CHARS_TCP 1460
 
 #define UDP_PORT 5450
 #define TCP_PORT 5451
@@ -157,10 +159,19 @@ void *tcpRequests(void *)
 
 		if(!strncmp(MAGIC_REQ_CMDEXEC, string, slen))
 		{
-			short lenCmd = 0;
+			unsigned char lenArray[2];
+			unsigned short lenCmd = 0;
+			unsigned int bMsgId = 0;
 			char * cmd;
 
-			read(fdd, &lenCmd, 2);
+			read(fdd, &lenArray, 2);
+
+			printf("%d %d\n", lenArray[0], lenArray[1]);
+
+			lenCmd = lenArray[0] + (lenArray[1] << 8);
+
+			printf("%d\n", lenCmd);
+
 			cmd = (char*)malloc(lenCmd+1);
 
 			read(fdd, cmd, lenCmd);
@@ -168,17 +179,48 @@ void *tcpRequests(void *)
 
 			printf("CMD: %s\n", cmd);
 			FILE * output = popen(cmd, "r");
+			
+			unsigned char bSendBuffer[MAX_CHARS_TCP];
+			unsigned char * p_bSendBuffer = bSendBuffer;
+			unsigned int iSendBufferCounter = 0;
+			
+			int SIZE_LENGTH = 2;
+			
 			while(!feof(output)) {
-				char buffer[1024]; 
-				char *line_p = fgets(buffer, sizeof(buffer), output); 
-				if(line_p != NULL) {
-					int iLength = strlen(line_p);
-					short sLength = iLength & 0xFFFF;
-					//printf("Output: [%03d : %03d] %s\n", sLength, iLength, line_p);
-					write(fdd, &sLength, 2);
-					write(fdd, line_p, iLength);
+				char bLineBuffer[1024]; 
+				char * p_bLineBuffer = fgets(bLineBuffer, sizeof(bLineBuffer), output); 
+
+				if(p_bLineBuffer != NULL) {
+					int iLineLength = strlen(p_bLineBuffer);
+					short sLineLength = iLineLength & 0xFFFF;
+					
+					//printf("iSendBufferCounter=%d + sLineLength=%d + SIZE_LENGTH=%d > MAX_CHARS_TCP=%d\n",
+					//	iSendBufferCounter, sLineLength, SIZE_LENGTH, MAX_CHARS_TCP);
+					
+					if(iSendBufferCounter + sLineLength + SIZE_LENGTH > MAX_CHARS_TCP)
+					{
+						printf("Sending %d Bytes\n", iSendBufferCounter);
+						write(fdd, p_bSendBuffer, iSendBufferCounter);
+						
+						iSendBufferCounter = 0;
+					}
+					
+					{
+						memcpy(&bSendBuffer[iSendBufferCounter], &sLineLength, SIZE_LENGTH);
+						iSendBufferCounter += SIZE_LENGTH;
+						
+						memcpy(&bSendBuffer[iSendBufferCounter], p_bLineBuffer, sLineLength);
+						iSendBufferCounter += sLineLength;
+					}
 				}
 			}
+			
+			if(iSendBufferCounter > 0)
+			{
+				printf("Sending Last %d Bytes\n", iSendBufferCounter);
+				write(fdd, p_bSendBuffer, iSendBufferCounter);
+			}
+			
 			pclose(output);
 		} else if(!strncmp(MAGIC_REQ_FILE_MT, string, slen))
 		{
@@ -214,7 +256,7 @@ void *tcpRequests(void *)
 				for(int i = 0; i < lenFile;) {
 					short bytesToRead = (lenFile - i)>MAX_CHARS_TCP?MAX_CHARS_TCP:lenFile-i;
 
-					printf("remaining %d [%d]", lenFile - i, bytesToRead);
+					//printf("remaining %d [%d]", lenFile - i, bytesToRead);
 
 					read(fdd, &buffer, bytesToRead);
 					fwrite (buffer , 1 , bytesToRead , pFile );
