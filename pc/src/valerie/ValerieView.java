@@ -18,6 +18,10 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,7 +53,10 @@ import valerie.tools.DebugOutput;
 /**
  * The application's main frame.
  */
-public class ValerieView extends FrameView {
+public class ValerieView extends FrameView implements WindowStateListener {
+
+
+    private String[] vArguments;
 
     class UIOutputHandler extends OutputHandler {
 
@@ -101,8 +108,57 @@ public class ValerieView extends FrameView {
         }
     }
 
-    public ValerieView(SingleFrameApplication app) {
+    public ValerieView(SingleFrameApplication app, String[] arguments) {
         super(app);
+
+        vArguments = arguments;
+
+        vArguments = new String[] {
+         //   "-a",
+        };
+
+        checkArguments("pre").run();
+
+        this.getFrame().addWindowStateListener(this);
+
+        class WListener implements WindowListener {
+            public void windowDeactivated(WindowEvent e) {
+                System.out.print(e);
+            }
+            public void windowActivated(WindowEvent e) {
+
+                if(firstFocus) {
+                    firstFocus = false;
+
+                    checkArguments("post").execute();
+                }
+
+                System.out.print(e);
+            }
+
+            public void windowIconified(WindowEvent e) {
+                System.out.print(e);
+            }
+            public void windowDeiconified(WindowEvent e) {
+                System.out.print(e);
+            }
+
+            public void windowClosed(WindowEvent e) {
+                System.out.print(e);
+            }
+
+            public void windowClosing(WindowEvent e) {
+                System.out.print(e);
+            }
+
+            public void windowOpened(WindowEvent e) {
+                System.out.print(e);
+            }
+
+         }
+
+        this.getFrame().addWindowListener(new WListener());
+
 
         initComponents();
 
@@ -166,13 +222,6 @@ public class ValerieView extends FrameView {
         //MY OWN CODE
         Logger.add(new UIOutputHandler());
 
-
-        //clear database
-        database.clear();
-
-        loadArchive();
-        updateTables();
-
         class TableChangedMovies implements TableModelListener {
 
             public void tableChanged(TableModelEvent e) {
@@ -235,7 +284,153 @@ public class ValerieView extends FrameView {
         }
 
         jTableFilelistEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
+
+         /*class PropertyListener implements PropertyChangeListener {
+            public void propertyChange(java.beans.PropertyChangeEvent event) {
+                System.out.print(event);
+            }
+
+         }
+
+        this.addPropertyChangeListener(new PropertyListener());
+
+        this.firePropertyChange("shown", "false", "true");*/
     }
+
+    boolean firstFocus = true;
+
+    public void windowStateChanged(java.awt.event.WindowEvent event)
+    {
+        if(event.getNewState() == java.awt.event.WindowEvent.WINDOW_OPENED) {
+            checkArguments("post").execute();
+        }
+
+    }
+
+    public void focusGained(FocusEvent e) {
+        if(firstFocus) {
+            firstFocus = false;
+
+            checkArguments("post").execute();
+        }
+    }
+
+    public void focusLost(FocusEvent e) {
+        //displayMessage("Focus lost", e);
+    }
+
+    @Action
+    public Task checkArguments(String mode) { return new checkArgumentsTask(getApplication(), mode); }
+
+    private class checkArgumentsTask extends org.jdesktop.application.Task<Object, Void> {
+
+        private String pMode = "";
+
+        checkArgumentsTask(org.jdesktop.application.Application app, String mode) {
+            super(app);
+
+            pMode = mode;
+
+            Logger.setBlocked(true);
+            Logger.printBlocked("Loading Archive");
+
+
+
+        }
+        @Override protected Object doInBackground() {
+
+            boolean showHelp = false;
+            boolean setAuto = false;
+            boolean setConnect = false;
+            boolean setSync = false;
+            boolean setParse = false;
+            boolean setArt = false;
+            boolean setUpload = false;
+            boolean setQuit = false;
+
+            for(int vIter = 0; vArguments != null && vIter < vArguments.length; vIter++) {
+                if(     vArguments[vIter].startsWith("-?")
+                    ||  vArguments[vIter].startsWith("-h")
+                    ||  vArguments[vIter].startsWith("--help"))
+                     showHelp = true;
+                else if(    /*vArguments[vIter].startsWith("-a")
+                        ||  */vArguments[vIter].startsWith("--auto")) {
+                     setAuto = true;
+                     setConnect = true;
+                     setSync = true;
+                     setParse = true;
+                     setArt = true;
+                     setUpload = true;
+                } else if(    vArguments[vIter].startsWith("-c")
+                        ||  vArguments[vIter].startsWith("--connect"))
+                     setConnect = true;
+                else if(    vArguments[vIter].startsWith("-s")
+                        ||  vArguments[vIter].startsWith("--sync"))
+                     setSync = true;
+                else if(    vArguments[vIter].startsWith("-p")
+                        ||  vArguments[vIter].startsWith("--parse"))
+                     setParse = true;
+                else if(    vArguments[vIter].startsWith("-a")
+                        ||  vArguments[vIter].startsWith("--art"))
+                     setArt = true;
+                else if(    vArguments[vIter].startsWith("-u")
+                        ||  vArguments[vIter].startsWith("--upload"))
+                     setUpload = true;
+                else if(    vArguments[vIter].startsWith("-q")
+                        ||  vArguments[vIter].startsWith("--quit"))
+                     setQuit = true;
+
+
+            }
+
+
+
+            if(pMode.equals("pre")) {
+                if(showHelp) {
+                    System.out.printf("\t%20s: %20s\n", "(-?|-h|--help)", "Show this help");
+                    System.out.printf("\t%20s: %20s\n", "(-c|--connect)", "Connects on startup");
+                    System.out.printf("\t%20s: %20s\n", "(-a|--auto)", "Auto mode");
+                    System.exit(0);
+                }
+            }
+
+            if(pMode.equals("post")) {
+
+                //INIT ALL
+                //clear database
+                database.clear();
+
+                loadArchive().run();
+                updateTables();
+
+                if(setConnect) {
+                    connectNetwork().run();
+                }
+                if(setSync) {
+                    syncFilelist().run();
+                }
+                if(setParse) {
+                    parseFilelist().run();
+                }
+                if(setArt) {
+                    getArt().run();
+                }
+                if(setUpload) {
+                    uploadFiles().run();
+                }
+
+                if(setQuit) {
+                    System.exit(0);
+                }
+            }
+            return null;
+        }
+
+        @Override protected void succeeded(Object result) {
+
+        }
+    }
+
 
     @Action
     public void showAboutBox() {
@@ -277,10 +472,13 @@ public class ValerieView extends FrameView {
                 Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
-                    jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());
+                    Object jo = getValueAt(rowIndex, vColIndex);
+                    if(jo != null)
+                    jc.setToolTipText(jo.toString());
 
                     if(!super.isRowSelected(rowIndex)) {
-                        if(getValueAt(rowIndex, 5).toString() == "true")
+                        jo = getValueAt(rowIndex, 5);
+                        if(jo != null && jo.toString() == "true")
                         jc.setBackground(Color.orange);
                         else
                         jc.setBackground(null/*Color.white*/);
@@ -298,7 +496,9 @@ public class ValerieView extends FrameView {
                 Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
-                    jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());
+                    Object jo = getValueAt(rowIndex, vColIndex);
+                    if(jo != null)
+                    jc.setToolTipText(jo.toString());
                 }
                 return c;
             }
@@ -310,10 +510,13 @@ public class ValerieView extends FrameView {
                 Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
-                    jc.setToolTipText(getValueAt(rowIndex, vColIndex).toString());
+                    Object jo = getValueAt(rowIndex, vColIndex);
+                    if(jo != null)
+                    jc.setToolTipText(jo.toString());
 
                     if(!super.isRowSelected(rowIndex)) {
-                        if(getValueAt(rowIndex, 6).toString() == "true")
+                        jo = getValueAt(rowIndex, 6);
+                        if(jo != null && jo.toString() == "true")
                         jc.setBackground(Color.orange);
                         else
                         jc.setBackground(null/*Color.white*/);
@@ -827,6 +1030,18 @@ public class ValerieView extends FrameView {
         setStatusBar(statusPanel);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void drawPosters(ImageIcon poster, ImageIcon backdrop) {
+        if(poster.getIconWidth() != -1)
+            jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, jLabelPoster.getWidth() - 80, jLabelPoster.getHeight() - 4, null);
+        else
+            jLabelPoster.repaint();
+
+        if(backdrop.getIconWidth() != -1)
+            jLabelBackdrop.getGraphics().drawImage(backdrop.getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+        else
+            jLabelBackdrop.repaint();
+    }
+
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
         int row = jTableFilelist.getSelectedRow();
         int id = (Integer) jTableFilelist.getValueAt(row, 4);
@@ -835,8 +1050,8 @@ public class ValerieView extends FrameView {
 
         jTextAreaDescription.setText(info.toString());
         ImageIcon poster = new ImageIcon("converted/tt" + info.Imdb + "_poster.png");
-        jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-        jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+        ImageIcon backdrop = new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg");
+        drawPosters(poster, backdrop);
     }//GEN-LAST:event_jTableFilelistMouseClicked
 
     private void jTableFilelistKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistKeyPressed
@@ -853,8 +1068,8 @@ public class ValerieView extends FrameView {
 
         jTextAreaDescription.setText(info.toString());
         ImageIcon poster = new ImageIcon("converted/tt" + info.Imdb + "_poster.png");
-        jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-        jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+        ImageIcon backdrop = new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg");
+        drawPosters(poster, backdrop);
     }//GEN-LAST:event_jTableFilelistKeyPressed
 
     private void jTableFilelistEpisodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesMouseClicked
@@ -865,8 +1080,8 @@ public class ValerieView extends FrameView {
 
         jTextAreaDescription.setText(info.toString());
         ImageIcon poster = new ImageIcon("converted/" + info.TheTvDb + "_poster.png");
-        jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-        jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+        ImageIcon backdrop = new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg");
+        drawPosters(poster, backdrop);
     }//GEN-LAST:event_jTableFilelistEpisodesMouseClicked
 
     private void jTableFilelistEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesKeyPressed
@@ -883,8 +1098,8 @@ public class ValerieView extends FrameView {
 
         jTextAreaDescription.setText(info.toString());
         ImageIcon poster = new ImageIcon("converted/" + info.TheTvDb + "_poster.png");
-        jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-        jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+        ImageIcon backdrop = new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg");
+        drawPosters(poster, backdrop);
     }//GEN-LAST:event_jTableFilelistEpisodesKeyPressed
 
     private void jTableSeriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSeriesMouseClicked
@@ -895,8 +1110,8 @@ public class ValerieView extends FrameView {
         if (info != null) {
             jTextAreaDescription.setText(info.toString());
             ImageIcon poster = new ImageIcon("converted/" + info.TheTvDb + "_poster.png");
-            jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-            jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+            ImageIcon backdrop = new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg");
+            drawPosters(poster, backdrop);
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesMouseClicked
@@ -915,8 +1130,8 @@ public class ValerieView extends FrameView {
         if (info != null) {
             jTextAreaDescription.setText(info.toString());
             ImageIcon poster = new ImageIcon("converted/" + info.TheTvDb + "_poster.png");
-            jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, poster.getIconWidth(), poster.getIconHeight(), null);
-            jLabelBackdrop.getGraphics().drawImage(new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg").getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
+            ImageIcon backdrop = new ImageIcon("download/" + info.TheTvDb + "_backdrop.jpg");
+            drawPosters(poster, backdrop);
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesKeyPressed
@@ -928,7 +1143,7 @@ public class ValerieView extends FrameView {
         //clear database
         database.clear();
 
-        loadArchive();
+        loadArchive().run();
         updateTables();
 
         DebugOutput.printl("<-");
@@ -1092,111 +1307,131 @@ public class ValerieView extends FrameView {
         }
     }
 
-    public void loadArchive() {
-        DebugOutput.printl("->");
 
-        Logger.setBlocked(true);
-        Logger.printBlocked("Loading Archive");
+    @Action
+    public Task loadArchive() { return new loadArchiveTask(getApplication()); }
 
-        try {
-            BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
-            String moviedb = "";
-            String line;
-            while ((line = frMovie.readLine()) != null) {
-                moviedb += line + "\n";
-            }
+    private class loadArchiveTask extends org.jdesktop.application.Task<Object, Void> {
+        loadArchiveTask(org.jdesktop.application.Application app) {
+            super(app);
 
-            String movies[] = moviedb.split("---BEGIN---\n");
-            for (String movie : movies) {
-                MediaInfo info = new MediaInfo();
-                info.reparse(movie);
-                info.isMovie = true;
-                info.isArchiv = true;
-                info.needsUpdate = false;
+            Logger.setBlocked(true);
+            Logger.printBlocked("Loading Archive");
 
-                //ignore the entry as long as we havent confirmed that it still exists
-                info.Ignoring = true;
-                if (info.Title.length() > 0) {
-                    if(database.getMediaInfoByPath(info.Path) == null)
-                        database.addMediaInfo(info);
-                }
-            }
-
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
         }
+        @Override protected Object doInBackground() {
+            DebugOutput.printl("->");
 
-
-        try {
-            BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
-            String moviedb = "";
-            String line;
-            while ((line = frMovie.readLine()) != null) {
-                moviedb += line + "\n";
-            }
-
-            String movies[] = moviedb.split("---BEGIN---\n");
-            for (String movie : movies) {
-                MediaInfo info = new MediaInfo();
-                info.reparse(movie);
-                info.isSeries = true;
-                info.isArchiv = true;
-                info.needsUpdate = false;
-
-                //As this isnt represented by any file we have to set ignoring to false
-                info.Ignoring = false;
-                if (info.Title.length() > 0) {
-                    if(database.getMediaInfoForSeries(info.TheTvDb) == null)
-                        database.addMediaInfo(info);
+            try {
+                BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
+                String moviedb = "";
+                String line;
+                while ((line = frMovie.readLine()) != null) {
+                    moviedb += line + "\n";
                 }
-            }
 
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }
+                String movies[] = moviedb.split("---BEGIN---\n");
+                for (String movie : movies) {
+                    MediaInfo info = new MediaInfo();
+                    info.reparse(movie);
+                    info.isMovie = true;
+                    info.isArchiv = true;
+                    info.needsUpdate = false;
 
-        try {
-            MediaInfo infos[] = database.getMediaInfo();
-            for (MediaInfo info : infos) {
-                if (info.isSeries) {
-                    BufferedReader frMovie = new BufferedReader(new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
-                    String moviedb = "";
-                    String line;
-                    while ((line = frMovie.readLine()) != null) {
-                        moviedb += line + "\n";
+                    info.DataProvider = new valerie.provider.Imdb();
+                    info.ArtProvider = new valerie.provider.theMovieDb();
+
+                    //ignore the entry as long as we havent confirmed that it still exists
+                    info.Ignoring = true;
+                    if (info.Title.length() > 0) {
+                        if(database.getMediaInfoByPath(info.Path) == null)
+                            database.addMediaInfo(info);
                     }
+                }
 
-                    String movies[] = moviedb.split("---BEGIN---\n");
-                    for (String movie : movies) {
-                        MediaInfo movieinfo = new MediaInfo();
-                        movieinfo.reparse(movie);
-                        movieinfo.isEpisode = true;
-                        movieinfo.isArchiv = true;
-                        movieinfo.needsUpdate = false;
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
 
-                        //ignore the entry as long as we havent confirmed that it still exists
-                        movieinfo.Ignoring = true;
-                        if (movieinfo.Title.length() > 0) {
-                            if(database.getMediaInfoByPath(movieinfo.Path) == null)
-                                database.addMediaInfo(movieinfo);
+
+            try {
+                BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
+                String moviedb = "";
+                String line;
+                while ((line = frMovie.readLine()) != null) {
+                    moviedb += line + "\n";
+                }
+
+                String movies[] = moviedb.split("---BEGIN---\n");
+                for (String movie : movies) {
+                    MediaInfo info = new MediaInfo();
+                    info.reparse(movie);
+                    info.isSeries = true;
+                    info.isArchiv = true;
+                    info.needsUpdate = false;
+
+                    info.DataProvider = new valerie.provider.theTvDb();
+                    info.ArtProvider = new valerie.provider.theTvDb();
+
+                    //As this isnt represented by any file we have to set ignoring to false
+                    info.Ignoring = false;
+                    if (info.Title.length() > 0) {
+                        if(database.getMediaInfoForSeries(info.TheTvDb) == null)
+                            database.addMediaInfo(info);
+                    }
+                }
+
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
+            }
+
+            try {
+                MediaInfo infos[] = database.getMediaInfo();
+                for (MediaInfo info : infos) {
+                    if (info.isSeries) {
+                        BufferedReader frMovie = new BufferedReader(new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
+                        String moviedb = "";
+                        String line;
+                        while ((line = frMovie.readLine()) != null) {
+                            moviedb += line + "\n";
+                        }
+
+                        String movies[] = moviedb.split("---BEGIN---\n");
+                        for (String movie : movies) {
+                            MediaInfo movieinfo = new MediaInfo();
+                            movieinfo.reparse(movie);
+                            movieinfo.isEpisode = true;
+                            movieinfo.isArchiv = true;
+                            movieinfo.needsUpdate = false;
+
+                            info.DataProvider = new valerie.provider.theTvDb();
+                            info.ArtProvider = new valerie.provider.theTvDb();
+
+                            //ignore the entry as long as we havent confirmed that it still exists
+                            movieinfo.Ignoring = true;
+                            if (movieinfo.Title.length() > 0) {
+                                if(database.getMediaInfoByPath(movieinfo.Path) == null)
+                                    database.addMediaInfo(movieinfo);
+                            }
                         }
                     }
                 }
+            } catch (Exception ex) {
+                System.out.println(ex.toString());
             }
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
+
+            DebugOutput.printl("<-");
+            return null;
         }
 
-        Logger.printBlocked("Finished");
-        Logger.setBlocked(false);
-
-        DebugOutput.printl("<-");
+        @Override protected void succeeded(Object result) {
+            Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
+        }
     }
 
     @Action
-    public Task connectNetwork() {
-        return new ConnectNetworkTask(getApplication());
-    }
+    public Task connectNetwork() { return new ConnectNetworkTask(getApplication()); }
 
     private class ConnectNetworkTask extends org.jdesktop.application.Task<Object, Void> {
         ConnectNetworkTask(org.jdesktop.application.Application app) {
@@ -1217,19 +1452,16 @@ public class ValerieView extends FrameView {
 
             if (boxInfos != null) {
             selectedBoxInfo = 0;
-            for (int i = 0; i < boxInfos.length; i++) { //valerie.tools.BoxInfo info : boxInfos) {
-            //TODO: FIX THIS
-            //DebugOutput.printl("Bug in ComboBox, " +
-            //"it takes way to long to populate a Combobox");
-            String vInfo = boxInfos[i].toShortString();
-            jComboBoxBoxinfo.addItem (vInfo);
+            for (int i = 0; i < boxInfos.length; i++) {
+                String vInfo = boxInfos[i].toShortString();
+                jComboBoxBoxinfo.addItem (vInfo);
             }
             jComboBoxBoxinfo.setSelectedIndex(selectedBoxInfo);
             }
 
             DebugOutput.printl("<-");
 
-            return null;  // return your result
+            return null;
         }
         @Override protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
@@ -1238,10 +1470,7 @@ public class ValerieView extends FrameView {
     }
 
     @Action
-    public Task syncFilelist() {
-
-        return new SyncFilelistTask(getApplication());
-    }
+    public Task syncFilelist() { return new SyncFilelistTask(getApplication()); }
 
     private class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void> {
 
@@ -1254,10 +1483,6 @@ public class ValerieView extends FrameView {
 
         @Override
         protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-
             if(boxInfos == null)
                 return null;
 
@@ -1269,13 +1494,19 @@ public class ValerieView extends FrameView {
             searchMovies();
             searchSeries();
 
-            //Delete uneeded archiv entries (isArchiv && Ignored)
-            //The easysiest way would be to delete the content of the database an readd everthing
-            MediaInfo[] movies = database.getMediaInfo();
+            //Delete the content of the database an readd everthing
+            /*MediaInfo[] movies = database.getMediaInfo();
             database.clear();
             for (MediaInfo info : movies) {
                 if(!(info.isArchiv && info.Ignoring))
                     database.addMediaInfo(info);
+            }*/
+
+            //Walk through the databasse and delete all failed entries
+            MediaInfo[] movies = database.getMediaInfo();
+            for (MediaInfo info : movies) {
+                if(info.isArchiv && info.Ignoring)
+                    database.deleteMediaInfo(info.ID);
             }
 
             Logger.printBlocked("Finished");
@@ -1287,16 +1518,12 @@ public class ValerieView extends FrameView {
 
         @Override
         protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
 
             updateTables();
-            //if(jTableFilelist.getRowCount() > 1)
-            //    jTableFilelist.setRowSelectionInterval(1, 1);
 
+            //Force Selection of Row "unspecified" and Force refresh
             if(jTableSeries.getRowCount() > 1)
                 jTableSeries.setRowSelectionInterval(1, 1);
-
             jTableSeriesMouseClicked(null);
         }
 
@@ -1411,6 +1638,7 @@ public class ValerieView extends FrameView {
 
                     movie.SearchString = filtered;
 
+                    //If parsing of Searchstring failed, set parameters so it is highlighted for the user
                     if(movie.SearchString.length() > 0) {
                         movie.Ignoring = false;
                         movie.needsUpdate = true;
@@ -1418,6 +1646,10 @@ public class ValerieView extends FrameView {
                         movie.Ignoring = true;
                         movie.needsUpdate = false;
                     }
+
+                    movie.DataProvider = new valerie.provider.Imdb();
+                    movie.ArtProvider = new valerie.provider.theMovieDb();
+
                     database.addMediaInfo(movie);
 
                     Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
@@ -1590,6 +1822,9 @@ public class ValerieView extends FrameView {
                         movie.needsUpdate = false;
                     }
 
+                    movie.DataProvider = new valerie.provider.theTvDb();
+                    movie.ArtProvider = new valerie.provider.theTvDb();
+
                     database.addMediaInfo(movie);
                 }
             }
@@ -1597,24 +1832,16 @@ public class ValerieView extends FrameView {
     }
 
     @Action
-    public Task parseFilelist() {
-        return new ParseFilelistTask(getApplication());
-    }
+    public Task parseFilelist() { return new ParseFilelistTask(getApplication()); }
 
     private class ParseFilelistTask extends org.jdesktop.application.Task<Object, Void> {
 
         ParseFilelistTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to ParseFilelistTask fields, here.
             super(app);
         }
 
         @Override
         protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
 
             Logger.setBlocked(true);
             Logger.printBlocked("Parse Filelist");
@@ -1632,41 +1859,41 @@ public class ValerieView extends FrameView {
             Logger.setBlocked(false);
             Logger.setProgress(0);
 
-            return null;  // return your result
+            return null;
         }
 
         @Override
         protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
+            //Force Selection of Row "unspecified" and Force refresh
+            if(jTableSeries.getRowCount() > 1)
+                jTableSeries.setRowSelectionInterval(1, 1);
+            jTableSeriesMouseClicked(null);
         }
 
         private void getMediaInfo() {
 
-            //The easysiest way would be to delete the content of the database an readd everthing
+            //TODO: How can we do this in parallel ?
+
             MediaInfo[] movies = database.getMediaInfo();
-
-            database.clear();
-
             for (int i = 0; i < movies.length; i++) {
                 Float progress = (float) i * 100;
                 progress /= movies.length;
                 Logger.setProgress(progress.intValue());
 
                 MediaInfo movie = movies[i];
-              
 
-                Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
+                if (movie.needsUpdate) {
 
-                if (movie.isMovie) {
-                    getMediaInfoMovie(movie);
-                } else if (movie.isEpisode || movie.isSeries) {
-                    getMediaInfoSeries(movie);
+                    Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
+
+                    if (movie.isMovie) {
+                        getMediaInfoMovie(movie);
+                    } else if (movie.isEpisode || movie.isSeries) {
+                        getMediaInfoSeries(movie);
+                    }
+
+                    Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
                 }
-
-                Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
-
-                //movie.Ignoring = false;
             }
 
             //TODO: We have to recheck if alle series got episodes, else delete unneeded series
@@ -1680,8 +1907,7 @@ public class ValerieView extends FrameView {
 
         private void getMediaInfoMovie(MediaInfo movie) {
 
-            movie.DataProvider = new valerie.provider.Imdb();
-            movie.ArtProvider = new valerie.provider.theMovieDb();
+            
 
             //if we have no searchstring, than the movie was importet from the archive and we dont need to reparse
             if (movie.needsUpdate) {
@@ -1696,14 +1922,13 @@ public class ValerieView extends FrameView {
                 movie.needsUpdate = true;
             }
 
-            database.addMediaInfo(movie);
+            //Dont add as we dont delete the datebase anylonger
+            //database.addMediaInfo(movie);
         }
 
         private void getMediaInfoSeries(MediaInfo movie) {
 
-            movie.DataProvider = new valerie.provider.theTvDb();
-            movie.ArtProvider = new valerie.provider.theTvDb();
-
+            //Ignore all series and only check episodes
             if (!movie.isSeries && movie.needsUpdate) {
                 MediaInfo Series;
 
@@ -1734,9 +1959,13 @@ public class ValerieView extends FrameView {
                     Series = database.getMediaInfoForSeries(movie.SearchString);
                 }
 
-                MediaInfo Episode = null;
+                //boolean beforeDontDeletePolicity = false;
+
+                //if(beforeDontDeletePolicity)
+                //    MediaInfo Episode = null;
 
                 if (Series != null) {
+                    /*if(beforeDontDeletePolicity) {
                     Episode = Series.clone();
                     Episode.isSeries = false;
                     Episode.isEpisode = true;
@@ -1745,12 +1974,30 @@ public class ValerieView extends FrameView {
                     Episode.Path = movie.Path;
                     Episode.Season = movie.Season;
                     Episode.Episode = movie.Episode;
+                    }*/
+
+                    movie.Title = Series.Title;
+                    movie.Year = Series.Year;
+                    movie.Imdb = Series.Imdb;
+                    movie.Poster = Series.Poster;
+                    movie.Backdrop = Series.Backdrop;
+                    movie.Banner = Series.Banner;
+                    movie.Runtime = Series.Runtime;
+                    movie.Plot = Series.Plot;
+                    movie.Directors = Series.Directors;
+                    movie.Writers = Series.Writers;
+                    movie.Genres = Series.Genres;
+                    movie.Tag = Series.Tag;
+                    movie.Popularity = Series.Popularity;
+                    movie.TheTvDb = Series.TheTvDb;
+
 
                 } else {
                     System.out.println("Does this happen ???");
                     return;
                 }
 
+                 /*if(beforeDontDeletePolicity) {
                 Episode.getDataByTitle();
 
                 Episode.ArtProvider = Episode.DataProvider;
@@ -1760,14 +2007,21 @@ public class ValerieView extends FrameView {
                     Episode.needsUpdate = false;
                 }
 
-                database.addMediaInfo(Episode);
+                
+                database.addMediaInfo(Episode);*/
+
+                movie.getDataByTitle();
+
+                if (movie.Title.length() > 0) {
+                    movie.Ignoring = false;
+                    movie.needsUpdate = false;
+                }
 
             } else {
                 if (movie.Title.length() > 0) {
                     movie.Ignoring = false;
                     movie.needsUpdate = false;
                 }
-                database.addMediaInfo(movie);
             }
         }
     }
@@ -1788,9 +2042,6 @@ public class ValerieView extends FrameView {
 
         @Override
         protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
 
             Logger.setBlocked(true);
             Logger.printBlocked("Getting Arts");
@@ -1987,7 +2238,14 @@ public class ValerieView extends FrameView {
                 String[] entries = folder.list();
 
                 for (int i = 0; i < entries.length; ++i) {
-                    new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+
+                    //Only upload arts if really needed so checbefore
+
+                    String[] vLine = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress,
+                            "ls /hdd/valerie/media/" + entries[i]);
+
+                    if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
+                        new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
                 }
             }
 

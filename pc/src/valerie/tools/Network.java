@@ -167,7 +167,8 @@ public class Network {
             dataOutput.write(bPrefix, 0, bPrefix.length);
 
             byte[] bName = cmd.getBytes();
-
+            byte[] bMsgId = new byte[1];
+            //Integer iMsgId = 0;
             Integer iLength = bName.length;
             Integer iByte0 = (iLength % 0x100) >> 8;
             Integer iByte1 = iLength & 0xFF;
@@ -182,14 +183,15 @@ public class Network {
                 iByte1 =  bLength[1] & 0xFF;
                 iByte1 = iByte1 << 8;
                 iLength = iByte0;
-                iLength += iByte1;
+                iLength += iByte1;             
+
                 byte[] bData = new byte[iLength];
                 dataInput.read(bData, 0, iLength);
                 
                 String sData = new String(bData);
                 sData = sData.substring(0, iLength-1);
 
-                //System.out.printf("[%03d] %s\n", iLength, sData);
+                System.out.printf("[%03d] %s\n", sData.length(), sData);
 
                 list.add(sData);
             }
