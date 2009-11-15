@@ -45,8 +45,6 @@ from Tools.Directories import InitFallbackFiles, resolveFilename, SCOPE_PLUGINS,
 from Components.config import config, configfile, ConfigText, ConfigYesNo
 InitFallbackFiles()
 
-#profile("ReloadProfiles")
-#eDVBDB.getInstance().reloadBouquets()
 
 config.misc.radiopic = ConfigText(default = resolveFilename(SCOPE_SKIN_IMAGE)+"radio.mvi")
 config.misc.isNextRecordTimerAfterEventActionAuto = ConfigYesNo(default=False)
@@ -56,36 +54,8 @@ def useTransponderTimeChanged(configElement):
 	enigma.eDVBLocalTimeHandler.getInstance().setUseDVBTime(configElement.value)
 config.misc.useTransponderTime.addNotifier(useTransponderTimeChanged)
 
-#profile("Twisted")
-#try:
-#	import twisted.python.runtime
-#	twisted.python.runtime.platform.supportsThreads = lambda: False
-#
-#	import e2reactor
-#	e2reactor.install()
-#
-#	from twisted.internet import reactor
-#
-#	def runReactor():
-#		reactor.run(installSignalHandlers=False)
-#except ImportError:
-#	print "twisted not available"
-#	def runReactor():
-#		runMainloop()
 
-#profile("LOAD:Plugin")
-
-# initialize autorun plugins and plugin menu entries
-#from Components.PluginComponent import plugins
-
-#profile("LOAD:Wizard")
-#from Screens.Wizard import wizardManager
-#from Screens.DefaultWizard import *
-#from Screens.StartWizard import *
-#from Screens.TutorialWizard import *
-#import Screens.Rc
 from Tools.BoundFunction import boundFunction
-#from Plugins.Plugin import PluginDescriptor
 
 profile("misc")
 had = dict()
@@ -104,9 +74,6 @@ def dump(dir, p = ""):
 	else:
 		print p + ":" + str(dir)
 
-# + ":" + str(dir.__class__)
-
-# display
 
 profile("LOAD:ScreenGlobals")
 from Screens.Globals import Globals
@@ -115,31 +82,6 @@ from Screens.Screen import Screen
 
 profile("Screen")
 Screen.global_screen = Globals()
-
-# Session.open:
-# * push current active dialog ('current_dialog') onto stack
-# * call execEnd for this dialog
-#   * clear in_exec flag
-#   * hide screen
-# * instantiate new dialog into 'current_dialog'
-#   * create screens, components
-#   * read, apply skin
-#   * create GUI for screen
-# * call execBegin for new dialog
-#   * set in_exec
-#   * show gui screen
-#   * call components' / screen's onExecBegin
-# ... screen is active, until it calls 'close'...
-# Session.close:
-# * assert in_exec
-# * save return value
-# * start deferred close handler ('onClose')
-# * execEnd
-#   * clear in_exec
-#   * hide screen
-# .. a moment later:
-# Session.doClose:
-# * destroy screen
 
 class Session:
 	def __init__(self, desktop = None, summary_desktop = None, navigation = None):
@@ -427,6 +369,7 @@ def runScreenTest():
 
 #	CiHandler.setSession(session)
 
+	#Check all plugins if they want to show an 
 #	screensToRun = [ p.__call__ for p in plugins.getPlugins(PluginDescriptor.WHERE_WIZARD) ]
 
 #	profile("wizards")

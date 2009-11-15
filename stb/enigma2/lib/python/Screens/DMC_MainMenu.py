@@ -1,4 +1,4 @@
-from enigma import eTimer, eDVBDB
+from enigma import eTimer, eDVBDB, getDesktop
 from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
@@ -19,12 +19,13 @@ import os
 
 # Plugins
 from MC_AudioPlayer import MC_AudioPlayer
+from MC_VideoPlayer import MC_VideoPlayer
 from DMC_Movies import DMC_Movies
 from DMC_Series import DMC_Series
 from MC_Settings import MC_Settings, MCS_Update
 
 
-currentmcversion = "092"
+currentmcversion = "043"
 currentmcplatform = "sh4"
 
 config.plugins.mc_favorites = ConfigSubsection()
@@ -52,21 +53,31 @@ config.plugins.mc_globalsettings.currentplatform.value = currentmcplatform
 
 from Components.MenuList import MenuList
 
-# Load Skin
-from skin import loadSkin
-loadSkin("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/skin.xml")
+
 
 import keymapparser
 keymapparser.readKeymap("/usr/lib/enigma2/python/Screens/MediaCenter/keymap.xml")
 
+desktopSize = getDesktop(0).size()
+
+# Load Skin
+from skin import loadSkin
+
+desktopSkin = ""
+if desktopSize.height() == 720:
+	desktopSkin = "/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/skin.xml"
+else:
+	desktopSkin = "/usr/lib/enigma2/python/Screens/MediaCenter/skins/default/skin.xml"
+
+loadSkin(desktopSkin)
+
 #------------------------------------------------------------------------------------------
-def getAspect():
-	val = AVSwitch().getAspectRatioSetting()
-	return val/2
 	
 class DMC_MainMenu(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
+
+		print "Desktop: ", desktopSize.width() , "x", desktopSize.height()
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.session.nav.stopService()
@@ -85,6 +96,7 @@ class DMC_MainMenu(Screen):
 		listWatch.append((" ", "dummy", "menu_dummy", "50"))
 		listWatch.append(("Movies", "DMC_Movies", "menu_movies", "50"))
 		listWatch.append(("Series", "DMC_Series", "menu_series", "50"))
+		listWatch.append(("Series", "MC_VideoPlayer", "menu_watch_all", "50"))
 		self["menuWatch"] = List(listWatch, True)
 		self.Watch = False
 
@@ -117,11 +129,13 @@ class DMC_MainMenu(Screen):
 					self.session.open(DMC_Movies)
 				elif selection[1] == "DMC_Series":
 					self.session.open(DMC_Series)
+				elif selection[1] == "MC_VideoPlayer":
+					self.session.open(MC_VideoPlayer)
 		else:
 			selection = self["menu"].getCurrent()
 			if selection is not None:
 				if selection[1] == "DMC_Watch":
-					self["menuWatch"].setIndex(1)
+					self["menuWatch"].setIndex(2)
 					self.Watch = True;
 				elif selection[1] == "MC_AudioPlayer":
 					self.session.open(MC_AudioPlayer)
@@ -169,16 +183,5 @@ class DMC_MainMenu(Screen):
 			self.Watch = False;
 
 		return
-
-	def error(self, error):
-		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
-
-	def Ok(self):
-		self.session.open(MPD_PictureViewer)
 		
-	def Exit(self):
-		self.session.nav.stopService()
-		self.session.nav.playService(self.oldService)
-		
-		self.close()
 

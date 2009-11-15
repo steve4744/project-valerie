@@ -11,7 +11,7 @@ from Screens.MessageBox import MessageBox
 from Screens.HelpMenu import HelpableScreen
 
 from Components.ServicePosition import ServicePositionGauge
-from Components.ServiceEventTracker import ServiceEventTracker
+from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import *
@@ -19,7 +19,8 @@ from Components.config import *
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
-from Screens.InfoBar import MoviePlayer
+from Screens.DMC_MoviePlayer import DMC_MoviePlayer
+
 from Plugins.Plugin import PluginDescriptor
 
 from enigma import eStillPicture
@@ -28,17 +29,18 @@ from Components.MenuList import MenuList
 import os
 from os import path as os_path
 
-def getAspect():
-	val = AVSwitch().getAspectRatioSetting()
-	return val/2
-
 #------------------------------------------------------------------------------------------
 
-class DMC_Movies(Screen, HelpableScreen):
+class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		
+		InfoBarBase.__init__(self)
+		HelpableScreen.__init__(self)
+
+		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
+		self.session.nav.stopService()		
+
 		self.isVisible = True
 		list = []
 		self.moviedb = {}
@@ -55,6 +57,8 @@ class DMC_Movies(Screen, HelpableScreen):
 		filter.append("ImdbId")
 		filter.append("Title")
 		filter.append("Path")
+
+		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 
 		try:
 			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
@@ -122,18 +126,9 @@ class DMC_Movies(Screen, HelpableScreen):
 		self["writer"].setText(self.moviedb[list[0][1]]["Writers"])
 		self["genre"].setText(self.moviedb[list[0][1]]["Genres"])
 		self["year"].setText(self.moviedb[list[0][1]]["Year"])
-		self["runtime"].setText(self.moviedb[list[0][1]]["Runtime"])
+		self["runtime"].setText(self.moviedb[list[0][1]]["Runtime"])	
 
-		#for i in range(int(self.moviedb[list[0][1]]["Popularity"])):
-		#	stars = "star" + str(i)
-		#	print stars
-		#	self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
-#
-#		for i in range(10 - int(self.moviedb[list[0][1]]["Popularity"])):
-#			self["star0"].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
-					
-	def up(self):
-		self["listview"].up()
+	def refresh(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
@@ -151,36 +146,23 @@ class DMC_Movies(Screen, HelpableScreen):
 
 			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 				self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
-#		self.ThumbTimer.start(config.plugins.mc_ap.preview_delay.getValue() * 1000, True)
+
+	def up(self):
+		self["listview"].up()
+		self.refresh()
+		
 
 	def down(self):
 		self["listview"].down()
-		selection = self["listview"].getCurrent()
-		if selection is not None:
-			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
-			self["title"].setText(selection[0])	
-			self["tag"].setText(self.moviedb[selection[1]]["Tag"])	
-			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
-			self["director"].setText(self.moviedb[selection[1]]["Directors"])
-			self["writer"].setText(self.moviedb[selection[1]]["Writers"])
-			self["genre"].setText(self.moviedb[selection[1]]["Genres"])
-			self["year"].setText(self.moviedb[selection[1]]["Year"])
-			self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
-			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
-				self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
-
-			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
-				self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Screens/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+		self.refresh()
 		
 	def leftUp(self):
 		self["listview"].pageUp()
-#		self.ThumbTimer.start(config.plugins.mc_ap.preview_delay.getValue() * 1000, True)
+		self.refresh()
 		
 	def rightDown(self):
 		self["listview"].pageDown()
-#		self.ThumbTimer.start(config.plugins.mc_ap.preview_delay.getValue() * 1000, True)
-
+		self.refresh()
 
 
 	def KeyOk(self):
@@ -192,7 +174,15 @@ class DMC_Movies(Screen, HelpableScreen):
 		
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			self.session.open(MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.moviedb[selection[1]]["Path"]))
+			self.session.openWithCallback(self.leaveMoviePlayer, DMC_MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.moviedb[selection[1]]["Path"]))
+		
+
+	def leaveMoviePlayer(self, answer): 
+		self.session.nav.playService(None) 
+		selection = self["listview"].getCurrent()
+		if selection is not None:
+			eStillPicture.getInstance().showSinglePic("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+
 
 	def Exit(self):
 		if self.isVisible == False:
@@ -204,5 +194,3 @@ class DMC_Movies(Screen, HelpableScreen):
 		self.close()
 
 #------------------------------------------------------------------------------------------
-
-
