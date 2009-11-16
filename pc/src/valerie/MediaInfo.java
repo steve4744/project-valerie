@@ -32,6 +32,7 @@ public class MediaInfo {
     //TODO: change Searchstring to regex, as a series could hava multiple possible searchstrings
     public String SearchString = "";
     public String Title = "";
+    public String LocalTitle = "";
     public int Year = 0;
     public int Imdb = 0;
     public String Poster = "";
@@ -85,6 +86,8 @@ public class MediaInfo {
                         Imdb = Integer.valueOf(keys[1]);
                     else if(keys[0].equals("Title"))
                         Title = keys[1];
+                    else if(keys[0].equals("LocalTitle"))
+                        LocalTitle = keys[1];
                     else if(keys[0].equals("Year"))
                         Year = Integer.valueOf(keys[1]);
                     else if(keys[0].equals("Path"))
@@ -119,15 +122,22 @@ public class MediaInfo {
         }
     }
 
+    public String cleanString(String str){
+    	str = str.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "").replaceAll("&#xE4;", "ä");
+    	str = str.replaceAll("&#xB7;", "-").replaceAll("&#xFC;", "ü").replaceAll("&#xDF;", "ß").replaceAll("&#xF6;", "ö").replaceAll("<.*?>", "");
+    	
+    	return str;
+    }
     public void checkStrings() {
 
-        Title = Title.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Runtime = Runtime.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Plot = Plot.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Directors = Directors.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Writers = Writers.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Genres = Genres.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
-        Tag = Tag.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "");
+        Title = cleanString(Title);
+        LocalTitle = cleanString(LocalTitle);
+        Runtime = cleanString(Runtime);
+        Plot = cleanString(Plot);
+        Directors = cleanString(Directors);
+        Writers = cleanString(Writers);
+        Genres = cleanString(Genres);
+        Tag = cleanString(Tag);
     }
 
     public String toString() {
@@ -136,6 +146,7 @@ public class MediaInfo {
                 (isEpisode||isSeries?("TheTvDb: " + TheTvDb + "\n"):"") +
                 "ImdbId: " + Imdb + "\n" +
                 "Title: " + Title + "\n" +
+                "LocalTitle: " + LocalTitle + "\n" +
                 "Year: " + Year + "\n" +
                 //"Filename: " + Filename + "\n" +
                 (!isSeries?("Path: " + Path + "\n"):"") +

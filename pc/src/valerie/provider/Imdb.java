@@ -106,7 +106,31 @@ public class Imdb extends provider {
        }
        return;
      }
+     
+     private void getMoviesLocalLanguage(MediaInfo info) {
+         String xml = null;
+         try {
+            xml = new valerie.tools.webgrabber().getText(new URL(apiImdbLookup + info.Imdb + "/releaseinfo"));
+         } catch (Exception ex) {}
 
+         if (xml == null)
+              return;
+         Pattern pPlot = Pattern.compile("Also Known As \\(AKA\\)</a></h5>(.*?)</table>");
+         Matcher mPlot = pPlot.matcher(xml);
+         if(mPlot.find()) {
+              String sPlot = mPlot.group(1);
+              Pattern pTitle = Pattern.compile("<tr><td>(.*?)</td><td>(.*?)</td></tr>");
+              Matcher mTitle = pTitle.matcher(sPlot);
+              info.LocalTitle = "";
+              while(mTitle.find()){
+            	  if(mTitle.group(2).contains("Germany")&& !mTitle.group(2).contains("Germany (working title)"))
+            		  info.LocalTitle = mTitle.group(1);
+              }
+         }
+         return;
+       }
+
+     
      private void parseDetailsScreen(MediaInfo info, String details)
      {
         Pattern pTitle = Pattern.compile("<title>.+?\\(\\d{4}[\\/IVX]*\\).*?</title>");
@@ -159,6 +183,7 @@ public class Imdb extends provider {
 
             Pattern pDirectors = Pattern.compile("<a href=\"/name/nm\\d{7}/\"[^>]*>([^<]+)</a>");
             Matcher mDirectors = pDirectors.matcher(sDirectorsBlock);
+            info.Directors="";
             while(mDirectors.find()) {
                 String sDirectors = mDirectors.group();
                 sDirectors = sDirectors.replaceAll(".*/\';\">", "");
@@ -174,6 +199,7 @@ public class Imdb extends provider {
 
             Pattern pWriters = Pattern.compile("<a href=\"/name/nm\\d+/\"[^>]*>([^<]+)</a>");
             Matcher mWriters = pWriters.matcher(sWritersBlock);
+            info.Writers="";
             while(mWriters.find()) {
                 String sWriters = mWriters.group();
                 sWriters = sWriters.replaceAll(".*/\';\">", "");
@@ -198,6 +224,7 @@ public class Imdb extends provider {
 
             Pattern pGenres = Pattern.compile("<a href=\"/Sections/Genres/[^/]+/\">(.+?)</a>");
             Matcher mGenres = pGenres.matcher(sGenresBlock);
+            info.Genres="";
             while(mGenres.find()) {
                 String sGenres = mGenres.group();
                 sGenres = sGenres.replaceAll(".*/\">", "");
@@ -215,7 +242,7 @@ public class Imdb extends provider {
             sTag = sTag.replaceAll("<", "");
             info.Tag = sTag;
         }
-
+        
         Pattern pPopularity = Pattern.compile("<div class=\"meta\">.*?<b>(\\d+.\\d+)/10</b>");
         Matcher mPopularity = pPopularity.matcher(details);
         if(mPopularity.find()) {
@@ -228,7 +255,8 @@ public class Imdb extends provider {
         }
 
         getMoviesPlot(info);
-
+        getMoviesLocalLanguage(info);
+        info.checkStrings();
         return;
      }
 
