@@ -23,6 +23,7 @@ import org.jdom.input.SAXBuilder;
  */
 public class webgrabber {
     public Document getXML(URL url) {
+        DebugOutput.printl(url.toString());
         //Serve the file
         Document doc = null;
         try {
@@ -49,10 +50,15 @@ public class webgrabber {
             System.out.printf("error %s\n", ex.getMessage());
         }
 
+        DebugOutput.printl("<-");
+
         return doc;
     }
 
     public String getText(URL url) {
+
+        DebugOutput.printl(url.toString());
+
         //Serve the file
         String doc = null;
 
@@ -87,10 +93,14 @@ public class webgrabber {
             System.out.printf("error %s\n", ex.getMessage());
         }
 
+        DebugOutput.printl("<-");
+
         return doc;
     }
 
     public void getFile(String surl, String SaveAs) {
+
+        DebugOutput.printl(surl);
 
         try {
             URL url = new URL(surl);
@@ -110,6 +120,8 @@ public class webgrabber {
         } catch (Exception ex) {
             System.out.printf("error %s\n", ex.getMessage());
         }
+
+        DebugOutput.printl("<-");
 
         return;
     }

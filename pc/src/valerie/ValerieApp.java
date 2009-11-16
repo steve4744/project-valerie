@@ -12,12 +12,17 @@ import org.jdesktop.application.SingleFrameApplication;
  */
 public class ValerieApp extends SingleFrameApplication {
 
+
+    static String[] vArguments;
+
     /**
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
 
-        show(new ValerieView(this));
+        show(new ValerieView(this, vArguments));
+        //ValerieView v = new ValerieView(this, vArguments);
+        //v.getFrame().setVisible(true);
     }
 
     /**
@@ -40,6 +45,9 @@ public class ValerieApp extends SingleFrameApplication {
      * Main method launching the application.
      */
     public static void main(String[] args) {
+
+        vArguments = args;
+
         launch(ValerieApp.class, args);
     }
 }

@@ -113,9 +113,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         vArguments = arguments;
 
-        vArguments = new String[] {
-         //   "-a",
-        };
+        /*vArguments = new String[] {
+            "-a",
+        };*/
 
         checkArguments("pre").run();
 
@@ -389,7 +389,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 if(showHelp) {
                     System.out.printf("\t%20s: %20s\n", "(-?|-h|--help)", "Show this help");
                     System.out.printf("\t%20s: %20s\n", "(-c|--connect)", "Connects on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-a|--auto)", "Auto mode");
+                    System.out.printf("\t%20s: %20s\n", "(-s|--sync)", "Sync on startup");
+                    System.out.printf("\t%20s: %20s\n", "(-p|--parse)", "Parse on startup");
+                    System.out.printf("\t%20s: %20s\n", "(-a|--art)", "Download arts on startup");
+                    System.out.printf("\t%20s: %20s\n", "(-u|--upload)", "Upload files on startup");
+                    System.out.printf("\t%20s: %20s\n", "(-q|--quit)", "Quits after parsing cmdline");
+                    System.out.printf("\t%20s: %20s\n", "(--auto)", "Auto mode,");
+                    System.out.printf("\t%20s: %20s\n", "", "equeal to -c -s -p -a -u");
                     System.exit(0);
                 }
             }
