@@ -1949,9 +1949,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
             //Ignore all series and only check episodes
             if (!movie.isSeries && movie.needsUpdate) {
                 MediaInfo Series;
-
+                if(movie.ArtProvider==null)movie.ArtProvider = new valerie.provider.theTvDb();
+                if(movie.DataProvider==null)movie.DataProvider = new valerie.provider.theTvDb();
+                
                 if (database.getMediaInfoForSeries(movie.SearchString) == null) {
                     Series = movie.clone();
+                    
                     Series.isSeries = true;
                     Series.isEpisode = false;
                     Series.getDataByTitle();

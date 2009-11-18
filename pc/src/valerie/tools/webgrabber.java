@@ -14,6 +14,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
@@ -22,8 +24,33 @@ import org.jdom.input.SAXBuilder;
  * @author Admin
  */
 public class webgrabber {
+	
+	class cachedRequestXML{
+		public URL Url;
+		public Document doc;
+		public cachedRequestXML(URL Url,Document doc){
+			this.doc=doc;
+			this.Url=Url;
+		}
+	}
+	class cachedRequestURL{
+		public URL Url;
+		public String doc;
+		public cachedRequestURL(URL Url,String doc){
+			this.doc=doc;
+			this.Url=Url;
+		}
+	}
+	private static ArrayList<cachedRequestXML> cacheXML=null;
+	private static ArrayList<cachedRequestURL> cacheURL=null;
     public Document getXML(URL url) {
-        DebugOutput.printl(url.toString());
+    	int x;
+    	if(cacheXML==null)cacheXML=new ArrayList<cachedRequestXML>();
+    	DebugOutput.printl(url.toString());
+    	for(x=0;x<cacheXML.size();x++){
+    		if(url.equals(cacheXML.get(x).Url))return cacheXML.get(x).doc;
+    	}
+        
         //Serve the file
         Document doc = null;
         try {
@@ -51,14 +78,18 @@ public class webgrabber {
         }
 
         DebugOutput.printl("<-");
-
+        cacheXML.add(new cachedRequestXML(url,doc));
         return doc;
     }
 
     public String getText(URL url) {
-
+    	int x;
+    	if(cacheURL==null)cacheURL=new ArrayList<cachedRequestURL>();
         DebugOutput.printl(url.toString());
-
+        for(x=0;x<cacheURL.size();x++){
+    		if(url.equals(cacheURL.get(x).Url))return cacheURL.get(x).doc;
+    	}
+        
         //Serve the file
         String doc = null;
 
@@ -94,7 +125,7 @@ public class webgrabber {
         }
 
         DebugOutput.printl("<-");
-
+        cacheURL.add(new cachedRequestURL(url,doc));
         return doc;
     }
 

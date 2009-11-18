@@ -40,6 +40,7 @@ public class MediaInfo {
     public String Banner = "";
     public String Runtime = "";
     public String Plot = "";
+    public String LocalPlot = "";
     public String Directors = "";
     public String Writers = "";
     public String Genres = "";
@@ -98,6 +99,8 @@ public class MediaInfo {
                         Writers = keys[1];
                     else if(keys[0].equals("Plot"))
                         Plot = keys[1];
+                    else if(keys[0].equals("LocalPlot"))
+                        LocalPlot = keys[1];
                     else if(keys[0].equals("Runtime"))
                         Runtime = keys[1];
                     else if(keys[0].equals("Genres"))
@@ -134,6 +137,7 @@ public class MediaInfo {
         LocalTitle = cleanString(LocalTitle);
         Runtime = cleanString(Runtime);
         Plot = cleanString(Plot);
+        LocalPlot = cleanString(LocalPlot);
         Directors = cleanString(Directors);
         Writers = cleanString(Writers);
         Genres = cleanString(Genres);
@@ -153,6 +157,7 @@ public class MediaInfo {
                 "Directors: " + Directors + "\n" +
                 "Writers: " + Writers + "\n" +
                 "Plot: " + Plot + "\n" +
+                "LocalPlot: " + LocalPlot + "\n" +
                 "Runtime: " + Runtime + "\n" +
                 "Genres: " + Genres + "\n" +
                 "Tag: " + Tag + "\n" +
@@ -178,6 +183,7 @@ public class MediaInfo {
         rtv.Path = Path;
         rtv.SearchString = SearchString;
         rtv.Title = Title;
+        rtv.LocalTitle = LocalTitle;
         rtv.Year = Year;
         rtv.Imdb = Imdb;
         rtv.Poster = Poster;
@@ -185,6 +191,7 @@ public class MediaInfo {
         rtv.Banner = Banner;
         rtv.Runtime = Runtime;
         rtv.Plot = Plot;
+        rtv.LocalPlot = LocalPlot;
         rtv.Directors = Directors;
         rtv.Writers = Writers;
         rtv.Genres = Genres;
