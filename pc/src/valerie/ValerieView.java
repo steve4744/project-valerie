@@ -1754,8 +1754,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                     /////////////////////////////////
 
-                    String SeriesName = filtered.replaceAll(" s\\d+e\\d+.*", "");
-                    SeriesName = SeriesName.replaceAll(" \\d+x\\d+.*", "");
+                    String SeriesName = filtered.replaceAll(" s\\d+\\D?e\\D?\\d+.*", "");
+                    SeriesName = SeriesName.replaceAll(" \\d+\\D?x\\D?\\d+.*", "");
 
                     //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
                     String firstWord = "";
@@ -1772,39 +1772,23 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     }
 
                     {
-                        Pattern pSeasonEpisode = Pattern.compile(" s\\d+e\\d+");
+                        Pattern pSeasonEpisode = Pattern.compile(" s(\\d+)\\D?e\\D?(\\d+)");
                         Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
                         if (mSeasonEpisode.find()) {
-                            String sSeasonEpisode = mSeasonEpisode.group().trim();
-
-                            Matcher mSeason = Pattern.compile("s\\d+").matcher(sSeasonEpisode);
-                            mSeason.find();
-                            movie.Season = Integer.valueOf(mSeason.group().substring(1));
-
-                            Matcher mEpisode = Pattern.compile("e\\d+").matcher(sSeasonEpisode);
-                            mEpisode.find();
-                            movie.Episode = Integer.valueOf(mEpisode.group().substring(1));
+                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
+                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
                         }
                     }
 
                     if (movie.Season == 0 && movie.Episode == 0) {
-                        Pattern pSeasonEpisode = Pattern.compile(" \\d+x\\d+");
+                        Pattern pSeasonEpisode = Pattern.compile(" (\\d+)\\D?x\\D?(\\d+)");
                         Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
                         if (mSeasonEpisode.find()) {
-                            String sSeasonEpisode = mSeasonEpisode.group().trim();
-
-                            Matcher mSeason = Pattern.compile("\\d+x").matcher(sSeasonEpisode);
-                            if (mSeason.find()) {
-                                movie.Season = Integer.valueOf(mSeason.group().substring(0, mSeason.group().length() - 1));
-                            }
-
-                            Matcher mEpisode = Pattern.compile("x\\d+").matcher(sSeasonEpisode);
-                            if (mEpisode.find()) {
-                                movie.Episode = Integer.valueOf(mEpisode.group().substring(1));
-                            }
+                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
+                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
                         }
                     }
-
+                    
                     //Sometimes the Season and Episode info is like this 812 for Season: 8 Episode: 12
                     if (movie.Season == 0 && movie.Episode == 0) {
                         String[] sSeasonEpisodeA = SeriesName.split(" ");

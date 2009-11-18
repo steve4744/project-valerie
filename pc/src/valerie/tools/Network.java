@@ -5,9 +5,11 @@
 
 package valerie.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -178,22 +180,12 @@ public class Network {
             dataOutput.write(bLength, 0, bLength.length);
             dataOutput.write(bName, 0, bName.length);
             
-            while(dataInput.read(bLength, 0, 2) > 0) {
-                iByte0 =  bLength[0] & 0xFF;
-                iByte1 =  bLength[1] & 0xFF;
-                iByte1 = iByte1 << 8;
-                iLength = iByte0;
-                iLength += iByte1;             
-
-                byte[] bData = new byte[iLength];
-                dataInput.read(bData, 0, iLength);
-                
-                String sData = new String(bData);
-                sData = sData.substring(0, iLength-1);
-
-                System.out.printf("[%03d] %s\n", sData.length(), sData);
-
-                list.add(sData);
+            InputStreamReader converter = new InputStreamReader(dataInput);
+            BufferedReader reader=new BufferedReader(converter);
+            String line;
+            while((line=reader.readLine())!=null){
+            	list.add(line.substring(2));
+            	System.out.printf("[%03d] %s\n", line.length(),line.substring(2));
             }
 
             dataOutput.close();

@@ -61,13 +61,24 @@ public class theTvDb extends provider {
             return;
 
        List movieList = xml.getRootElement().getChildren("Series");
+       if(movieList.size()<=0){
+    	   /*No englisch result lets try german */
+    	   try {
+               String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDb))+"de.xml";
+                   xml = new valerie.tools.webgrabber().getXML(new URL(url));
+           } catch (Exception ex) {}
+
+           if (xml == null)
+                return;
+           movieList = xml.getRootElement().getChildren("Series");
+       }
        for(int i = 0; i < movieList.size(); i++)
        {
            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
 
            int Year = 0;
            org.jdom.Element eYear = eMovie.getChild("FirstAired");
-           if(eYear != null)
+           if(eYear != null && !eYear.getText().equals(""))
                 Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
 
            info.Year = Year;
@@ -110,20 +121,32 @@ public class theTvDb extends provider {
        try {
            String urlTitle = info.SearchString;
            urlTitle = urlTitle.replaceAll(" ", "+");
-           xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
+           xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
        } catch (Exception ex) {}
 
        if (xml == null)
             return;
 
        List movieList = xml.getRootElement().getChildren("Series");
+       if(movieList.size()<=0){
+    	   /*No englisch result lets try german */
+    	   try {
+    		   String urlTitle = info.SearchString;
+               urlTitle = urlTitle.replaceAll(" ", "+");
+               xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
+           } catch (Exception ex) {}
+
+           if (xml == null)
+                return;
+           movieList = xml.getRootElement().getChildren("Series");
+       }
        for(int i = 0; i < movieList.size(); i++)
        {
            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
 
            int Year = 0;
            org.jdom.Element eYear = eMovie.getChild("FirstAired");
-           if(eYear != null)
+           if(eYear != null && !eYear.getText().equals(""))
                 Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
 
            info.Year = Year;
@@ -194,7 +217,11 @@ public class theTvDb extends provider {
                }
                org.jdom.Element eYear = eMovie.getChild("FirstAired");
                if(eYear != null) {
-                   info.Year = Integer.parseInt(eYear.getText().split("-")[0]);
+            	   try{
+            		   info.Year = Integer.parseInt(eYear.getText().split("-")[0]);
+            	   }catch(Exception e){
+            		   ;
+            	   }
                }
                /*org.jdom.Element eID = eMovie.getChild("id");
                if(eID != null)
