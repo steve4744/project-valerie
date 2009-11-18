@@ -25,8 +25,10 @@ import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1532,10 +1534,30 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jTableSeries.setRowSelectionInterval(1, 1);
             jTableSeriesMouseClicked(null);
         }
-
+        private ArrayList<String[]> getReplacements(){
+        	ArrayList<String[]> replacements=new ArrayList<String[]>();
+        	
+        	replacements.add(new String[]{"[.]", " "});
+        	replacements.add(new String[]{"_", " "});
+        	replacements.add(new String[]{"-", " "});
+        	replacements.add(new String[]{"tt\\d{7}", ""});
+        	replacements.add(new String[]{"(\\b(vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
+        	BufferedReader frMovie;
+			try {
+				frMovie = new BufferedReader(new FileReader("replacements.txt"));
+	            String line;
+	            while ((line = frMovie.readLine()) != null) {
+	            		String[] parts = line.split("=");
+	            		replacements.add(new String[]{parts[0], parts[1]});
+				}
+			} catch (Exception e) {
+				return replacements;
+			}
+			return replacements;
+        }
         private void searchMovies() {
             String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
-
+            ArrayList<String[]> replacements=getReplacements();
             for (int row = 0; row < paths.length; row++) {
                 String filterString = "";
                 String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
@@ -1586,15 +1608,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
                     }
 
-                    String[][] replacements = new String[][]{
-                        new String[]{"[.]", " "},
-                        new String[]{"_", " "},
-                        new String[]{"-", " "},
-                        new String[]{"tt\\d{7}", ""},
-                        new String[]{"(\\b(vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""},};
                     String filtered = movie.Filename.toLowerCase();
-                    for (int iter = 0; iter < replacements.length; iter++) {
-                        filtered = filtered.replaceAll(replacements[iter][0].toLowerCase(), replacements[iter][1]);
+                    for (int iter = 0; iter < replacements.size(); iter++) {
+                        filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
                     }
 
                     filtered = filtered.trim();
@@ -1666,7 +1682,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         private void searchSeries() {
             String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
-
+            ArrayList<String[]> replacements=getReplacements();
             for (int row = 0; row < paths.length; row++) {
                 String filterString = "";
                 String filter = new valerie.tools.Properties().getPropertyString("FILTER_SERIES");
@@ -1720,15 +1736,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
                     }
 
-                    String[][] replacements = new String[][]{
-                        new String[]{"[.]", " "},
-                        new String[]{"_", " "},
-                        new String[]{"-", " "},
-                        new String[]{"tt\\d{7}", ""},
-                        new String[]{"(\\b(vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""},};
                     String filtered = movie.Filename.toLowerCase();
-                    for (int iter = 0; iter < replacements.length; iter++) {
-                        filtered = filtered.replaceAll(replacements[iter][0].toLowerCase(), replacements[iter][1]);
+                    for (int iter = 0; iter < replacements.size(); iter++) {
+                        filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
                     }
 
                     filtered = filtered.trim();
