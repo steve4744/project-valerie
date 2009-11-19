@@ -1338,31 +1338,32 @@ public class ValerieView extends FrameView implements WindowStateListener {
             theMovieDb theMovieDB=new valerie.provider.theMovieDb();
             try {
                 BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
-                String moviedb = "";
                 String line;
+                String Movie="";
                 while ((line = frMovie.readLine()) != null) {
-                    moviedb += line + "\n";
+                	if(line.equals("---BEGIN---")){
+                		Movie="";
+                	}
+                	Movie += line + "\n";
+                	if(line.equals("----END----")){
+                		MediaInfo info = new MediaInfo();
+                        info.reparse(Movie);
+                        info.isMovie = true;
+                        info.isArchiv = true;
+                        info.needsUpdate = false;
+
+                        info.DataProvider = imdb;
+                        info.ArtProvider = theMovieDB;
+
+                        //ignore the entry as long as we havent confirmed that it still exists
+                        info.Ignoring = true;
+                        if (info.Title.length() > 0) {
+                            if(database.getMediaInfoByPath(info.Path) == null)
+                                database.addMediaInfo(info);
+                        }
+                	}
                 }
                
-                String movies[] = moviedb.split("---BEGIN---\n");
-                for (String movie : movies) {
-                    MediaInfo info = new MediaInfo();
-                    info.reparse(movie);
-                    info.isMovie = true;
-                    info.isArchiv = true;
-                    info.needsUpdate = false;
-
-                    info.DataProvider = imdb;
-                    info.ArtProvider = theMovieDB;
-
-                    //ignore the entry as long as we havent confirmed that it still exists
-                    info.Ignoring = true;
-                    if (info.Title.length() > 0) {
-                        if(database.getMediaInfoByPath(info.Path) == null)
-                            database.addMediaInfo(info);
-                    }
-                }
-
             } catch (Exception ex) {
                 System.out.println(ex.toString());
             }
@@ -1371,30 +1372,30 @@ public class ValerieView extends FrameView implements WindowStateListener {
             try {
             	
                 BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
-                String moviedb = "";
                 String line;
+                String Movie="";
                 while ((line = frMovie.readLine()) != null) {
-                    moviedb += line + "\n";
-                }
+                	if(line.equals("---BEGIN---")){
+                		Movie="";
+                	}
+                	Movie += line + "\n";
+                	if(line.equals("----END----")){
+                		MediaInfo info = new MediaInfo();
+                        info.reparse(Movie);
+                        info.isSeries = true;
+                        info.isArchiv = true;
+                        info.needsUpdate = false;
 
-                String movies[] = moviedb.split("---BEGIN---\n");
-                
-                for (String movie : movies) {
-                    MediaInfo info = new MediaInfo();
-                    info.reparse(movie);
-                    info.isSeries = true;
-                    info.isArchiv = true;
-                    info.needsUpdate = false;
+                        info.DataProvider = tvdb;
+                        info.ArtProvider = tvdb;
 
-                    info.DataProvider = tvdb;
-                    info.ArtProvider = tvdb;
-
-                    //As this isnt represented by any file we have to set ignoring to false
-                    info.Ignoring = false;
-                    if (info.Title.length() > 0) {
-                        if(database.getMediaInfoForSeries(info.TheTvDb) == null)
-                            database.addMediaInfo(info);
-                    }
+                        //As this isnt represented by any file we have to set ignoring to false
+                        info.Ignoring = false;
+                        if (info.Title.length() > 0) {
+                            if(database.getMediaInfoForSeries(info.TheTvDb) == null)
+                                database.addMediaInfo(info);
+                        }
+                	}
                 }
 
             } catch (Exception ex) {
@@ -1406,29 +1407,30 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 for (MediaInfo info : infos) {
                     if (info.isSeries) {
                         BufferedReader frMovie = new BufferedReader(new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
-                        String moviedb = "";
                         String line;
+                        String Movie="";
                         while ((line = frMovie.readLine()) != null) {
-                            moviedb += line + "\n";
-                        }
+                        	if(line.equals("---BEGIN---")){
+                        		Movie="";
+                        	}
+                        	Movie += line + "\n";
+                        	if(line.equals("----END----")){
+                        		MediaInfo movieinfo = new MediaInfo();
+                                movieinfo.reparse(Movie);
+                                movieinfo.isEpisode = true;
+                                movieinfo.isArchiv = true;
+                                movieinfo.needsUpdate = false;
 
-                        String movies[] = moviedb.split("---BEGIN---\n");
-                        for (String movie : movies) {
-                            MediaInfo movieinfo = new MediaInfo();
-                            movieinfo.reparse(movie);
-                            movieinfo.isEpisode = true;
-                            movieinfo.isArchiv = true;
-                            movieinfo.needsUpdate = false;
+                                info.DataProvider = tvdb;
+                                info.ArtProvider = tvdb;
 
-                            info.DataProvider = tvdb;
-                            info.ArtProvider = tvdb;
-
-                            //ignore the entry as long as we havent confirmed that it still exists
-                            movieinfo.Ignoring = true;
-                            if (movieinfo.Title.length() > 0) {
-                                if(database.getMediaInfoByPath(movieinfo.Path) == null)
-                                    database.addMediaInfo(movieinfo);
-                            }
+                                //ignore the entry as long as we havent confirmed that it still exists
+                                movieinfo.Ignoring = true;
+                                if (movieinfo.Title.length() > 0) {
+                                    if(database.getMediaInfoByPath(movieinfo.Path) == null)
+                                        database.addMediaInfo(movieinfo);
+                                }
+                        	}
                         }
                     }
                 }
