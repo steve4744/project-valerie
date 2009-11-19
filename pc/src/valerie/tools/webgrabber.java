@@ -41,6 +41,7 @@ public class webgrabber {
 			this.Url=Url;
 		}
 	}
+	private int maxCacheEntrys=512;
 	private static ArrayList<cachedRequestXML> cacheXML=null;
 	private static ArrayList<cachedRequestURL> cacheURL=null;
     public Document getXML(URL url) {
@@ -78,6 +79,7 @@ public class webgrabber {
         }
 
         DebugOutput.printl("<-");
+        if(cacheXML.size()>maxCacheEntrys)cacheXML.remove(0);
         cacheXML.add(new cachedRequestXML(url,doc));
         return doc;
     }
@@ -125,6 +127,7 @@ public class webgrabber {
         }
 
         DebugOutput.printl("<-");
+        if(cacheURL.size()>maxCacheEntrys)cacheURL.remove(0);
         cacheURL.add(new cachedRequestURL(url,doc));
         return doc;
     }

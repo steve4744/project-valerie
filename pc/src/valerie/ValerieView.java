@@ -6,6 +6,10 @@ package valerie;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+
+import valerie.provider.Imdb;
+import valerie.provider.theMovieDb;
+import valerie.provider.theTvDb;
 import valerie.tools.pngquant;
 import valerie.tools.mencoder;
 import java.awt.Graphics;
@@ -1329,7 +1333,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
         @Override protected Object doInBackground() {
             DebugOutput.printl("->");
-
+            theTvDb tvdb=new valerie.provider.theTvDb();
+        	Imdb imdb=new valerie.provider.Imdb();
+            theMovieDb theMovieDB=new valerie.provider.theMovieDb();
             try {
                 BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
                 String moviedb = "";
@@ -1337,7 +1343,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 while ((line = frMovie.readLine()) != null) {
                     moviedb += line + "\n";
                 }
-
+               
                 String movies[] = moviedb.split("---BEGIN---\n");
                 for (String movie : movies) {
                     MediaInfo info = new MediaInfo();
@@ -1346,8 +1352,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     info.isArchiv = true;
                     info.needsUpdate = false;
 
-                    info.DataProvider = new valerie.provider.Imdb();
-                    info.ArtProvider = new valerie.provider.theMovieDb();
+                    info.DataProvider = imdb;
+                    info.ArtProvider = theMovieDB;
 
                     //ignore the entry as long as we havent confirmed that it still exists
                     info.Ignoring = true;
@@ -1363,6 +1369,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
 
             try {
+            	
                 BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
                 String moviedb = "";
                 String line;
@@ -1371,6 +1378,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 }
 
                 String movies[] = moviedb.split("---BEGIN---\n");
+                
                 for (String movie : movies) {
                     MediaInfo info = new MediaInfo();
                     info.reparse(movie);
@@ -1378,8 +1386,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     info.isArchiv = true;
                     info.needsUpdate = false;
 
-                    info.DataProvider = new valerie.provider.theTvDb();
-                    info.ArtProvider = new valerie.provider.theTvDb();
+                    info.DataProvider = tvdb;
+                    info.ArtProvider = tvdb;
 
                     //As this isnt represented by any file we have to set ignoring to false
                     info.Ignoring = false;
@@ -1412,8 +1420,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             movieinfo.isArchiv = true;
                             movieinfo.needsUpdate = false;
 
-                            info.DataProvider = new valerie.provider.theTvDb();
-                            info.ArtProvider = new valerie.provider.theTvDb();
+                            info.DataProvider = tvdb;
+                            info.ArtProvider = tvdb;
 
                             //ignore the entry as long as we havent confirmed that it still exists
                             movieinfo.Ignoring = true;
@@ -1541,7 +1549,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         	replacements.add(new String[]{"_", " "});
         	replacements.add(new String[]{"-", " "});
         	replacements.add(new String[]{"tt\\d{7}", ""});
-        	replacements.add(new String[]{"(\\b(vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
+        	replacements.add(new String[]{"(\\b(avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
         	BufferedReader frMovie;
 			try {
 				frMovie = new BufferedReader(new FileReader("replacements.txt"));
@@ -1613,10 +1621,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
                     }
 
-                    filtered = filtered.trim();
+                    //filtered = filtered.trim();
                     filtered = filtered.replaceAll("\\s+", " ");
-
-                    String[] parts = filtered.split(" ");
+                    System.out.println("parsing :"+filtered);
+                    /*String[] parts = filtered.split(" ");
                     for (int possibleYearPosition = 0; possibleYearPosition < 3 && possibleYearPosition < parts.length; possibleYearPosition++) {
                         if (parts[parts.length - 1 - possibleYearPosition].matches("\\d{4}")) {
                             System.out.printf("Year found: %s", parts[parts.length - 1 - possibleYearPosition]);
@@ -1625,6 +1633,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                             break;
                         }
+                    }*/
+                    {
+	                	Pattern pYear = Pattern.compile("\\D(\\d{4})\\D");
+	                    Matcher mYear = pYear.matcher(filtered);
+	                    if (mYear.find()) {
+	                        movie.Year= Integer.valueOf(mYear.group(1));
+	                    }           
                     }
 
                     filtered = filtered.trim();
@@ -1642,7 +1657,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                     //Idee alles was nach dem Erscheinungsjahr kommt wegwerfen, mögliche Fehlerquelle wenn bestandteil des Filmes ist.
                     if (movie.Year > 1950 && movie.Year < 2020) {
-                        filtered = filtered.split(String.valueOf(movie.Year))[0];
+                    	Pattern pYear = Pattern.compile("(.*)(\\d{4})");
+                        Matcher mYear = pYear.matcher(filtered);
+                        if (mYear.find()) {
+                        	filtered = mYear.group(1);
+                        	System.out.println(mYear.group(1)+":"+mYear.group(2));
+                        }
+                    	
                     }
 
                     //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
@@ -1740,10 +1761,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     for (int iter = 0; iter < replacements.size(); iter++) {
                         filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
                     }
-
+                    
                     filtered = filtered.trim();
                     filtered = filtered.replaceAll("\\s+", " ");
-
+                    
                     //^.*?\\?(?<series>[^\\$]+?)(?:s(?<season>[0-3]?\d)\s?ep?(?<episode>\d\d)|(?<season>(?:[0-1]\d|(?<!\d)\d))x?(?<episode>\d\d))(?!\d)(?:[ .-]?(?:s\k<season>e?(?<episode2>\d{2}(?!\d))|\k<season>x?(?<episode2>\d{2}(?!\d))|(?<episode2>\d\d(?!\d))|E(?<episode2>\d\d))|)[ -.]*(?<title>(?![^\\]*?sample)[^\\]*?[^\\]*?)\.(?<ext>[^.]*)$
                     //^(?<series>[^\\$]+)\\[^\\$]*?(?:s(?<season>[0-1]?\d)ep?(?<episode>\d\d)|(?<season>(?:[0-1]\d|(?<!\d)\d))x?(?<episode>\d\d))(?!\d)(?:[ .-]?(?:s\k<season>e?(?<episode2>\d{2}(?!\d))|\k<season>x?(?<episode2>\d{2}(?!\d))|(?<episode2>\d\d(?!\d))|E(?<episode2>\d\d))|)[ -.]*(?<title>(?!.*sample)[^\\]*?[^\\]*?)\.(?<ext>[^.]*)$
                     //(?<series>[^\\\[]*) - \[(?<season>[0-9]{1,2})x(?<episode>[0-9\W]+)\](( |)(-( |)|))(?<title>(?![^\\]*?sample)[^$]*?)\.(?<ext>[^.]*)
@@ -1756,9 +1777,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                     String SeriesName = filtered.replaceAll(" s\\d+\\D?e\\D?\\d+.*", "");
                     SeriesName = SeriesName.replaceAll(" \\d+\\D?x\\D?\\d+.*", "");
-
+                    
                     //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
-                    String firstWord = "";
+                    /*String firstWord = "";
                     String[] spaceSplit = SeriesName.split(" ", 2);
                     if (spaceSplit.length == 2) {
                         firstWord = spaceSplit[0];
@@ -1769,7 +1790,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     String[] minusSplit = firstWord.split("-", 2);
                     if (minusSplit.length == 2) {
                         SeriesName = minusSplit[1] + (spaceSplit.length == 2 ? " " + spaceSplit[1] : "");
-                    }
+                    }*/
 
                     {
                         Pattern pSeasonEpisode = Pattern.compile(" s(\\d+)\\D?e\\D?(\\d+)");
@@ -1791,29 +1812,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     
                     //Sometimes the Season and Episode info is like this 812 for Season: 8 Episode: 12
                     if (movie.Season == 0 && movie.Episode == 0) {
-                        String[] sSeasonEpisodeA = SeriesName.split(" ");
-                        SeriesName = "";
-                        for (int iteratorSeasonEpisodeA = 0; iteratorSeasonEpisodeA < sSeasonEpisodeA.length; iteratorSeasonEpisodeA++) {
-                            String sSeasonEpisode = sSeasonEpisodeA[iteratorSeasonEpisodeA];
-
-                            Pattern pSeasonEpisode = Pattern.compile("\\d+");
-                            Matcher mSeasonEpisode = pSeasonEpisode.matcher(sSeasonEpisode);
-                            if (mSeasonEpisode.matches()) {
-                                int iSeasonEpisode = Integer.valueOf(mSeasonEpisode.group());
-                                if (iSeasonEpisode > 100 && iSeasonEpisode < 2400) {
-                                    movie.Season = iSeasonEpisode / 100;
-                                    movie.Episode = iSeasonEpisode % 100;
-
-                                    break;
-                                }
-                            } else {
-                                SeriesName += sSeasonEpisode + " ";
-                            }
+                        Pattern pSeasonEpisode = Pattern.compile(" (\\d+)(\\d\\d)");
+                        Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
+                        String seasonStr="";
+                        while (mSeasonEpisode.find()) { //use last one found because year 2008 is also that pattern
+                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
+                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
+                        	seasonStr=mSeasonEpisode.group(1)+mSeasonEpisode.group(2);
                         }
+                        // delete the last found and everything after that
+                        SeriesName = SeriesName.replaceAll(" "+seasonStr+".*", "");
                     }
 
                     movie.SearchString = SeriesName.trim();
-
                     Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
 
                     if(movie.SearchString.length() > 0) {
