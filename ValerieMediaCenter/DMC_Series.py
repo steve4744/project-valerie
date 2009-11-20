@@ -70,25 +70,71 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.inSeasons = False
 		self.inEpisode = False
 		self.rememeberSeriesIndex = 0
+		self.selectedSeries = 0
 		self.serieslist = []
 		self.moviedb = {}
-		self.selectedSeries = 0
+		self.episodesdb = {}
+		
+		self["listview"] = MenuList(self.serieslist)
+		self["poster"] 				= Pixmap()
+		self["title"] 				= Label()
+		self["otitle"] 				= Label()
+		self["tag"] 				= Label()
+		self["shortDesc"] 	        = Label()
+		self["director"] 			= Label()
+		self["writer"] 				= Label()
+		self["genre"] 				= Label()
+		self["year"] 				= Label()
+		self["runtime"] 			= Label()
+		#self["poster"] 				= Pixmap()
+		
+		for i in range(10):
+			stars = "star" + str(i)
+			print stars
+			self[stars] = Pixmap()
 
+		self["actions"] = HelpableActionMap(self, "MC_AudioPlayerActions", 
+			{
+				"ok": (self.KeyOk, "Play selected file"),
+				"cancel": (self.KeyExit, "Exit Audio Player"),
+				"left": (self.leftUp, "List Top"),
+				"right": (self.rightDown, "List Bottom"),
+				"up": (self.up, "List up"),
+				"down": (self.down, "List down"),
+			}, -2)
+		
+		self.loadSeriesDB()
+
+	def loadSeriesDB(self):
+		list =[]
 		filter = []
-		filter.append("Tag")
-		filter.append("Plot")
-		filter.append("Directors")
-		filter.append("Writers")
-		filter.append("Genres")
-		filter.append("Year")
-		filter.append("Runtime")
-		filter.append("Popularity")
-		filter.append("ImdbId")
-		filter.append("Title")
-		filter.append("TheTvDb")
-
+		entrys =[]
+		if self.inSeries or self.inEpisode:
+			filter.append("Tag")
+			filter.append("Plot")
+			filter.append("LocalPlot")
+			filter.append("Directors")
+			filter.append("Writers")
+			filter.append("Genres")
+			filter.append("Year")
+			filter.append("Runtime")
+			filter.append("Popularity")
+			filter.append("ImdbId")
+			filter.append("Title")
+			filter.append("LocalTitle")
+			filter.append("TheTvDb")
+			filter.append("Path")
+		if self.inSeasons or self.inEpisode:
+			filter.append("Season")
+			filter.append("Episode")
+				
 		try:
-			db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
+			if self.inSeries:
+				self.serieslist=[]
+				db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
+			else:
+				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
+					
 			movies = db.split("\n----END----\n")
 			
 
@@ -106,81 +152,55 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 							d[key] = text
 
 					#print d
-					self.moviedb[d["TheTvDb"]] = d
-					self.serieslist.append((d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
-			
+					if self.inSeries:
+						self.moviedb[d["TheTvDb"]] = d
+						if not d["Title"] in entrys:
+							entrys.append(d["Title"])
+							if d["LocalTitle"] != "":
+								self.serieslist.append((d["LocalTitle"], d["TheTvDb"], "menu_globalsettings", "50"))
+							else:
+								self.serieslist.append((d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
+					elif self.inSeasons:
+						if not d["Season"] in entrys:
+							entrys.append(d["Season"])
+							list.append(("Season " + d["Season"], d["Season"], "menu_globalsettings", "50"))			
+					else:
+						if d["Season"] == self.selectedSeason:
+							if not d["Episode"] in entrys:
+								entrys.append(d["Episode"])
+								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
+								if d["LocalTitle"] != "":
+									list.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["LocalTitle"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
+								else:
+									list.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
+								
+						
 		except OSError, e: 
 			print "OSError: ", e
-
-		self.serieslist.sort()
-
-		self["listview"] = MenuList(self.serieslist)
-
-		for i in range(10):
-			stars = "star" + str(i)
-			print stars
-			self[stars] = Pixmap()
-
-
 		
-		self["actions"] = HelpableActionMap(self, "MC_AudioPlayerActions", 
-			{
-				"ok": (self.KeyOk, "Play selected file"),
-				"cancel": (self.KeyExit, "Exit Audio Player"),
-				"left": (self.leftUp, "List Top"),
-				"right": (self.rightDown, "List Bottom"),
-				"up": (self.up, "List up"),
-				"down": (self.down, "List down"),
-			}, -2)
-
-		self["poster"] 				= Pixmap()
-
-		print "count: ", self.serieslist.count
-		if self.serieslist.count > 0:
-
-			showStillpicture("/hdd/valerie/media/" + self.serieslist[0][1] + "_backdrop.m1v")
-			#self["poster"] 				= LoadPixmap("/hdd/valerie/media/" + self.serieslist[0][1] + "_poster.png")
-			self["title"] 				= Label(self.serieslist[0][0])
-			self["tag"] 				= Label(self.moviedb[self.serieslist[0][1]]["Tag"])
-			self["shortDesc"] 	= Label(self.moviedb[self.serieslist[0][1]]["Plot"])
-			self["director"] 			= Label(self.moviedb[self.serieslist[0][1]]["Directors"])
-			self["writer"] 				= Label(self.moviedb[self.serieslist[0][1]]["Writers"])
-			self["genre"] 				= Label(self.moviedb[self.serieslist[0][1]]["Genres"])
-			self["year"] 				= Label(self.moviedb[self.serieslist[0][1]]["Year"])
-			self["runtime"] 			= Label(self.moviedb[self.serieslist[0][1]]["Runtime"])
-
-
-
-			#for i in range(int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
-			#	self["star" + str(i)] = LoadPixmap("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
-
-			#for i in range(10 - int(self.moviedb[self.serieslist[0][1]]["Popularity"])):
-			#	self["star" + str(9 - i)] = LoadPixmap("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
-		else:
-
-			showStillpicture("/hdd/valerie/media/default_backdrop.m1v")
-			#self["poster"] 				= Pixmap()
-			self["title"] 				= Label("Libary empty!")
-			self["tag"] 				= Label("Please setup")
-			self["shortDesc"] 	= Label("None")
-			self["director"] 			= Label("")
-			self["writer"] 				= Label("")
-			self["genre"] 				= Label("")
-			self["year"] 				= Label("")
-			self["runtime"] 			= Label("")
-
-			#for i in range(10):
-			#	self["star" + str(i)] = LoadPixmap("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
-
-		
+		if self.inSeries:
+			self.serieslist.sort()
+			self["listview"].setList(self.serieslist)	
+		elif self.inSeasons:
+			list.sort()
+			self["listview"].setList(list)
+		elif self.inEpisode:
+			list.sort()
+			self["listview"].setList(list)
+			
+		self["listview"].moveToIndex(0)
+		self.refresh()
+			
 
 	def refresh(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
 				showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
-				self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+				if self["poster"].instance is not None:
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 				self["title"].setText(selection[0])
+				self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 				self["tag"].setText(self.moviedb[selection[1]]["Tag"])
 				self["shortDesc"].setText(self.moviedb[selection[1]]["Plot"])
 				self["director"].setText(self.moviedb[selection[1]]["Directors"])
@@ -189,14 +209,19 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self["year"].setText(self.moviedb[selection[1]]["Year"])
 				self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
 				for i in range(int(self.moviedb[selection[1]]["Popularity"])):
-					self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
+					if self["star" + str(i)].instance is not None:
+						self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
 
 				for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
-					self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+					if self["star" + str(9 - i)].instance is not None:
+						self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
 
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])
-				self["shortDesc"].setText(self.episodesdb[selection[1]]["Plot"])
+				if self.episodesdb[selection[1]]["LocalPlot"] and self.episodesdb[selection[1]]["LocalPlot"] !="":
+					self["shortDesc"].setText(self.episodesdb[selection[1]]["LocalPlot"])
+				else:
+					self["shortDesc"].setText(self.episodesdb[selection[1]]["Plot"])
 			
 	def up(self):
 		self["listview"].up()
@@ -232,41 +257,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				seasonslist = []
 				self.seasonsdb = {}
 				
-				filter = []
-				filter.append("Season")
-				filter.append("Episode")
-				
-				try:
-					db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
-					movies = db.split("\n----END----\n")
-
-					for movie in movies:
-						movie = movie.split("---BEGIN---\n")
-						if len(movie) == 2: 
-							d = {} 
-							lines = movie[1].split('\n')
-							for line in lines: 
-								#print "Line: ", line
-								if ":" in line: 
-									key, text = (s.strip() for s in line.split(":", 1)) 
-
-								if key in filter: 
-									d[key] = text
-
-							duplicate = False
-							for season in seasonslist:
-								print "Season", season
-								if d["Season"] is season[1]:
-									duplicate = True
-							if duplicate is False:
-								seasonslist.append(("Season " + d["Season"], d["Season"], "menu_globalsettings", "50"))
-			
-				except OSError, e: 
-					print "OSError: ", e
-
-				seasonslist.sort()
-				self["listview"].setList(seasonslist)
-				self["listview"].moveToIndex(0)
+				self.loadSeriesDB()
 				self.refresh()
 				
 			elif self.inSeasons is True:
@@ -277,52 +268,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.selectedSeason = selection[1]
 				self.rememeberSeasonsIndex = self["listview"].getSelectionIndex()
 
-				episodeslist = []
-				self.episodesdb = {}
-
-				filter = []
-				filter.append("Path")
-				filter.append("Plot")
-				filter.append("Directors")
-				filter.append("Writers")
-				filter.append("Genres")
-				filter.append("Year")
-				filter.append("Runtime")
-				filter.append("Popularity")
-				filter.append("ImdbId")
-				filter.append("Title")
-				filter.append("TheTvDb")
-				filter.append("Season")
-				filter.append("Episode")
-
-				try:
-					db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
-					movies = db.split("\n----END----\n")
-			
-
-					for movie in movies:
-						movie = movie.split("---BEGIN---\n")
-						if len(movie) == 2: 
-							d = {} 
-							lines = movie[1].split('\n')
-							for line in lines: 
-								#print "Line: ", line
-								if ":" in line: 
-									key, text = (s.strip() for s in line.split(":", 1)) 
-
-								if key in filter: 
-									d[key] = text
-
-							if d["Season"] is self.selectedSeason:
-								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
-								episodeslist.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
-			
-				except OSError, e: 
-					print "OSError: ", e
-
-				episodeslist.sort()
-				self["listview"].setList(episodeslist)
-				self["listview"].moveToIndex(0)
+				self.loadSeriesDB()
 				self.refresh()
 
 			elif self.inEpisode is True:

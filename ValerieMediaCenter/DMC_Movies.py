@@ -99,16 +99,15 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"down": (self.down, "List down"),
 				"blue": (self.KeyGenres, "Genres"),
 			}, -2)
-		self.MenuList = MenuList(list)
-		self["listview"] = self.MenuList
+		self["listview"] = MenuList(list)
 		self.loadMoviesDB()
-		
 
 	def loadMoviesDB(self):
 		filter = []
 		list = []
 		filter.append("Tag")
 		filter.append("Plot")
+		filter.append("LocalPlot")
 		filter.append("Directors")
 		filter.append("Writers")
 		filter.append("Genres")
@@ -154,9 +153,9 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			print "OSError: ", e
 
 		list.sort()
-		self.MenuList.setList(list)
-		#self["listview"].setCurrent(1)
-		#self.refresh()
+		self["listview"].setList(list)
+		self["listview"].moveToIndex(1)
+		self.refresh()
 
 	def getAvailGenres(self):
 		list = []
@@ -196,22 +195,27 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
 			self["title"].setText(selection[0])
 			self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
-			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
+			if self.moviedb[selection[1]]["LocalPlot"]!="":
+				self["shortDescription"].setText(self.moviedb[selection[1]]["LocalPlot"])
+			else:
+				self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
 			self["director"].setText(self.moviedb[selection[1]]["Directors"])
 			self["writer"].setText(self.moviedb[selection[1]]["Writers"])
 			self["genre"].setText(self.moviedb[selection[1]]["Genres"])
 			self["year"].setText(self.moviedb[selection[1]]["Year"])
 			self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
-			
+			if self["poster"].instance is not None:
+				self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
-				self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
+				if self["star" + str(i)].instance is not None:
+					self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
 
 			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
-				self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+				if self["star" + str(9 - i)].instance is not None:
+					self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
 
 	def up(self):
 		self["listview"].up()
