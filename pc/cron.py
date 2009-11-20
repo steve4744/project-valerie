@@ -8,42 +8,49 @@ vRepoDir="E:\\Documents\\Valerie\\pc"
 vSvnDir="E:\\SlikSvn\\bin\\"
 
 
-
+##### GET REVISION
+vRev = 0
 cmd = vSvnDir + "svn info " + vRepoDir
 print "Executing: ", cmd
-
-vRev = 0
-vLastRev = 0
-
 vPipe = os.popen(cmd, 'r')
 for line in vPipe.readlines():
 	if line.startswith("Revision: "):
 		line=line.replace("Revision: ", "")
 		vRev = line.lstrip()
-	if line.startswith("Last Changed Rev: "):
-		line=line.replace("Last Changed Rev: ", "")
-		vLastRev = line.lstrip()
 
 print "Revision: ", vRev
-print "Last: ", vLastRev
+##### END GET REVISION
 
-if vRev != vLastRev:
-#if vRev == vLastRev:
+###### UPDATE
+cmd = vSvnDir + "svn up " + vRepoDir
+print "Executing: ", cmd
+vRetVal = os.system(cmd)
+print vRetVal
+###### END UPDATE
 
-	cmd = vSvnDir + "svn up " + vRepoDir
-	print "Executing: ", cmd
+##### GET NEW REVISION
+vNewRev = 0
+cmd = vSvnDir + "svn info " + vRepoDir
+print "Executing: ", cmd
+vPipe = os.popen(cmd, 'r')
+for line in vPipe.readlines():
+	if line.startswith("Revision: "):
+		line=line.replace("Revision: ", "")
+		vNewRev = line.lstrip()
 
-	vRetVal = os.system(cmd)
+print "NewRevision: ", vNewRev
+##### END GET NEW REVISION
 
-	print vRetVal
-	if vRetVal == 0:
-		print "BUILD"
-		
-		FILE = open(vRepoDir + "\\REV","w")
-		FILE.write(vRev)
-		FILE.close()
-		
-		vRetVal = os.system(vRepoDir + "\\build.bat")
+
+if vRev != vNewRev:
+#if vRev == vNewRev:
+	print "BUILD"
+	
+	FILE = open(vRepoDir + "\\REV","w")
+	FILE.write(vNewRev)
+	FILE.close()
+	
+	vRetVal = os.system(vRepoDir + "\\build.bat")
 
 
 else:
