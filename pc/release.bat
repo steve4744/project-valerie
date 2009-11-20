@@ -13,4 +13,13 @@ copy dist\lib release\lib\
 copy bin\mencoder.exe release\bin\
 copy bin\pngquant.exe release\bin\
 copy valerie.properties release\
-bin\7za.exe a -tzip nightly\valerie.zip release\*
+copy replacements.txt release\
+
+REM Get Revision
+set /p REV=<"REV"
+
+REM bin\7za.exe a -tzip nightly\valerie.zip release\*
+bin\7za.exe a -tzip nightly\valerie_pc_rev%REV%.zip release\*
+
+set PYTHON="E:\Python26\python.exe"
+%PYTHON% upload.py
