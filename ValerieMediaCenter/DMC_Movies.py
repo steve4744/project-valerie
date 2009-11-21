@@ -69,7 +69,9 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self.isVisible = True
 		self.moviedb = {}
 		self.genreFilter = ""
+		self.Sort = ""
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
+		
 		list = []
 		self["title"] = Label()
 		self["otitle"] = Label()
@@ -98,9 +100,19 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"up": (self.up, "List up"),
 				"down": (self.down, "List down"),
 				"blue": (self.KeyGenres, "Genres"),
+				"red": (self.KeySort, "Sort"),
 			}, -2)
 		self["listview"] = MenuList(list)
 		self.loadMoviesDB()
+
+	def sortList(self,x, y):
+		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
+			return 1
+		elif self.moviedb[x[1]][self.Sort]==self.moviedb[y[1]][self.Sort]:
+			return 0
+		else: # x<y
+			return -1
+
 
 	def loadMoviesDB(self):
 		filter = []
@@ -151,8 +163,11 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			
 		except OSError, e: 
 			print "OSError: ", e
-
-		list.sort()
+		
+		if self.Sort == "":
+			list.sort()
+		else:
+			list.sort(self.sortList,reverse=True)
 		self["listview"].setList(list)
 		self["listview"].moveToIndex(1)
 		self.refresh()
@@ -160,7 +175,6 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def getAvailGenres(self):
 		list = []
 		glist = []
-		list.append((_("All"), "all"))
 		try:
 			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
 			movies = db.split("\n----END----\n")
@@ -189,6 +203,7 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			print "OSError: ", e
 
 		list.sort()
+		list.insert(0,(_("All"), "all"))
 		return list
 		
 	def refresh(self):
@@ -265,6 +280,23 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.genreFilter = ""
 		else:
 			self.genreFilter = choice[1]
+		self.loadMoviesDB()
+		
+	def KeySort(self):
+		menu = []
+		menu.append((_("Title"), "title"))
+		menu.append((_("Year"), "Year"))
+		menu.append((_("Popularity"), "Popularity"))
+		self.session.openWithCallback(self.sortCallback, ChoiceBox, title="Sort by", list=menu)
+
+	def sortCallback(self, choice):
+		if choice is None:
+			return
+
+		if choice[1] == "title":
+			self.Sort = ""
+		else:
+			self.Sort = choice[1]
 		self.loadMoviesDB()
 
 	def Exit(self):
