@@ -41,7 +41,7 @@ public class webgrabber {
 			this.Url=Url;
 		}
 	}
-	private int maxCacheEntrys=256;
+	private int maxCacheEntrys=128;//30mb  256=60mb
 	private static ArrayList<cachedRequestXML> cacheXML=null;
 	private static ArrayList<cachedRequestURL> cacheURL=null;
     public Document getXML(URL url) {
