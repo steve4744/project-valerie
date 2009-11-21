@@ -144,12 +144,12 @@ public class Imdb extends provider {
 
             String sYear = "0";
 
-            Pattern pYear = Pattern.compile("\\(\\d{4}[\\/IVX]*\\)");
+            Pattern pYear = Pattern.compile("\\((\\d{4})[\\/IVX]*\\)");
             Matcher mYear = pYear.matcher(sTitleAndYear);
             if(mYear.find()) {
-                sYear = mYear.group();
+                sYear = mYear.group(1);
             }
-            sYear = sYear.replaceAll("(\\(|\\))", "").trim();
+            //sYear = sYear.replaceAll("(\\(|\\))", "").trim();
             String sTitle = "";
 
             Pattern pTitleString = Pattern.compile(".*\\(\\d{4}[\\/IVX]*\\)");

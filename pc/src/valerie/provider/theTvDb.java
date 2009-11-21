@@ -121,7 +121,7 @@ public class theTvDb extends provider {
        try {
            String urlTitle = info.SearchString;
            urlTitle = urlTitle.replaceAll(" ", "+");
-           xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
+           xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -133,7 +133,7 @@ public class theTvDb extends provider {
     	   try {
     		   String urlTitle = info.SearchString;
                urlTitle = urlTitle.replaceAll(" ", "+");
-               xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
+               xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -164,11 +164,13 @@ public class theTvDb extends provider {
                  info.TheTvDb = Integer.valueOf(eID.getText());
 
            org.jdom.Element eTitle = eMovie.getChild("SeriesName");
-           if(eTitle != null)
+           if(eTitle != null){
                 info.Title = eTitle.getText();
+                System.out.println("this is "+info.Title);
+           }
 
-           if (info.Year <= 1980)
-               continue;
+           /*if (info.Year <= 1980)
+               continue;*/
 
            break;
        }
@@ -262,7 +264,8 @@ public class theTvDb extends provider {
 
                org.jdom.Element eTitle = eMovie.getChild("EpisodeName");
                if(eTitle != null)
-                    info.LocalTitle = eTitle.getText();
+                    if(info.Title.equals(""))info.Title = eTitle.getText();
+                    else info.LocalTitle = eTitle.getText();
 
                break;
            }
