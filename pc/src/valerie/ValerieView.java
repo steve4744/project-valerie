@@ -29,10 +29,8 @@ import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,16 +73,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
             //popup = new StatusPopup(null, true);
         }
 
+        @Override
         public void print(String s) {
             statusMessageLabel.setText(s);
         }
 
+        @Override
         public void printBlocked(String s) {
             statusMessageLabel.setText(s);
             statusPopup.setTitle(s);
             descLabel.setText(s);
         }
 
+        @Override
         public void setWorking(boolean s) {
             jButtonConnect.setEnabled(!s);
             jButtonSync.setEnabled(!s);
@@ -93,6 +94,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             jButtonUpload.setEnabled(!s);
         }
 
+        @Override
         public void setBlocked(boolean s) {
             setWorking(s);
 
@@ -109,6 +111,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             statusPopup.setVisible(s);
         }
 
+        @Override
         public void setProgress(int s) {
             progressBar.setValue(s);
         }
