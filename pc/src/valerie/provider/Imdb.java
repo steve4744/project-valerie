@@ -243,6 +243,15 @@ public class Imdb extends provider {
             info.Tag = sTag;
         }
         
+        Pattern pReleaseDate = Pattern.compile("<h5>Release Date:</h5>.*(\\d+) (\\w+) (\\d{4}).*<h5>Genre:</h5>");
+        Matcher mReleaseDate = pReleaseDate.matcher(details);
+        if(mReleaseDate.find()) {
+            String sMonth = mReleaseDate.group(2).replaceAll("January", "01").replaceAll("February", "02").replaceAll("March", "03").replaceAll("April", "04");
+            sMonth=sMonth.replaceAll("May", "05").replaceAll("June", "06").replaceAll("July", "07").replaceAll("August", "08");
+            sMonth=sMonth.replaceAll("September", "09").replaceAll("October", "10").replaceAll("November", "11").replaceAll("December", "12");
+            info.Releasedate = mReleaseDate.group(3)+"-"+sMonth+"-"+String.format("%02d", Integer.parseInt(mReleaseDate.group(1)));
+        }
+        
         Pattern pPopularity = Pattern.compile("<div class=\"meta\">.*?<b>(\\d+.\\d+)/10</b>");
         Matcher mPopularity = pPopularity.matcher(details);
         if(mPopularity.find()) {

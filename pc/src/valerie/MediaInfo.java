@@ -45,6 +45,7 @@ public class MediaInfo {
     public String Writers = "";
     public String Genres = "";
     public String Tag = "";
+    public String Releasedate = "";
     public int Popularity = 0;
     public int Season = 0;
     public int Episode = 0;
@@ -109,6 +110,8 @@ public class MediaInfo {
                         Tag = keys[1];
                     else if(keys[0].equals("Popularity"))
                         Popularity = Integer.valueOf(keys[1]);
+                    else if(keys[0].equals("Releasedate"))
+                        Releasedate = keys[1];
                     else if(keys[0].equals("Season"))
                         Season = Integer.valueOf(keys[1]);
                     else if(keys[0].equals("Episode"))
@@ -160,6 +163,7 @@ public class MediaInfo {
                 "LocalPlot: " + LocalPlot + "\n" +
                 "Runtime: " + Runtime + "\n" +
                 "Genres: " + Genres + "\n" +
+                "Releasedate: " + Releasedate + "\n" +
                 "Tag: " + Tag + "\n" +
                 "Popularity: " + Popularity + "\n" +
                 (isEpisode?("Season: " + Season + "\n"):"") +
@@ -200,7 +204,8 @@ public class MediaInfo {
         rtv.Season = Season;
         rtv.Episode = Episode;
         rtv.TheTvDb = TheTvDb;
-
+        rtv.Releasedate = Releasedate;
+        
         rtv.Ignoring = Ignoring;
         rtv.isArchiv = isArchiv;
         rtv.needsUpdate = needsUpdate;

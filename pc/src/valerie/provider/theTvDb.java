@@ -221,6 +221,7 @@ public class theTvDb extends provider {
                if(eYear != null) {
             	   try{
             		   info.Year = Integer.parseInt(eYear.getText().split("-")[0]);
+            		   info.Releasedate=eYear.getText();
             	   }catch(Exception e){
             		   ;
             	   }
