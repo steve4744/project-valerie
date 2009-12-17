@@ -21,9 +21,7 @@ public class MediaInfoDB {
         info.checkStrings();
         info.ID = IDCounter;
         DB.put(IDCounter, info);
-        IDCounter++;
-
-        
+        IDCounter++;   
 
         return true;
     }

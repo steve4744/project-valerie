@@ -9,7 +9,7 @@
  * Created on 24.08.2009, 21:38:40
  */
 
-package valerie;
+package Gui;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;

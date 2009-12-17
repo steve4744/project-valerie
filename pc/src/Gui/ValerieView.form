@@ -47,7 +47,7 @@
             <Component class="javax.swing.JButton" name="jButtonConnect">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="connectNetwork" methodName="connectNetwork"/>
+                  <action class="Gui.ValerieView" id="connectNetwork" methodName="connectNetwork"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -64,7 +64,7 @@
             <Component class="javax.swing.JButton" name="jButtonSync">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="syncFilelist" methodName="syncFilelist"/>
+                  <action class="Gui.ValerieView" id="syncFilelist" methodName="syncFilelist"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonSync.text"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -81,7 +81,7 @@
             <Component class="javax.swing.JButton" name="jButtonParse">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="parseFilelist" methodName="parseFilelist"/>
+                  <action class="Gui.ValerieView" id="parseFilelist" methodName="parseFilelist"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonParse.text"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -98,7 +98,7 @@
             <Component class="javax.swing.JButton" name="jButtonArt">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="getArt" methodName="getArt"/>
+                  <action class="Gui.ValerieView" id="getArt" methodName="getArt"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonArt.text"/>
                 <Property name="focusable" type="boolean" value="false"/>
@@ -115,7 +115,7 @@
             <Component class="javax.swing.JButton" name="jButtonUpload">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="uploadFiles" methodName="uploadFiles"/>
+                  <action class="Gui.ValerieView" id="uploadFiles" methodName="uploadFiles"/>
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonUpload.text"/>
                 <Property name="focusable" type="boolean" value="false"/>

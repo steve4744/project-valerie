@@ -1,24 +1,17 @@
 /*
  * ValerieView.java
  */
-package valerie;
+package Gui;
 
+import valerie.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 
-import valerie.provider.Imdb;
-import valerie.provider.theMovieDb;
-import valerie.provider.theTvDb;
-import valerie.tools.pngquant;
-import valerie.tools.mencoder;
-import java.awt.Graphics;
-import java.awt.Image;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,18 +19,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
@@ -51,7 +38,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
+import valerie.tools.BoxInfo;
 import valerie.tools.DebugOutput;
 
 /**
@@ -59,13 +46,7 @@ import valerie.tools.DebugOutput;
  */
 public class ValerieView extends FrameView implements WindowStateListener {
 
-
-    private String[] vArguments;
-
     class UIOutputHandler extends OutputHandler {
-
-        //StatusPopup popup = null;
-
         UIOutputHandler()
         {
             super();
@@ -117,16 +98,74 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
     }
 
+    BackgroundWorker pWorker = null;
+    BackgroundWorker.ParentObject pCallback = null;
+
+    protected class Callback implements BackgroundWorker.ParentObject {
+
+        ValerieView pParent;
+
+        Callback(ValerieView parent) {
+            pParent = parent;
+        }
+
+        public void done(String id) {
+            if(id.equals("CONNECT_NETWORK")) {
+                notify("UPDATE_BOXINFOS");
+            } else if(id.equals("SYNC_FILELIST")) {
+
+                notify("UPDATE_TABLES");
+
+                //Force Selection of Row "unspecified" and Force refresh
+                if(jTableSeries.getRowCount() > 1)
+                    jTableSeries.setRowSelectionInterval(1, 1);
+                jTableSeriesMouseClicked(null);
+
+            } else if(id.equals("PARSE_FILELIST")) {
+                done("SYNC_FILELIST");
+
+                pParent.saveTables();
+            } else {
+                notify(id);
+            }
+        }
+
+        public void notify(String id) {
+            if(id.equals("UPDATE_BOXINFOS")) {
+                pParent.jComboBoxBoxinfo.removeAllItems();
+                BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
+                if (boxInfos != null) {
+                    pWorker.set("SelectedBoxInfo", (int)0);
+                    for (int i = 0; i < boxInfos.length; i++) {
+                        String vInfo = boxInfos[i].toShortString();
+                        jComboBoxBoxinfo.addItem (vInfo);
+                    }
+                    jComboBoxBoxinfo.setSelectedIndex( 0 );
+                } else {
+                    pWorker.set("SelectedBoxInfo", (int)-1);
+                    jComboBoxBoxinfo.setSelectedIndex( -1 );
+                }
+            }
+            else if(id.equals("UPDATE_TABLES")) {
+                pParent.updateTables();
+            }
+
+        }
+    }
+
     public ValerieView(SingleFrameApplication app, String[] arguments) {
         super(app);
 
-        vArguments = arguments;
+        pCallback = new Callback(this);
 
-        /*vArguments = new String[] {
-            "-a",
-        };*/
+        pWorker = new BackgroundWorker(this.getApplication());
 
-        checkArguments("pre").run();
+        pWorker.set("CmdArguments", arguments);
+
+        //vArguments = arguments;
+
+        pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
+                pCallback, "pre");
 
         this.getFrame().addWindowStateListener(this);
 
@@ -135,39 +174,21 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 System.out.print(e);
             }
             public void windowActivated(WindowEvent e) {
-
                 if(firstFocus) {
                     firstFocus = false;
 
-                    checkArguments("post").execute();
+                    pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.BACKGROUND,
+                        pCallback, "post");
                 }
-
-                System.out.print(e);
             }
-
-            public void windowIconified(WindowEvent e) {
-                System.out.print(e);
-            }
-            public void windowDeiconified(WindowEvent e) {
-                System.out.print(e);
-            }
-
-            public void windowClosed(WindowEvent e) {
-                System.out.print(e);
-            }
-
-            public void windowClosing(WindowEvent e) {
-                System.out.print(e);
-            }
-
-            public void windowOpened(WindowEvent e) {
-                System.out.print(e);
-            }
-
+            public void windowIconified(WindowEvent e) { }
+            public void windowDeiconified(WindowEvent e) { }
+            public void windowClosed(WindowEvent e) { }
+            public void windowClosing(WindowEvent e) { }
+            public void windowOpened(WindowEvent e) { }
          }
 
         this.getFrame().addWindowListener(new WListener());
-
 
         initComponents();
 
@@ -247,6 +268,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
                             String searchstring = ((String) model.getValueAt(row, 2));
 
+                            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
                             toUpdate.Ignoring = !use;
                             toUpdate.SearchString = searchstring;
@@ -278,6 +300,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             int season = ((Integer) model.getValueAt(row, 3)).intValue();
                             int episode = ((Integer) model.getValueAt(row, 4)).intValue();
 
+                            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
                             toUpdate.Ignoring = !use;
                             toUpdate.SearchString = searchstring;
@@ -293,17 +316,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         jTableFilelistEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
-
-         /*class PropertyListener implements PropertyChangeListener {
-            public void propertyChange(java.beans.PropertyChangeEvent event) {
-                System.out.print(event);
-            }
-
-         }
-
-        this.addPropertyChangeListener(new PropertyListener());
-
-        this.firePropertyChange("shown", "false", "true");*/
     }
 
     boolean firstFocus = true;
@@ -311,141 +323,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
     public void windowStateChanged(java.awt.event.WindowEvent event)
     {
         if(event.getNewState() == java.awt.event.WindowEvent.WINDOW_OPENED) {
-            checkArguments("post").execute();
+            pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
+                pCallback, "post");
         }
-
     }
 
     public void focusGained(FocusEvent e) {
         if(firstFocus) {
             firstFocus = false;
 
-            checkArguments("post").execute();
+            pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
+                pCallback, "post");
         }
     }
-
-    public void focusLost(FocusEvent e) {
-        //displayMessage("Focus lost", e);
-    }
-
-    @Action
-    public Task checkArguments(String mode) { return new checkArgumentsTask(getApplication(), mode); }
-
-    private class checkArgumentsTask extends org.jdesktop.application.Task<Object, Void> {
-
-        private String pMode = "";
-
-        checkArgumentsTask(org.jdesktop.application.Application app, String mode) {
-            super(app);
-
-            pMode = mode;
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Loading Archive");
-
-
-
-        }
-        @Override protected Object doInBackground() {
-
-            boolean showHelp = false;
-            boolean setAuto = false;
-            boolean setConnect = false;
-            boolean setSync = false;
-            boolean setParse = false;
-            boolean setArt = false;
-            boolean setUpload = false;
-            boolean setQuit = false;
-
-            for(int vIter = 0; vArguments != null && vIter < vArguments.length; vIter++) {
-                if(     vArguments[vIter].startsWith("-?")
-                    ||  vArguments[vIter].startsWith("-h")
-                    ||  vArguments[vIter].startsWith("--help"))
-                     showHelp = true;
-                else if(    /*vArguments[vIter].startsWith("-a")
-                        ||  */vArguments[vIter].startsWith("--auto")) {
-                     setAuto = true;
-                     setConnect = true;
-                     setSync = true;
-                     setParse = true;
-                     setArt = true;
-                     setUpload = true;
-                } else if(    vArguments[vIter].startsWith("-c")
-                        ||  vArguments[vIter].startsWith("--connect"))
-                     setConnect = true;
-                else if(    vArguments[vIter].startsWith("-s")
-                        ||  vArguments[vIter].startsWith("--sync"))
-                     setSync = true;
-                else if(    vArguments[vIter].startsWith("-p")
-                        ||  vArguments[vIter].startsWith("--parse"))
-                     setParse = true;
-                else if(    vArguments[vIter].startsWith("-a")
-                        ||  vArguments[vIter].startsWith("--art"))
-                     setArt = true;
-                else if(    vArguments[vIter].startsWith("-u")
-                        ||  vArguments[vIter].startsWith("--upload"))
-                     setUpload = true;
-                else if(    vArguments[vIter].startsWith("-q")
-                        ||  vArguments[vIter].startsWith("--quit"))
-                     setQuit = true;
-
-
-            }
-
-
-
-            if(pMode.equals("pre")) {
-                if(showHelp) {
-                    System.out.printf("\t%20s: %20s\n", "(-?|-h|--help)", "Show this help");
-                    System.out.printf("\t%20s: %20s\n", "(-c|--connect)", "Connects on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-s|--sync)", "Sync on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-p|--parse)", "Parse on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-a|--art)", "Download arts on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-u|--upload)", "Upload files on startup");
-                    System.out.printf("\t%20s: %20s\n", "(-q|--quit)", "Quits after parsing cmdline");
-                    System.out.printf("\t%20s: %20s\n", "(--auto)", "Auto mode,");
-                    System.out.printf("\t%20s: %20s\n", "", "equeal to -c -s -p -a -u");
-                    System.exit(0);
-                }
-            }
-
-            if(pMode.equals("post")) {
-
-                //INIT ALL
-                //clear database
-                database.clear();
-
-                loadArchive().run();
-                updateTables();
-
-                if(setConnect) {
-                    connectNetwork().run();
-                }
-                if(setSync) {
-                    syncFilelist().run();
-                }
-                if(setParse) {
-                    parseFilelist().run();
-                }
-                if(setArt) {
-                    getArt().run();
-                }
-                if(setUpload) {
-                    uploadFiles().run();
-                }
-
-                if(setQuit) {
-                    System.exit(0);
-                }
-            }
-            return null;
-        }
-
-        @Override protected void succeeded(Object result) {
-
-        }
-    }
-
 
     @Action
     public void showAboutBox() {
@@ -1061,6 +951,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         int row = jTableFilelist.getSelectedRow();
         int id = (Integer) jTableFilelist.getValueAt(row, 4);
 
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());
@@ -1079,6 +970,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         int id = (Integer) jTableFilelist.getValueAt(row, 4);
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());
@@ -1091,6 +983,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         int row = jTableFilelistEpisodes.getSelectedRow();
         int id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
 
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());
@@ -1109,6 +1002,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         int id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());
@@ -1121,6 +1015,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         int row = jTableSeries.getSelectedRow();
         int id = (Integer) jTableSeries.getValueAt(row, 1);
 
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
         if (info != null) {
             jTextAreaDescription.setText(info.toString());
@@ -1141,6 +1036,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         int id = (Integer) jTableSeries.getValueAt(row, 1);
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
         if (info != null) {
             jTextAreaDescription.setText(info.toString());
@@ -1154,22 +1050,24 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private void jComboBoxBoxinfoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxBoxinfoItemStateChanged
         DebugOutput.printl("->");
 
-        selectedBoxInfo = jComboBoxBoxinfo.getSelectedIndex();
+        pWorker.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
         //clear database
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         database.clear();
 
-        loadArchive().run();
+        pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
         updateTables();
 
         DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
-    MediaInfoDB database = new MediaInfoDB();
+    
 
     boolean isUpdating = false;
 
     public void updateTables() {
         DebugOutput.printl("->");
 
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo[] movies = database.getMediaInfo();
 
         ((DefaultTableModel) jTableFilelist.getModel()).setRowCount(database.getMediaInfoMoviesCount());
@@ -1243,6 +1141,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     public void updateTablesEpisodes(int id) {
 
         MediaInfo[] movies;
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
 
         if (id == -1) {
             movies = database.getMediaInfoEpisodes();
@@ -1282,6 +1181,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     private void saveTables() {
 
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo[] movies = database.getMediaInfo();
 
         //create db file
@@ -1322,970 +1222,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
     }
 
-
-    @Action
-    public Task loadArchive() { return new loadArchiveTask(getApplication()); }
-
-    private class loadArchiveTask extends org.jdesktop.application.Task<Object, Void> {
-        loadArchiveTask(org.jdesktop.application.Application app) {
-            super(app);
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Loading Archive");
-
-        }
-        @Override protected Object doInBackground() {
-            DebugOutput.printl("->");
-            theTvDb tvdb=new valerie.provider.theTvDb();
-        	Imdb imdb=new valerie.provider.Imdb();
-            theMovieDb theMovieDB=new valerie.provider.theMovieDb();
-            try {
-                BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
-                String line;
-                String Movie="";
-                while ((line = frMovie.readLine()) != null) {
-                	if(line.equals("---BEGIN---")){
-                		Movie="";
-                	}
-                	Movie += line + "\n";
-                	if(line.equals("----END----")){
-                		MediaInfo info = new MediaInfo();
-                        info.reparse(Movie);
-                        info.isMovie = true;
-                        info.isArchiv = true;
-                        info.needsUpdate = false;
-
-                        info.DataProvider = imdb;
-                        info.ArtProvider = theMovieDB;
-
-                        //ignore the entry as long as we havent confirmed that it still exists
-                        info.Ignoring = true;
-                        if (info.Title.length() > 0) {
-                            if(database.getMediaInfoByPath(info.Path) == null)
-                                database.addMediaInfo(info);
-                        }
-                	}
-                }
-               
-            } catch (Exception ex) {
-                System.out.println(ex.toString());
-            }
-
-
-            try {
-            	
-                BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
-                String line;
-                String Movie="";
-                while ((line = frMovie.readLine()) != null) {
-                	if(line.equals("---BEGIN---")){
-                		Movie="";
-                	}
-                	Movie += line + "\n";
-                	if(line.equals("----END----")){
-                		MediaInfo info = new MediaInfo();
-                        info.reparse(Movie);
-                        info.isSeries = true;
-                        info.isArchiv = true;
-                        info.needsUpdate = false;
-
-                        info.DataProvider = tvdb;
-                        info.ArtProvider = tvdb;
-
-                        //As this isnt represented by any file we have to set ignoring to false
-                        info.Ignoring = false;
-                        if (info.Title.length() > 0) {
-                            if(database.getMediaInfoForSeries(info.TheTvDb) == null)
-                                database.addMediaInfo(info);
-                        }
-                	}
-                }
-
-            } catch (Exception ex) {
-                System.out.println(ex.toString());
-            }
-
-            try {
-                MediaInfo infos[] = database.getMediaInfo();
-                for (MediaInfo info : infos) {
-                    if (info.isSeries) {
-                        BufferedReader frMovie = new BufferedReader(new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
-                        String line;
-                        String Movie="";
-                        while ((line = frMovie.readLine()) != null) {
-                        	if(line.equals("---BEGIN---")){
-                        		Movie="";
-                        	}
-                        	Movie += line + "\n";
-                        	if(line.equals("----END----")){
-                        		MediaInfo movieinfo = new MediaInfo();
-                                movieinfo.reparse(Movie);
-                                movieinfo.isEpisode = true;
-                                movieinfo.isArchiv = true;
-                                movieinfo.needsUpdate = false;
-
-                                info.DataProvider = tvdb;
-                                info.ArtProvider = tvdb;
-
-                                //ignore the entry as long as we havent confirmed that it still exists
-                                movieinfo.Ignoring = true;
-                                if (movieinfo.Title.length() > 0) {
-                                    if(database.getMediaInfoByPath(movieinfo.Path) == null)
-                                        database.addMediaInfo(movieinfo);
-                                }
-                        	}
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                System.out.println(ex.toString());
-            }
-
-            DebugOutput.printl("<-");
-            return null;
-        }
-
-        @Override protected void succeeded(Object result) {
-            Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-        }
-    }
-
-    @Action
-    public Task connectNetwork() { return new ConnectNetworkTask(getApplication()); }
-
-    private class ConnectNetworkTask extends org.jdesktop.application.Task<Object, Void> {
-        ConnectNetworkTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to ConnectNetworkTask fields, here.
-            super(app);
-            
-        }
-        @Override protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-
-            DebugOutput.printl("->");
-            jComboBoxBoxinfo.removeAllItems();
-            boxInfos = new valerie.tools.BoxInfoParser().parse(new valerie.tools.Network().sendBroadcast());
-
-            if (boxInfos != null) {
-            selectedBoxInfo = 0;
-            for (int i = 0; i < boxInfos.length; i++) {
-                String vInfo = boxInfos[i].toShortString();
-                jComboBoxBoxinfo.addItem (vInfo);
-            }
-            jComboBoxBoxinfo.setSelectedIndex(selectedBoxInfo);
-            }
-
-            DebugOutput.printl("<-");
-
-            return null;
-        }
-        @Override protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
-        }
-    }
-
-    @Action
-    public Task syncFilelist() { return new SyncFilelistTask(getApplication()); }
-
-    private class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void> {
-
-        SyncFilelistTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to SyncFilelistTask fields, here.
-            super(app);
-        }
-
-        @Override
-        protected Object doInBackground() {
-            if(boxInfos == null)
-                return null;
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Syncing Filelist");
-
-            Logger.setProgress(0);
-
-            searchMovies();
-            searchSeries();
-
-            //Delete the content of the database an readd everthing
-            /*MediaInfo[] movies = database.getMediaInfo();
-            database.clear();
-            for (MediaInfo info : movies) {
-                if(!(info.isArchiv && info.Ignoring))
-                    database.addMediaInfo(info);
-            }*/
-
-            //Walk through the databasse and delete all failed entries
-            MediaInfo[] movies = database.getMediaInfo();
-            for (MediaInfo info : movies) {
-                if(info.isArchiv && info.Ignoring)
-                    database.deleteMediaInfo(info.ID);
-            }
-
-            Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-            Logger.setProgress(0);
-
-            return null;  // return your result
-        }
-
-        @Override
-        protected void succeeded(Object result) {
-
-            updateTables();
-
-            //Force Selection of Row "unspecified" and Force refresh
-            if(jTableSeries.getRowCount() > 1)
-                jTableSeries.setRowSelectionInterval(1, 1);
-            jTableSeriesMouseClicked(null);
-        }
-        private ArrayList<String[]> getReplacements(){
-        	ArrayList<String[]> replacements=new ArrayList<String[]>();
-        	
-        	replacements.add(new String[]{"[.]", " "});
-        	replacements.add(new String[]{"_", " "});
-        	replacements.add(new String[]{"-", " "});
-        	replacements.add(new String[]{"tt\\d{7}", ""});
-        	replacements.add(new String[]{"(\\b(avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
-        	BufferedReader frMovie;
-			try {
-				frMovie = new BufferedReader(new FileReader("replacements.txt"));
-	            String line;
-	            while ((line = frMovie.readLine()) != null) {
-	            		String[] parts = line.split("=");
-	            		replacements.add(new String[]{parts[0], parts[1]});
-				}
-			} catch (Exception e) {
-				return replacements;
-			}
-			return replacements;
-        }
-        private void searchMovies() {
-            String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
-            ArrayList<String[]> replacements=getReplacements();
-            for (int row = 0; row < paths.length; row++) {
-                String filterString = "";
-                String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
-                String[] filters = filter.split("\\|");
-                if(filters.length > 0)
-                    filterString += " -name \"*." + filters[0] + "\"";
-
-                for(int i = 1; i < filters.length; i++)
-                    filterString += " -o -name \"*." + filters[i] + "\"";
-
-                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
-
-                for (int i = 0; i < entries.length; i++) {
-                    Float progress = (float) i * 100;
-                    progress /= entries.length;
-
-                    Logger.setProgress(progress.intValue());
-
-                    MediaInfo movie = new MediaInfo(entries[i]);
-
-                    Pattern pFileFilter = Pattern.compile(".*(" + new valerie.tools.Properties().getPropertyString("FILTER_MOVIES") + ")$");
-                    Matcher mFileFilter = pFileFilter.matcher(movie.Filename);
-                    if (!mFileFilter.matches()) {
-                        continue;
-                    }
-
-                    movie.isMovie = true;
-
-                    Logger.print(movie.Filename + " : Parsing");
-
-                    //Check if we already have this Movie in our Archiv!
-                    //if so we dont need to extra inject it.
-                    MediaInfo archiveEntry = null;
-                    if ((archiveEntry = database.getMediaInfoByPath(movie.Path)) != null) {
-                        if (archiveEntry.isArchiv) {
-                            archiveEntry.Ignoring = false;
-                            continue;
-                        } else {
-                            //this means that the file is a duplicate, what to do with that knowledge ?
-                            continue;
-                        }
-                    }
-
-                    //FileFilter
-                    Pattern p = Pattern.compile("tt\\d{7}");
-                    Matcher m = p.matcher(movie.Filename);
-                    if (m.find()) {
-                        System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
-                    }
-
-                    String filtered = movie.Filename.toLowerCase();
-                    for (int iter = 0; iter < replacements.size(); iter++) {
-                        filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
-                    }
-
-                    //filtered = filtered.trim();
-                    filtered = filtered.replaceAll("\\s+", " ");
-                    System.out.println("parsing :"+filtered);
-                    /*String[] parts = filtered.split(" ");
-                    for (int possibleYearPosition = 0; possibleYearPosition < 3 && possibleYearPosition < parts.length; possibleYearPosition++) {
-                        if (parts[parts.length - 1 - possibleYearPosition].matches("\\d{4}")) {
-                            System.out.printf("Year found: %s", parts[parts.length - 1 - possibleYearPosition]);
-                            movie.Year = Integer.valueOf(parts[parts.length - 1 - possibleYearPosition]);
-                            filtered = filtered.substring(0, filtered.length() - 5);
-
-                            break;
-                        }
-                    }*/
-                    {
-	                	Pattern pYear = Pattern.compile("\\D(\\d{4})\\D");
-	                    Matcher mYear = pYear.matcher(filtered);
-	                    if (mYear.find()) {
-	                        movie.Year= Integer.valueOf(mYear.group(1));
-	                    }           
-                    }
-
-                    filtered = filtered.trim();
-
-                    //Idee bei grossklein wechsel leerzeichen einfügen, auch bei buchstabe auf zahlen wechsel
-                    for (int i2 = 0; i2 + 1 < filtered.length(); i2++) {
-                        String p1 = filtered.substring(i2, i2 + 1);
-                        String p2 = filtered.substring(i2 + 1, i2 + 2);
-
-                        if ((p1.matches("[a-zA-Z]") && p2.matches("\\d")) ||
-                                (p1.matches("\\d") && p2.matches("[a-zA-Z]"))) {
-                            filtered = filtered.substring(0, i2 + 1) + " " + filtered.substring(i2 + 1, filtered.length());
-                        }
-                    }
-
-                    //Idee alles was nach dem Erscheinungsjahr kommt wegwerfen, mögliche Fehlerquelle wenn bestandteil des Filmes ist.
-                    if (movie.Year > 1950 && movie.Year < 2020) {
-                    	Pattern pYear = Pattern.compile("(.*)(\\d{4})");
-                        Matcher mYear = pYear.matcher(filtered);
-                        if (mYear.find()) {
-                        	filtered = mYear.group(1);
-                        	System.out.println(mYear.group(1)+":"+mYear.group(2));
-                        }
-                    	
-                    }
-
-                    //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
-                    String firstWord = "";
-                    String[] spaceSplit = filtered.split(" ", 2);
-                    if (spaceSplit.length == 2) {
-                        firstWord = spaceSplit[0];
-                    } else {
-                        firstWord = filtered;
-                    }
-
-                    String[] minusSplit = firstWord.split("-", 2);
-                    if (minusSplit.length == 2) {
-                        filtered = minusSplit[1] + (spaceSplit.length == 2 ? " " + spaceSplit[1] : "");
-                    }
-
-                    movie.SearchString = filtered;
-
-                    //If parsing of Searchstring failed, set parameters so it is highlighted for the user
-                    if(movie.SearchString.length() > 0) {
-                        movie.Ignoring = false;
-                        movie.needsUpdate = true;
-                    } else {
-                        movie.Ignoring = true;
-                        movie.needsUpdate = false;
-                    }
-
-                    movie.DataProvider = new valerie.provider.Imdb();
-                    movie.ArtProvider = new valerie.provider.theMovieDb();
-
-                    database.addMediaInfo(movie);
-
-                    Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
-                }
-            }
-        }
-
-        private void searchSeries() {
-            String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
-            ArrayList<String[]> replacements=getReplacements();
-            for (int row = 0; row < paths.length; row++) {
-                String filterString = "";
-                String filter = new valerie.tools.Properties().getPropertyString("FILTER_SERIES");
-                String[] filters = filter.split("\\|");
-                if(filters.length > 0)
-                    filterString += " -name \"*." + filters[0] + "\"";
-
-                for(int i = 1; i < filters.length; i++)
-                    filterString += " -o -name \"*." + filters[i] + "\"";
-
-                String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
-
-                //String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\" -type f\n");
-
-                for (int i = 0; i < entries.length; i++) {
-                    Float progress = (float) i * 100;
-                    progress /= entries.length;
-
-                    Logger.setProgress(progress.intValue());
-
-                    MediaInfo movie = new MediaInfo(entries[i]);
-
-                    //FileFilter
-                    Pattern pFileFilter = Pattern.compile(".*(" + new valerie.tools.Properties().getPropertyString("FILTER_SERIES") + ")$");
-                    Matcher mFileFilter = pFileFilter.matcher(movie.Filename);
-                    if (!mFileFilter.matches()) {
-                        continue;
-                    }
-
-                    movie.isEpisode = true;
-
-                    Logger.print(movie.Filename + " : Parsing");
-
-                    //Check if we already have this Movie in our Archiv!
-                    //if so we dont need to extra inject it.
-                    MediaInfo archiveEntry = null;
-                    if ((archiveEntry = database.getMediaInfoByPath(movie.Path)) != null) {
-                        if (archiveEntry.isArchiv) {
-                            archiveEntry.Ignoring = false;
-                            continue;
-                        } else {
-                            //this means that the file is a duplicate, what to do with that knowledge ?
-                            continue;
-                        }
-                    }
-
-
-                    Pattern p = Pattern.compile("tt\\d{7}");
-                    Matcher m = p.matcher(movie.Filename);
-                    if (m.find()) {
-                        System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
-                    }
-
-                    String filtered = movie.Filename.toLowerCase();
-                    for (int iter = 0; iter < replacements.size(); iter++) {
-                        filtered = filtered.replaceAll(replacements.get(iter)[0].toLowerCase(), replacements.get(iter)[1]);
-                    }
-                    
-                    filtered = filtered.trim();
-                    filtered = filtered.replaceAll("\\s+", " ");
-                    
-                    //^.*?\\?(?<series>[^\\$]+?)(?:s(?<season>[0-3]?\d)\s?ep?(?<episode>\d\d)|(?<season>(?:[0-1]\d|(?<!\d)\d))x?(?<episode>\d\d))(?!\d)(?:[ .-]?(?:s\k<season>e?(?<episode2>\d{2}(?!\d))|\k<season>x?(?<episode2>\d{2}(?!\d))|(?<episode2>\d\d(?!\d))|E(?<episode2>\d\d))|)[ -.]*(?<title>(?![^\\]*?sample)[^\\]*?[^\\]*?)\.(?<ext>[^.]*)$
-                    //^(?<series>[^\\$]+)\\[^\\$]*?(?:s(?<season>[0-1]?\d)ep?(?<episode>\d\d)|(?<season>(?:[0-1]\d|(?<!\d)\d))x?(?<episode>\d\d))(?!\d)(?:[ .-]?(?:s\k<season>e?(?<episode2>\d{2}(?!\d))|\k<season>x?(?<episode2>\d{2}(?!\d))|(?<episode2>\d\d(?!\d))|E(?<episode2>\d\d))|)[ -.]*(?<title>(?!.*sample)[^\\]*?[^\\]*?)\.(?<ext>[^.]*)$
-                    //(?<series>[^\\\[]*) - \[(?<season>[0-9]{1,2})x(?<episode>[0-9\W]+)\](( |)(-( |)|))(?<title>(?![^\\]*?sample)[^$]*?)\.(?<ext>[^.]*)
-                    //(?<series>[^\\$]*) - season (?<season>[0-9]{1,2}) - (?<title>(?![^\\]*?sample)[^$]*?)\.(?<ext>[^.]*)
-                    //<series> - <season>x<episode> - <title>.<ext>
-                    //<series>\Season <season>\Episode <episode> - <title>.<ext>
-                    //<series>\<season>x<episode> - <title>.<ext>
-
-                    /////////////////////////////////
-
-                    String SeriesName = filtered.replaceAll(" s\\d+\\D?e\\D?\\d+.*", "");
-                    SeriesName = SeriesName.replaceAll(" \\d+\\D?x\\D?\\d+.*", "");
-                    
-                    //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
-                    /*String firstWord = "";
-                    String[] spaceSplit = SeriesName.split(" ", 2);
-                    if (spaceSplit.length == 2) {
-                        firstWord = spaceSplit[0];
-                    } else {
-                        firstWord = SeriesName;
-                    }
-
-                    String[] minusSplit = firstWord.split("-", 2);
-                    if (minusSplit.length == 2) {
-                        SeriesName = minusSplit[1] + (spaceSplit.length == 2 ? " " + spaceSplit[1] : "");
-                    }*/
-
-                    {
-                        Pattern pSeasonEpisode = Pattern.compile(" s(\\d+)\\D?e\\D?(\\d+)");
-                        Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
-                        if (mSeasonEpisode.find()) {
-                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
-                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
-                        }
-                    }
-
-                    if (movie.Season == 0 && movie.Episode == 0) {
-                        Pattern pSeasonEpisode = Pattern.compile(" (\\d+)\\D?x\\D?(\\d+)");
-                        Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
-                        if (mSeasonEpisode.find()) {
-                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
-                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
-                        }
-                    }
-                    
-                    //Sometimes the Season and Episode info is like this 812 for Season: 8 Episode: 12
-                    if (movie.Season == 0 && movie.Episode == 0) {
-                        Pattern pSeasonEpisode = Pattern.compile(" (\\d+)(\\d\\d)");
-                        Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
-                        String seasonStr="";
-                        while (mSeasonEpisode.find()) { //use last one found because year 2008 is also that pattern
-                        	movie.Season = Integer.valueOf(mSeasonEpisode.group(1));
-                        	movie.Episode = Integer.valueOf(mSeasonEpisode.group(2));
-                        	seasonStr=mSeasonEpisode.group(1)+mSeasonEpisode.group(2);
-                        }
-                        // delete the last found and everything after that
-                        SeriesName = SeriesName.replaceAll(" "+seasonStr+".*", "");
-                    }
-
-                    movie.SearchString = SeriesName.trim();
-                    Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
-
-                    if(movie.SearchString.length() > 0) {
-                        movie.Ignoring = false;
-                        movie.needsUpdate = true;
-                    } else {
-                        movie.Ignoring = true;
-                        movie.needsUpdate = false;
-                    }
-
-                    movie.DataProvider = new valerie.provider.theTvDb();
-                    movie.ArtProvider = new valerie.provider.theTvDb();
-
-                    database.addMediaInfo(movie);
-                }
-            }
-        }
-    }
-
-    @Action
-    public Task parseFilelist() { return new ParseFilelistTask(getApplication()); }
-
-    private class ParseFilelistTask extends org.jdesktop.application.Task<Object, Void> {
-
-        ParseFilelistTask(org.jdesktop.application.Application app) {
-            super(app);
-        }
-
-        @Override
-        protected Object doInBackground() {
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Parse Filelist");
-            Logger.setProgress(0);
-
-            getMediaInfo();
-
-            //Redraw Menu Tables
-            updateTables();
-
-            //Save to txt
-            saveTables();
-
-            Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-            Logger.setProgress(0);
-
-            return null;
-        }
-
-        @Override
-        protected void succeeded(Object result) {
-            //Force Selection of Row "unspecified" and Force refresh
-            if(jTableSeries.getRowCount() > 1)
-                jTableSeries.setRowSelectionInterval(1, 1);
-            jTableSeriesMouseClicked(null);
-        }
-
-        private void getMediaInfo() {
-
-            //TODO: How can we do this in parallel ?
-
-            MediaInfo[] movies = database.getMediaInfo();
-            for (int i = 0; i < movies.length; i++) {
-                Float progress = (float) i * 100;
-                progress /= movies.length;
-                Logger.setProgress(progress.intValue());
-
-                MediaInfo movie = movies[i];
-
-                if (movie.needsUpdate) {
-
-                    Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
-
-                    if (movie.isMovie) {
-                        getMediaInfoMovie(movie);
-                    } else if (movie.isEpisode || movie.isSeries) {
-                        getMediaInfoSeries(movie);
-                    }
-
-                    Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
-                }
-            }
-
-            //TODO: We have to recheck if alle series got episodes, else delete unneeded series
-            MediaInfo[] series = database.getMediaInfoSeries();
-            for(MediaInfo info : series) {
-                MediaInfo[] episodes = database.getMediaInfoEpisodes(info.TheTvDb);
-                if(episodes.length == 0)
-                    database.deleteMediaInfo(info.ID);
-            }
-        }
-
-        private void getMediaInfoMovie(MediaInfo movie) {
-
-            
-
-            //if we have no searchstring, than the movie was importet from the archive and we dont need to reparse
-            if (movie.needsUpdate) {
-                movie.getDataByTitle();
-            }
-
-            if (movie.Title.length() > 0) {
-                movie.Ignoring = false;
-                movie.needsUpdate = false;
-            } else {
-                movie.Ignoring = true;
-                movie.needsUpdate = true;
-            }
-
-            //Dont add as we dont delete the datebase anylonger
-            //database.addMediaInfo(movie);
-        }
-
-        private void getMediaInfoSeries(MediaInfo movie) {
-
-            //Ignore all series and only check episodes
-            if (!movie.isSeries && movie.needsUpdate) {
-                MediaInfo Series;
-                if(movie.ArtProvider==null)movie.ArtProvider = new valerie.provider.theTvDb();
-                if(movie.DataProvider==null)movie.DataProvider = new valerie.provider.theTvDb();
-                
-                if (database.getMediaInfoForSeries(movie.SearchString) == null) {
-                    Series = movie.clone();
-                    
-                    Series.isSeries = true;
-                    Series.isEpisode = false;
-                    Series.getDataByTitle();
-                    Series.Filename = "";
-                    Series.Path = "";
-
-                    if (Series.Title.length() > 0) {
-                        Series.Ignoring = false;
-                        Series.needsUpdate = false;
-
-                        //check if this is a duplicate
-                        MediaInfo duplicate = database.getMediaInfoForSeries(Series.TheTvDb);
-                        if (duplicate == null) {
-                            database.addMediaInfo(Series);
-                        } else {
-                            if(duplicate.SearchString.length() > 0)
-                                duplicate.SearchString = duplicate.SearchString.substring(0, duplicate.SearchString.length()) + "|" + movie.SearchString + ")";
-                            else
-                                duplicate.SearchString =  "(" + movie.SearchString + ")";
-                        }
-                    }
-                } else {
-                    Series = database.getMediaInfoForSeries(movie.SearchString);
-                }
-
-                //boolean beforeDontDeletePolicity = false;
-
-                //if(beforeDontDeletePolicity)
-                //    MediaInfo Episode = null;
-
-                if (Series != null) {
-                    /*if(beforeDontDeletePolicity) {
-                    Episode = Series.clone();
-                    Episode.isSeries = false;
-                    Episode.isEpisode = true;
-                    Episode.Filename = movie.Filename;
-                    Episode.SearchString = movie.SearchString;
-                    Episode.Path = movie.Path;
-                    Episode.Season = movie.Season;
-                    Episode.Episode = movie.Episode;
-                    }*/
-
-                    movie.Title = Series.Title;
-                    movie.Year = Series.Year;
-                    movie.Imdb = Series.Imdb;
-                    movie.Poster = Series.Poster;
-                    movie.Backdrop = Series.Backdrop;
-                    movie.Banner = Series.Banner;
-                    movie.Runtime = Series.Runtime;
-                    movie.Plot = Series.Plot;
-                    movie.Directors = Series.Directors;
-                    movie.Writers = Series.Writers;
-                    movie.Genres = Series.Genres;
-                    movie.Tag = Series.Tag;
-                    movie.Popularity = Series.Popularity;
-                    movie.TheTvDb = Series.TheTvDb;
-
-
-                } else {
-                    System.out.println("Does this happen ???");
-                    return;
-                }
-
-                 /*if(beforeDontDeletePolicity) {
-                Episode.getDataByTitle();
-
-                Episode.ArtProvider = Episode.DataProvider;
-
-                if (Episode.Title.length() > 0) {
-                    Episode.Ignoring = false;
-                    Episode.needsUpdate = false;
-                }
-
-                
-                database.addMediaInfo(Episode);*/
-
-                movie.getDataByTitle();
-
-                if (movie.Title.length() > 0) {
-                    movie.Ignoring = false;
-                    movie.needsUpdate = false;
-                }
-
-            } else {
-                if (movie.Title.length() > 0) {
-                    movie.Ignoring = false;
-                    movie.needsUpdate = false;
-                }
-            }
-        }
-    }
-
-    @Action
-    public Task getArt() {
-        return new GetArtTask(getApplication());
-    }
-
-    private class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
-
-        GetArtTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to GetArtTask fields, here.
-            super(app);
-        }
-
-        @Override
-        protected Object doInBackground() {
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Getting Arts");
-            Logger.setProgress(0);
-
-            MediaInfo[] movies = database.getMediaInfo();
-
-            int moviesSize = movies.length;
-            int moviesIterator = 0;
-
-            for (MediaInfo movie : movies) {
-                Logger.setProgress((moviesIterator++ * 100) / moviesSize);
-                if (movie.isMovie) {
-                    getMediaArtMovie(movie);
-                }
-                if (movie.isSeries) {
-                    getMediaArtSeries(movie);
-                }
-            }
-
-            Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-            Logger.setProgress(0);
-
-            return null;  // return your result
-        }
-
-        @Override
-        protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
-        }
-
-        private void getMediaArtMovie(MediaInfo movie) {
-            Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
-
-            movie.ArtProvider.getArtById(movie);
-
-            if (movie.Poster.length() > 0) {
-                File checkIfFileAlreadyExists = new File("download/tt" + movie.Imdb + "_poster.jpg");
-                if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
-                } else {
-                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/tt" + movie.Imdb + "_poster.jpg");
-                }
-
-                if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
-                    File checkIfFilePNGalreadyExists = new File("converted/tt" + movie.Imdb + "_poster.png");
-                    if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
-                        try {
-                            BufferedImage image = ImageIO.read(checkIfFileAlreadyExists);
-                            Image scaled = image.getScaledInstance(156, 214, Image.SCALE_SMOOTH);
-
-                            BufferedImage bi = new BufferedImage(
-                                    156,
-                                    214,
-                                    BufferedImage.TYPE_INT_RGB);
-                            Graphics g = bi.getGraphics();
-                            g.drawImage(scaled, 0, 0, null);
-
-                            ImageIO.write(bi, "png", checkIfFilePNGalreadyExists);
-
-                            new pngquant().exec("converted\\tt" + movie.Imdb + "_poster.png", "converted\\tt" + movie.Imdb + "_poster.png");
-
-                        } catch (Exception ex) {
-                            System.out.println(ex.toString());
-                        }
-                    }
-                }
-            }
-
-            Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading and Converting backdrops");
-
-            if (movie.Backdrop.length() > 0) {
-                File downloaded = new File("download/tt" + movie.Imdb + "_backdrop.jpg");
-
-                //Check if already downloaded
-                if (downloaded == null || !downloaded.exists()) {
-                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/tt" + movie.Imdb + "_backdrop.jpg");
-                }
-
-
-                if (downloaded != null && downloaded.exists()) {
-                    File converted = new File("converted/tt" + movie.Imdb + "_backdrop.m1v");
-
-                    //check if file already converted
-                    if (converted == null || !converted.exists()) {
-                        new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v");
-                    }
-                }
-            }
-
-            database.addMediaInfo(movie);
-        }
-
-        private void getMediaArtSeries(MediaInfo movie) {
-            Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
-
-            movie.ArtProvider.getArtById(movie);
-
-            if (movie.Poster.length() > 0) {
-                File checkIfFileAlreadyExists = new File("download/" + movie.TheTvDb + "_poster.jpg");
-                if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
-                } else {
-                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/" + movie.TheTvDb + "_poster.jpg");
-                }
-
-                if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
-                    File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDb + "_poster.png");
-                    if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
-                        try {
-                            BufferedImage image = ImageIO.read(checkIfFileAlreadyExists);
-                            Image scaled = image.getScaledInstance(156, 214, Image.SCALE_SMOOTH);
-
-                            BufferedImage bi = new BufferedImage(
-                                    156,
-                                    214,
-                                    BufferedImage.TYPE_INT_RGB);
-                            Graphics g = bi.getGraphics();
-                            g.drawImage(scaled, 0, 0, null);
-
-                            ImageIO.write(bi, "png", checkIfFilePNGalreadyExists);
-
-                            new pngquant().exec("converted\\" + movie.TheTvDb + "_poster.png", "converted\\" + movie.TheTvDb + "_poster.png");
-
-                        } catch (Exception ex) {
-                            System.out.println(ex.toString());
-                        }
-                    }
-                }
-            }
-
-            Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading and Converting backdrops");
-
-            if (movie.Backdrop.length() > 0) {
-                File checkIfFileJPEGAlreadyExists = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
-                if (checkIfFileJPEGAlreadyExists != null && checkIfFileJPEGAlreadyExists.exists()) {
-                } else {
-                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/" + movie.TheTvDb + "_backdrop.jpg");
-                }
-
-                if (checkIfFileJPEGAlreadyExists != null && checkIfFileJPEGAlreadyExists.exists()) {
-                    File checkIfFileMVIlreadyExists = new File("converted/" + movie.TheTvDb + "_backdrop.m1v");
-                    if (checkIfFileMVIlreadyExists == null || !checkIfFileMVIlreadyExists.exists()) {
-                        new mencoder().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "converted/" + movie.TheTvDb + "_backdrop.m1v");
-                    }
-                }
-            }
-
-            database.addMediaInfo(movie);
-        }
-    }
-
-    @Action
-    public Task uploadFiles() {
-        return new UploadFilesTask(getApplication());
-    }
-
-    private class UploadFilesTask extends org.jdesktop.application.Task<Object, Void> {
-
-        UploadFilesTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to UploadFilesTask fields, here.
-            super(app);
-        }
-
-        @Override
-        protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-
-            Logger.setBlocked(true);
-            Logger.printBlocked("Uploading");
-
-            new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "db/moviedb.txt", "/hdd/valerie");
-            new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "db/seriesdb.txt", "/hdd/valerie");
-
-            File episodes = new File("db/episodes");
-            if (!(episodes.exists())) {
-                Logger.print("No such Folder \"db/episodes\"!");
-            } else {
-                String[] entries = episodes.list();
-
-                for (int i = 0; i < entries.length; ++i) {
-                    new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
-                }
-            }
-
-            File folder = new File("converted");
-            if (!(folder.exists())) {
-                Logger.print("No such Folder \"converted\"!");
-            } else {
-                String[] entries = folder.list();
-
-                for (int i = 0; i < entries.length; ++i) {
-
-                    //Only upload arts if really needed so checbefore
-
-                    String[] vLine = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress,
-                            "ls /hdd/valerie/media/" + entries[i]);
-
-                    if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
-                        new valerie.tools.Network().sendFile(boxInfos[selectedBoxInfo].IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
-                }
-            }
-
-
-
-            Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-
-            return null;  // return your result
-        }
-
-        @Override
-        protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
-        }
-    }
-
-    @Action
     public void jMenuItemEditSettingsClicked() {
         JDialog settingsDialog;
         {
@@ -2295,8 +1231,40 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
         ValerieApp.getApplication().show(settingsDialog);
     }
-    private valerie.tools.BoxInfo[] boxInfos;
-    private int selectedBoxInfo = -1;
+
+    @Action
+    public void connectNetwork() {
+        pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
+    }
+
+    @Action
+    public void syncFilelist() {
+        pWorker.doTask(BackgroundWorker.Tasks.SYNC_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
+    }
+
+    @Action
+    public void parseFilelist() {
+        ThreadSize ts = new ThreadSize();
+        ts.ThreadCount = 1;
+        ts.ThreadId = 1;
+        pWorker.doTask(BackgroundWorker.Tasks.PARSE_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+    }
+
+    @Action
+    public void getArt() {
+        ThreadSize ts = new ThreadSize();
+        ts.ThreadCount = 1;
+        ts.ThreadId = 1;
+        pWorker.doTask(BackgroundWorker.Tasks.GET_ART, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+    }
+
+    @Action
+    public void uploadFiles() {
+        pWorker.doTask(BackgroundWorker.Tasks.UPLOAD_FILES, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
+    }
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel animatedBar;
     private javax.swing.JLabel descLabel;

@@ -2,7 +2,7 @@
  * ValerieAboutBox.java
  */
 
-package valerie;
+package Gui;
 
 import org.jdesktop.application.Action;
 

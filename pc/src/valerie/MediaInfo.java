@@ -129,8 +129,8 @@ public class MediaInfo {
     }
 
     public String cleanString(String str){
-    	str = str.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "").replaceAll("&#xE4;", "ä");
-    	str = str.replaceAll("&#xB7;", "-").replaceAll("&#xFC;", "ü").replaceAll("&#xDF;", "ß").replaceAll("&#xF6;", "ö").replaceAll("<.*?>", "");
+    	str = str.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "").replaceAll("&#xE4;", "ï¿½");
+    	str = str.replaceAll("&#xB7;", "-").replaceAll("&#xFC;", "ï¿½").replaceAll("&#xDF;", "ï¿½").replaceAll("&#xF6;", "ï¿½").replaceAll("<.*?>", "");
     	
     	return str;
     }
@@ -174,7 +174,7 @@ public class MediaInfo {
     }
 
     @Override
-    protected MediaInfo clone() {
+    public MediaInfo clone() {
         MediaInfo rtv = new MediaInfo(Filename);
 
         rtv.DataProvider = DataProvider;
