@@ -29,7 +29,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
         if(threadCount > 0) {
             pThreadCount = threadCount;
-            if(threadId > 0 && threadId <= threadCount) {
+            if(threadId >= 0 && threadId < threadCount) {
                 pThreadId = threadId;
             }
         }
@@ -52,7 +52,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         int moviesSize = movies.length;
         int moviesIterator = 0;
 
-        for(int i = (pThreadId - 1); i < movies.length; i += pThreadCount) {
+        for(int i = pThreadId; i < movies.length; i += pThreadCount) {
             MediaInfo movie = movies[i];
 
             Logger.setProgress((moviesIterator++ * 100) / moviesSize);

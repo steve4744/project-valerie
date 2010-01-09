@@ -30,6 +30,7 @@ public class CheckArgumentsTask extends org.jdesktop.application.Task<Object, Vo
 
             pMode = mode;
             pWorker = worker;
+            pParent = parent;
 
             Logger.setBlocked(true);
             Logger.printBlocked("Loading Archive");

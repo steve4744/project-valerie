@@ -442,7 +442,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItemSettings = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
@@ -850,10 +850,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
-        jMenuItem1.setAction(actionMap.get("jMenuItemEditSettingsClicked")); // NOI18N
-        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
-        jMenuItem1.setName("jMenuItem1"); // NOI18N
-        jMenu1.add(jMenuItem1);
+        jMenuItemSettings.setAction(actionMap.get("jMenuItemEditSettingsClicked")); // NOI18N
+        jMenuItemSettings.setText(resourceMap.getString("jMenuItemSettings.text")); // NOI18N
+        jMenuItemSettings.setName("jMenuItemSettings"); // NOI18N
+        jMenu1.add(jMenuItemSettings);
 
         menuBar.add(jMenu1);
 
@@ -917,7 +917,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel2.setName("jPanel2"); // NOI18N
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        animatedBar.setIcon(new javax.swing.ImageIcon("E:\\Documents\\Valerie\\pc\\src\\valerie\\resources\\ajax-loader_transparent.gif")); // NOI18N
         animatedBar.setText(resourceMap.getString("animatedBar.text")); // NOI18N
         animatedBar.setName("animatedBar"); // NOI18N
         jPanel2.add(animatedBar, java.awt.BorderLayout.CENTER);
@@ -1222,16 +1221,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
     }
 
-    public void jMenuItemEditSettingsClicked() {
-        JDialog settingsDialog;
-        {
-            JFrame mainFrame = ValerieApp.getApplication().getMainFrame();
-            settingsDialog = new Settings(mainFrame, true);
-            settingsDialog.setLocationRelativeTo(mainFrame);
-        }
-        ValerieApp.getApplication().show(settingsDialog);
-    }
-
     @Action
     public void connectNetwork() {
         pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
@@ -1244,23 +1233,40 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     @Action
     public void parseFilelist() {
-        ThreadSize ts = new ThreadSize();
-        ts.ThreadCount = 1;
-        ts.ThreadId = 1;
-        pWorker.doTask(BackgroundWorker.Tasks.PARSE_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+        int ParallelTasks = 10;
+        for(int i = 0; i < ParallelTasks; i++) {
+            ThreadSize ts = new ThreadSize();
+            ts.ThreadCount = ParallelTasks;
+            ts.ThreadId = i;
+            pWorker.doTask(BackgroundWorker.Tasks.PARSE_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+        }
     }
 
     @Action
     public void getArt() {
-        ThreadSize ts = new ThreadSize();
-        ts.ThreadCount = 1;
-        ts.ThreadId = 1;
-        pWorker.doTask(BackgroundWorker.Tasks.GET_ART, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+        int ParallelTasks = 10;
+        for(int i = 0; i < ParallelTasks; i++) {
+            ThreadSize ts = new ThreadSize();
+            ts.ThreadCount = ParallelTasks;
+            ts.ThreadId = i;
+            pWorker.doTask(BackgroundWorker.Tasks.GET_ART, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
+        }
     }
 
     @Action
     public void uploadFiles() {
         pWorker.doTask(BackgroundWorker.Tasks.UPLOAD_FILES, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
+    }
+
+    @Action
+    public void jMenuItemEditSettingsClicked() {
+        JDialog settingsDialog;
+        {
+            JFrame mainFrame = ValerieApp.getApplication().getMainFrame();
+            settingsDialog = new Settings(mainFrame, true);
+            settingsDialog.setLocationRelativeTo(mainFrame);
+        }
+        ValerieApp.getApplication().show(settingsDialog);
     }
 
     
@@ -1277,7 +1283,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JLabel jLabelBackdrop;
     private javax.swing.JLabel jLabelPoster;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanelMovies;

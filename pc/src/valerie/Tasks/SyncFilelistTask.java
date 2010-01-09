@@ -228,8 +228,10 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
     private void searchSeries( MediaInfoDB database) {
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
-        ArrayList<String[]> replacements=getReplacements();
+        ArrayList<String[]> replacements = getReplacements();
         for (int row = 0; row < paths.length; row++) {
+            if(paths[row].length() <= 0)
+                continue;
             String filterString = "";
             String filter = new valerie.tools.Properties().getPropertyString("FILTER_SERIES");
             String[] filters = filter.split("\\|");

@@ -28,7 +28,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
 
         if(threadCount > 0) {
             pThreadCount = threadCount;
-            if(threadId > 0 && threadId <= threadCount) {
+            if(threadId >= 0 && threadId < threadCount) {
                 pThreadId = threadId;
             }
         }
@@ -46,7 +46,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
 
         MediaInfo[] movies = database.getMediaInfo();
-        for (int i = (pThreadId - 1); i < movies.length; i += pThreadCount) {
+        for (int i = pThreadId; i < movies.length; i += pThreadCount) {
             Float progress = (float) i * 100;
             progress /= movies.length;
             Logger.setProgress(progress.intValue());

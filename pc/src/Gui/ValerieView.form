@@ -597,13 +597,13 @@
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemSettings">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="valerie.ValerieView" id="jMenuItemEditSettingsClicked" methodName="jMenuItemEditSettingsClicked"/>
+                  <action class="Gui.ValerieView" id="jMenuItemEditSettingsClicked" methodName="jMenuItemEditSettingsClicked"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
-                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItemSettings.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItemSettings" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>
@@ -736,9 +736,6 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="animatedBar">
               <Properties>
-                <Property name="icon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="2" name="E:\Documents\Valerie\pc\src\valerie\resources\ajax-loader_transparent.gif"/>
-                </Property>
                 <Property name="text" type="java.lang.String" resourceKey="animatedBar.text"/>
                 <Property name="name" type="java.lang.String" value="animatedBar" noResource="true"/>
               </Properties>
