@@ -47,7 +47,7 @@ public class webgrabber {
     private static ArrayList<cachedRequestXML> cacheXML=null;
     private static ArrayList<cachedRequestURL> cacheURL=null;
 
-    //private static Semaphore sem;
+    //private static Semaphore sem = new Semaphore(10, true);
 
     private int RETRIES = 20;
         
@@ -90,7 +90,7 @@ public class webgrabber {
 
                 break;
             } catch (Exception ex) {
-                System.out.printf("Webgrabber: %s\n", ex.getMessage());
+                System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
             }
         }
 
@@ -113,7 +113,9 @@ public class webgrabber {
 
         for(int i = 0; i < RETRIES; i++) {
             try {
+                //sem.acquire();
                 HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
+                //sem.release();
                 //urlc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4");
                 urlc.addRequestProperty("user-agent", "Firefox");
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
@@ -130,7 +132,7 @@ public class webgrabber {
                 out.close();
                 break;
             } catch (Exception ex) {
-                System.out.printf("Webgrabber: %s\n", ex.getMessage());
+                System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
             }
         }
 

@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
@@ -37,6 +38,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -121,8 +123,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         @Override
         public void setProgress(int s, int t) {
-            jTableTasks.setValueAt(t, t, 0);
-            jTableTasks.setValueAt(s, t, 1);
+            jTableTasks.setValueAt((int)t, t, 0);
+            jTableTasks.setValueAt((int)s, t, 1);
             //progressBar.setValue(s);
         }
 
@@ -394,7 +396,38 @@ public class ValerieView extends FrameView implements WindowStateListener {
             aboutBox.setLocationRelativeTo(mainFrame);
         }
         ValerieApp.getApplication().show(aboutBox);
+
+        //jTableTasks.getColumnModel().getColumn(2).setCellRenderer( new ProgressRenderer() );
     }
+
+    class ProgressRenderer extends DefaultTableCellRenderer {
+  private final JProgressBar b = new JProgressBar(0, 100);
+  public ProgressRenderer() {
+    super();
+    setOpaque(true);
+    b.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+  }
+  public Component getTableCellRendererComponent(JTable table, Object value,
+                                               boolean isSelected, boolean hasFocus,
+                                               int row, int column) {
+    Integer i = (Integer)value;
+    String text = "Done";
+    if(i != null) {
+        if(i < 0) {
+          text = "Canceled";
+        }else if(i < 100) {
+          b.setValue(i);
+          return b;
+        }
+    } else {
+        b.setValue(0);
+        return b;
+    }
+
+    super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
+    return this;
+  }
+}
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -1018,6 +1051,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jTableTasks.getColumnModel().getColumn(2).setResizable(false);
         jTableTasks.getColumnModel().getColumn(2).setPreferredWidth(500);
         jTableTasks.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title2")); // NOI18N
+        jTableTasks.getColumnModel().getColumn(1).setCellRenderer( new ProgressRenderer() );
 
         jPanel2.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
