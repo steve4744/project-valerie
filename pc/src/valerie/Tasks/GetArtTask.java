@@ -57,6 +57,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
             Logger.setProgress((i * 100) / moviesSize);
             this.setProgress((i * 100) / moviesSize);
+            this.setMessage(movie.Title);
             if (movie.isMovie) {
                 getMediaArtMovie(movie);
             }

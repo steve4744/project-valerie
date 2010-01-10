@@ -18,7 +18,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
 
     protected BackgroundWorker pWorker;
     protected int pThreadCount = 1;
-    protected int pThreadId = 1;
+    protected int pThreadId = 0;
 
     public ParseFilelistTask(org.jdesktop.application.Application app,
             BackgroundWorker worker,
@@ -39,29 +39,37 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
     @Override
     protected Object doInBackground() {
 
-        Logger.setBlocked(true);
-        Logger.printBlocked("Parse Filelist");
-        Logger.setProgress(0);
+        if(pThreadId == 0) {
+            Logger.setBlocked(true);
+            Logger.printBlocked("Parse Filelist");
+            Logger.setProgress(0);
+        }
+        this.setProgress((int)0);
 
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-
         MediaInfo[] movies = database.getMediaInfo();
+
         for (int i = pThreadId; i < movies.length; i += pThreadCount) {
             Float progress = (float) i * 100;
             progress /= movies.length;
+            this.setProgress(progress.intValue());
+
             Logger.setProgress(progress.intValue());
 
             MediaInfo movie = movies[i];
             
             if (movie.needsUpdate) {
+                Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
+                this.setMessage(movie.SearchString);
+                //System.out.println("movie=" + movie.SearchString + " ismovie=" + movie.isMovie);
 
-            Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
-
-            if (movie.isMovie) {
+                if (movie.isMovie) {
                     getMediaInfoMovie(database, movie);
                 } else if (movie.isEpisode || movie.isSeries) {
                     getMediaInfoSeries(database, movie);
                 }
+
+                //movie.Title = "[" + pThreadId + "] " + movie.Title;
 
                 Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
             }
@@ -77,9 +85,12 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
                 database.deleteMediaInfo(info.ID);
         }
 
-        Logger.printBlocked("Finished");
+        this.setProgress(100);
+        this.succeeded(null);
+
+        /*Logger.printBlocked("Finished");
         Logger.setBlocked(false);
-        Logger.setProgress(0);
+        Logger.setProgress(0);*/
 
         return null;
     }

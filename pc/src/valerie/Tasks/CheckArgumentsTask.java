@@ -105,7 +105,7 @@ public class CheckArgumentsTask extends org.jdesktop.application.Task<Object, Vo
                 pDatabase.clear();
 
                 pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, null, null);
-                pParent.notify("UPDATE_TABLES");
+                pParent.notify(0, 1, "UPDATE_TABLES");
                 
                 if(setConnect) {
                     pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.NORMAL, null, null);

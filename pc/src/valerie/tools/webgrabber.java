@@ -49,7 +49,7 @@ public class webgrabber {
 
     //private static Semaphore sem;
 
-    private int RETRIES = 10;
+    private int RETRIES = 20;
         
     public Document getXML(URL url) {
     	int x;
