@@ -42,4 +42,14 @@ public class Logger {
         for(Object out : outputHandlers)
             ((OutputHandler)out).setProgress(s);
     }
+
+    public static void setProgress(int s, int t) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).setProgress(s, t);
+    }
+
+    public static void setMessage(String s, int t) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).setMessage(s, t);
+    }
 }

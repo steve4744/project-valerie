@@ -5,6 +5,8 @@
 
 package valerie;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
@@ -32,18 +34,22 @@ public class BackgroundWorker {
     };
 
     public interface ParentObject {
-        public void done(String id);
-        public void notify(String id);
+        public void done(int taskid, int taskcount, String id);
+        public void notify(int taskid, int taskcount, String id);
     }
 
     protected class Listener implements TaskListener {
 
         ParentObject pParent;
         Tasks pTaskId;
+        int pTaskIdInt;
+        int pTaskCountInt;
 
-        public Listener(ParentObject parent, Tasks taskId) {
+        public Listener(ParentObject parent, Tasks taskId, int iTaskId, int iTaskCount) {
             pParent = parent;
             pTaskId = taskId;
+            pTaskIdInt = iTaskId;
+            pTaskCountInt = iTaskCount;
         }
 
         public void finished(TaskEvent evt) {
@@ -55,11 +61,36 @@ public class BackgroundWorker {
         public void failed(TaskEvent evt) {
         }
         public void succeeded(TaskEvent evt) {
-            pParent.done(pTaskId.toString());
+            pParent.done(pTaskIdInt, pTaskCountInt, pTaskId.toString());
         }
         public void process(TaskEvent evt) {
         }
         public void doInBackground(TaskEvent evt) {
+        }
+    }
+
+    protected class PropertyListener implements PropertyChangeListener {
+
+        ParentObject pParent;
+        Tasks pTaskId;
+        int pTaskIdInt;
+
+        public PropertyListener(ParentObject parent, Tasks taskId, int iTaskId) {
+            pParent = parent;
+            pTaskId = taskId;
+            pTaskIdInt = iTaskId;
+        }
+
+        @Override public void propertyChange( PropertyChangeEvent e )
+        {
+            //System.out.printf( "[%d]Property '%s': '%s' -> '%s'%n",
+            //               pTaskIdInt, e.getPropertyName(), e.getOldValue(), e.getNewValue() );
+            String propertyName = e.getPropertyName();
+            if(propertyName.equals("progress"))
+                Logger.setProgress((Integer)e.getNewValue(), pTaskIdInt);
+            else if(propertyName.equals("message"))
+                Logger.setMessage((String)e.getNewValue(), pTaskIdInt);
+            //pParent.progress(pTaskId, e.getNewValue());
         }
     }
 
@@ -80,6 +111,9 @@ public class BackgroundWorker {
     public boolean doTask(Tasks taskId, Mode mode, ParentObject parent, Object obj) {
 
         Task vTask = null;
+
+        int iTaskId = 0;
+        int iTaskCount = 1;
 
         switch(taskId) {
             case CHECK_ARGUMENTS:
@@ -105,6 +139,8 @@ public class BackgroundWorker {
                 break;
 
             case PARSE_FILELIST:
+                iTaskId = (int)((ThreadSize)obj).ThreadId;
+                iTaskCount = (int) (int)((ThreadSize)obj).ThreadCount;
                 vTask = new valerie.Tasks.ParseFilelistTask(pApp,
                         this,
                         (int)((ThreadSize)obj).ThreadCount,
@@ -112,6 +148,8 @@ public class BackgroundWorker {
                 break;
 
             case GET_ART:
+                iTaskId = (int)((ThreadSize)obj).ThreadId;
+                iTaskCount = (int) (int)((ThreadSize)obj).ThreadCount;
                 vTask = new valerie.Tasks.GetArtTask(pApp,
                         this,
                         (int)((ThreadSize)obj).ThreadCount,
@@ -129,7 +167,8 @@ public class BackgroundWorker {
                 vTask.run();
                 
             } else if (mode == Mode.BACKGROUND) {
-                vTask.addTaskListener(new Listener(parent, taskId));
+                vTask.addTaskListener(new Listener(parent, taskId, iTaskId, iTaskCount));
+                vTask.addPropertyChangeListener(new PropertyListener(parent, taskId, iTaskId));
                 vTask.execute();
             }
         }

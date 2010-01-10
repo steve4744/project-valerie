@@ -15,4 +15,6 @@ public class OutputHandler {
     public void setBlocked(boolean s) { }
     public void printBlocked(String s) { }
     public void setProgress(int s) { }
+    public void setProgress(int s, int t) { }
+    public void setMessage(String s, int t) { }
 }
