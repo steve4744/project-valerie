@@ -19,7 +19,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
     protected BackgroundWorker pWorker;
     protected int pThreadCount = 1;
-    protected int pThreadId = 1;
+    protected int pThreadId = 0;
 
     public GetArtTask(org.jdesktop.application.Application app,
             BackgroundWorker worker,
@@ -40,22 +40,23 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
     @Override
     protected Object doInBackground() {
 
-        if(pThreadId == 1) {
+        if(pThreadId == 0) {
             Logger.setBlocked(true);
             Logger.printBlocked("Getting Arts");
             Logger.setProgress(0);
         }
+        this.setProgress((int)0);
 
         MediaInfoDB pDatabase = (MediaInfoDB)pWorker.get("Database");
         MediaInfo[] movies = pDatabase.getMediaInfo();
 
         int moviesSize = movies.length;
-        int moviesIterator = 0;
 
         for(int i = pThreadId; i < movies.length; i += pThreadCount) {
             MediaInfo movie = movies[i];
 
-            Logger.setProgress((moviesIterator++ * 100) / moviesSize);
+            Logger.setProgress((i * 100) / moviesSize);
+            this.setProgress((i * 100) / moviesSize);
             if (movie.isMovie) {
                 getMediaArtMovie(movie);
             }
@@ -64,11 +65,14 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
             }
         }
 
-        if(pThreadId == 1) {
+        /*if(pThreadId == 1) {
             Logger.printBlocked("Finished");
             Logger.setBlocked(false);
             Logger.setProgress(0);
-        }
+        }*/
+
+        this.setProgress(100);
+        this.succeeded(null);
 
         return null;
     }
