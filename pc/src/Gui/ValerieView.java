@@ -31,6 +31,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.event.TableModelEvent;
@@ -47,6 +49,9 @@ import valerie.tools.DebugOutput;
 public class ValerieView extends FrameView implements WindowStateListener {
 
     class UIOutputHandler extends OutputHandler {
+
+        long startTimer = 0;
+
         UIOutputHandler()
         {
             super();
@@ -77,6 +82,23 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         @Override
         public void setBlocked(boolean s) {
+
+            if(s && startTimer == 0) {
+                startTimer = System.currentTimeMillis();
+            } else if(!s && startTimer > 0) {
+                System.out.println("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
+                Logger.print("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
+                startTimer = 0;
+
+                            /*//Give the user time to read the duration.
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e){
+                                // the VM doesn't want us to sleep anymore,
+                                // so get back to work
+                            }*/
+            }
+
             setWorking(s);
 
             //mainPanel.getParent()
@@ -96,6 +118,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
         public void setProgress(int s) {
             progressBar.setValue(s);
         }
+
+        @Override
+        public void setProgress(int s, int t) {
+            jTableTasks.setValueAt(t, t, 0);
+            jTableTasks.setValueAt(s, t, 1);
+            //progressBar.setValue(s);
+        }
+
+        @Override
+        public void setMessage(String s, int t) {
+            jTableTasks.setValueAt(t, t, 0);
+            jTableTasks.setValueAt(s, t, 2);
+            //progressBar.setValue(s);
+        }
     }
 
     BackgroundWorker pWorker = null;
@@ -104,17 +140,30 @@ public class ValerieView extends FrameView implements WindowStateListener {
     protected class Callback implements BackgroundWorker.ParentObject {
 
         ValerieView pParent;
+        int pTaskCounter = 0;
 
         Callback(ValerieView parent) {
             pParent = parent;
         }
 
-        public void done(String id) {
+        public void done(int taskId, int taskCount, String id) {
+
+            //Only continue if the last task has finished
+            if(pTaskCounter < (taskCount - 1)) {
+                pTaskCounter++;
+                return;
+            }
+
+            pTaskCounter = 0;
+            //Logger.printBlocked("Finished");
+            Logger.setBlocked(false);
+            Logger.setProgress(0);
+
             if(id.equals("CONNECT_NETWORK")) {
-                notify("UPDATE_BOXINFOS");
+                notify(0, 1, "UPDATE_BOXINFOS");
             } else if(id.equals("SYNC_FILELIST")) {
 
-                notify("UPDATE_TABLES");
+                notify(0, 1, "UPDATE_TABLES");
 
                 //Force Selection of Row "unspecified" and Force refresh
                 if(jTableSeries.getRowCount() > 1)
@@ -122,15 +171,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jTableSeriesMouseClicked(null);
 
             } else if(id.equals("PARSE_FILELIST")) {
-                done("SYNC_FILELIST");
+                done(0,1, "SYNC_FILELIST");
 
                 pParent.saveTables();
             } else {
-                notify(id);
+                notify(0, 1, id);
             }
         }
 
-        public void notify(String id) {
+        public void notify(int taskId, int taskCount, String id) {
             if(id.equals("UPDATE_BOXINFOS")) {
                 pParent.jComboBoxBoxinfo.removeAllItems();
                 BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
@@ -452,8 +501,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         progressBar = new javax.swing.JProgressBar();
         statusPopup = new javax.swing.JFrame();
         jPanel2 = new javax.swing.JPanel();
-        animatedBar = new javax.swing.JLabel();
         descLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTableTasks = new javax.swing.JTable();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -905,7 +955,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 .addGap(3, 3, 3))
         );
 
-        statusPopup.setMinimumSize(new java.awt.Dimension(220, 50));
+        statusPopup.setMinimumSize(new java.awt.Dimension(317, 220));
         statusPopup.setModalExclusionType(java.awt.Dialog.ModalExclusionType.TOOLKIT_EXCLUDE);
         statusPopup.setName("statusPopup"); // NOI18N
         statusPopup.setResizable(false);
@@ -917,15 +967,59 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel2.setName("jPanel2"); // NOI18N
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        animatedBar.setText(resourceMap.getString("animatedBar.text")); // NOI18N
-        animatedBar.setName("animatedBar"); // NOI18N
-        jPanel2.add(animatedBar, java.awt.BorderLayout.CENTER);
-
-        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18));
+        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         descLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descLabel.setText(resourceMap.getString("descLabel.text")); // NOI18N
         descLabel.setName("descLabel"); // NOI18N
         jPanel2.add(descLabel, java.awt.BorderLayout.NORTH);
+
+        jScrollPane2.setName("jScrollPane2"); // NOI18N
+
+        jTableTasks.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Task", "Progress", "Description"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTableTasks.setName("jTableTasks"); // NOI18N
+        jScrollPane2.setViewportView(jTableTasks);
+        jTableTasks.getColumnModel().getColumn(0).setResizable(false);
+        jTableTasks.getColumnModel().getColumn(0).setPreferredWidth(60);
+        jTableTasks.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title0")); // NOI18N
+        jTableTasks.getColumnModel().getColumn(1).setResizable(false);
+        jTableTasks.getColumnModel().getColumn(1).setPreferredWidth(200);
+        jTableTasks.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title1")); // NOI18N
+        jTableTasks.getColumnModel().getColumn(2).setResizable(false);
+        jTableTasks.getColumnModel().getColumn(2).setPreferredWidth(500);
+        jTableTasks.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title2")); // NOI18N
+
+        jPanel2.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         statusPopup.getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
@@ -1272,7 +1366,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel animatedBar;
     private javax.swing.JLabel descLabel;
     private javax.swing.JButton jButtonArt;
     private javax.swing.JButton jButtonConnect;
@@ -1290,6 +1383,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JPanel jPanelSeries;
     private javax.swing.JPanel jPanelThumbs;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
@@ -1303,6 +1397,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JTable jTableFilelist;
     private javax.swing.JTable jTableFilelistEpisodes;
     private javax.swing.JTable jTableSeries;
+    private javax.swing.JTable jTableTasks;
     private javax.swing.JTextArea jTextAreaDescription;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel mainPanel;
