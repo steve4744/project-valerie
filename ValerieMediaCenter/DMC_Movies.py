@@ -34,25 +34,7 @@ def getAspect():
 	val = AVSwitch().getAspectRatioSetting()
 	return val/2
 
-try:
-	from enigma import eStillPicture
-except Exception, e:
-	print "No build in Stillpicture support!"
-	hasBuildInStillpicture = False
-
-def finishStillPicture():
-	if not hasBuildInStillpicture:
-		os.system("killall showiframe")
-		
-
-def showStillpicture(picture):
-	if not os.path.exists(picture):
-		picture="/boot/bootlogo.mvi"
-	if hasBuildInStillpicture:
-		eStillPicture.getInstance().showSinglePic(picture)
-	else:
-		finishStillPicture()
-		os.system("/usr/bin/showiframe " + picture + " &")
+from DMC_Global import Showiframe
 
 #------------------------------------------------------------------------------------------
 
@@ -62,6 +44,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		Screen.__init__(self, session)
 		InfoBarBase.__init__(self)
 		HelpableScreen.__init__(self)
+		Showiframe.__init__()
+		self.showiframe = Showiframe()
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.session.nav.stopService()		
@@ -209,7 +193,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def refresh(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+#			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
 			self["title"].setText(selection[0])
 			self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
@@ -255,7 +240,7 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.visibility()
 			return
 		
-		finishStillPicture()
+		self.showiframe.finishStillPicture()
 		
 		selection = self["listview"].getCurrent()
 		if selection is not None:
@@ -266,7 +251,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self.session.nav.playService(None) 
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+#			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
 
 	def KeyGenres(self):
 		menu=self.getAvailGenres()
@@ -304,7 +290,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.visibility()
 			return
 		
-		finishStillPicture()
+#		finishStillPicture()
+		self.showiframe.finishStillPicture()
 
 		self.close()
 

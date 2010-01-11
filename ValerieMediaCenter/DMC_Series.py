@@ -31,27 +31,7 @@ from Tools.LoadPixmap import LoadPixmap
 import os
 from os import path as os_path
 
-hasBuildInStillpicture = True
-
-try:
-	from enigma import eStillPicture
-except Exception, e:
-	print "No build in Stillpicture support!"
-	hasBuildInStillpicture = False
-
-def finishStillPicture():
-	if not hasBuildInStillpicture:
-		os.system("killall showiframe")
-		
-
-def showStillpicture(picture):
-	if not os.path.exists(picture):
-		picture="/boot/bootlogo.mvi"
-	if hasBuildInStillpicture:
-		eStillPicture.getInstance().showSinglePic(picture)
-	else:
-		finishStillPicture()
-		os.system("/usr/bin/showiframe " + picture + " &")
+from DMC_Global import Showiframe
 
 #------------------------------------------------------------------------------------------
 
@@ -61,6 +41,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		Screen.__init__(self, session)
 		InfoBarBase.__init__(self)
 		HelpableScreen.__init__(self)
+		self.showiframe = Showiframe()
 		
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.session.nav.stopService()	
@@ -196,7 +177,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
-				showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
 				if self["poster"].instance is not None:
 					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 				self["title"].setText(selection[0])
@@ -276,7 +257,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self.visibility()
 					return
 		
-				finishStillPicture()
+				self.showiframe.finishStillPicture()
 		
 				selection = self["listview"].getCurrent()
 				if selection is not None:
@@ -285,7 +266,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def leaveMoviePlayer(self): 
 		self.session.nav.playService(None) 
-		showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v")
+		self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v")
 
 	def KeyExit(self):
 		if self.inSeries is True:
@@ -293,7 +274,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.visibility()
 				return
 		
-			finishStillPicture()
+			self.showiframe.finishStillPicture()
 
 			self.close()
 		elif self.inEpisode is True or self.inSeasons is True:
