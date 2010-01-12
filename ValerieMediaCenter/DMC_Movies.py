@@ -44,7 +44,6 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		Screen.__init__(self, session)
 		InfoBarBase.__init__(self)
 		HelpableScreen.__init__(self)
-		Showiframe.__init__()
 		self.showiframe = Showiframe()
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()

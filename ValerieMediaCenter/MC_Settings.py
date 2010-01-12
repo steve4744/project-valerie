@@ -214,8 +214,8 @@ class MCS_SkinSelector(Screen):
 					self.skinlist.append(subdir)
 
 	def ok(self):
-		if self["SkinList"].getCurrent() == "Default Skin":
-			skinfile = "default/skin.xml"
+		if self["SkinList"].getCurrent() == "DefaultHD Skin":
+			skinfile = "defaultHD/skin.xml"
 		else:
 			skinfile = self["SkinList"].getCurrent()+"/skin.xml"
 
