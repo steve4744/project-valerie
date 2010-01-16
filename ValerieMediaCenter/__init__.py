@@ -9,84 +9,48 @@ from Components.config import ConfigText
 from Components.config import configfile
 from Components.config import ConfigYesNo
 from skin import loadSkin
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+from DMC_Global import printl
 
-currentmcversion = "093"
-currentmcplatform = "mipsel"
+printl("Init")
 
-config.plugins.mc_favorites = ConfigSubsection()
-config.plugins.mc_favorites.foldercount = ConfigInteger(0)
-config.plugins.mc_favorites.folders = ConfigSubList()
+# the currentVersion should be renewed every major update
+currentVersion          = "100"
+defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/MediaCenter/")
+defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
+defaultSkin             = "defaultHD/skin.xml"
 
-config.plugins.mc_globalsettings = ConfigSubsection()
-config.plugins.mc_globalsettings.language = ConfigSelection(default="EN", choices = [("EN", _("English"))])
-config.plugins.mc_globalsettings.showinmainmenu = ConfigYesNo(default=True)
-config.plugins.mc_globalsettings.showinextmenu = ConfigYesNo(default=True)
-config.plugins.mc_globalsettings.checkforupdate = ConfigYesNo(default=True)
-config.plugins.mc_globalsettings.currentversion = ConfigInteger(0, (0, 999))
-config.plugins.mc_globalsettings.currentplatform = ConfigText(default = currentmcplatform)
+printl("defaultPluginFolderPath=" + defaultPluginFolderPath)
+printl("defaultSkinFolderPath=" + defaultSkinFolderPath)
 
-config.plugins.mc_globalsettings.dst_top = ConfigInteger(0, (0, 999))
-config.plugins.mc_globalsettings.dst_left = ConfigInteger(0, (0, 999))
-config.plugins.mc_globalsettings.dst_width = ConfigInteger(720, (1, 720))
-config.plugins.mc_globalsettings.dst_height = ConfigInteger(576, (1, 576))
+config.plugins.dmc = ConfigSubsection()
 
-config.plugins.mc_globalsettings.currentskin = ConfigSubsection()
-config.plugins.mc_globalsettings.currentskin.path = ConfigText(default = "default/skin.xml")
+config.plugins.dmc.language          = ConfigSelection(default="EN", choices = [("EN", _("English"))])
+config.plugins.dmc.showwizard        = ConfigYesNo(default = True)
+config.plugins.dmc.autostart         = ConfigYesNo(default = True)
+config.plugins.dmc.checkforupdate    = ConfigYesNo(default = True)
 
-config.plugins.mc_globalsettings.currentversion.value = currentmcversion
-config.plugins.mc_globalsettings.currentplatform.value = currentmcplatform
+printl("language="       + str(config.plugins.dmc.language.value))
+printl("showwizard="     + str(config.plugins.dmc.showwizard.value))
+printl("autostart="      + str(config.plugins.dmc.autostart.value))
+printl("checkforupdate=" + str(config.plugins.dmc.checkforupdate.value))
 
-# Load Skin
+config.plugins.dmc.version           = ConfigInteger(0, (0, 999))
+config.plugins.dmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
+config.plugins.dmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPath)
+config.plugins.dmc.skin              = ConfigText(default = defaultSkinFolderPath)
+
+config.plugins.dmc.version.value     = currentVersion
+
+# Load Skin, first try to find it, if not found reset to default skin
 try:
-	loadSkin("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/" + config.plugins.mc_globalsettings.currentskin.path.value)
+	loadSkin(config.plugins.dmc.skinfolderpath.value + config.plugins.dmc.skin.value)
 except Exception, e:
-	loadSkin("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/skin.xml")
+	config.plugins.dmc.skinfolderpath.value = defaultSkinFolderPath
+	config.plugins.dmc.skin.value           = defaultSkin
+	
+	# we could do an try at this point, but if the skin is missing we have lost anyway
+	loadSkin(config.plugins.dmc.skinfolderpath.value + config.plugins.dmc.skin.value)
 
-# Favorite Folders
-def addFavoriteFolders():
-	i = len(config.plugins.mc_favorites.folders)
-	config.plugins.mc_favorites.folders.append(ConfigSubsection())
-	config.plugins.mc_favorites.folders[i].name = ConfigText("", False)
-	config.plugins.mc_favorites.folders[i].basedir = ConfigText("/", False)
-	config.plugins.mc_favorites.foldercount.value = i+1
-	return i
+config.save()
 
-for i in range(0, config.plugins.mc_favorites.foldercount.value):
-	addFavoriteFolders()
-
-
-# VLC PLAYER CONFIG
-config.plugins.mc_vlc = ConfigSubsection()
-config.plugins.mc_vlc.lastDir = ConfigText(default="")
-
-config.plugins.mc_vlc.foldercount = ConfigInteger(0)
-config.plugins.mc_vlc.folders = ConfigSubList()
-
-config.plugins.mc_vlc.vcodec = ConfigSelection({"mp1v": "MPEG1", "mp2v": "MPEG2"}, "mp2v")
-config.plugins.mc_vlc.vb = ConfigInteger(1000, (100, 9999))
-config.plugins.mc_vlc.acodec = ConfigSelection({"mpga":"MP1", "mp2a": "MP2", "mp3": "MP3"}, "mp2a")
-config.plugins.mc_vlc.ab = ConfigInteger(128, (64, 320))
-config.plugins.mc_vlc.samplerate = ConfigSelection({"0":"as Input", "44100": "44100", "48000": "48000"}, "0")
-config.plugins.mc_vlc.channels = ConfigInteger(2, (1, 9))
-config.plugins.mc_vlc.width = ConfigSelection(["352", "704", "720"])
-config.plugins.mc_vlc.height = ConfigSelection(["288", "576"])
-config.plugins.mc_vlc.fps = ConfigInteger(25, (1, 99))
-config.plugins.mc_vlc.aspect = ConfigSelection(["none", "16:9", "4:3"], "none")
-config.plugins.mc_vlc.soverlay = ConfigYesNo()
-config.plugins.mc_vlc.checkdvd = ConfigYesNo(True)
-config.plugins.mc_vlc.notranscode = ConfigYesNo(False) 
-
-config.plugins.mc_vlc.servercount = ConfigInteger(0)
-config.plugins.mc_vlc.servers = ConfigSubList()
-
-def addVlcServerConfig():
-	i = len(config.plugins.mc_vlc.servers)
-	config.plugins.mc_vlc.servers.append(ConfigSubsection())
-	config.plugins.mc_vlc.servers[i].host = ConfigText("", False)
-	config.plugins.mc_vlc.servers[i].httpport = ConfigInteger(8080, (0,65535))
-	config.plugins.mc_vlc.servers[i].basedir = ConfigText("/", False)
-	config.plugins.mc_vlc.servercount.value = i+1
-	return i
-
-for i in range(0, config.plugins.mc_vlc.servercount.value):
-	addVlcServerConfig()

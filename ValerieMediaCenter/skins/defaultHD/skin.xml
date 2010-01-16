@@ -3,8 +3,13 @@
 			<resolution xres="1280" yres="720" bpp="32" />
 		</output>
 	
+		<colors>
+			<color name="white" value="#f0f0f0"/>
+			<color name="black" value="#0f0f0f"/>
+		</colors>
+
 		<!-- DMC Main Menu -->
-		<screen name="DMC_MainMenu" position="0,0" size="1280,720" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
+		<screen name="MainMenu" position="0,0" size="1280,720" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/bg_home.png" />
 			<widget source="title" transparent="1" render="Label" zPosition="2" position="100,80" size="280,35" font="Regular;23" />
 			<widget source="welcomemessage" transparent="1" render="Label" zPosition="2" valign="center" halign="center" position="0,600" size="1280,30" font="Regular;30" />
@@ -233,6 +238,408 @@
 			<widget name="TdatHumidity" zPosition="5" transparent="1" halign="center" position="999,400" size="110,30" font="Regular;24" foregroundColor="#f0f0f0"/>
 		</screen>
 		
+<!-- DMC Wizard -->
+		<screen name="DMC_Wizard" position="0,0" size="1280,720" title="Welcome" flags="wfNoBorder" backgroundColor="#1f1f21" >
+			<ePixmap name="mb_bg" 
+				position="0,0" 
+				zPosition="0" 
+				size="1280,720" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/background-fs8.png" 
+			/>
+			<eLabel text="Project Valerie" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,60" 
+				size="620,40" 
+				font="Regular;40" 
+			/>
+			<widget name="text" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,120" 
+				size="620,60"
+				font="Regular;30" 
+			/>
+			<widget name="textTop" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,290" 
+				size="620,52"
+				font="Regular;26" 
+			/>
+			<widget name="textCenter" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,347" 
+				size="620,52"
+				font="Regular;26" 
+			/>
+			<widget name="textBottom" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,540" 
+				size="620,52"
+				font="Regular;26" 
+			/>
+
+			<widget source="list" 
+				render="Listbox" 
+				transparent="1" 
+				zPosition="1" 
+				position="590,330" 
+				size="50,60" 
+				scrollbarMode="showOnDemand" >
+				<convert type="StringList" />		
+			</widget>
+
+			<widget name="config" position="50,300" zPosition="1" size="440,200" transparent="1" scrollbarMode="showOnDemand" />
+			<widget name="wizard" pixmap="skin_default/wizard.png" position="40,50" zPosition="10" size="110,174" transparent="1" alphatest="on"/>
+
+			<widget name="languagetext" 
+				transparent="1" 
+				zPosition="1"  
+				position="55,225" 
+				size="95,30" 
+				font="Regular;18" 
+			/>
+		</screen>"
+
+
+<!-- DMC Main Menu -->
+		<screen name="DMC_MainMenu" position="0,0" size="1280,720" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
+
+			<ePixmap name="mb_bg" 
+				position="0,0" 
+				zPosition="0" 
+				size="1280,720" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/background-fs8.png" 
+			/>
+			<eLabel text="Project Valerie" 
+				transparent="1" 
+				zPosition="1" 
+				halign="center"
+				position="330,60" 
+				size="620,40" 
+				font="Regular;40" 
+			/>
+
+			<!-- This Element does not realy exist-->
+			<widget source="menu" 
+				render="Listbox" 
+				enableWrapAround="True"
+				zPosition="-1" 
+				transparent="0" 
+				position="0,0" 
+				size="100,100" 
+				scrollbarMode="showOnDemand" >
+				<convert type="StringList" />
+			</widget>
+
+<!-- #################### -->
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="50,280" 
+				size="238,156" 
+				alphatest="on"
+			/>
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="50,280" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_pictures</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="3" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/hover_my weather-fs8.png" 
+				position="119,300" 
+				size="100,100" 
+				alphatest="blend"
+			/>
+
+			<eLabel text="My Weather" 
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="60,390" 
+				size="218,25" 
+				font="Regular;25" 
+			/>
+
+<!-- #################### -->
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="290,280" 
+				size="238,156" 
+				alphatest="on"
+			/>
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="290,280" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_music</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="3" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/hover_my music-fs8.png" 
+				position="359,300" 
+				size="100,100" 
+				alphatest="blend"
+			/>
+
+			<eLabel text="Listen" 
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="300,390" 
+				size="218,25" 
+				font="Regular;25" 
+			/>
+
+<!-- #################### -->
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="530,280" 
+				size="238,156" 
+				alphatest="on"
+			/>
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="530,280" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_watch</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="3" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/hover_my videos-fs8.png" 
+				position="599,300" 
+				size="100,100" 
+				alphatest="blend"
+			/>
+
+			<eLabel text="Watch" 
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="540,390" 
+				size="218,25" 
+				font="Regular;25" 
+			/>
+
+<!-- |||||||||||||||||| -->
+
+			<!-- This Element does not realy exist-->
+			<widget source="menuWatch" 
+				render="Listbox" 
+				enableWrapAround="True"
+				zPosition="-1" 
+				transparent="0" 
+				position="0,0" 
+				size="100,100" 
+				scrollbarMode="showOnDemand" >
+				<convert type="StringList" />
+			</widget>
+
+<!-- |||||||||||||||||| -->
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="410,440" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_watch</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<widget source="menuWatch" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="410,440" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_movies</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<widget source="menu" render="FixedLabel" 
+				text="Movies"
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="420,500" 
+				size="218,25" 
+				font="Regular;25" >
+				<convert type="MenuEntryCompare">menu_watch</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+<!-- |||||||||||||||||| -->
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="650,440" 
+				size="238,156" 
+				alphatest="on"  >
+				<convert type="MenuEntryCompare">menu_watch</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<widget source="menuWatch" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="650,440" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_series</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<widget source="menu" render="FixedLabel" 
+				text="Series"
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="660,500" 
+				size="218,25" 
+				font="Regular;25" >
+				<convert type="MenuEntryCompare">menu_watch</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+
+<!-- #################### -->
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="770,280" 
+				size="238,156" 
+				alphatest="on"
+			/>
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="770,280" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_tv</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="3" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/hover_my tv-fs8.png" 
+				position="839,300" 
+				size="100,100" 
+				alphatest="blend"
+			/>
+
+			<eLabel text="My TV" 
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="780,390" 
+				size="218,25" 
+				font="Regular;25" 
+			/>
+
+<!-- #################### -->
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="1" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_nofocus-fs8.png" 
+				position="1010,280" 
+				size="238,156" 
+				alphatest="on"
+			/>
+
+			<widget source="menu" render="Pixmap" 
+				transparent="1" 
+				zPosition="2" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/basic_button_focus-fs8.png" 
+				position="1010,280" 
+				size="238,156" 
+				alphatest="on" >
+				<convert type="MenuEntryCompare">menu_settings</convert>
+				<convert type="ConditionalShowHide" />
+			</widget>
+
+			<ePixmap 
+				transparent="1" 
+				zPosition="3" 
+				pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/monochrome/hover_settings-fs8.png" 
+				position="1079,300" 
+				size="100,100" 
+				alphatest="blend"
+			/>
+
+			<eLabel text="Options" 
+				transparent="1" 
+				halign="center"
+				zPosition="4" 
+				position="1020,390" 
+				size="218,25" 
+				font="Regular;25" 
+			/>
+
+<!-- #################### -->
+
+		</screen>
+
+
+
+
+
+
+
+
+
+
 		<!-- DMC Series -->
 		<screen name="DMC_Series" position="0,0" size="1280,720" title="Media Center - Series" flags="wfNoBorder" backgroundColor="#ff000000" >
 

@@ -13,4 +13,6 @@ class Showiframe():
 		call_function(self.finishShowSinglePic, ())
 		#dlclose(self.showiframe)
 
+def printl(string):
+	print "[Project Valerie] ", string
 #------------------------------------------------------------------------------------------
