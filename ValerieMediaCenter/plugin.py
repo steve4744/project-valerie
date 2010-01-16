@@ -3,9 +3,12 @@ from Components.config import config
 		
 #------------------------------------------------------------------------------------------
 
+def main(session, **kwargs):
+		session.open(DMC_MainMenu)
+
 def menu(menuid, **kwargs):
 	if menuid == "mainmenu":
-		return [(_("Project Valerie"), DMC_MainMenu, "dmc_mainmenu", 44)]
+		return [(_("Project Valerie"), main, "dmc_mainmenu", 44)]
 	return []
 
 def DMC_Wizard(*args, **kwargs):
