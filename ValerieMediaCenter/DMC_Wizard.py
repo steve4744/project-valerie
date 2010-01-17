@@ -19,12 +19,20 @@ class DMC_Wizard(WizardLanguage):
 	def autostart(self, selection = None):
 		if selection is None:
 			selection = self.selection
-		printl("set config.plugins.dmc.autostart to" + str(selection))
 		if selection == "yes":
 			config.plugins.dmc.autostart.value = True
 		else:
 			config.plugins.dmc.autostart.value = False
 		printl("config.plugins.dmc.autostart -> " + str(config.plugins.dmc.autostart.value))
+
+	def checkforupdate(self, selection = None):
+		if selection is None:
+			selection = self.selection
+		if selection == "yes":
+			config.plugins.dmc.checkforupdate.value = True
+		else:
+			config.plugins.dmc.checkforupdate.value = False
+		printl("config.plugins.dmc.checkforupdate -> " + str(config.plugins.dmc.checkforupdate.value))
 
 	def saveConfig(self):
 		config.plugins.dmc.showwizard.value = False

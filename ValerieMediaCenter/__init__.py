@@ -15,10 +15,12 @@ from DMC_Global import printl
 printl("Init")
 
 # the currentVersion should be renewed every major update
-currentVersion          = "100"
+currentVersion          = 100
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/MediaCenter/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultSkin             = "defaultHD/skin.xml"
+defaultURL              = "http://project-valerie.googlecode.com/svn/trunk/"
+defaultUpdateXML        = "update.xml"
 
 printl("defaultPluginFolderPath=" + defaultPluginFolderPath)
 printl("defaultSkinFolderPath=" + defaultSkinFolderPath)
@@ -39,6 +41,12 @@ config.plugins.dmc.version           = ConfigInteger(0, (0, 999))
 config.plugins.dmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
 config.plugins.dmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPath)
 config.plugins.dmc.skin              = ConfigText(default = defaultSkinFolderPath)
+config.plugins.dmc.url               = ConfigText(default = defaultURL)
+config.plugins.dmc.updatexml         = ConfigText(default = defaultUpdateXML)
+
+# We updated to a newer version, so redisplay wizard
+if config.plugins.dmc.version.value != currentVersion:
+	config.plugins.dmc.showwizard.value = True
 
 config.plugins.dmc.version.value     = currentVersion
 

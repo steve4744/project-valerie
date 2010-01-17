@@ -7,7 +7,7 @@ self["textCenter"].setText("This Wizard allows you to setup Project Valerie\nPre
 self["textBottom"].setText(" ")
 		</code>
 	</step>
-	<step id="autostart" nextstep="end">
+	<step id="autostart" nextstep="checkforupdate">
 		<text value="Autostart configuration" />
 		<list evaluation="autostart" onselect="autostart">
 			<listentry caption="Yes" step="yes" />
@@ -15,6 +15,18 @@ self["textBottom"].setText(" ")
 		</list>
 		<code>
 self["textTop"].setText("Should Project Valerie automatically start?")
+self["textCenter"].setText(" ")
+self["textBottom"].setText("Press OK to continue")
+		</code>
+	</step>
+	<step id="checkforupdate" nextstep="end">
+		<text value="Update configuration" />
+		<list evaluation="checkforupdate" onselect="checkforupdate">
+			<listentry caption="Yes" step="yes" />
+			<listentry caption="No" step="no" />
+		</list>
+		<code>
+self["textTop"].setText("Should Project Valerie automatically check for updates?")
 self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>

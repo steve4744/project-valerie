@@ -88,6 +88,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self["listview"] = MenuList(list)
 		self.loadMoviesDB()
 
+		self.onFirstExecBegin.append(self.refresh)
+
 	def sortList(self,x, y):
 		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
 			return 1

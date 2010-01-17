@@ -26,12 +26,19 @@ from MC_Settings import MC_Settings, MCS_Update
 
 
 from Components.MenuList import MenuList
+from DMC_Global import printl
 
+# Unfortunaly not everyone has twisted installed ...
+try:
+	from twisted.web.client import getPage
+except Exception, e:
+	printl("import twisted.web.client failed")
 
 #------------------------------------------------------------------------------------------
 	
 class DMC_MainMenu(Screen):
 	def __init__(self, session):
+		printl("DMC_MainMenu:__init__")
 		Screen.__init__(self, session)
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -74,7 +81,30 @@ class DMC_MainMenu(Screen):
 				"down": self.down,
 			}, -1)
 
-		
+		if config.plugins.dmc.checkforupdate.value == True:
+			self.onFirstExecBegin.append(self.checkForUpdate)
+
+
+	def checkForUpdate(self):
+		self.url = config.plugins.dmc.url.value + config.plugins.dmc.updatexml.value
+		printl("Checking URL: " + self.url) 
+		try:
+			getPage(self.url).addCallback(self.gotUpdateInformation).addErrback(self.error)
+		except Exception, e:
+			printl("""Could not download HTTP Page (%s)""" % e)
+
+	def gotUpdateInformation(self, html):
+		tmp_infolines = html.splitlines()     
+		remoteversion = tmp_infolines[0]
+
+		if config.plugins.dmc.version.value < remoteversion:
+			self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_INFO)
+
+	def startUpdate(self, answer):
+		if answer is True:
+			printl("Updating not yet supported!")
+			#self.session.open(MCS_Update)
+
 	def okbuttonClick(self):
 		print "okbuttonClick"
 

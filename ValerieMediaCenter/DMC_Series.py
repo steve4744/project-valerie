@@ -86,6 +86,8 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 		self.loadSeriesDB()
 
+		self.onFirstExecBegin.append(self.refresh)
+
 	def loadSeriesDB(self):
 		list =[]
 		filter = []
