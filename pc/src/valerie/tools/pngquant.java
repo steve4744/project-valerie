@@ -14,7 +14,14 @@ import java.io.File;
 public class pngquant {
     public void exec(String Input, String Output) {
          try {
-            String cmd = "bin\\pngquant 256 " + Input;
+            String cmd = "";
+            //cmd = System.getProperty("file.separator");
+            if(System.getProperty("file.separator").equals("/")) //Linux
+                    cmd = "pngquant";
+                else //Windows
+                    cmd = "bin\\pngquant";
+
+            cmd += " 8 " + Input;
             Process process = Runtime.getRuntime().exec(cmd);
             process.getErrorStream().close();
             process.getInputStream().close();

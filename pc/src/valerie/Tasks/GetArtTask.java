@@ -151,21 +151,21 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
     private void getMediaArtSeries(MediaInfo movie) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
-        File checkIfFilePNGalreadyExists = new File("converted/tt" + movie.TheTvDb + "_poster.png");
+        File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDb + "_poster.png");
         if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
 
-            File checkIfFileAlreadyExists = new File("download/tt" + movie.TheTvDb + "_poster.jpg");
+            File checkIfFileAlreadyExists = new File("download/" + movie.TheTvDb + "_poster.jpg");
             if (checkIfFileAlreadyExists == null || !checkIfFileAlreadyExists.exists()) {
 
                 movie.ArtProvider.getArtById(movie);
                 if (movie.Poster.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/tt" + movie.TheTvDb + "_poster.jpg");
+                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/" + movie.TheTvDb + "_poster.jpg");
                 }
             }
 
 
 
-            checkIfFileAlreadyExists = new File("download/tt" + movie.TheTvDb + "_poster.jpg");
+            checkIfFileAlreadyExists = new File("download/" + movie.TheTvDb + "_poster.jpg");
             if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
                 try {
                     BufferedImage image = ImageIO.read(checkIfFileAlreadyExists);
@@ -180,7 +180,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
                     ImageIO.write(bi, "png", checkIfFilePNGalreadyExists);
 
-                    new pngquant().exec("converted\\tt" + movie.TheTvDb + "_poster.png", "converted\\tt" + movie.TheTvDb + "_poster.png");
+                    new pngquant().exec("converted\\" + movie.TheTvDb + "_poster.png", "converted\\" + movie.TheTvDb + "_poster.png");
 
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
@@ -190,25 +190,25 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading backdrops");
 
-        File converted = new File("converted/tt" + movie.TheTvDb + "_backdrop.m1v");
+        File converted = new File("converted/" + movie.TheTvDb + "_backdrop.m1v");
         if (converted == null || !converted.exists()) {
 
-            File downloaded = new File("download/tt" + movie.TheTvDb + "_backdrop.jpg");
+            File downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
             if (downloaded == null || !downloaded.exists()) {
                 if (movie.Backdrop == null || movie.Backdrop.length() <= 0) {
                     movie.ArtProvider.getArtById(movie);
                 }
 
                 if (movie.Backdrop.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/tt" + movie.TheTvDb + "_backdrop.jpg");
+                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/" + movie.TheTvDb + "_backdrop.jpg");
                 }
             }
 
 
 
-            downloaded = new File("download/tt" + movie.TheTvDb + "_backdrop.jpg");
+            downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
-                new mencoder().exec("download/tt" + movie.TheTvDb + "_backdrop.jpg", "converted/tt" + movie.TheTvDb + "_backdrop.m1v");
+                new mencoder().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "converted/" + movie.TheTvDb + "_backdrop.m1v");
             }
         }
     }
