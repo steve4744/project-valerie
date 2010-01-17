@@ -89,13 +89,14 @@ class DMC_MainMenu(Screen):
 		self.url = config.plugins.dmc.url.value + config.plugins.dmc.updatexml.value
 		printl("Checking URL: " + self.url) 
 		try:
-			getPage(self.url).addCallback(self.gotUpdateInformation).addErrback(self.error)
+			getPage(self.url).addCallback(self.gotUpdateInformation).addErrback(self.Error)
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % e)
 
 	def gotUpdateInformation(self, html):
+		printl(str(html))
 		tmp_infolines = html.splitlines()     
-		remoteversion = tmp_infolines[0]
+		remoteversion = int(tmp_infolines[0])
 
 		if config.plugins.dmc.version.value < remoteversion:
 			self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_INFO)
@@ -104,6 +105,9 @@ class DMC_MainMenu(Screen):
 		if answer is True:
 			printl("Updating not yet supported!")
 			#self.session.open(MCS_Update)
+
+	def Error(self, error):
+		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
 
 	def okbuttonClick(self):
 		print "okbuttonClick"

@@ -1,6 +1,6 @@
 from Components.config import config
 from _ctypes import *
-from os import environ, popen
+from os import environ, popen, makedirs
 
 class Showiframe():
 	def __init__(self):
@@ -21,12 +21,36 @@ def printl(string):
 class E2Control():
 	def __init__(self):
 		# TODO: Change dinaicaly
+		try:
+			makedirs("/hdd/valerie")
+		except OSError, e: 
+			printl("OSError: " + str(e))
+		try:
+			makedirs("/hdd/valerie/episodes")
+		except OSError, e: 
+			printl("OSError: " + str(e))
+		try:
+			makedirs("/hdd/valerie/media")
+		except OSError, e: 
+			printl("OSError: " + str(e))
+
+		self.close()
+
 		environ['BOXSYSTEM'] = "MANUFACTOR=Topfield;MODEL=HDPVR-7700;"
 		s = config.plugins.dmc.pluginfolderpath.value + "e2control"
 		s += " &"
-		print s
+		printl(s)
 		try:
 			popen(s)
 		except OSError, e: 
-			printl("OSError: " + e)
+			printl("OSError: " + str(e))
+
+	def close(self):
+		s = "killall e2control"
+		#s += " &"
+		printl(s)
+		try:
+			popen(s)
+		except OSError, e: 
+			printl("OSError: " + str(e))
 

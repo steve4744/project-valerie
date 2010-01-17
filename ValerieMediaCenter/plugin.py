@@ -1,5 +1,6 @@
 from Plugins.Plugin import PluginDescriptor
 from Components.config import config
+from DMC_Global import printl
 		
 #------------------------------------------------------------------------------------------
 
@@ -21,9 +22,15 @@ def autostart(reason, **kwargs):
 
 	if kwargs.has_key("session"):
                 gSession = kwargs["session"]
+	printl("Reason: " + str(reason))
+	gReason = reason
 
 	from DMC_Global import E2Control
-	gE2Control = E2Control()
+	if gReason == 0 and gSession != None and gE2Control == None:
+		gE2Control = E2Control()
+	elif gReason == 1 and gE2Control != None:
+#		gE2Control.stop()
+		gE2Control = None
 	
 
 def DMC_Wizard(*args, **kwargs):
