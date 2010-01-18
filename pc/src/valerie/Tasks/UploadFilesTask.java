@@ -57,7 +57,9 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
             String[] entries = folder.list();
 
             for (int i = 0; i < entries.length; ++i) {
-
+                System.out.println(entries[i]);
+                if(entries[i].charAt(0) == '.')
+                    continue;
                 //Only upload arts if really needed so checbefore
                 String[] vLine = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress,
                         "ls /hdd/valerie/media/" + entries[i]);

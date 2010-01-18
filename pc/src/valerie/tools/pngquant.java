@@ -21,7 +21,7 @@ public class pngquant {
                 else //Windows
                     cmd = "bin\\pngquant";
 
-            cmd += " 8 " + Input;
+            cmd += " 256 " + Input;
             Process process = Runtime.getRuntime().exec(cmd);
             process.getErrorStream().close();
             process.getInputStream().close();

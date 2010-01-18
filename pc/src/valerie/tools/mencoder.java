@@ -34,6 +34,7 @@ public class mencoder {
                 
                 cmd += " mf://" + fOutput.getName() + " -mf type=jpg -ovc lavc -lavcopts vcodec=mpeg2video -oac copy -o " +  Output + " -vf scale=1024:576";
                 sem.acquire();
+                System.out.println("------>>>>>>");
                 Process process = Runtime.getRuntime().exec(cmd);
                 process.getErrorStream().close();
                 process.getInputStream().close();
@@ -42,11 +43,12 @@ public class mencoder {
                 process.waitFor();
                 int exitval = process.exitValue();
                 System.out.printf("Exit: %d\n",  exitval);
+                System.out.println("<<<<<<------");
                 sem.release();
 
                fOutput.delete();
 
-                if( new File(Output).exists() && new File(Output).length() > 20000 )
+                if( new File(Output).exists() && new File(Output).length() > 2000 )
                     break;
 
                 new File(Output).delete();

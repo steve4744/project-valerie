@@ -26,6 +26,8 @@ import java.util.ArrayList;
  */
 public class Network {
 
+    int MAX_CHARS_TCP = 1460;
+
     public String sendBroadcast()
     {
         DebugOutput.printl("->");
@@ -96,7 +98,7 @@ public class Network {
             File inputFile = new File(file);
             FileInputStream in = new FileInputStream(inputFile);
 
-            byte[] buffer = new byte[2048];
+            byte[] buffer = new byte[MAX_CHARS_TCP];
             int numread;
 
             String sPrefix = "REQ_FILE_MT";
@@ -130,19 +132,21 @@ public class Network {
                 bLength[3] = (byte)(iByte3%0x100);
                 dataOutput.write(bLength, 0, bLength.length);
 
-                DebugOutput.print("sending:"); // console confirmation of transfer
+                DebugOutput.print("Sending:"); // console confirmation of transfer
                 while ((numread = in.read(buffer))>=0) {
                     dataOutput.write(buffer, 0, numread);
-                    DebugOutput.print("."); // console confirmation of transfer
+                    System.out.print("."); // console confirmation of transfer
                 }
-                DebugOutput.printl("");
+                System.out.println("");
             }
 
             in.close();
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
-            DebugOutput.print(ex.toString());
+            DebugOutput.printl("");
+            DebugOutput.printl(ex.toString());
+            DebugOutput.printl("");
         }
 
         DebugOutput.printl("<-");
