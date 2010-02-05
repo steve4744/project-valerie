@@ -89,19 +89,19 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
         ArrayList<String[]> replacements=getReplacements();
         for (int row = 0; row < paths.length; row++) {
-            String filterString = "";
+            String filterString = "(";
             String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
             String[] filters = filter.split("\\|");
             if(filters.length > 0)
-                filterString += " -name \"*." + filters[0] + "\"";
+                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[0] + "\"  -type f;";
 
             for(int i = 1; i < filters.length; i++)
-                filterString += " -o -name \"*." + filters[i] + "\"";
-
+                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[0] + "\"  -type f;";
+            filterString += ")";
 
             BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
             int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
-            String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
+            String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, filterString + "\n");
 
             for (int i = 0; i < entries.length; i++) {
                 Float progress = (float) i * 100;
@@ -232,18 +232,19 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         for (int row = 0; row < paths.length; row++) {
             if(paths[row].length() <= 0)
                 continue;
-            String filterString = "";
+            String filterString = "(";
             String filter = new valerie.tools.Properties().getPropertyString("FILTER_SERIES");
             String[] filters = filter.split("\\|");
             if(filters.length > 0)
-                filterString += " -name \"*." + filters[0] + "\"";
+                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[0] + "\"  -type f;";
 
             for(int i = 1; i < filters.length; i++)
-                filterString += " -o -name \"*." + filters[i] + "\"";
+                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[i] + "\"  -type f;";
+            filterString += ")";
 
             BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
             int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
-            String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");
+            String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, filterString + "\n");
 
             //String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\" -type f\n");
 
