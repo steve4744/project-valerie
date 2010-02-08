@@ -44,6 +44,8 @@ captain=welcome captain
 bigbang=the big bang theory
 lasvegas=las vegas
 ctu= 
-
+\d+\s+\d+\s+= 
+ts= 
+premiere= 
 \[.*\]= 
 \(.*\)= 
