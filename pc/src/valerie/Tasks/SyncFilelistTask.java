@@ -96,7 +96,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                 filterString += "find \"" + paths[row] + "\" -name \"*." + filters[0] + "\"  -type f;";
 
             for(int i = 1; i < filters.length; i++)
-                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[0] + "\"  -type f;";
+                filterString += "find \"" + paths[row] + "\" -name \"*." + filters[i] + "\"  -type f;";
             filterString += ")";
 
             BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
