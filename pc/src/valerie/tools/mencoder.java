@@ -32,7 +32,7 @@ public class mencoder {
                 else //Windows
                     cmd = "bin\\mencoder";
                 
-                cmd += " mf://" + fOutput.getName() + " -mf type=jpg -ovc lavc -lavcopts vcodec=mpeg2video -oac copy -o " +  Output + " -vf scale=1024:576";
+                cmd += " mf://" + fOutput.getName() + " -mf w=1024:h=576:fps=25:type=jpg -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video";
                 sem.acquire();
                 System.out.println("------>>>>>>");
                 Process process = Runtime.getRuntime().exec(cmd);
