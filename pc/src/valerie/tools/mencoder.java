@@ -16,9 +16,13 @@ public class mencoder {
 
     private static Semaphore sem = new Semaphore(1, true);
 
-    public void exec(String Input, String Output) {
+    public void exec(String Input, String Output, Integer Resolution) {
          try {
-            for(int retry = 0; retry < 2; retry++) {
+
+            Process process;
+            int exitval;
+
+            for(int retry = 0; retry < 1; retry++) {
 
                 File fInput = new File(Input);
                 File fOutput = new File(fInput.getName());
@@ -32,18 +36,38 @@ public class mencoder {
                 else //Windows
                     cmd = "bin\\mencoder";
                 
+                String Res = "1024:576";
+                String fps = "25";
+
+                switch(Resolution)
+                {
+                    case 0:
+                        Res = "1024:576";
+                        fps = "25";
+                        break;
+                    case 1:
+                        Res = "1280:720";
+                        fps = "60";
+                        break;
+                    case 2:
+                        Res = "1920:1080";
+                        fps = "60";
+                        break;
+                }
+
+                cmd += " mf://" + fOutput.getName() + " -mf fps="+fps+":type=jpg -embeddedfonts -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video -vf scale="+Res;
                 cmd += " mf://" + fOutput.getName() + " -mf fps=25:type=jpg -embeddedfonts -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video -vf scale=1024:576";
                 sem.acquire();
-                System.out.println("------>>>>>>");
-                Process process = Runtime.getRuntime().exec(cmd);
+                System.out.println("mencoder "+Input+" >>>>>>");
+                process = Runtime.getRuntime().exec(cmd);
                 process.getErrorStream().close();
                 process.getInputStream().close();
                 process.getOutputStream().close();
 
                 process.waitFor();
-                int exitval = process.exitValue();
-                System.out.printf("Exit: %d\n",  exitval);
-                System.out.println("<<<<<<------");
+                exitval = process.exitValue();
+                System.out.printf("mencoder-Exit: %d\n",  exitval);
+                System.out.println("<<<<<<mencoder");
                 sem.release();
 
                fOutput.delete();
@@ -54,8 +78,9 @@ public class mencoder {
                 new File(Output).delete();
             }
         } catch(Exception ex) {
-            System.out.println(ex.toString());
+            System.out.println("mencoder: "+ex.toString());
 
         }
     }
 }
+
