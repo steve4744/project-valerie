@@ -55,8 +55,7 @@ public class mencoder {
                         break;
                 }
 
-                cmd += " mf://" + fOutput.getName() + " -mf fps="+fps+":type=jpg -embeddedfonts -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video -vf scale="+Res;
-                cmd += " mf://" + fOutput.getName() + " -mf fps=25:type=jpg -embeddedfonts -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video -vf scale=1024:576";
+                cmd += " mf://" + fOutput.getName() + " -mf fps="+fps+":type=jpg -embeddedfonts -o " +  Output + " -ovc lavc -lavcopts vcodec=mpeg1video -vf scale="+Res;                
                 sem.acquire();
                 System.out.println("mencoder "+Input+" >>>>>>");
                 process = Runtime.getRuntime().exec(cmd);
