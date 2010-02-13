@@ -22,6 +22,7 @@ import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -42,8 +43,20 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+
 import valerie.tools.BoxInfo;
 import valerie.tools.DebugOutput;
+import valerie.tools.ImageFilter;
+import valerie.tools.Resize;
+import valerie.tools.FileUtils;
+import valerie.tools.Encode;
+import valerie.tools.mencoder;
+import valerie.tools.pngquant;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
 
 /**
  * The application's main frame.
@@ -75,11 +88,18 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         @Override
         public void setWorking(boolean s) {
-            jButtonConnect.setEnabled(!s);
-            jButtonSync.setEnabled(!s);
+            jButtonConnect.setEnabled(!s);            
             jButtonParse.setEnabled(!s);
             jButtonArt.setEnabled(!s);
-            jButtonUpload.setEnabled(!s);
+            if (BoxIsConnected){
+                jButtonUpload.setEnabled(!s);
+                jButtonSync.setEnabled(!s);
+            }
+            else {
+                jButtonUpload.setEnabled(false);
+                jButtonSync.setEnabled(false);
+            }
+
         }
 
         @Override
@@ -189,12 +209,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     pWorker.set("SelectedBoxInfo", (int)0);
                     for (int i = 0; i < boxInfos.length; i++) {
                         String vInfo = boxInfos[i].toShortString();
+                        if (vInfo.contains("unknown")){
+                            pParent.BoxIsConnected = false;
+                        }
+                        else {
+                            pParent.BoxIsConnected = true;
+                        }
                         jComboBoxBoxinfo.addItem (vInfo);
                     }
                     jComboBoxBoxinfo.setSelectedIndex( 0 );
                 } else {
                     pWorker.set("SelectedBoxInfo", (int)-1);
                     jComboBoxBoxinfo.setSelectedIndex( -1 );
+                    pParent.BoxIsConnected = false;
                 }
             }
             else if(id.equals("UPDATE_TABLES")) {
@@ -475,6 +502,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         }
         ;
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jPanelSeries = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane6 = new javax.swing.JScrollPane();
@@ -537,6 +566,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
         descLabel = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableTasks = new javax.swing.JTable();
+        jImportBackdrop = new javax.swing.JFrame();
+        jLabelBackdrop1 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
+        jButtonBackdropOpen = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jJPEGOpen = new javax.swing.JFileChooser();
+        jImportPoster = new javax.swing.JFrame();
+        jLabelPoster1 = new javax.swing.JLabel();
+        jButtonPosterCancel = new javax.swing.JButton();
+        jButtonPosterOpen = new javax.swing.JButton();
+        jButtonPosterSave = new javax.swing.JButton();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -605,7 +645,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         });
 
-        jSplitPane1.setDividerLocation(400);
+        jSplitPane1.setDividerLocation(500);
         jSplitPane1.setDividerSize(10);
         jSplitPane1.setName("jSplitPane1"); // NOI18N
         jSplitPane1.setOneTouchExpandable(true);
@@ -622,7 +662,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "Year", "ID", "Update"
+                "Use", "Title", "Searchstring", "Searchstring", "ID", "Use"
             }
         ) {
             Class[] types = new Class [] {
@@ -659,33 +699,46 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         });
         jScrollPane1.setViewportView(jTableFilelist);
-        jTableFilelist.getColumnModel().getColumn(0).setResizable(false);
-        jTableFilelist.getColumnModel().getColumn(0).setPreferredWidth(10);
+        jTableFilelist.getColumnModel().getColumn(0).setMinWidth(20);
+        jTableFilelist.getColumnModel().getColumn(0).setPreferredWidth(15);
         jTableFilelist.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(1).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(1).setPreferredWidth(150);
         jTableFilelist.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title1")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(2).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(3).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(3).setPreferredWidth(30);
         jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(4).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
         jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title6")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(5).setResizable(false);
         jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(1);
         jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
+
+        jButton1.setAction(actionMap.get("SelectAllMovies")); // NOI18N
+        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+        jButton1.setName("jButton1"); // NOI18N
+
+        jButton2.setAction(actionMap.get("UnselectAllMovies")); // NOI18N
+        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
+        jButton2.setName("jButton2"); // NOI18N
 
         javax.swing.GroupLayout jPanelMoviesLayout = new javax.swing.GroupLayout(jPanelMovies);
         jPanelMovies.setLayout(jPanelMoviesLayout);
         jPanelMoviesLayout.setHorizontalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+            .addGroup(jPanelMoviesLayout.createSequentialGroup()
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addContainerGap(328, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
         );
         jPanelMoviesLayout.setVerticalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
+            .addGroup(jPanelMoviesLayout.createSequentialGroup()
+                .addGroup(jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE))
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -822,11 +875,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanelSeries.setLayout(jPanelSeriesLayout);
         jPanelSeriesLayout.setHorizontalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
@@ -851,22 +904,32 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jLabelPoster.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jLabelPoster.setName("jLabelPoster"); // NOI18N
         jLabelPoster.setOpaque(true);
+        jLabelPoster.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelPosterMouseClicked(evt);
+            }
+        });
 
         jLabelBackdrop.setBackground(resourceMap.getColor("jLabelBackdrop.background")); // NOI18N
         jLabelBackdrop.setText(resourceMap.getString("jLabelBackdrop.text")); // NOI18N
         jLabelBackdrop.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jLabelBackdrop.setName("jLabelBackdrop"); // NOI18N
         jLabelBackdrop.setOpaque(true);
+        jLabelBackdrop.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelBackdropMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelThumbsLayout = new javax.swing.GroupLayout(jPanelThumbs);
         jPanelThumbs.setLayout(jPanelThumbsLayout);
         jPanelThumbsLayout.setHorizontalGroup(
             jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelThumbsLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29))
         );
         jPanelThumbsLayout.setVerticalGroup(
@@ -874,8 +937,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -883,13 +946,16 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
-            .addComponent(jPanelThumbs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jPanelThumbs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -901,11 +967,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
                 .addGap(121, 121, 121)
                 .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1095, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1116, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -916,7 +982,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         .addContainerGap()
                         .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -964,15 +1030,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1095, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1116, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1075, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1096, Short.MAX_VALUE)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(788, Short.MAX_VALUE)
+                .addContainerGap(809, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1000,7 +1066,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel2.setName("jPanel2"); // NOI18N
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        descLabel.setFont(new java.awt.Font("Tahoma", 0, 18));
         descLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descLabel.setText(resourceMap.getString("descLabel.text")); // NOI18N
         descLabel.setName("descLabel"); // NOI18N
@@ -1057,21 +1123,164 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         statusPopup.getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
-        setComponent(mainPanel);
-        setMenuBar(menuBar);
-        setStatusBar(statusPanel);
-    }// </editor-fold>//GEN-END:initComponents
+        jImportBackdrop.setTitle(resourceMap.getString("jImportBackdrop.title")); // NOI18N
+        jImportBackdrop.setAlwaysOnTop(true);
+        jImportBackdrop.setMinimumSize(new java.awt.Dimension(430, 310));
+        jImportBackdrop.setName("jImportBackdrop"); // NOI18N
+
+        jLabelBackdrop1.setBackground(resourceMap.getColor("jLabelBackdrop1.background")); // NOI18N
+        jLabelBackdrop1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jLabelBackdrop1.setName("jLabelBackdrop1"); // NOI18N
+        jLabelBackdrop1.setOpaque(true);
+        jLabelBackdrop1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelBackdrop1MouseClicked(evt);
+            }
+        });
+
+        jButton3.setAction(actionMap.get("importBackdropCancel")); // NOI18N
+        jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
+        jButton3.setName("jButton3"); // NOI18N
+
+        jButtonBackdropOpen.setAction(actionMap.get("ImportBackdropOpen")); // NOI18N
+        jButtonBackdropOpen.setText(resourceMap.getString("jButtonBackdropOpen.text")); // NOI18N
+        jButtonBackdropOpen.setName("jButtonBackdropOpen"); // NOI18N
+        jButtonBackdropOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBackdropOpenActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText(resourceMap.getString("jButton5.text")); // NOI18N
+        jButton5.setName("jButton5"); // NOI18N
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jImportBackdropLayout = new javax.swing.GroupLayout(jImportBackdrop.getContentPane());
+        jImportBackdrop.getContentPane().setLayout(jImportBackdropLayout);
+        jImportBackdropLayout.setHorizontalGroup(
+            jImportBackdropLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jImportBackdropLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jImportBackdropLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jImportBackdropLayout.createSequentialGroup()
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonBackdropOpen)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5))
+                    .addComponent(jLabelBackdrop1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        jImportBackdropLayout.setVerticalGroup(
+            jImportBackdropLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jImportBackdropLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelBackdrop1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jImportBackdropLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jButton5)
+                    .addComponent(jButtonBackdropOpen))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jJPEGOpen.setCurrentDirectory(new java.io.File("C:\\"));
+            jJPEGOpen.setDialogTitle(resourceMap.getString("jJPEGOpen.dialogTitle")); // NOI18N
+            jJPEGOpen.setName("jJPEGOpen"); // NOI18N
+
+            jImportPoster.setMinimumSize(new java.awt.Dimension(230, 310));
+            jImportPoster.setName("jImportPoster"); // NOI18N
+
+            jLabelPoster1.setBackground(resourceMap.getColor("jLabelPoster1.background")); // NOI18N
+            jLabelPoster1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+            jLabelPoster1.setName("jLabelPoster1"); // NOI18N
+            jLabelPoster1.setOpaque(true);
+
+            jButtonPosterCancel.setAction(actionMap.get("importBackdropCancel")); // NOI18N
+            jButtonPosterCancel.setText(resourceMap.getString("jButtonPosterCancel.text")); // NOI18N
+            jButtonPosterCancel.setName("jButtonPosterCancel"); // NOI18N
+            jButtonPosterCancel.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButtonPosterCancelActionPerformed(evt);
+                }
+            });
+
+            jButtonPosterOpen.setText(resourceMap.getString("jButtonPosterOpen.text")); // NOI18N
+            jButtonPosterOpen.setName("jButtonPosterOpen"); // NOI18N
+            jButtonPosterOpen.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButtonPosterOpenActionPerformed(evt);
+                }
+            });
+
+            jButtonPosterSave.setText(resourceMap.getString("jButtonPosterSave.text")); // NOI18N
+            jButtonPosterSave.setName("jButtonPosterSave"); // NOI18N
+            jButtonPosterSave.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButtonPosterSaveActionPerformed(evt);
+                }
+            });
+
+            javax.swing.GroupLayout jImportPosterLayout = new javax.swing.GroupLayout(jImportPoster.getContentPane());
+            jImportPoster.getContentPane().setLayout(jImportPosterLayout);
+            jImportPosterLayout.setHorizontalGroup(
+                jImportPosterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jImportPosterLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jImportPosterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jImportPosterLayout.createSequentialGroup()
+                            .addComponent(jButtonPosterCancel)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButtonPosterOpen)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jButtonPosterSave))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jImportPosterLayout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelPoster1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(21, 21, 21)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            jImportPosterLayout.setVerticalGroup(
+                jImportPosterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jImportPosterLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabelPoster1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(11, 11, 11)
+                    .addGroup(jImportPosterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButtonPosterCancel)
+                        .addComponent(jButtonPosterOpen)
+                        .addComponent(jButtonPosterSave))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+
+            setComponent(mainPanel);
+            setMenuBar(menuBar);
+            setStatusBar(statusPanel);
+        }// </editor-fold>//GEN-END:initComponents
 
     private void drawPosters(ImageIcon poster, ImageIcon backdrop) {
-        if(poster.getIconWidth() != -1)
-            jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, jLabelPoster.getWidth() - 80, jLabelPoster.getHeight() - 4, null);
-        else
-            jLabelPoster.repaint();
+        if(poster.getIconWidth() != -1){
+            jLabelPoster.setDoubleBuffered(true);
+            jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster.getWidth(), jLabelPoster.getHeight(), 0)));
+        }
+            //jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, jLabelPoster.getWidth() - 80, jLabelPoster.getHeight() - 4, null);
+        else {
+            jLabelPoster.setDoubleBuffered(true);
+            jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(1, 1, 0)));
+        }
 
-        if(backdrop.getIconWidth() != -1)
-            jLabelBackdrop.getGraphics().drawImage(backdrop.getImage(), 10, 2, jLabelBackdrop.getWidth() - 20, jLabelBackdrop.getHeight() - 4, null);
-        else
-            jLabelBackdrop.repaint();
+        if(backdrop.getIconWidth() != -1){
+            jLabelBackdrop.setDoubleBuffered(true);
+            jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop.getWidth(), jLabelBackdrop.getHeight(), 0)));            
+        }
+        else {
+            jLabelBackdrop.setDoubleBuffered(true);
+            jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(1, 1, 0)));
+        }
     }
 
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
@@ -1185,8 +1394,279 @@ public class ValerieView extends FrameView implements WindowStateListener {
         pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
         updateTables();
 
+        if (jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
+            jButtonUpload.setEnabled(false);
+            jButtonSync.setEnabled(false);
+        }
+        else {
+            jButtonUpload.setEnabled(true);
+            jButtonSync.setEnabled(true);
+        }
+
         DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
+
+    private void jLabelBackdropMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelBackdropMouseClicked
+
+        int row = 0;
+        int id = 0;
+        String directory = "";
+        ImageIcon backdrop;        
+
+        System.out.println(jTabbedPane.getSelectedIndex());
+
+        switch(jTabbedPane.getSelectedIndex()){
+            case 0:
+                row = jTableFilelist.getSelectedRow();
+                if (row >= 0){
+                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    directory = "download/tt";
+                }
+                break;
+            case 1:
+                row = jTableSeries.getSelectedRow();
+
+                if (row > 1){
+                    id = (Integer) jTableSeries.getValueAt(row, 1);
+                    directory = "download/";
+                }
+                else {
+                    row = jTableFilelistEpisodes.getSelectedRow();
+
+                    if (row > 1){
+                        id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
+                        directory = "download/";
+                    }
+                }
+                break;
+        }
+
+        if (directory.contains("download")){
+            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            BackdropWork = database.getMediaInfoById(id);
+
+            if (BackdropWork.isMovie){
+                directory = directory + BackdropWork.Imdb + "_backdrop.jpg";
+            }
+            else {
+                directory = directory + BackdropWork.TheTvDb + "_backdrop.jpg";
+            }            
+
+            jImportBackdrop.setLocationRelativeTo(mainPanel);
+            jImportBackdrop.validate();
+            jImportBackdrop.setVisible(true);
+            jImportBackdrop.setTitle("Import Backdrop (Imdb: "+BackdropWork.Imdb+")");
+
+            backdrop = new ImageIcon(directory);
+
+            if(backdrop.getIconWidth() != -1){                
+                jLabelBackdrop1.setDoubleBuffered(true);                
+                jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
+            }
+            else {                
+                jLabelBackdrop1.setDoubleBuffered(true);
+                jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(1, 1, 0)));
+            }
+        }
+    }//GEN-LAST:event_jLabelBackdropMouseClicked
+
+    private void jLabelBackdrop1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelBackdrop1MouseClicked
+        // TODO add your handling code here:
+}//GEN-LAST:event_jLabelBackdrop1MouseClicked
+
+    private void jButtonBackdropOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackdropOpenActionPerformed
+        Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
+
+        jJPEGOpen.addChoosableFileFilter(new ImageFilter());
+        int result = jJPEGOpen.showOpenDialog(null);
+
+        if(result == jJPEGOpen.APPROVE_OPTION){
+            File selectedFile = jJPEGOpen.getSelectedFile();
+            System.out.println(selectedFile.toString());
+
+            new Resize().exec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
+            ImageIcon backdrop = new ImageIcon("import/backdrop.jpg");
+            jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
+        }
+
+    }//GEN-LAST:event_jButtonBackdropOpenActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        try {
+            if (BackdropWork.isMovie) {
+                FileUtils.copy("import/backdrop.jpg", "download/tt"+BackdropWork.Imdb+"_backdrop.jpg");
+            }
+            else {
+                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDb+"_backdrop.jpg");
+            }
+        }
+        catch(IOException e2)
+        {
+             e2.printStackTrace();
+        }
+
+        Integer Encoder = new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE");
+        Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
+
+        switch (Encoder)
+        {
+            case 0:
+                if (BackdropWork.isMovie) {
+                    new mencoder().exec("download/tt" + BackdropWork.Imdb + "_backdrop.jpg", "converted/tt" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
+                }
+                else {
+                    new mencoder().exec("download/" + BackdropWork.TheTvDb + "_backdrop.jpg", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v", Resolution);
+                }
+                break;
+            case 1:
+                if (BackdropWork.isMovie) {
+                    new Encode().exec("download/tt" + BackdropWork.Imdb + "_backdrop", "converted/tt" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
+                }
+                else {
+                    new Encode().exec("download/" + BackdropWork.TheTvDb + "_backdrop", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v",Resolution);
+                }
+                break;
+        }
+
+        jImportBackdrop.setVisible(false);
+        FileUtils.deleteFile("import/backdrop.jpg");
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButtonPosterOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterOpenActionPerformed
+        jJPEGOpen.addChoosableFileFilter(new ImageFilter());
+        int result = jJPEGOpen.showOpenDialog(null);
+
+        if(result == jJPEGOpen.APPROVE_OPTION){
+            File selectedFile = jJPEGOpen.getSelectedFile();
+            System.out.println(selectedFile.toString());
+
+            try {
+                FileUtils.copy(selectedFile.toString(), "import/poster.jpg");
+            }
+            catch(IOException e2)
+            {
+                e2.printStackTrace();
+            }
+
+            if (selectedFile != null) {
+                try {
+                    BufferedImage image = ImageIO.read(selectedFile);
+                    Image scaled = image.getScaledInstance(156, 214, Image.SCALE_SMOOTH);
+
+                    BufferedImage bi = new BufferedImage(
+                            156,
+                            214,
+                            BufferedImage.TYPE_INT_RGB);
+                    Graphics g = bi.getGraphics();
+                    g.drawImage(scaled, 0, 0, null);
+
+                    File pngposter = new File("import/poster.png");
+                    ImageIO.write(bi, "png", pngposter);
+
+                    new pngquant().exec("import\\poster.png", "import\\poster.png");
+
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
+            }
+
+            ImageIcon poster = new ImageIcon("import/poster.png");
+            jLabelPoster1.setDoubleBuffered(true);
+            jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster1.getWidth(), jLabelPoster1.getHeight(), 0)));
+        }
+    }//GEN-LAST:event_jButtonPosterOpenActionPerformed
+
+    private void jButtonPosterSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterSaveActionPerformed
+        String directory ="";
+        
+        try {
+            if (PosterWork.isMovie) {
+                FileUtils.copy("import/poster.jpg", "download/tt"+PosterWork.Imdb+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/tt"+PosterWork.Imdb+"_poster.png");
+            }
+            else {
+                FileUtils.copy("import/poster.ipg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDb+"_poster.png");
+            }
+        }
+        catch(IOException e2)
+        {
+             e2.printStackTrace();
+        }
+
+        jImportPoster.setVisible(false);
+        FileUtils.deleteFile("import/poster.jpg");
+        FileUtils.deleteFile("import/poster.png");
+    }//GEN-LAST:event_jButtonPosterSaveActionPerformed
+
+    private void jButtonPosterCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterCancelActionPerformed
+        jImportPoster.setVisible(false);
+        FileUtils.deleteFile("import/poster.jpg");
+        FileUtils.deleteFile("import/poster.png");
+    }//GEN-LAST:event_jButtonPosterCancelActionPerformed
+
+    private void jLabelPosterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelPosterMouseClicked
+        int row = 0;
+        int id = 0;
+        String directory = "";
+        ImageIcon poster;        
+
+        switch(jTabbedPane.getSelectedIndex()){
+            case 0:
+                row = jTableFilelist.getSelectedRow();
+                if (row >= 0){
+                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    directory = "converted/tt";
+                }
+                break;
+            case 1:
+                row = jTableSeries.getSelectedRow();
+
+                if (row > 1){
+                    id = (Integer) jTableSeries.getValueAt(row, 1);
+                    directory = "converted/";
+                }
+                else {
+                    row = jTableFilelistEpisodes.getSelectedRow();
+
+                    if (row > 1){
+                        id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
+                        directory = "converted/";
+                    }
+                }
+                break;
+        }
+
+        if (directory.contains("converted")){
+            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            PosterWork = database.getMediaInfoById(id);
+
+            if (PosterWork.isMovie){
+                directory = directory + PosterWork.Imdb + "_poster.png";
+            }
+            else {
+                directory = directory + PosterWork.TheTvDb + "_poster.png";
+            }
+
+            System.out.println(directory);
+
+            jImportPoster.setLocationRelativeTo(mainPanel);
+            jImportPoster.validate();
+            jImportPoster.setVisible(true);
+            jImportPoster.setTitle("Import Poster (Imdb: "+PosterWork.Imdb+")");
+
+            poster = new ImageIcon(directory);
+
+            if(poster.getIconWidth() != -1){
+                jLabelPoster1.setDoubleBuffered(true);
+                jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster1.getWidth(), jLabelPoster1.getHeight(), 0)));
+            }
+            else {
+                jLabelPoster1.setDoubleBuffered(true);
+                jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(1, 1, 0)));
+            }
+        }
+    }//GEN-LAST:event_jLabelPosterMouseClicked
     
 
     boolean isUpdating = false;
@@ -1397,18 +1877,60 @@ public class ValerieView extends FrameView implements WindowStateListener {
         ValerieApp.getApplication().show(settingsDialog);
     }
 
+    @Action
+    public void SelectAllMovies() {
+        int tablecount = jTableFilelist.getRowCount();
+
+        for (int counter=0; counter<tablecount; counter++){
+            jTableFilelist.setValueAt(true, counter, 0);
+        }
+    }
+
+    @Action
+    public void UnselectAllMovies() {
+        int tablecount = jTableFilelist.getRowCount();
+
+        for (int counter=0; counter<tablecount; counter++){
+            jTableFilelist.setValueAt(false, counter, 0);
+        }
+    }
+
+    @Action
+    public void importBackdropCancel() {
+        jImportBackdrop.setVisible(false);
+        FileUtils.deleteFile("import/backdrop.jpg");
+    }
+
+    @Action
+    public void ImportBackdropOpen() {
+        jImportBackdrop.repaint();
+    }
+
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descLabel;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonArt;
+    private javax.swing.JButton jButtonBackdropOpen;
     private javax.swing.JButton jButtonConnect;
     private javax.swing.JButton jButtonParse;
+    private javax.swing.JButton jButtonPosterCancel;
+    private javax.swing.JButton jButtonPosterOpen;
+    private javax.swing.JButton jButtonPosterSave;
     private javax.swing.JButton jButtonSync;
     private javax.swing.JButton jButtonUpload;
     private javax.swing.JComboBox jComboBoxBoxinfo;
+    private javax.swing.JFrame jImportBackdrop;
+    private javax.swing.JFrame jImportPoster;
+    private javax.swing.JFileChooser jJPEGOpen;
     private javax.swing.JLabel jLabelBackdrop;
+    private javax.swing.JLabel jLabelBackdrop1;
     private javax.swing.JLabel jLabelPoster;
+    private javax.swing.JLabel jLabelPoster1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JPanel jPanel1;
@@ -1448,4 +1970,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private final Icon[] busyIcons = new Icon[15];
     private int busyIconIndex = 0;
     private JDialog aboutBox;
+    private JDialog importBackdrop;
+    private boolean BoxIsConnected = false;
+    private MediaInfo BackdropWork;
+    private MediaInfo PosterWork;
 }

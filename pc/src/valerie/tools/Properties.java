@@ -33,6 +33,15 @@ public class Properties {
         catch(Exception ex) {}
     }
 
+    public void load() {
+        try {
+            FileInputStream stream = new FileInputStream("valerie.properties");
+            properties.load(stream);
+            stream.close();
+        }
+        catch(Exception ex) {}
+    }
+
     public String getPropertyString(String s) {
         String rtv = properties.getProperty(s);
         return rtv!=null?rtv:"";
@@ -44,6 +53,15 @@ public class Properties {
         } catch(Exception ex)
         {
             return -1;
+        }
+    }
+
+    public boolean getPropertyBoolean(String s) {
+        try {
+            return Boolean.parseBoolean(properties.getProperty(s));
+        } catch(Exception ex)
+        {
+            return false;
         }
     }
 

@@ -14,6 +14,7 @@ package Gui;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.*;
 
 /**
  *
@@ -31,6 +32,7 @@ public class Settings extends javax.swing.JDialog {
         }
 
         jPanelGeneral.setVisible(true);
+        jPanelConvert.setVisible(false);
         jPanelFileManagment.setVisible(false);
         jPanelImportManagment.setVisible(false);
 
@@ -66,6 +68,12 @@ public class Settings extends javax.swing.JDialog {
         jTableImportManagment = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jPanelConvert = new javax.swing.JPanel();
+        jCheckBoxResize = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        jComboBoxEncoder = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        jComboBoxResolution = new javax.swing.JComboBox();
         jLabelHeading = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -73,13 +81,18 @@ public class Settings extends javax.swing.JDialog {
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                SettingShow(evt);
+            }
+        });
 
         jSplitPaneApplyCancel.setBorder(null);
         jSplitPaneApplyCancel.setDividerSize(0);
         jSplitPaneApplyCancel.setName("jSplitPaneApplyCancel"); // NOI18N
 
-        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-        jButton1.setName("jButton1"); // NOI18N
+        jButton1.setText(resourceMap.getString("jButtonApply.text")); // NOI18N
+        jButton1.setName("jButtonApply"); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -87,9 +100,13 @@ public class Settings extends javax.swing.JDialog {
         });
         jSplitPaneApplyCancel.setLeftComponent(jButton1);
 
-        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-        jButton2.setEnabled(false);
-        jButton2.setName("jButton2"); // NOI18N
+        jButton2.setText(resourceMap.getString("jButtonCancel.text")); // NOI18N
+        jButton2.setName("jButtonCancel"); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jSplitPaneApplyCancel.setRightComponent(jButton2);
 
         jSplitPaneTree.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -112,6 +129,7 @@ public class Settings extends javax.swing.JDialog {
         jLabel1.setPreferredSize(new java.awt.Dimension(215, 45));
         jSplitPaneTree.setTopComponent(jLabel1);
 
+        jScrollPane1.setBackground(resourceMap.getColor("jScrollPane1.background")); // NOI18N
         jScrollPane1.setBorder(null);
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -121,6 +139,8 @@ public class Settings extends javax.swing.JDialog {
         javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("General");
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("File Managment");
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Convert");
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Movies");
         javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Import Managment");
@@ -182,11 +202,6 @@ public class Settings extends javax.swing.JDialog {
 
         jTextFieldFilter.setText(resourceMap.getString("jTextFieldFilter.text")); // NOI18N
         jTextFieldFilter.setName("jTextFieldFilter"); // NOI18N
-        jTextFieldFilter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldFilterActionPerformed(evt);
-            }
-        });
 
         jLabelFilter.setText(resourceMap.getString("jLabelFilter.text")); // NOI18N
         jLabelFilter.setName("jLabelFilter"); // NOI18N
@@ -289,6 +304,65 @@ public class Settings extends javax.swing.JDialog {
         jPanelImportManagment.setBounds(10, 70, 510, 140);
         jLayeredPaneSettings.add(jPanelImportManagment, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
+        jPanelConvert.setBackground(new java.awt.Color(250, 250, 250));
+        jPanelConvert.setName("jPanelConvert"); // NOI18N
+
+        jCheckBoxResize.setBackground(resourceMap.getColor("jCheckBoxResize.background")); // NOI18N
+        jCheckBoxResize.setText(resourceMap.getString("jCheckBoxResize.text")); // NOI18N
+        jCheckBoxResize.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jCheckBoxResize.setName("jCheckBoxResize"); // NOI18N
+
+        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setName("jLabel2"); // NOI18N
+
+        jComboBoxEncoder.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "mencoder", "jepg2yuv + mpeg2enc" }));
+        jComboBoxEncoder.setName("jComboBoxEncoder"); // NOI18N
+
+        jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
+        jLabel3.setName("jLabel3"); // NOI18N
+
+        jComboBoxResolution.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1024x576 25fps", "1280x720 60fps", "1920x1080 60fps" }));
+        jComboBoxResolution.setName("jComboBoxResolution"); // NOI18N
+
+        javax.swing.GroupLayout jPanelConvertLayout = new javax.swing.GroupLayout(jPanelConvert);
+        jPanelConvert.setLayout(jPanelConvertLayout);
+        jPanelConvertLayout.setHorizontalGroup(
+            jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelConvertLayout.createSequentialGroup()
+                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelConvertLayout.createSequentialGroup()
+                        .addGap(106, 106, 106)
+                        .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboBoxResolution, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBoxEncoder, 0, 146, Short.MAX_VALUE)))
+                    .addGroup(jPanelConvertLayout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(jCheckBoxResize)))
+                .addContainerGap(31, Short.MAX_VALUE))
+        );
+        jPanelConvertLayout.setVerticalGroup(
+            jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelConvertLayout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jCheckBoxResize)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jComboBoxResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+
+        jPanelConvert.setBounds(10, 70, 337, 108);
+        jLayeredPaneSettings.add(jPanelConvert, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
         jLabelHeading.setBackground(resourceMap.getColor("jLabelHeading.background")); // NOI18N
         jLabelHeading.setFont(resourceMap.getFont("jLabelHeading.font")); // NOI18N
         jLabelHeading.setForeground(resourceMap.getColor("jLabelHeading.foreground")); // NOI18N
@@ -348,19 +422,36 @@ public class Settings extends javax.swing.JDialog {
         if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("General")) {
             jPanelGeneral.setVisible(true);
             jPanelFileManagment.setVisible(false);
+            jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
         } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
+            jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
+        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
+            jPanelFileManagment.setVisible(false);
+            jPanelGeneral.setVisible(false);
+            jPanelConvert.setVisible(true);
+            jPanelImportManagment.setVisible(false);
+
+            jCheckBoxResize.setSelected(new valerie.tools.Properties().getPropertyBoolean("RESIZE_BACKDROP"));
+            jComboBoxEncoder.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE"));
+            jComboBoxResolution.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE"));
+
         } else if(path.length == 1) {
 
         } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelFileManagment.setVisible(false);
-            String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
+            jPanelConvert.setVisible(false);
+
+            String[] pathsMovies = WorkPathMovies.split("\\|");
             ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
+
+            //String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
+            //((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
 
             int iteratorMovies = 0;
             for(String pathMovies : pathsMovies) {
@@ -370,8 +461,13 @@ public class Settings extends javax.swing.JDialog {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelFileManagment.setVisible(false);
-            String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
+            jPanelConvert.setVisible(false);
+
+            String[] pathsMovies = WorkPathTV.split("\\|");
             ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
+
+            //String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
+            //((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
 
             int iteratorMovies = 0;
             for(String pathMovies : pathsMovies) {
@@ -380,66 +476,88 @@ public class Settings extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jTree1ValueChanged
 
-    private void jTextFieldFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldFilterActionPerformed
-        valerie.tools.Properties prop = new valerie.tools.Properties();
-        prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
-        prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
-
-        prop.save();
-    }//GEN-LAST:event_jTextFieldFilterActionPerformed
-
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        valerie.tools.Properties prop = new valerie.tools.Properties();
+        //valerie.tools.Properties prop = new valerie.tools.Properties();
 
         String pathToAdd = JOptionPane.showInputDialog("New Directory:");
         if(pathToAdd != null && pathToAdd.length() > 0) {
             Object path[] = jTree1.getSelectionPaths()[0].getPath();
             if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-                String paths = prop.getPropertyString("PATHS_MOVIES");
-                if(!paths.contains(pathToAdd))
-                    prop.setProperty("PATHS_MOVIES", paths + pathToAdd + "|");
+                //String paths = prop.getPropertyString("PATHS_MOVIES");
+                
+                if(!WorkPathMovies.contains(pathToAdd))
+                    WorkPathMovies +=(pathToAdd + "|");
+
+                //if(!paths.contains(pathToAdd))
+                //    prop.setProperty("PATHS_MOVIES", paths + pathToAdd + "|");
 
             } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-                String paths = prop.getPropertyString("PATHS_SERIES");
-                if(!paths.contains(pathToAdd))
-                    prop.setProperty("PATHS_SERIES", paths + pathToAdd + "|");
+                //String paths = prop.getPropertyString("PATHS_SERIES");
+
+                if(!WorkPathTV.contains(pathToAdd))
+                    WorkPathTV += (pathToAdd + "|");
+
+                //if(!paths.contains(pathToAdd))
+                //    prop.setProperty("PATHS_SERIES", paths + pathToAdd + "|");
             }
         }
 
-        prop.save();
+        //prop.save();
 
         jTree1ValueChanged(null);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        valerie.tools.Properties prop = new valerie.tools.Properties();
+        //valerie.tools.Properties prop = new valerie.tools.Properties();
 
         Object path[] = jTree1.getSelectionPaths()[0].getPath();
         if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
 
-            String paths = prop.getPropertyString("PATHS_MOVIES");
-            paths = paths.replaceAll(pathToDelete + "\\|", "");
+            WorkPathMovies = WorkPathMovies.replaceAll(pathToDelete + "\\|", "");
 
-            prop.setProperty("PATHS_MOVIES", paths);
+            //String paths = prop.getPropertyString("PATHS_MOVIES");
+            //paths = paths.replaceAll(pathToDelete + "\\|", "");
+
+            //prop.setProperty("PATHS_MOVIES", paths);
 
         } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
 
-            String paths = prop.getPropertyString("PATHS_SERIES");
-            paths = paths.replaceAll((pathToDelete + "\\|"), "");
+            WorkPathTV = WorkPathTV.replaceAll(pathToDelete + "\\|", "");
 
-            prop.setProperty("PATHS_SERIES", paths);
+            //String paths = prop.getPropertyString("PATHS_SERIES");
+            //paths = paths.replaceAll((pathToDelete + "\\|"), "");
+
+            //prop.setProperty("PATHS_SERIES", paths);
         }
 
-        prop.save();
+        //prop.save();
 
         jTree1ValueChanged(null);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        valerie.tools.Properties prop = new valerie.tools.Properties();
+        prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
+        prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
+        prop.setProperty("RESIZE_BACKDROP", new Boolean(jCheckBoxResize.isSelected()).toString());
+        prop.setProperty("ENCODER_TYPE",Integer.toString(jComboBoxEncoder.getSelectedIndex()));
+        prop.setProperty("RESOLUTION_TYPE",Integer.toString(jComboBoxResolution.getSelectedIndex()));
+        prop.setProperty("PATHS_MOVIES", WorkPathMovies);
+        prop.setProperty("PATHS_SERIES", WorkPathTV);
+        prop.save();
         setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void SettingShow(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_SettingShow
+        WorkPathMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES");
+        WorkPathTV = new valerie.tools.Properties().getPropertyString("PATHS_SERIES");
+    }//GEN-LAST:event_SettingShow
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -447,10 +565,16 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBoxResize;
+    private javax.swing.JComboBox jComboBoxEncoder;
+    private javax.swing.JComboBox jComboBoxResolution;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabelFilter;
     private javax.swing.JLabel jLabelHeading;
     private javax.swing.JLayeredPane jLayeredPaneSettings;
+    private javax.swing.JPanel jPanelConvert;
     private javax.swing.JPanel jPanelFileManagment;
     private javax.swing.JPanel jPanelGeneral;
     private javax.swing.JPanel jPanelImportManagment;
@@ -462,5 +586,6 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldFilter;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
-
+    private String WorkPathMovies;
+    private String WorkPathTV;
 }

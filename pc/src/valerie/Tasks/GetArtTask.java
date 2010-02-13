@@ -12,8 +12,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 import valerie.BackgroundWorker.ParentObject;
+import valerie.tools.Resize;
+import valerie.tools.Encode;
 import valerie.tools.mencoder;
 import valerie.tools.pngquant;
+import java.util.*;
 
 public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
@@ -47,6 +50,10 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         }
         this.setProgress((int)0);
 
+        Boolean Resize = new valerie.tools.Properties().getPropertyBoolean("RESIZE_BACKDROP");
+        Integer Encoder = new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE");
+        Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
+
         MediaInfoDB pDatabase = (MediaInfoDB)pWorker.get("Database");
         MediaInfo[] movies = pDatabase.getMediaInfo();
 
@@ -59,10 +66,10 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
             this.setProgress((i * 100) / moviesSize);
             this.setMessage(movie.Title);
             if (movie.isMovie) {
-                getMediaArtMovie(movie);
+                getMediaArtMovie(movie, Resize, Encoder, Resolution);
             }
             if (movie.isSeries) {
-                getMediaArtSeries( movie);
+                getMediaArtSeries(movie, Resize, Encoder, Resolution);
             }
         }
 
@@ -83,7 +90,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
     }
 
-    private void getMediaArtMovie(MediaInfo movie) {
+    private void getMediaArtMovie(MediaInfo movie, Boolean Resize, Integer Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
         File checkIfFilePNGalreadyExists = new File("converted/tt" + movie.Imdb + "_poster.png");
@@ -143,12 +150,28 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
             downloaded = new File("download/tt" + movie.Imdb + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
-                new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v");
+
+                if (Resize)
+                {
+                    new Resize().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "download/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                }
+
+                switch (Encoder)
+                {
+                    case 0:
+                        new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v", Resolution);
+                        break;
+                    case 1:
+                        new Encode().exec("download/tt" + movie.Imdb + "_backdrop", "converted/tt" + movie.Imdb + "_backdrop.m1v",Resolution);
+                        break;
+                }
+                
+                
             }
         }
     }
 
-    private void getMediaArtSeries(MediaInfo movie) {
+    private void getMediaArtSeries(MediaInfo movie, Boolean Resize, Integer Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
         File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDb + "_poster.png");
@@ -208,7 +231,23 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
             downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
-                new mencoder().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "converted/" + movie.TheTvDb + "_backdrop.m1v");
+
+                if (Resize)
+                {
+                    new Resize().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                }
+
+                switch (Encoder)
+                {
+                    case 0:
+                        new mencoder().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "converted/" + movie.TheTvDb + "_backdrop.m1v", Resolution);
+                        break;
+                    case 1:
+                        new Encode().exec("download/" + movie.TheTvDb + "_backdrop", "converted/" + movie.TheTvDb + "_backdrop.m1v", Resolution);
+                        break;
+                }
+                
+                
             }
         }
     }

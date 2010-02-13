@@ -29,7 +29,7 @@ public class pngquant {
 
             process.waitFor();
             int exitval = process.exitValue();
-            System.out.printf("Exit: %d\n",  exitval);
+            System.out.printf("PNG Exit: %d\n",  exitval);
 
             String createdFile = Input.replaceAll(".png", "-fs8.png");
 
