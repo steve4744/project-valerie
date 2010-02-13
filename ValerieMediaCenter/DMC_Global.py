@@ -37,8 +37,7 @@ class E2Control():
 		self.close()
 
 		environ['BOXSYSTEM'] = "MANUFACTOR=Topfield;MODEL=HDPVR-7700;"
-		s = config.plugins.dmc.pluginfolderpath.value + "e2control"
-		s += " &"
+		s = config.plugins.dmc.pluginfolderpath.value + " e2control"
 		printl(s)
 		try:
 			popen(s)
@@ -46,8 +45,7 @@ class E2Control():
 			printl("OSError: " + str(e))
 
 	def close(self):
-		s = "killall e2control"
-		#s += " &"
+		s = config.plugins.dmc.pluginfolderpath.value + " e2control stop"
 		printl(s)
 		try:
 			popen(s)
