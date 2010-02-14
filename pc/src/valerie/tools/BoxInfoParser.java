@@ -49,8 +49,19 @@ public class BoxInfoParser {
                     }
                 }
             }
-            
-            list.add(boxinfo);
+
+            boolean alreadyIn = false;
+            for(int i = 0; i < list.size(); i++) { //A little bit hacky
+                String a = boxinfo.IpAddress.getHostAddress();
+                String b = ((BoxInfo)list.get(i)).IpAddress.getHostAddress();
+                if (a.equals(b)) {
+                    alreadyIn = true;
+                    break;
+                }
+            }
+
+            if(!alreadyIn)
+                list.add(boxinfo);
         }
         if(list.size()> 0) {
             BoxInfo[] boxinfos = new BoxInfo[list.size()];
