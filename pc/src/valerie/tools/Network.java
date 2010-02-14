@@ -12,11 +12,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import valerie.tools.DebugOutput;
 
@@ -36,52 +42,69 @@ public class Network {
 
         byte[] RecieveBuf = new byte [256];
         byte[] SendBuf =  new byte [256];
-
-        InetAddress myAddr = null;
-        try {
-               myAddr = InetAddress.getLocalHost();
-        }catch(Exception ex) {}
-
         String servReq = "SERV_REQ";
         byte[] bServReq = servReq.getBytes();
-        byte[] bMyAddr = myAddr.getHostAddress().getBytes();
-
-        int iter = 0;
-        for(byte b : bServReq)
-            SendBuf[iter++] = b;
-
-        for(byte b : bMyAddr)
-            SendBuf[iter++] = b;
-        
-        MulticastSocket socket;
+        NetworkInterface ntAdapter = null;
+        Enumeration enu;
         try {
-            socket = new MulticastSocket();
-            socket.setBroadcast(true);
-            InetAddress Adr = InetAddress.getByName("255.255.255.255");
-            Integer Port = 5450;
-            Integer WaitMilliSeconds = 50;
-            DatagramPacket Send = new DatagramPacket(SendBuf, SendBuf.length, Adr, Port);
-            socket.setSoTimeout(WaitMilliSeconds);
-            socket.send(Send);
+            enu = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException ex) {
+            Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+            return rtv;
+        }
+        while(enu.hasMoreElements())
+        {
+           ntAdapter = (NetworkInterface)enu.nextElement();
+           Enumeration e = ntAdapter.getInetAddresses();
 
-            //DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
-            do
-            {//warten auf Antworten
-                DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
-                socket.receive(Recieve);
+           while(e.hasMoreElements())
+           {
+                InetAddress myAddr = (InetAddress)e.nextElement();
+                if (myAddr instanceof Inet6Address)
+                    continue; //We dont support ipv6
+                DebugOutput.printl("Adapter Display Name :"+ntAdapter.getDisplayName());
+                DebugOutput.printl("Adapter Name : "+ntAdapter.getName());
 
-                rtv += new String(Recieve.getData()).trim();
+                byte[] bMyAddr = myAddr.getHostAddress().getBytes();
 
-                rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
+                int iter = 0;
+                for(byte b : bServReq)
+                    SendBuf[iter++] = b;
 
-                DebugOutput.printl(rtv.trim());
+                for(byte b : bMyAddr)
+                    SendBuf[iter++] = b;
 
-                //We only want the Boxinfo an the BoxIP for now.
-                //break;
-            } while(!socket.isClosed());
-            socket.close();
-        } catch(Exception ex) {
-            DebugOutput.printl(ex.toString());
+                MulticastSocket socket;
+                try {
+                    socket = new MulticastSocket();
+                    socket.setBroadcast(true);
+                    InetAddress Adr = InetAddress.getByName("255.255.255.255");
+                    Integer Port = 5450;
+                    Integer WaitMilliSeconds = 50;
+                    DatagramPacket Send = new DatagramPacket(SendBuf, SendBuf.length, Adr, Port);
+                    socket.setSoTimeout(WaitMilliSeconds);
+                    socket.send(Send);
+
+                    //DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
+                    do
+                    {//warten auf Antworten
+                        DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
+                        socket.receive(Recieve);
+
+                        rtv += new String(Recieve.getData()).trim();
+
+                        rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
+
+                        DebugOutput.printl(rtv.trim());
+
+                        //We only want the Boxinfo an the BoxIP for now.
+                        //break;
+                    } while(!socket.isClosed());
+                    socket.close();
+                } catch(Exception ex) {
+                    DebugOutput.printl(ex.toString());
+                }
+           }
         }
 
         DebugOutput.printl("<-");
