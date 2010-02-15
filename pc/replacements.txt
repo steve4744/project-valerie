@@ -47,5 +47,6 @@ ctu=
 \d+\s+\d+\s+= 
 ts= 
 premiere= 
+zdf
 \[.*\]= 
 \(.*\)= 
