@@ -59,19 +59,36 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
             MediaInfo movie = movies[i];
             
             if (movie.needsUpdate) {
-                Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
-                this.setMessage(movie.SearchString);
-                //System.out.println("movie=" + movie.SearchString + " ismovie=" + movie.isMovie);
+                if (movie.Imdb == 0) {
+                    Logger.print(movie.Filename + " : Using Title\"" + movie.SearchString + "\" to get title");
+                    this.setMessage(movie.SearchString);
+                    //System.out.println("movie=" + movie.SearchString + " ismovie=" + movie.isMovie);
 
-                if (movie.isMovie) {
-                    getMediaInfoMovie(database, movie);
-                } else if (movie.isEpisode || movie.isSeries) {
-                    getMediaInfoSeries(database, movie);
+                    if (movie.isMovie) {
+                        getMediaInfoMovie(database, movie);
+                    } else if (movie.isEpisode || movie.isSeries) {
+                        getMediaInfoSeries(database, movie);
+                    }
+
+                    //movie.Title = "[" + pThreadId + "] " + movie.Title;
+
+                    Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
                 }
+                else {
+                    Logger.print(movie.Filename + " : Using Imdb\"" + movie.Imdb + "\" to get title");
+                    this.setMessage("Imdb: "+movie.Imdb);
+                    //System.out.println("movie=" + movie.Imdb + " ismovie=" + movie.isMovie);
 
-                //movie.Title = "[" + pThreadId + "] " + movie.Title;
+                    if (movie.isMovie) {
+                        getMediaInfoMovie(database, movie);
+                    } else if (movie.isEpisode || movie.isSeries) {
+                        getMediaInfoSeries(database, movie);
+                    }
 
-                Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
+                    //movie.Title = "[" + pThreadId + "] " + movie.Title;
+
+                    Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
+                }
             }
         }
 
@@ -103,7 +120,14 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
         
       //if we have no searchstring, than the movie was imported from the archive and we dont need to reparse
         if (movie.needsUpdate) {
-            movie.getDataByTitle();
+            if (movie.Imdb == 0){
+                System.out.println("Getting Data by Title.");
+                movie.getDataByTitle();
+            }
+            else {
+                System.out.println("Getting Data by ID.");
+                movie.getDataById();                                
+            }
         }
 
         if (movie.Title.length() > 0) {

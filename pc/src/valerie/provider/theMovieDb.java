@@ -22,6 +22,8 @@ public class theMovieDb extends provider {
     }
 
     public void getDataById(MediaInfo info) {
+        if(info.isMovie)
+            getMoviesById(info);        
     }
 
     public void getArtById(MediaInfo info) {
@@ -73,6 +75,42 @@ public class theMovieDb extends provider {
                break;
            }
             return;
+        }
+
+    public void getMoviesById(MediaInfo info) {
+           Document xml = null;
+           try {               
+               xml =  new valerie.tools.webgrabber().getXML(new URL(apiImdbLookup + "/tt" + String.format("%07d", info.Imdb)));
+           } catch (Exception ex) {}
+
+           if (xml == null)
+                return;
+
+           List movieList = ((org.jdom.Element)(xml.getRootElement().getChildren("moviematches")).get(0)).getChildren("movie");
+           for(int i = 0; i < movieList.size(); i++)
+           {
+               org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+
+               //<release>1984-10-26</release>
+               if(info.Year > 1900 && info.Year < 2020) {
+                   org.jdom.Element eRelease = eMovie.getChild("release");
+                   if(eRelease != null) {
+                        String sYear = eRelease.getText();
+                        sYear = sYear.substring(0, sYear.indexOf("-"));
+
+                        if(info.Year < Integer.valueOf(sYear) - 1 || info.Year > Integer.valueOf(sYear) + 1)
+                            continue;
+
+                        info.Year = Integer.valueOf(sYear);
+                   }
+               }
+               org.jdom.Element eTitle = eMovie.getChild("title");
+               if(eTitle != null)
+                    info.Title = eTitle.getText();                    
+               break;
+           }
+           
+           return;
         }
 
     public void getMoviesArtById(MediaInfo info) {

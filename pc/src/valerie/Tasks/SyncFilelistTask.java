@@ -89,12 +89,14 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
         ArrayList<String[]> replacements=getReplacements();
         for (int row = 0; row < paths.length; row++) {
-            String filterString = "(";
+            String filterString = "";
             String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
             String[] filters = filter.split("\\|");
             if(filters.length > 0) {
-            		for(int i = 0; i < filters.length; i++) {
-            				BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
+                for(int i = 0; i < filters.length; i++) {
+                    filterString = " -name \"*." + filters[i] + "\"";
+
+                    BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
                     int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
                     String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");            
 

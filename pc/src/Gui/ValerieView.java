@@ -340,9 +340,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         int row = e.getFirstRow();
                         int column = e.getColumn();
 
-                        if (column == 0 || column == 2) {
+                        if (column == 0 || column == 2 || column == 4) {
                             TableModel model = jTableFilelist.getModel();
-                            int id = ((Integer) model.getValueAt(row, 4)).intValue();
+                            int imdb = ((Integer) model.getValueAt(row, 4)).intValue();
+                            int id = ((Integer) model.getValueAt(row, 5)).intValue();
                             boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
                             String searchstring = ((String) model.getValueAt(row, 2));
 
@@ -351,8 +352,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             toUpdate.Ignoring = !use;
                             toUpdate.SearchString = searchstring;
                             toUpdate.needsUpdate = true;
+                            toUpdate.Imdb = imdb;                            
 
-                            model.setValueAt(toUpdate.needsUpdate, row, 5);
+                            model.setValueAt(toUpdate.needsUpdate, row, 6);
                         }
                     }
                 }
@@ -551,6 +553,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jLabelBackdrop = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemSettings = new javax.swing.JMenuItem();
@@ -659,17 +662,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jTableFilelist.setAutoCreateRowSorter(true);
         jTableFilelist.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "Searchstring", "ID", "Use"
+                "Use", "Title", "Searchstring", "Year", "Imbd", "ID", "Use"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, false, false, false
+                true, false, true, false, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -699,18 +702,22 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         });
         jScrollPane1.setViewportView(jTableFilelist);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("Gui/resources/ValerieView"); // NOI18N
         jTableFilelist.getColumnModel().getColumn(0).setMinWidth(20);
         jTableFilelist.getColumnModel().getColumn(0).setPreferredWidth(15);
-        jTableFilelist.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
         jTableFilelist.getColumnModel().getColumn(1).setPreferredWidth(150);
-        jTableFilelist.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title1")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title1")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(2).setPreferredWidth(100);
+        jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title2")); // NOI18N
         jTableFilelist.getColumnModel().getColumn(3).setPreferredWidth(30);
-        jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
-        jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title6")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(1);
-        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title3")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(50);
+        jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title4")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(10);
+        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title5")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(6).setPreferredWidth(1);
+        jTableFilelist.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
 
         jButton1.setAction(actionMap.get("SelectAllMovies")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
@@ -728,8 +735,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(328, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+                .addContainerGap(308, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
         );
         jPanelMoviesLayout.setVerticalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -875,7 +882,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanelSeries.setLayout(jPanelSeriesLayout);
         jPanelSeriesLayout.setHorizontalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -987,8 +994,14 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         menuBar.setName("menuBar"); // NOI18N
 
+        fileMenu.setAction(actionMap.get("SaveDB")); // NOI18N
         fileMenu.setText(resourceMap.getString("fileMenu.text")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
+
+        jMenuItem1.setAction(actionMap.get("SaveDB")); // NOI18N
+        jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
+        jMenuItem1.setName("jMenuItem1"); // NOI18N
+        fileMenu.add(jMenuItem1);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -1285,7 +1298,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
         int row = jTableFilelist.getSelectedRow();
-        int id = (Integer) jTableFilelist.getValueAt(row, 4);
+        int id = (Integer) jTableFilelist.getValueAt(row, 5);
 
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
@@ -1305,7 +1318,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             row++;
         }
 
-        int id = (Integer) jTableFilelist.getValueAt(row, 4);
+        int id = (Integer) jTableFilelist.getValueAt(row, 5);
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
@@ -1419,7 +1432,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             case 0:
                 row = jTableFilelist.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    id = (Integer) jTableFilelist.getValueAt(row, 5);
                     directory = "download/tt";
                 }
                 break;
@@ -1615,7 +1628,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             case 0:
                 row = jTableFilelist.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    id = (Integer) jTableFilelist.getValueAt(row, 5);
                     directory = "converted/tt";
                 }
                 break;
@@ -1707,9 +1720,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jTableFilelist.setValueAt(movie.Title, iteratorMovies, 1);
 
                 jTableFilelist.setValueAt(movie.Year, iteratorMovies, 3);
-                jTableFilelist.setValueAt(movie.ID, iteratorMovies, 4);
+                jTableFilelist.setValueAt(movie.Imdb, iteratorMovies, 4);
+                jTableFilelist.setValueAt(movie.ID, iteratorMovies, 5);
 
-                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 5);
+                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 6);
 
                 iteratorMovies++;
             } else if (movie.isEpisode) {
@@ -1879,11 +1893,21 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     @Action
     public void SelectAllMovies() {
-        int tablecount = jTableFilelist.getRowCount();
+        //int tablecount = jTableFilelist.getRowCount();
 
-        for (int counter=0; counter<tablecount; counter++){
-            jTableFilelist.setValueAt(true, counter, 0);
+        //for (int counter=0; counter<tablecount; counter++){
+        //    jTableFilelist.setValueAt(true, counter, 0);
+
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        MediaInfo[] movies = database.getMediaInfo();
+
+        for (int i = 0; i < movies.length; i ++) {
+            MediaInfo movie = movies[i];
+            movie.Ignoring = false;
+            movie.needsUpdate = false;
         }
+
+        updateTables();
     }
 
     @Action
@@ -1904,6 +1928,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
     @Action
     public void ImportBackdropOpen() {
         jImportBackdrop.repaint();
+    }
+
+    @Action
+    public void SaveDB() {
+        saveTables();
     }
 
     
@@ -1932,6 +1961,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JLabel jLabelPoster;
     private javax.swing.JLabel jLabelPoster1;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

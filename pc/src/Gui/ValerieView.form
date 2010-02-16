@@ -179,9 +179,9 @@
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="328" max="32767" attributes="0"/>
+                              <EmptySpace pref="308" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane1" alignment="0" pref="494" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="0" pref="474" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -212,11 +212,12 @@
                           <Properties>
                             <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysMovies &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);">
-                              <Table columnCount="6" rowCount="1">
+                              <Table columnCount="7" rowCount="1">
                                 <Column editable="true" title="Use" type="java.lang.Boolean"/>
                                 <Column editable="false" title="Title" type="java.lang.String"/>
                                 <Column editable="true" title="Searchstring" type="java.lang.String"/>
-                                <Column editable="false" title="Searchstring" type="java.lang.String"/>
+                                <Column editable="false" title="Year" type="java.lang.String"/>
+                                <Column editable="true" title="Imbd" type="java.lang.Integer"/>
                                 <Column editable="false" title="ID" type="java.lang.String"/>
                                 <Column editable="false" title="Use" type="java.lang.Boolean"/>
                               </Table>
@@ -224,32 +225,51 @@
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                               <TableColumnModel selectionModel="0">
                                 <Column maxWidth="-1" minWidth="20" prefWidth="15" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title5"/>
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title1"/>
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title3"/>
+                                <Column maxWidth="-1" minWidth="-1" prefWidth="100" resizable="true">
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title2" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title3"/>
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title3" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
+                                  <Editor/>
+                                  <Renderer/>
+                                </Column>
+                                <Column maxWidth="-1" minWidth="-1" prefWidth="50" resizable="true">
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title4" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="10" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title6"/>
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title5" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="1" resizable="true">
-                                  <Title resourceKey="jTableFilelist.columnModel.title5"/>
+                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  </Title>
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
@@ -308,7 +328,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSplitPane2" alignment="0" pref="494" max="32767" attributes="0"/>
+                          <Component id="jSplitPane2" alignment="0" pref="474" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -611,6 +631,9 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="Gui.ValerieView" id="SaveDB" methodName="SaveDB"/>
+            </Property>
             <Property name="text" type="java.lang.String" resourceKey="fileMenu.text"/>
             <Property name="name" type="java.lang.String" value="fileMenu" noResource="true"/>
           </Properties>
@@ -619,6 +642,15 @@
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
           </AuxValues>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="SaveDB" methodName="SaveDB"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem1.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exitMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
