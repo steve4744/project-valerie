@@ -236,6 +236,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
             String[] filters = filter.split("\\|");
             if(filters.length > 0) {
                 for(int i = 0; i < filters.length; i++){
+                    filterString = " -name \"*." + filters[i] + "\"";
                     BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
                     int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
                     String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");            

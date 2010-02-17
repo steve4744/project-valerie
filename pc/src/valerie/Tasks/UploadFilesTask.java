@@ -47,7 +47,10 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
             String[] entries = episodes.list();
 
             for (int i = 0; i < entries.length; ++i) {
-                new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
+                File testentries = new File("db/episodes/" + entries[i]);
+                if (testentries.isFile()){
+                    new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
+                }
             }
         }
 
@@ -61,12 +64,16 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
                 System.out.println(entries[i]);
                 if(entries[i].charAt(0) == '.')
                     continue;
-                //Only upload arts if really needed so checbefore
-                String[] vLine = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress,
-                        "ls /hdd/valerie/media/" + entries[i]);
 
-                if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
-                    new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+                File testpicture = new File("converted/" + entries[i] + entries[i]);
+                if (testpicture.isFile()){
+                    //Only upload arts if really needed so checbefore
+                    String[] vLine = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress,
+                            "ls /hdd/valerie/media/" + entries[i]);
+
+                    if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
+                        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+                }
             }
         }
 

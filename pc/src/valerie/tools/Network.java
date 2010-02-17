@@ -155,7 +155,7 @@ public class Network {
                 bLength[3] = (byte)(iByte3%0x100);
                 dataOutput.write(bLength, 0, bLength.length);
 
-                DebugOutput.print("Sending:"); // console confirmation of transfer
+                DebugOutput.print("Sending: "+directory+"/"+file); // console confirmation of transfer
                 while ((numread = in.read(buffer))>=0) {
                     dataOutput.write(buffer, 0, numread);
                     System.out.print("."); // console confirmation of transfer

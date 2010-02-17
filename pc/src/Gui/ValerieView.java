@@ -1279,11 +1279,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
         if(poster.getIconWidth() != -1){
             jLabelPoster.setDoubleBuffered(true);
             jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster.getWidth(), jLabelPoster.getHeight(), 0)));
-        }
-            //jLabelPoster.getGraphics().drawImage(poster.getImage(), 40, 2, jLabelPoster.getWidth() - 80, jLabelPoster.getHeight() - 4, null);
+        }            
         else {
-            jLabelPoster.setDoubleBuffered(true);
-            jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(1, 1, 0)));
+            jLabelPoster.setDoubleBuffered(true);            
+            jLabelPoster.setIcon(null);
         }
 
         if(backdrop.getIconWidth() != -1){            
@@ -1291,8 +1290,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
             jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop.getWidth(), jLabelBackdrop.getHeight(), 0)));            
         }
         else {            
-            jLabelBackdrop.setDoubleBuffered(true);
-            jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(1, 1, 0)));
+            jLabelBackdrop.setDoubleBuffered(true);            
+            jLabelBackdrop.setIcon(null);
         }
     }
 
@@ -1478,7 +1477,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
             else {                
                 jLabelBackdrop1.setDoubleBuffered(true);
-                jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(1, 1, 0)));
+                jLabelBackdrop1.setIcon(null);
             }
         }
     }//GEN-LAST:event_jLabelBackdropMouseClicked
@@ -1695,7 +1694,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
             else {
                 jLabelPoster1.setDoubleBuffered(true);
-                jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(1, 1, 0)));
+                jLabelPoster1.setIcon(null);
             }
         }
     }//GEN-LAST:event_jLabelPosterMouseClicked

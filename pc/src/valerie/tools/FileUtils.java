@@ -58,17 +58,17 @@ public class FileUtils{
                 if (data == -1) {
                     break;
                 }
-            out.write(data);
-        }
+                out.write(data);
+            }
         } finally {
             if (in != null) {
-            in.close();
-        }
-        if (out != null) {
-            out.close();
-        }
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
 
+        }
     }
-}
 
 }
