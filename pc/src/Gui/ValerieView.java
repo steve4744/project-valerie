@@ -1286,11 +1286,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
             jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(1, 1, 0)));
         }
 
-        if(backdrop.getIconWidth() != -1){
+        if(backdrop.getIconWidth() != -1){            
             jLabelBackdrop.setDoubleBuffered(true);
             jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop.getWidth(), jLabelBackdrop.getHeight(), 0)));            
         }
-        else {
+        else {            
             jLabelBackdrop.setDoubleBuffered(true);
             jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(1, 1, 0)));
         }
@@ -1303,7 +1303,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
-        jTextAreaDescription.setText(info.toString());
+        jTextAreaDescription.setText(info.toString());        
         ImageIcon poster = new ImageIcon("converted/tt" + info.Imdb + "_poster.png");
         ImageIcon backdrop = new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg");
         drawPosters(poster, backdrop);
@@ -1322,7 +1322,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
-        jTextAreaDescription.setText(info.toString());
+        jTextAreaDescription.setText(info.toString());      
         ImageIcon poster = new ImageIcon("converted/tt" + info.Imdb + "_poster.png");
         ImageIcon backdrop = new ImageIcon("download/tt" + info.Imdb + "_backdrop.jpg");
         drawPosters(poster, backdrop);
@@ -1525,20 +1525,39 @@ public class ValerieView extends FrameView implements WindowStateListener {
         {
             case 0:
                 if (BackdropWork.isMovie) {
-                    new mencoder().exec("download/tt" + BackdropWork.Imdb + "_backdrop.jpg", "converted/tt" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/tt" + BackdropWork.Imdb + "_backdrop.jpg", "import/tt" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
                 }
                 else {
-                    new mencoder().exec("download/" + BackdropWork.TheTvDb + "_backdrop.jpg", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + BackdropWork.TheTvDb + "_backdrop.jpg", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v", Resolution);
                 }
                 break;
             case 1:
                 if (BackdropWork.isMovie) {
-                    new Encode().exec("download/tt" + BackdropWork.Imdb + "_backdrop", "converted/tt" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/tt" + BackdropWork.Imdb + "_backdrop", "import/tt" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
                 }
                 else {
-                    new Encode().exec("download/" + BackdropWork.TheTvDb + "_backdrop", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/" + BackdropWork.TheTvDb + "_backdrop", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v",Resolution);
                 }
                 break;
+        }
+
+        try {
+            if (BackdropWork.isMovie) {
+                FileUtils.copy("import/tt" + BackdropWork.Imdb + "_backdrop.m1v", "converted/tt"+BackdropWork.Imdb+"_backdrop.m1v");
+                ImageIcon poster = new ImageIcon("converted/tt" + BackdropWork.Imdb + "_poster.png");
+                ImageIcon backdrop = new ImageIcon("download/tt" + BackdropWork.Imdb + "_backdrop.jpg");
+                drawPosters(poster, backdrop);                
+            }
+            else {
+                FileUtils.copy("import/" + BackdropWork.TheTvDb + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v");
+                ImageIcon poster = new ImageIcon("converted/" + BackdropWork.TheTvDb + "_poster.png");
+                ImageIcon backdrop = new ImageIcon("download/" + BackdropWork.TheTvDb + "_backdrop.jpg");
+                drawPosters(poster, backdrop);
+            }
+        }
+        catch(IOException e2)
+        {
+             e2.printStackTrace();
         }
 
         jImportBackdrop.setVisible(false);
@@ -1590,16 +1609,16 @@ public class ValerieView extends FrameView implements WindowStateListener {
     }//GEN-LAST:event_jButtonPosterOpenActionPerformed
 
     private void jButtonPosterSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterSaveActionPerformed
-        String directory ="";
-        
         try {
             if (PosterWork.isMovie) {
                 FileUtils.copy("import/poster.jpg", "download/tt"+PosterWork.Imdb+"_poster.jpg");
                 FileUtils.copy("import/poster.png", "converted/tt"+PosterWork.Imdb+"_poster.png");
+                FileUtils.copy("import/poster.png", "import/tt"+PosterWork.Imdb+"_poster.png");
             }
             else {
                 FileUtils.copy("import/poster.ipg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
                 FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDb+"_poster.png");
+                FileUtils.copy("import/poster.png", "import/"+PosterWork.TheTvDb+"_poster.png");
             }
         }
         catch(IOException e2)

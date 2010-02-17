@@ -9,6 +9,7 @@ import java.io.File;
 import valerie.BackgroundWorker;
 import valerie.Logger;
 import valerie.tools.BoxInfo;
+import valerie.tools.FileUtils;
 
 /**
  *
@@ -66,6 +67,22 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
 
                 if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
                     new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+            }
+        }
+
+        // Move imported pictures to hdd
+        folder = new File("import");
+        if (!(folder.exists())) {
+            Logger.print("No such Folder \"import\"!");
+        } else {
+            String[] entries = folder.list();
+
+            for (int i = 0; i < entries.length; ++i) {
+                System.out.println(entries[i]);
+                if(entries[i].charAt(0) == '.')
+                    continue;
+                new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "import/" + entries[i], "/hdd/valerie/media");
+                FileUtils.deleteFile("import/" + entries[i]);
             }
         }
 

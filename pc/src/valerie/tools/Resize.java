@@ -42,7 +42,7 @@ public class Resize {
                     break;
             }
 
-            cmd += " "+Input+" -colorspace YUV -resize "+Res+"! -gravity Center -crop "+Res+"+0+0 +repage "+Output;
+            cmd += " \""+Input+"\" -colorspace YUV -resize "+Res+"! -gravity Center -crop "+Res+"+0+0 +repage "+Output;
 
             sem.acquire();
             System.out.println("Resize>>>>>>");
