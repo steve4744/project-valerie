@@ -54,8 +54,9 @@ import valerie.tools.mencoder;
 import valerie.tools.pngquant;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 
@@ -90,15 +91,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
         @Override
         public void setWorking(boolean s) {
             jButtonConnect.setEnabled(!s);            
-            jButtonParse.setEnabled(!s);
-            jButtonArt.setEnabled(!s);
             if (BoxIsConnected){
                 jButtonUpload.setEnabled(!s);
+                jButtonParse.setEnabled(!s);
                 jButtonSync.setEnabled(!s);
+                jButtonArt.setEnabled(!s);
             }
             else {
                 jButtonUpload.setEnabled(false);
+                jButtonParse.setEnabled(false);
                 jButtonSync.setEnabled(false);
+                jButtonArt.setEnabled(false);
             }
 
         }
@@ -341,21 +344,31 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         int row = e.getFirstRow();
                         int column = e.getColumn();
 
-                        if (column == 0 || column == 2 || column == 4) {
+                        if (column == 0 || column == 2) {
                             TableModel model = jTableFilelist.getModel();
-                            int imdb = ((Integer) model.getValueAt(row, 4)).intValue();
-                            int id = ((Integer) model.getValueAt(row, 5)).intValue();
+                           // int imdb = ((Integer) model.getValueAt(row, 4)).intValue();
+                            int id = ((Integer) model.getValueAt(row, 4)).intValue();
                             boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
                             String searchstring = ((String) model.getValueAt(row, 2));
 
                             MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
                             toUpdate.Ignoring = !use;
-                            toUpdate.SearchString = searchstring;
-                            toUpdate.needsUpdate = true;
-                            toUpdate.Imdb = imdb;                            
 
-                            model.setValueAt(toUpdate.needsUpdate, row, 6);
+                            Pattern pImdb = Pattern.compile("tt\\d{7}");
+                            Matcher mImdb = pImdb.matcher(searchstring);
+                            if (mImdb.matches()) {
+                                toUpdate.Imdb = Integer.valueOf(searchstring.substring(2));
+                                toUpdate.SearchString = searchstring;
+                            } else {
+                                toUpdate.Imdb = 0;
+                                toUpdate.SearchString = searchstring;
+                            }
+
+                            toUpdate.needsUpdate = true;
+                            //toUpdate.Imdb = imdb;
+
+                            model.setValueAt(toUpdate.needsUpdate, row, 5);
                         }
                     }
                 }
@@ -384,6 +397,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
                             toUpdate.Ignoring = !use;
+
                             toUpdate.SearchString = searchstring;
                             toUpdate.Season = season;
                             toUpdate.Episode = episode;
@@ -495,9 +509,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                     if(!super.isRowSelected(rowIndex)) {
                         jo = getValueAt(rowIndex, 5);
-                        if(jo != null && jo.toString() == "true")
-                        jc.setBackground(Color.orange);
-                        else
+                        if(jo != null && jo.toString() == "true") {
+                            jc.setBackground(Color.orange);
+                        } else
                         jc.setBackground(null/*Color.white*/);
                     }
                 }
@@ -663,17 +677,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jTableFilelist.setAutoCreateRowSorter(true);
         jTableFilelist.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "Year", "Imbd", "ID", "Use"
+                "Usage", "Title", "Searchstring", "Year", "ID", "Update"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, false, true, false, false
+                true, false, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -713,12 +727,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title2")); // NOI18N
         jTableFilelist.getColumnModel().getColumn(3).setPreferredWidth(30);
         jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(50);
-        jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title4")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(10);
-        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title5")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(6).setPreferredWidth(1);
-        jTableFilelist.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
+        jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title5")); // NOI18N
+        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(1);
+        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
 
         jButton1.setAction(actionMap.get("SelectAllMovies")); // NOI18N
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
@@ -736,8 +748,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addContainerGap(308, Short.MAX_VALUE))
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+                .addContainerGap(328, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
         );
         jPanelMoviesLayout.setVerticalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -746,7 +758,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE))
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -883,11 +895,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanelSeries.setLayout(jPanelSeriesLayout);
         jPanelSeriesLayout.setHorizontalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
@@ -933,20 +945,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanelThumbs.setLayout(jPanelThumbsLayout);
         jPanelThumbsLayout.setHorizontalGroup(
             jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanelThumbsLayout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29))
+                .addContainerGap())
         );
         jPanelThumbsLayout.setVerticalGroup(
             jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -954,16 +966,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jPanelThumbs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+            .addComponent(jPanelThumbs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -975,11 +984,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
                 .addGap(121, 121, 121)
                 .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1116, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -990,7 +999,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         .addContainerGap()
                         .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1044,15 +1053,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1116, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1096, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1111, Short.MAX_VALUE)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(809, Short.MAX_VALUE)
+                .addContainerGap(824, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1305,9 +1314,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
         int row = jTableFilelist.getSelectedRow();
-        int id = (Integer) jTableFilelist.getValueAt(row, 5);
+        int id = (Integer) jTableFilelist.getValueAt(row, 4);
 
-        Toolkit tk = Toolkit.getDefaultToolkit();
+        //Toolkit tk = Toolkit.getDefaultToolkit();
 
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
@@ -1325,7 +1334,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             row++;
         }
 
-        int id = (Integer) jTableFilelist.getValueAt(row, 5);
+        int id = (Integer) jTableFilelist.getValueAt(row, 4);
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
@@ -1494,7 +1503,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             File selectedFile = jJPEGOpen.getSelectedFile();
             System.out.println(selectedFile.toString());
 
-            new Resize().exec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
+            new Resize().internalExcec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
             ImageIcon backdrop = new ImageIcon("import/backdrop.jpg");
             jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
         }
@@ -1740,10 +1749,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jTableFilelist.setValueAt(movie.Title, iteratorMovies, 1);
 
                 jTableFilelist.setValueAt(movie.Year, iteratorMovies, 3);
-                jTableFilelist.setValueAt(movie.Imdb, iteratorMovies, 4);
-                jTableFilelist.setValueAt(movie.ID, iteratorMovies, 5);
+                //jTableFilelist.setValueAt(movie.Imdb, iteratorMovies, 4);
+                jTableFilelist.setValueAt(movie.ID, iteratorMovies, 4);
 
-                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 6);
+                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 5);
 
                 iteratorMovies++;
             } else if (movie.isEpisode) {

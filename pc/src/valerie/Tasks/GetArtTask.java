@@ -153,16 +153,16 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
                 if (Resize)
                 {
-                    new Resize().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "download/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                    new Resize().internalExcec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
                 }
 
                 switch (Encoder)
                 {
                     case 0:
-                        new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v", Resolution);
+                        new mencoder().exec("converted/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v", Resolution);
                         break;
                     case 1:
-                        new Encode().exec("download/tt" + movie.Imdb + "_backdrop", "converted/tt" + movie.Imdb + "_backdrop.m1v",Resolution);
+                        new Encode().exec("converted/tt" + movie.Imdb + "_backdrop", "converted/tt" + movie.Imdb + "_backdrop.m1v",Resolution);
                         break;
                 }
                 
@@ -234,7 +234,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
                 if (Resize)
                 {
-                    new Resize().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                    new Resize().internalExcec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
                 }
 
                 switch (Encoder)

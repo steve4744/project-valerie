@@ -60,6 +60,7 @@ public class Network {
            while(e.hasMoreElements())
            {
                 InetAddress myAddr = (InetAddress)e.nextElement();
+                DebugOutput.printl(myAddr.getClass().toString());
                 if (myAddr instanceof Inet6Address)
                     continue; //We dont support ipv6
                 DebugOutput.printl("Adapter Display Name :"+ntAdapter.getDisplayName());

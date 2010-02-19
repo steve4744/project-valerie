@@ -11,12 +11,12 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
-                  <Component id="jToolBar1" pref="661" max="32767" attributes="0"/>
+                  <Component id="jToolBar1" pref="676" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
                   <Component id="jComboBoxBoxinfo" min="-2" pref="324" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
-              <Component id="jSplitPane1" alignment="0" pref="1116" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" alignment="0" pref="1131" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -30,7 +30,7 @@
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="641" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="646" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -192,7 +192,7 @@
                                   <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane1" pref="582" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" pref="587" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -212,14 +212,13 @@
                           <Properties>
                             <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysMovies &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);">
-                              <Table columnCount="7" rowCount="1">
-                                <Column editable="true" title="Use" type="java.lang.Boolean"/>
+                              <Table columnCount="6" rowCount="1">
+                                <Column editable="true" title="Usage" type="java.lang.Boolean"/>
                                 <Column editable="false" title="Title" type="java.lang.String"/>
                                 <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                 <Column editable="false" title="Year" type="java.lang.String"/>
-                                <Column editable="true" title="Imbd" type="java.lang.Integer"/>
                                 <Column editable="false" title="ID" type="java.lang.String"/>
-                                <Column editable="false" title="Use" type="java.lang.Boolean"/>
+                                <Column editable="false" title="Update" type="java.lang.Boolean"/>
                               </Table>
                             </Property>
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -252,13 +251,6 @@
                                   <Editor/>
                                   <Renderer/>
                                 </Column>
-                                <Column maxWidth="-1" minWidth="-1" prefWidth="50" resizable="true">
-                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title4" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                                  </Title>
-                                  <Editor/>
-                                  <Renderer/>
-                                </Column>
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="10" resizable="true">
                                   <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                     <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title5" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -285,7 +277,7 @@
                             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableFilelistKeyPressed"/>
                           </Events>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null)&#xa;            jc.setToolTipText(jo.toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 5);&#xa;                if(jo != null &amp;&amp; jo.toString() == &quot;true&quot;)&#xa;                jc.setBackground(Color.orange);&#xa;                else&#xa;                jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null)&#xa;            jc.setToolTipText(jo.toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 5);&#xa;                if(jo != null &amp;&amp; jo.toString() == &quot;true&quot;) {&#xa;                    jc.setBackground(Color.orange);&#xa;                } else&#xa;                jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
@@ -333,7 +325,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSplitPane2" alignment="0" pref="611" max="32767" attributes="0"/>
+                          <Component id="jSplitPane2" alignment="0" pref="616" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -504,19 +496,14 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jScrollPane3" alignment="0" max="32767" attributes="1"/>
-                              <Component id="jPanelThumbs" alignment="0" max="32767" attributes="1"/>
-                          </Group>
-                      </Group>
+                      <Component id="jScrollPane3" alignment="0" pref="620" max="32767" attributes="1"/>
+                      <Component id="jPanelThumbs" alignment="1" max="32767" attributes="1"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane3" pref="398" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" pref="403" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jPanelThumbs" min="-2" pref="235" max="-2" attributes="0"/>
                       </Group>
@@ -557,12 +544,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabelBackdrop" min="-2" pref="400" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace pref="42" max="32767" attributes="0"/>
                               <Component id="jLabelPoster" min="-2" pref="156" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -571,8 +558,8 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabelBackdrop" alignment="0" min="-2" pref="218" max="-2" attributes="1"/>
                                   <Component id="jLabelPoster" alignment="0" min="-2" pref="218" max="-2" attributes="1"/>
+                                  <Component id="jLabelBackdrop" alignment="0" min="-2" pref="218" max="-2" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -716,16 +703,16 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="1116" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="1131" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="1096" max="32767" attributes="0"/>
+                  <EmptySpace pref="1111" max="32767" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace pref="809" max="32767" attributes="0"/>
+                  <EmptySpace pref="824" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" pref="297" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -1090,6 +1077,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-35,0,0,4,92"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-35,0,0,4,107"/>
   </AuxValues>
 </Form>
