@@ -65,7 +65,7 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
                 if(entries[i].charAt(0) == '.')
                     continue;
 
-                File testpicture = new File("converted/" + entries[i] + entries[i]);
+                File testpicture = new File("converted/" + entries[i]);
                 if (testpicture.isFile()){
                     //Only upload arts if really needed so checbefore
                     String[] vLine = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress,
