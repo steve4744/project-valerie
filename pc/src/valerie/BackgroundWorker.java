@@ -185,7 +185,8 @@ public class BackgroundWorker {
 
     public void set(String name, Object obj) {
 
-        pTable.put(name, obj);
+        if(obj != null)
+            pTable.put(name, obj);
     }
 
     public Object get(String name) {

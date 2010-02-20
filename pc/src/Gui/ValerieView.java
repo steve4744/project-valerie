@@ -1413,7 +1413,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
         updateTables();
 
-        if (jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
+        if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
             jButtonUpload.setEnabled(false);
             jButtonSync.setEnabled(false);
         }

@@ -60,11 +60,12 @@ public class Network {
            while(e.hasMoreElements())
            {
                 InetAddress myAddr = (InetAddress)e.nextElement();
-                DebugOutput.printl(myAddr.getClass().toString());
+                //DebugOutput.printl(myAddr.getClass().toString());
                 if (myAddr instanceof Inet6Address)
                     continue; //We dont support ipv6
                 DebugOutput.printl("Adapter Display Name :"+ntAdapter.getDisplayName());
                 DebugOutput.printl("Adapter Name : "+ntAdapter.getName());
+                DebugOutput.printl("Ip : "+myAddr.getHostAddress());
 
                 byte[] bMyAddr = myAddr.getHostAddress().getBytes();
 
@@ -77,10 +78,10 @@ public class Network {
 
                 MulticastSocket socket;
                 try {
-                    socket = new MulticastSocket();
+                    Integer Port = 5450;
+                    socket = new MulticastSocket(new InetSocketAddress(myAddr.getHostAddress(), Port));
                     socket.setBroadcast(true);
                     InetAddress Adr = InetAddress.getByName("255.255.255.255");
-                    Integer Port = 5450;
                     Integer WaitMilliSeconds = 50;
                     DatagramPacket Send = new DatagramPacket(SendBuf, SendBuf.length, Adr, Port);
                     socket.setSoTimeout(WaitMilliSeconds);
