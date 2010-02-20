@@ -86,7 +86,7 @@ void printThis( const char* format, ... ) {
 
 //#define DEBUG
 
-void dprintf( const char* format, ... ) {
+void dbgprintf( const char* format, ... ) {
 #ifdef DEBUG
     va_list args;
 
@@ -168,6 +168,8 @@ void *answerUdpBroadcast(void * none)
 		{
 			//char* s = "MANUFACTOR=Kathrein;MODEL=UFS910;";
 			char * s = getenv("BOXSYSTEM");
+			if(s == NULL || strlen(s) <= 0)
+				s = strdup("MANUFACTOR=Testbox;MODEL=TESTBOX;");
 			printThis("%s:%d -> \"%s\" %d\n", __FUNCTION__, __LINE__, s, strlen(s));
 			if((n=sendto(bsockfd, s, strlen(s), 0, (struct sockaddr*)&adr_client, len_adr_client))<0) {
 				printThis("sendto failed\n");
@@ -320,8 +322,8 @@ void * tcpRequests(void * none)
 
 				FILE *pFile;
 	   			pFile = fopen( name, "w");
-
-				for(int i = 0; i < lenFile;) {
+				int i = 0;
+				for(i = 0; i < lenFile;) {
 					short bytesToRead = (lenFile - i)>MAX_CHARS_TCP?MAX_CHARS_TCP:lenFile-i;
 
 					//printThis("remaining %d [%d]", lenFile - i, bytesToRead);
@@ -350,7 +352,7 @@ static int vShutdown = 0;
 
 int listenControlSocket(int fdc)
 {
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 	int fdd;
 	
 
@@ -360,7 +362,7 @@ int listenControlSocket(int fdc)
 
 	while(1) {
 		// accept connection
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 		struct sockaddr_in socketRemote;
 		memset(&socketRemote, 0, sizeof(struct sockaddr_in));
 		socklen_t len = sizeof(struct sockaddr_in);
@@ -379,7 +381,7 @@ int listenControlSocket(int fdc)
 				break;
 		}
 
-	dprintf("%s-<\n", __FUNCTION__);
+	dbgprintf("%s-<\n", __FUNCTION__);
 
 		/*printThis("%s:%d\n", __FUNCTION__, __LINE__);
 		//close(fdc);
@@ -389,13 +391,13 @@ int listenControlSocket(int fdc)
 		//First of read what the client want
 		int slen = read(fdd, string, strlen(MAGIC_REQ_PROTOYPE));*/
 	}
-	dprintf("%s-<\n", __FUNCTION__);
+	dbgprintf("%s-<\n", __FUNCTION__);
 	return 0;
 }
 
 int sendControlCommand(int cmd, unsigned char * buffer, int * bufferlen)
 {
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 	struct sockaddr_in serv_addr;
 	int sockfd = socket(PF_INET, SOCK_STREAM, 0);
 	memset(&serv_addr, 0, sizeof(struct sockaddr_in));
@@ -410,12 +412,12 @@ int sendControlCommand(int cmd, unsigned char * buffer, int * bufferlen)
 	if(*bufferlen > 0)
 		*bufferlen = read(sockfd, buffer, *bufferlen);
 	close(sockfd);
-	dprintf("%s-<\n", __FUNCTION__);
+	dbgprintf("%s-<\n", __FUNCTION__);
 }
 
 int createControlSocket()
 {
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 	int success = 0;
 
 	struct sockaddr_in socketLocal;
@@ -428,13 +430,13 @@ int createControlSocket()
 	if (bind(fdControl, (struct sockaddr*)&socketLocal, sizeof(struct sockaddr_in)) >= 0)
 		listenControlSocket(fdControl);
 
-	dprintf("%s-<\n", __FUNCTION__);
+	dbgprintf("%s-<\n", __FUNCTION__);
 	return fdControl;
 }
 
 int checkControlSocket()
 {
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 	int running = 0;
 
 	struct sockaddr_in socketLocal;
@@ -448,7 +450,7 @@ int checkControlSocket()
 		running = 1;
 
 	close(fdControl);
-	dprintf("%s-<, %d\n", __FUNCTION__, running);
+	dbgprintf("%s-<, %d\n", __FUNCTION__, running);
 	return running;
 
 }
@@ -470,7 +472,7 @@ int checkForRunningInstance()
 
 int startDaemon()
 {
-	dprintf("%s->\n", __FUNCTION__);
+	dbgprintf("%s->\n", __FUNCTION__);
 	pid_t pid = fork();
 	if (pid == 0)
 	{
@@ -497,7 +499,7 @@ int startDaemon()
 		}
 		closeLogfile();
 	}
-	dprintf("%s-<\n", __FUNCTION__);
+	dbgprintf("%s-<\n", __FUNCTION__);
 	return 0;
 }
 
@@ -511,7 +513,7 @@ int main(int argc, char**argv)
 	} 
 	else
 	{
-		//dprintf("%s argv: %s\n", __FUNCTION__, argv[1]);
+		//dbgprintf("%s argv: %s\n", __FUNCTION__, argv[1]);
 		if (argc == 2 && !strncmp(argv[1], "log", 3))
 		{
 			int bufSize = 1024;
