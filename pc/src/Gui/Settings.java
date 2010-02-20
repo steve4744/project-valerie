@@ -14,7 +14,10 @@ package Gui;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.*;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
@@ -419,17 +422,19 @@ public class Settings extends javax.swing.JDialog {
 
         jLabelHeading.setText(heading);
 
-        if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("General")) {
+        if(path.length == 1 /* TOP NODE SHOULD NEVER BE SELECTED */) {
+
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("General")) {
             jPanelGeneral.setVisible(true);
             jPanelFileManagment.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
-        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
-        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
             jPanelFileManagment.setVisible(false);
             jPanelGeneral.setVisible(false);
             jPanelConvert.setVisible(true);
@@ -439,9 +444,20 @@ public class Settings extends javax.swing.JDialog {
             jComboBoxEncoder.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE"));
             jComboBoxResolution.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE"));
 
-        } else if(path.length == 1) {
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies")) {
+            /* SELECT FIRST CHILD */
+            TreeModel model = jTree1.getModel();
+            TreePath oldTreePath = jTree1.getSelectionPaths()[0];
+            TreeNode node = (TreeNode)oldTreePath.getLastPathComponent();
+            int childCount = model.getChildCount(node);
+            for (int i = 0; i < childCount; i++)
+            {
+               Object child = model.getChild(node, i);
+               TreePath tp = (oldTreePath.pathByAddingChild(child));
+               jTree1.setSelectionPath(tp);
+            }
 
-        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
+        } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelFileManagment.setVisible(false);
@@ -457,7 +473,21 @@ public class Settings extends javax.swing.JDialog {
             for(String pathMovies : pathsMovies) {
                     jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
             }
-        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
+
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV")) {
+            /* SELECT FIRST CHILD */
+            TreeModel model = jTree1.getModel();
+            TreePath oldTreePath = jTree1.getSelectionPaths()[0];
+            TreeNode node = (TreeNode)oldTreePath.getLastPathComponent();
+            int childCount = model.getChildCount(node);
+            for (int i = 0; i < childCount; i++)
+            {
+               Object child = model.getChild(node, i);
+               TreePath tp = (oldTreePath.pathByAddingChild(child));
+               jTree1.setSelectionPath(tp);
+            }
+            
+        } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV")/* && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")*/) {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelFileManagment.setVisible(false);
