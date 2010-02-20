@@ -328,9 +328,11 @@ void * tcpRequests(void * none)
 
 					//printThis("remaining %d [%d]", lenFile - i, bytesToRead);
 
-					read(fdd, &buffer, bytesToRead);
-					fwrite (buffer , 1 , bytesToRead , pFile );
-					i+=bytesToRead;
+					// We cant realy expect to always read a whole array, 
+					// so only write the bytes to file which we know that we read
+					int realBytesRead = read(fdd, &buffer, bytesToRead);
+					fwrite (buffer , 1 , realBytesRead , pFile );
+					i += realBytesRead;
 				}
 
 
