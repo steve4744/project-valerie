@@ -98,7 +98,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                     BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
                     int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
-                    String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");            
+                    String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f");            
 
                     for (int f = 0; f < entries.length; f++) {
                         Float progress = (float) f * 100;
@@ -239,7 +239,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                     filterString = " -name \"*." + filters[i] + "\"";
                     BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
                     int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
-                    String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f\n");            
+                    String[] entries = new valerie.tools.Network().sendCMD(boxInfos[selectedBoxInfo].IpAddress, "find \"" + paths[row] + "\"" + filterString + " -type f");            
 
                     for (int f = 0; f < entries.length; f++) {
                         Float progress = (float) i * 100;

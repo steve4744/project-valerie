@@ -182,6 +182,9 @@ public class Network {
     public String[] sendCMD(InetAddress addr, String cmd) {
         DebugOutput.printl("->");
 
+        //As we dont get stderr, lets 'disable' it here
+        cmd = cmd + " 2> /dev/null";
+
         ArrayList list = new ArrayList();
         try {
             Socket clientSocket = new Socket(addr, 5451);
