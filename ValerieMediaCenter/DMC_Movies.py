@@ -195,7 +195,10 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 #			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			else:
+				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 			self["title"].setText(selection[0])
 			self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
@@ -253,7 +256,10 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 #			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			else:
+				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyGenres(self):
 		menu=self.getAvailGenres()

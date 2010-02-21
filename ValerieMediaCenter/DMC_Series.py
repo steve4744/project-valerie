@@ -179,7 +179,10 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
-				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+				else:
+					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 				if self["poster"].instance is not None:
 					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 				self["title"].setText(selection[0])
@@ -268,7 +271,10 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def leaveMoviePlayer(self): 
 		self.session.nav.playService(None) 
-		self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v")
+		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v", os.F_OK):
+			self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v")
+		else:
+			self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyExit(self):
 		if self.inSeries is True:
