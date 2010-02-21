@@ -1312,6 +1312,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
     }
 
+    private final String defaultPoster = "default/defaultposter.jpg";
+    private final String defaultBackdrop = "default/defaultbackdrop.jpg";
+
+    private void drawPosters(String Id){
+
+        String poster = defaultPoster;
+        String backdrop = defaultBackdrop;
+        if(new File("converted/" + Id + "_poster.png").exists())
+            poster = "converted/" + Id + "_poster.png";
+        if(new File("converted/" + Id + "_backdrop.jpg").exists())
+            backdrop = "converted/" + Id + "_backdrop.jpg";
+        drawPosters(poster, backdrop);
+    }
+
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
         int row = jTableFilelist.getSelectedRow();
         int id = (Integer) jTableFilelist.getValueAt(row, 4);
@@ -1321,8 +1335,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
-        jTextAreaDescription.setText(info.toString());        
-        drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
+        jTextAreaDescription.setText(info.toString());
+        //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
+        drawPosters("tt" + info.Imdb);
     }//GEN-LAST:event_jTableFilelistMouseClicked
 
     private void jTableFilelistKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistKeyPressed
@@ -1339,7 +1354,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());              
-        drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
+        //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
+        drawPosters("tt" + info.Imdb);
     }//GEN-LAST:event_jTableFilelistKeyPressed
 
     private void jTableFilelistEpisodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesMouseClicked
@@ -1350,7 +1366,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());        
-        drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+        //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+        drawPosters(String.valueOf(info.TheTvDb));
     }//GEN-LAST:event_jTableFilelistEpisodesMouseClicked
 
     private void jTableFilelistEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesKeyPressed
@@ -1367,7 +1384,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfo info = database.getMediaInfoById(id);
 
         jTextAreaDescription.setText(info.toString());        
-        drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+       // drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+        drawPosters(String.valueOf(info.TheTvDb));
     }//GEN-LAST:event_jTableFilelistEpisodesKeyPressed
 
     private void jTableSeriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSeriesMouseClicked
@@ -1378,7 +1396,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfo info = database.getMediaInfoById(id);
         if (info != null) {
             jTextAreaDescription.setText(info.toString());            
-            drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+            //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+            drawPosters(String.valueOf(info.TheTvDb));
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesMouseClicked
@@ -1397,7 +1416,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
         MediaInfo info = database.getMediaInfoById(id);
         if (info != null) {
             jTextAreaDescription.setText(info.toString());            
-            drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+            //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
+            drawPosters(String.valueOf(info.TheTvDb));
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesKeyPressed
