@@ -93,6 +93,21 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
             }
         }
 
+        folder = new File("default");
+        if (!(folder.exists())) {
+            Logger.print("No such Folder \"default\"!");
+        } else {
+            String[] entries = folder.list();
+
+            for (int i = 0; i < entries.length; ++i) {
+                System.out.println(entries[i]);
+                if(entries[i].charAt(0) == '.')
+                    continue;
+                new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "default/" + entries[i], "/hdd/valerie/media");
+                //FileUtils.deleteFile("default/" + entries[i]);
+            }
+        }
+
         Logger.printBlocked("Finished");
         Logger.setBlocked(false);
 
