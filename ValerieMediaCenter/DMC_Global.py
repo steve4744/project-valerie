@@ -36,7 +36,30 @@ class E2Control():
 
 		self.close()
 
-		environ['BOXSYSTEM'] = "MANUFACTOR=Topfield;MODEL=HDPVR-7700;"
+		file = open("/proc/stb/info/model", "r")
+		box = file.readline().strip()
+		file.close()
+		manu = "Unknown"
+		model = "UNKNOWN"
+		if box == "ufs910":
+			manu = "Kathrein"
+			model = "UFS-910"
+		elif box == "ufs912":
+			manu = "Kathrein"
+			model = "UFS-912"
+		elif box == "ufs922":
+			manu = "Kathrein"
+			model = "UFS-922"
+		elif box == "tf7700hdpvr":
+			manu = "Topfield"
+			model = "HDPVR-7700"
+		elif box == "dm800":
+			manu = "Dreambox"
+			model = "800"
+		elif box == "dm8000":
+			manu = "Dreambox"
+			model = "8000"
+		environ['BOXSYSTEM'] = "MANUFACTOR="+manu+";MODEL="+model+";"
 		s = config.plugins.dmc.pluginfolderpath.value + " e2control"
 		printl(s)
 		try:
