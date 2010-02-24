@@ -50,7 +50,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         }
         this.setProgress((int)0);
 
-        Boolean Resize = new valerie.tools.Properties().getPropertyBoolean("RESIZE_BACKDROP");
+        Integer Resize = new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE");
         Integer Encoder = new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE");
         Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
 
@@ -90,7 +90,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
     }
 
-    private void getMediaArtMovie(MediaInfo movie, Boolean Resize, Integer Encoder, Integer Resolution) {
+    private void getMediaArtMovie(MediaInfo movie, Integer Resize, Integer Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
         File checkIfFilePNGalreadyExists = new File("converted/tt" + movie.Imdb + "_poster.png");
@@ -151,9 +151,16 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
             downloaded = new File("download/tt" + movie.Imdb + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
 
-                if (Resize)
+                switch (Resize)
                 {
-                    new Resize().internalExcec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                    case 0:
+                        break;
+                    case 1:
+                        new Resize().internalExcec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        break;
+                    case 2:
+                        new Resize().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        break;
                 }
 
                 switch (Encoder)
@@ -171,7 +178,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         }
     }
 
-    private void getMediaArtSeries(MediaInfo movie, Boolean Resize, Integer Encoder, Integer Resolution) {
+    private void getMediaArtSeries(MediaInfo movie, Integer Resize, Integer Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
         File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDb + "_poster.png");
@@ -232,9 +239,16 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
             downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
 
-                if (Resize)
+                switch (Resize)
                 {
-                    new Resize().internalExcec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                    case 0:
+                        break;
+                    case 1:
+                        new Resize().internalExcec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                        break;
+                    case 2:
+                        new Resize().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                        break;
                 }
 
                 switch (Encoder)

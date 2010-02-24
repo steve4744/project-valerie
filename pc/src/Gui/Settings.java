@@ -11,6 +11,7 @@
 
 package Gui;
 
+import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -72,11 +73,13 @@ public class Settings extends javax.swing.JDialog {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanelConvert = new javax.swing.JPanel();
-        jCheckBoxResize = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         jComboBoxEncoder = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jComboBoxResolution = new javax.swing.JComboBox();
+        jComboBoxResize = new javax.swing.JComboBox();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jLabelHeading = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -310,11 +313,6 @@ public class Settings extends javax.swing.JDialog {
         jPanelConvert.setBackground(new java.awt.Color(250, 250, 250));
         jPanelConvert.setName("jPanelConvert"); // NOI18N
 
-        jCheckBoxResize.setBackground(resourceMap.getColor("jCheckBoxResize.background")); // NOI18N
-        jCheckBoxResize.setText(resourceMap.getString("jCheckBoxResize.text")); // NOI18N
-        jCheckBoxResize.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        jCheckBoxResize.setName("jCheckBoxResize"); // NOI18N
-
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
@@ -327,6 +325,15 @@ public class Settings extends javax.swing.JDialog {
         jComboBoxResolution.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1024x576 25fps", "1280x720 60fps", "1920x1080 60fps" }));
         jComboBoxResolution.setName("jComboBoxResolution"); // NOI18N
 
+        jComboBoxResize.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "off", "internal" }));
+        jComboBoxResize.setName("jComboBoxResize"); // NOI18N
+
+        jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
+        jLabel4.setName("jLabel4"); // NOI18N
+
+        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
+        jLabel5.setName("jLabel5"); // NOI18N
+
         javax.swing.GroupLayout jPanelConvertLayout = new javax.swing.GroupLayout(jPanelConvert);
         jPanelConvert.setLayout(jPanelConvertLayout);
         jPanelConvertLayout.setHorizontalGroup(
@@ -334,33 +341,41 @@ public class Settings extends javax.swing.JDialog {
             .addGroup(jPanelConvertLayout.createSequentialGroup()
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelConvertLayout.createSequentialGroup()
-                        .addGap(106, 106, 106)
+                        .addGap(127, 127, 127)
                         .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxResolution, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBoxEncoder, 0, 146, Short.MAX_VALUE)))
+                        .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jComboBoxResolution, 0, 123, Short.MAX_VALUE)
+                            .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.Alignment.LEADING, 0, 123, Short.MAX_VALUE)
+                            .addComponent(jComboBoxResize, javax.swing.GroupLayout.Alignment.LEADING, 0, 123, Short.MAX_VALUE)))
                     .addGroup(jPanelConvertLayout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(jCheckBoxResize)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jLabel5)))
+                .addContainerGap())
         );
         jPanelConvertLayout.setVerticalGroup(
             jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelConvertLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jCheckBoxResize)
+                .addContainerGap()
+                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxResize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel2)
+                    .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jComboBoxResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                    .addComponent(jComboBoxResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addContainerGap(25, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelConvertLayout.createSequentialGroup()
+                .addContainerGap(83, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addContainerGap())
         );
 
         jPanelConvert.setBounds(10, 70, 337, 108);
@@ -440,7 +455,14 @@ public class Settings extends javax.swing.JDialog {
             jPanelConvert.setVisible(true);
             jPanelImportManagment.setVisible(false);
 
-            jCheckBoxResize.setSelected(new valerie.tools.Properties().getPropertyBoolean("RESIZE_BACKDROP"));
+            if (jComboBoxResize.getItemCount()<3){                
+                File checkIfConvertExists = new File("bin/convert.exe");
+                if (checkIfConvertExists.exists()){
+                    jComboBoxResize.addItem("extern by convert.exe");
+                }                
+            }            
+
+            jComboBoxResize.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE"));
             jComboBoxEncoder.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE"));
             jComboBoxResolution.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE"));
 
@@ -571,7 +593,7 @@ public class Settings extends javax.swing.JDialog {
         valerie.tools.Properties prop = new valerie.tools.Properties();
         prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
         prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
-        prop.setProperty("RESIZE_BACKDROP", new Boolean(jCheckBoxResize.isSelected()).toString());
+        prop.setProperty("RESIZE_TYPE", Integer.toString(jComboBoxResize.getSelectedIndex()));
         prop.setProperty("ENCODER_TYPE",Integer.toString(jComboBoxEncoder.getSelectedIndex()));
         prop.setProperty("RESOLUTION_TYPE",Integer.toString(jComboBoxResolution.getSelectedIndex()));
         prop.setProperty("PATHS_MOVIES", WorkPathMovies);
@@ -595,12 +617,14 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBoxResize;
     private javax.swing.JComboBox jComboBoxEncoder;
+    private javax.swing.JComboBox jComboBoxResize;
     private javax.swing.JComboBox jComboBoxResolution;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelFilter;
     private javax.swing.JLabel jLabelHeading;
     private javax.swing.JLayeredPane jLayeredPaneSettings;

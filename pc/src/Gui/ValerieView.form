@@ -30,7 +30,7 @@
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="646" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="641" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -192,7 +192,7 @@
                                   <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane1" pref="587" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" pref="582" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -325,7 +325,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSplitPane2" alignment="0" pref="616" max="32767" attributes="0"/>
+                          <Component id="jSplitPane2" alignment="0" pref="611" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -503,7 +503,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane3" pref="403" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" pref="398" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jPanelThumbs" min="-2" pref="235" max="-2" attributes="0"/>
                       </Group>

@@ -99,9 +99,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
             else {
                 jButtonUpload.setEnabled(false);
-                jButtonParse.setEnabled(false);
+                //jButtonParse.setEnabled(false);
                 jButtonSync.setEnabled(false);
-                jButtonArt.setEnabled(false);
+                //jButtonArt.setEnabled(false);
             }
 
         }
@@ -1515,6 +1515,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
     private void jButtonBackdropOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackdropOpenActionPerformed
         Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
+        Integer Resize = new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE");
 
         jJPEGOpen.addChoosableFileFilter(new ImageFilter());
         int result = jJPEGOpen.showOpenDialog(null);
@@ -1523,7 +1524,18 @@ public class ValerieView extends FrameView implements WindowStateListener {
             File selectedFile = jJPEGOpen.getSelectedFile();
             System.out.println(selectedFile.toString());
 
-            new Resize().internalExcec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
+            switch (Resize)
+            {
+                case 0:
+                    break;
+                case 1:
+                    new Resize().internalExcec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
+                    break;
+                case 2:
+                    new Resize().exec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
+                    break;
+            }
+            
             ImageIcon backdrop = new ImageIcon("import/backdrop.jpg");
             jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
         }
