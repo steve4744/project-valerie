@@ -758,7 +758,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE))
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -899,7 +899,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
@@ -972,7 +972,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -999,7 +999,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         .addContainerGap()
                         .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1155,11 +1155,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jLabelBackdrop1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jLabelBackdrop1.setName("jLabelBackdrop1"); // NOI18N
         jLabelBackdrop1.setOpaque(true);
-        jLabelBackdrop1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabelBackdrop1MouseClicked(evt);
-            }
-        });
 
         jButton3.setAction(actionMap.get("importBackdropCancel")); // NOI18N
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
@@ -1319,10 +1314,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         String poster = defaultPoster;
         String backdrop = defaultBackdrop;
-        if(new File("converted/" + Id + "_poster.png").exists())
-            poster = "converted/" + Id + "_poster.png";
-        if(new File("converted/" + Id + "_backdrop.jpg").exists())
-            backdrop = "converted/" + Id + "_backdrop.jpg";
+        if(new File("download/" + Id + "_poster.jpg").exists())
+            poster = "download/" + Id + "_poster.jpg";
+        if(new File("download/" + Id + "_backdrop.jpg").exists())
+            backdrop = "download/" + Id + "_backdrop.jpg";
         drawPosters(poster, backdrop);
     }
 
@@ -1367,7 +1362,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jTextAreaDescription.setText(info.toString());        
         //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(String.valueOf(info.TheTvDb));
+        drawPosters(""+info.TheTvDb);
     }//GEN-LAST:event_jTableFilelistEpisodesMouseClicked
 
     private void jTableFilelistEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesKeyPressed
@@ -1385,7 +1380,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jTextAreaDescription.setText(info.toString());        
        // drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(String.valueOf(info.TheTvDb));
+        drawPosters(""+info.TheTvDb);
     }//GEN-LAST:event_jTableFilelistEpisodesKeyPressed
 
     private void jTableSeriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSeriesMouseClicked
@@ -1458,7 +1453,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             case 0:
                 row = jTableFilelist.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 5);
+                    id = (Integer) jTableFilelist.getValueAt(row, 4);
                     directory = "download/tt";
                 }
                 break;
@@ -1508,10 +1503,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         }
     }//GEN-LAST:event_jLabelBackdropMouseClicked
-
-    private void jLabelBackdrop1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelBackdrop1MouseClicked
-        // TODO add your handling code here:
-}//GEN-LAST:event_jLabelBackdrop1MouseClicked
 
     private void jButtonBackdropOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackdropOpenActionPerformed
         Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
@@ -1581,11 +1572,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         try {
             if (BackdropWork.isMovie) {
-                FileUtils.copy("import/tt" + BackdropWork.Imdb + "_backdrop.m1v", "converted/tt"+BackdropWork.Imdb+"_backdrop.m1v");                
+                FileUtils.copy("import/tt" + BackdropWork.Imdb + "_backdrop.m1v", "converted/tt"+BackdropWork.Imdb+"_backdrop.m1v");
                 drawPosters("converted/tt" + BackdropWork.Imdb + "_poster.png", "download/tt" + BackdropWork.Imdb + "_backdrop.jpg");
             }
             else {
-                FileUtils.copy("import/" + BackdropWork.TheTvDb + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v");                
+                FileUtils.copy("import/" + BackdropWork.TheTvDb + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v");
                 drawPosters("converted/" + BackdropWork.TheTvDb + "_poster.png","download/" + BackdropWork.TheTvDb + "_backdrop.jpg");
             }
         }
@@ -1646,12 +1637,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
         try {
             if (PosterWork.isMovie) {
                 FileUtils.copy("import/poster.jpg", "download/tt"+PosterWork.Imdb+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/tt"+PosterWork.Imdb+"_poster.png");
+                FileUtils.copy("import/poster.png", "converted/tt"+PosterWork.Imdb+"_poster.png");                
                 FileUtils.copy("import/poster.png", "import/tt"+PosterWork.Imdb+"_poster.png");
             }
             else {
-                FileUtils.copy("import/poster.ipg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDb+"_poster.png");
+                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDb+"_poster.png");                
                 FileUtils.copy("import/poster.png", "import/"+PosterWork.TheTvDb+"_poster.png");
             }
         }
@@ -1663,10 +1654,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jImportPoster.setVisible(false);
 
         if (PosterWork.isMovie) {
-            drawPosters("converted/tt" + PosterWork.Imdb + "_poster.png", "download/tt" + PosterWork.Imdb + "_backdrop.jpg");
+            drawPosters("download/tt" + PosterWork.Imdb + "_poster.jpg", "download/tt" + PosterWork.Imdb + "_backdrop.jpg");
         }
         else {
-            drawPosters("converted/" + PosterWork.TheTvDb + "_poster.png","download/" + PosterWork.TheTvDb + "_backdrop.jpg");
+            drawPosters("download/" + PosterWork.TheTvDb + "_poster.jpg","download/" + PosterWork.TheTvDb + "_backdrop.jpg");
         }
 
         FileUtils.deleteFile("import/poster.jpg");
@@ -1689,8 +1680,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
             case 0:
                 row = jTableFilelist.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 5);
-                    directory = "converted/tt";
+                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    directory = "download/tt";
                 }
                 break;
             case 1:
@@ -1698,28 +1689,28 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                 if (row > 1){
                     id = (Integer) jTableSeries.getValueAt(row, 1);
-                    directory = "converted/";
+                    directory = "download/";
                 }
                 else {
                     row = jTableFilelistEpisodes.getSelectedRow();
 
                     if (row > 1){
                         id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
-                        directory = "converted/";
+                        directory = "download/";
                     }
                 }
                 break;
         }
 
-        if (directory.contains("converted")){
+        if (directory.contains("download")){
             MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
             PosterWork = database.getMediaInfoById(id);
 
             if (PosterWork.isMovie){
-                directory = directory + PosterWork.Imdb + "_poster.png";
+                directory = directory + PosterWork.Imdb + "_poster.jpg";
             }
             else {
-                directory = directory + PosterWork.TheTvDb + "_poster.png";
+                directory = directory + PosterWork.TheTvDb + "_poster.jpg";
             }
 
             System.out.println(directory);

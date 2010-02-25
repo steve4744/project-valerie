@@ -156,20 +156,20 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
                     case 0:
                         break;
                     case 1:
-                        new Resize().internalExcec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        new Resize().internalExcec("download/tt" + movie.Imdb + "_backdrop.jpg", "download/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
                         break;
                     case 2:
-                        new Resize().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        new Resize().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "download/tt" + movie.Imdb + "_backdrop.jpg", Resolution);
                         break;
                 }
 
                 switch (Encoder)
                 {
                     case 0:
-                        new mencoder().exec("converted/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v", Resolution);
+                        new mencoder().exec("download/tt" + movie.Imdb + "_backdrop.jpg", "converted/tt" + movie.Imdb + "_backdrop.m1v", Resolution);
                         break;
                     case 1:
-                        new Encode().exec("converted/tt" + movie.Imdb + "_backdrop", "converted/tt" + movie.Imdb + "_backdrop.m1v",Resolution);
+                        new Encode().exec("download/tt" + movie.Imdb + "_backdrop", "converted/tt" + movie.Imdb + "_backdrop.m1v",Resolution);
                         break;
                 }
                 
@@ -259,9 +259,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
                     case 1:
                         new Encode().exec("download/" + movie.TheTvDb + "_backdrop", "converted/" + movie.TheTvDb + "_backdrop.m1v", Resolution);
                         break;
-                }
-                
-                
+                }                                
             }
         }
     }

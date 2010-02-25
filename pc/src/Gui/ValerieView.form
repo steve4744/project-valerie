@@ -918,9 +918,6 @@
             <Property name="name" type="java.lang.String" value="jLabelBackdrop1" noResource="true"/>
             <Property name="opaque" type="boolean" value="true"/>
           </Properties>
-          <Events>
-            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelBackdrop1MouseClicked"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton3">
           <Properties>
