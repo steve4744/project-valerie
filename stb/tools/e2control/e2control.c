@@ -509,11 +509,7 @@ int main(int argc, char**argv)
 {
 	fpLogfile = stdout;
 
-	if(checkForRunningInstance() == 0)
-	{
-		startDaemon();
-	} 
-	else
+	if(checkForRunningInstance() == 1)
 	{
 		//dbgprintf("%s argv: %s\n", __FUNCTION__, argv[1]);
 		if (argc == 2 && !strncmp(argv[1], "log", 3))
@@ -545,9 +541,18 @@ int main(int argc, char**argv)
 				"\n"
 				"Options are:\n"
 				"\tlog         shows log\n"
+				"\tstart       start daemon\n"
 				"\tstop        stop daemon\n"
 				"\n");
+	} 
+	else
+	{
+		if (argc == 1 || (argc == 2 && !strncmp(argv[1], "start", 5)) )
+		{
+			startDaemon();
+		}
 	}
 	return 0;
 }
+
 
