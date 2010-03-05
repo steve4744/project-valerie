@@ -486,16 +486,28 @@
 			<widget name="title" transparent="1" zPosition="5" halign="center" position="200,25" size="880,30" font="Regular;30" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 
 
-			<widget name="star0" transparent="1" zPosition="5" position="490,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star1" transparent="1" zPosition="5" position="520,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star2" transparent="1" zPosition="5" position="550,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star3" transparent="1" zPosition="5" position="580,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star4" transparent="1" zPosition="5" position="610,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star5" transparent="1" zPosition="5" position="640,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star6" transparent="1" zPosition="5" position="670,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star7" transparent="1" zPosition="5" position="700,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star8" transparent="1" zPosition="5" position="730,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
-			<widget name="star9" transparent="1" zPosition="5" position="760,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png" alphatest="on" />
+			<widget name="star0" transparent="1" zPosition="6" position="490,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star1" transparent="1" zPosition="6" position="520,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star2" transparent="1" zPosition="6" position="550,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star3" transparent="1" zPosition="6" position="580,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star4" transparent="1" zPosition="6" position="610,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star5" transparent="1" zPosition="6" position="640,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star6" transparent="1" zPosition="6" position="670,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star7" transparent="1" zPosition="6" position="700,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star8" transparent="1" zPosition="6" position="730,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+			<widget name="star9" transparent="1" zPosition="6" position="760,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/Star.png" alphatest="on" />
+
+
+			<widget name="nostar0" transparent="1" zPosition="5" position="490,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar1" transparent="1" zPosition="5" position="520,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar2" transparent="1" zPosition="5" position="550,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar3" transparent="1" zPosition="5" position="580,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar4" transparent="1" zPosition="5" position="610,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar5" transparent="1" zPosition="5" position="640,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar6" transparent="1" zPosition="5" position="670,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar7" transparent="1" zPosition="5" position="700,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar8" transparent="1" zPosition="5" position="730,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
+			<widget name="nostar9" transparent="1" zPosition="5" position="760,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1280x720/images/NoStar.png" alphatest="on" />
 
 			<eLabel text="" zPosition="5" halign="left" position="124,112" size="1032,1" backgroundColor="#FFFFFF"/>
 

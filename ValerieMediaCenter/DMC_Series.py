@@ -73,6 +73,13 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 			stars = "star" + str(i)
 			print stars
 			self[stars] = Pixmap()
+			if self[stars].instance is not None:
+				self[stars].instance.hide()
+
+		for i in range(10):
+			stars = "nostar" + str(i)
+			print stars
+			self[stars] = Pixmap()
 
 		self["actions"] = HelpableActionMap(self, "MC_AudioPlayerActions", 
 			{
@@ -196,13 +203,14 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self["genre"].setText(self.moviedb[selection[1]]["Genres"])
 				self["year"].setText(self.moviedb[selection[1]]["Year"])
 				self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
+
 				for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 					if self["star" + str(i)].instance is not None:
-						self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
+						self["star" + str(i)].instance.show()
 
 				for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 					if self["star" + str(9 - i)].instance is not None:
-						self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+						self["star" + str(9 - i)].instance.hide()
 
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])

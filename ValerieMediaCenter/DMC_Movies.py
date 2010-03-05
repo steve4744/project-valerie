@@ -57,13 +57,6 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		
 		list = []
 
-		# Start of Definitions
-
-		self["PATH_STAR"] = Label()
-		self["PATH_NOSTAR"] = Label()
-
-		# End of Definitions
-
 		self["title"] = Label()
 		self["otitle"] = Label()
 		self["tag"] = Label()
@@ -233,15 +226,11 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(i)].instance is not None:
-					self["star" + str(i)].instance.show() #instance.setPixmapFromFile(self["PATH_STAR"].text)
-				#if self["nostar" + str(i)].instance is not None:
-				#	self["nostar" + str(i)].hide() #instance.setPixmapFromFile(self["PATH_STAR"].text)
+					self["star" + str(i)].instance.show()
 
 			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(9 - i)].instance is not None:
 					self["star" + str(9 - i)].instance.hide()
-				#if self["nostar" + str(9 - i)].instance is not None:
-				#	self["nostar" + str(9 - i)].show()
 
 	def up(self):
 		self["listview"].up()
