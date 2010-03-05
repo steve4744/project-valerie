@@ -56,6 +56,14 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		
 		list = []
+
+		# Start of Definitions
+
+		self["PATH_STAR"] = Label()
+		self["PATH_NOSTAR"] = Label()
+
+		# End of Definitions
+
 		self["title"] = Label()
 		self["otitle"] = Label()
 		self["tag"] = Label()
@@ -69,6 +77,13 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 		for i in range(10):
 			stars = "star" + str(i)
+			print stars
+			self[stars] = Pixmap()
+			if self[stars].instance is not None:
+				self[stars].instance.hide()
+
+		for i in range(10):
+			stars = "nostar" + str(i)
 			print stars
 			self[stars] = Pixmap()
 
@@ -148,6 +163,8 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			
 		except OSError, e: 
 			print "OSError: ", e
+		except IOError, e: 
+			print "OSError: ", e
 		
 		if self.Sort == "":
 			list.sort()
@@ -213,13 +230,18 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
 			if self["poster"].instance is not None:
 				self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
+
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(i)].instance is not None:
-					self["star" + str(i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_Star.png")
+					self["star" + str(i)].instance.show() #instance.setPixmapFromFile(self["PATH_STAR"].text)
+				#if self["nostar" + str(i)].instance is not None:
+				#	self["nostar" + str(i)].hide() #instance.setPixmapFromFile(self["PATH_STAR"].text)
 
 			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(9 - i)].instance is not None:
-					self["star" + str(9 - i)].instance.setPixmapFromFile("/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/defaultHD/images/Valerie_NoStar.png")
+					self["star" + str(9 - i)].instance.hide()
+				#if self["nostar" + str(9 - i)].instance is not None:
+				#	self["nostar" + str(9 - i)].show()
 
 	def up(self):
 		self["listview"].up()

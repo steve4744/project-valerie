@@ -61,7 +61,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self["title"] 				= Label()
 		self["otitle"] 				= Label()
 		self["tag"] 				= Label()
-		self["shortDesc"] 	        = Label()
+		self["shortDescription"] 	= Label()
 		self["director"] 			= Label()
 		self["writer"] 				= Label()
 		self["genre"] 				= Label()
@@ -160,6 +160,8 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 						
 		except OSError, e: 
 			print "OSError: ", e
+		except IOError, e: 
+			print "OSError: ", e
 		
 		if self.inSeries:
 			self.serieslist.sort()
@@ -188,7 +190,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self["title"].setText(selection[0])
 				self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 				self["tag"].setText(self.moviedb[selection[1]]["Tag"])
-				self["shortDesc"].setText(self.moviedb[selection[1]]["Plot"])
+				self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
 				self["director"].setText(self.moviedb[selection[1]]["Directors"])
 				self["writer"].setText(self.moviedb[selection[1]]["Writers"])
 				self["genre"].setText(self.moviedb[selection[1]]["Genres"])
@@ -205,9 +207,9 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])
 				if self.episodesdb[selection[1]]["LocalPlot"] and self.episodesdb[selection[1]]["LocalPlot"] !="":
-					self["shortDesc"].setText(self.episodesdb[selection[1]]["LocalPlot"])
+					self["shortDescription"].setText(self.episodesdb[selection[1]]["LocalPlot"])
 				else:
-					self["shortDesc"].setText(self.episodesdb[selection[1]]["Plot"])
+					self["shortDescription"].setText(self.episodesdb[selection[1]]["Plot"])
 			
 	def up(self):
 		self["listview"].up()

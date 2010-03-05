@@ -60,7 +60,7 @@ class E2Control():
 			manu = "Dreambox"
 			model = "8000"
 		environ['BOXSYSTEM'] = "MANUFACTOR="+manu+";MODEL="+model+";"
-		s = config.plugins.dmc.pluginfolderpath.value + " e2control"
+		s = config.plugins.dmc.pluginfolderpath.value + "e2control"
 		printl(s)
 		try:
 			popen(s)
@@ -68,7 +68,7 @@ class E2Control():
 			printl("OSError: " + str(e))
 
 	def close(self):
-		s = config.plugins.dmc.pluginfolderpath.value + " e2control stop"
+		s = config.plugins.dmc.pluginfolderpath.value + "e2control stop"
 		printl(s)
 		try:
 			popen(s)
