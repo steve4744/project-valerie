@@ -20,10 +20,10 @@ is divided into following sections:
 
         -->
 <project xmlns:j2seproject1="http://www.netbeans.org/ns/j2se-project/1" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3" xmlns:jaxrpc="http://www.netbeans.org/ns/j2se-project/jax-rpc" basedir=".." default="default" name="Valerie-impl">
-    <fail message="Please build using Ant 1.7.1 or higher.">
+    <fail message="Please build using Ant 1.7.0 or higher.">
         <condition>
             <not>
-                <antversion atleast="1.7.1"/>
+                <antversion atleast="1.7.0"/>
             </not>
         </condition>
     </fail>
@@ -198,9 +198,6 @@ is divided into following sections:
                 <mkdir dir="${empty.dir}"/>
                 <javac debug="@{debug}" deprecation="${javac.deprecation}" destdir="@{destdir}" encoding="${source.encoding}" excludes="@{excludes}" fork="${javac.fork}" includeantruntime="false" includes="@{includes}" source="${javac.source}" sourcepath="@{sourcepath}" srcdir="@{srcdir}" target="${javac.target}" tempdir="${java.io.tmpdir}">
                     <src>
-                        <dirset dir="@{gensrcdir}" erroronmissingdir="false">
-                            <include name="*"/>
-                        </dirset>
                     </src>
                     <classpath>
                         <path path="@{classpath}"/>
