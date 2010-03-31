@@ -1886,7 +1886,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     } else if (movie.isSeries) {
                         fwSeries.append(movie.toString());
                     } else if (movie.isEpisode) {
-                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt"),"UTF-8");
+                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),"UTF-8");
                         //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
                         fwEpisode.close();

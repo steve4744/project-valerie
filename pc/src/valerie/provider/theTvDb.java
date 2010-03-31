@@ -101,6 +101,7 @@ public class theTvDb extends provider {
                 System.out.println(sPopularity);
                 Float fPopularity = Float.valueOf(sPopularity);
                 info.Popularity = fPopularity.intValue();
+                if(info.Popularity > 10) info.Popularity = 10;
            }
 
            org.jdom.Element eGenres = eMovie.getChild("Genre");
