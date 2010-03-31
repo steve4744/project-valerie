@@ -55,6 +55,8 @@ import valerie.tools.pngquant;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -1859,8 +1861,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         //create db file
         try {
-            Writer fwMovie = new FileWriter("db/moviedb.txt");
-            Writer fwSeries = new FileWriter("db/seriesdb.txt");
+            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),"UTF-8");
+            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),"UTF-8");
+            //Writer fwMovie = new FileWriter("db/moviedb.txt");
+            //Writer fwSeries = new FileWriter("db/seriesdb.txt");
 
             File episodes = new File("db/episodes");
             if (episodes.exists()) {
@@ -1882,7 +1886,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     } else if (movie.isSeries) {
                         fwSeries.append(movie.toString());
                     } else if (movie.isEpisode) {
-                        Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
+                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt"),"UTF-8");
+                        //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
                         fwEpisode.close();
                     }
