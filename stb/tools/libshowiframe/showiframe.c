@@ -40,7 +40,7 @@ int showSinglePic(const char *filename)
                 if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
                         printf("video: VIDEO_CLEAR_BUFFER: %m\n");
 
-                bool seq_end_avail = false;
+                int seq_end_avail = 0;
                 size_t pos = 0;
                 unsigned char pes_header[] = { 0x00, 0x00, 0x01, 0xE0, 0x00, 0x00, 0x80, 0x00, 0x00 };
                 unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
