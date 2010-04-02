@@ -8,6 +8,7 @@ package valerie;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
+import java.util.concurrent.Semaphore;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
 import org.jdesktop.application.TaskListener;
@@ -74,23 +75,35 @@ public class BackgroundWorker {
         ParentObject pParent;
         Tasks pTaskId;
         int pTaskIdInt;
+        int pseudoTaskIdInt = -1;
+
+        private Semaphore sem;
 
         public PropertyListener(ParentObject parent, Tasks taskId, int iTaskId) {
             pParent = parent;
             pTaskId = taskId;
             pTaskIdInt = iTaskId;
+
+            sem = new Semaphore(1, true);
         }
 
         @Override public void propertyChange( PropertyChangeEvent e )
         {
-            //System.out.printf( "[%d]Property '%s': '%s' -> '%s'%n",
-            //               pTaskIdInt, e.getPropertyName(), e.getOldValue(), e.getNewValue() );
+            try {
+                sem.acquire();
+            } catch(InterruptedException ex)
+            {}
+            /*System.out.printf( "[%d]Property '%s': '%s' -> '%s'%n",
+                           pTaskIdInt, e.getPropertyName(), e.getOldValue(), e.getNewValue() );*/
             String propertyName = e.getPropertyName();
             if(propertyName.equals("progress"))
-                Logger.setProgress((Integer)e.getNewValue(), pTaskIdInt);
+                Logger.setProgress((Integer)e.getNewValue(), pseudoTaskIdInt!=-1?pseudoTaskIdInt:pTaskIdInt);
             else if(propertyName.equals("message"))
-                Logger.setMessage((String)e.getNewValue(), pTaskIdInt);
+                Logger.setMessage((String)e.getNewValue(), pseudoTaskIdInt!=-1?pseudoTaskIdInt:pTaskIdInt);
+            else if(propertyName.equals("description"))
+                pseudoTaskIdInt = Integer.valueOf((String)e.getNewValue());
             //pParent.progress(pTaskId, e.getNewValue());
+            sem.release();
         }
     }
 

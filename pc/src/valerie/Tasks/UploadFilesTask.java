@@ -37,7 +37,12 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
         int selectedBoxInfo = (Integer)pWorker.get("SelectedBoxInfo");
         BoxInfo pBoxInfo = pBoxInfos[selectedBoxInfo];
 
+        this.setDescription("0");
+        this.setProgress((int)0);
+
+        this.setMessage("db/moviedb.txt");
         new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db/moviedb.txt", "/hdd/valerie");
+        this.setMessage("db/seriesdb.txt");
         new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db/seriesdb.txt", "/hdd/valerie");
 
         File episodes = new File("db/episodes");
@@ -49,10 +54,17 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
             for (int i = 0; i < entries.length; ++i) {
                 File testentries = new File("db/episodes/" + entries[i]);
                 if (testentries.isFile()){
+                    this.setProgress((int)((i * 100) / entries.length));
+                    this.setMessage("db/episodes/" + entries[i]);
                     new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db/episodes/" + entries[i], "/hdd/valerie/episodes");
                 }
             }
         }
+
+        this.setProgress((int)100);
+        this.setMessage("db upload finsihed");
+        this.setDescription("1");
+        this.setProgress((int)0);
 
         File folder = new File("converted");
         if (!(folder.exists())) {
@@ -71,11 +83,19 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
                     String[] vLine = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress,
                             "ls /hdd/valerie/media/" + entries[i]);
 
-                    if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i]))
+                    if(vLine.length == 0 || !vLine[0].equals("/hdd/valerie/media/" + entries[i])) {
+                        this.setProgress((int)((i * 100) / entries.length));
+                        this.setMessage("converted/" + entries[i]);
                         new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "converted/" + entries[i], "/hdd/valerie/media");
+                    }
                 }
             }
         }
+
+        this.setProgress((int)100);
+        this.setMessage("converted pic upload finsihed");
+        this.setDescription("2");
+        this.setProgress((int)0);
 
         // Move imported pictures to hdd
         folder = new File("import");
@@ -88,10 +108,17 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
                 System.out.println(entries[i]);
                 if(entries[i].charAt(0) == '.')
                     continue;
+                this.setProgress((int)((i * 100) / entries.length));
+                this.setMessage("import/" + entries[i]);
                 new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "import/" + entries[i], "/hdd/valerie/media");
                 FileUtils.deleteFile("import/" + entries[i]);
             }
         }
+
+        this.setProgress((int)100);
+        this.setMessage("import pic upload finsihed");
+        this.setDescription("3");
+        this.setProgress((int)0);
 
         folder = new File("default");
         if (!(folder.exists())) {
@@ -103,10 +130,17 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
                 System.out.println(entries[i]);
                 if(entries[i].charAt(0) == '.')
                     continue;
+                this.setProgress((int)((i * 100) / entries.length));
+                this.setMessage("default/" + entries[i]);
                 new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "default/" + entries[i], "/hdd/valerie/media");
                 //FileUtils.deleteFile("default/" + entries[i]);
             }
         }
+
+        this.setProgress((int)100);
+        this.setMessage("import default upload finsihed");
+        this.setDescription("-1");
+
 
         Logger.printBlocked("Finished");
         Logger.setBlocked(false);

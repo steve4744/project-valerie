@@ -37,7 +37,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         Logger.setBlocked(true);
         Logger.printBlocked("Syncing Filelist");
 
-        Logger.setProgress(0);
+        Logger.setProgress((int)0);
 
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
 
@@ -54,7 +54,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
         Logger.printBlocked("Finished");
         Logger.setBlocked(false);
-        Logger.setProgress(0);
+        Logger.setProgress((int)0);
 
         return null;
     }
@@ -69,7 +69,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         replacements.add(new String[]{"[.]", " "});
         replacements.add(new String[]{"_", " "});
         replacements.add(new String[]{"-", " "});
-        replacements.add(new String[]{"tt\\d{7}", ""});
+        //replacements.add(new String[]{"tt\\d{7}", ""});
         replacements.add(new String[]{"(\\b(avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
         BufferedReader frMovie;
         try {
@@ -77,7 +77,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
             String line;
             while ((line = frMovie.readLine()) != null) {
                 String[] parts = line.split("=");
-                replacements.add(new String[]{parts[0], parts[1]});
+                replacements.add(new String[]{parts[0], parts.length>1?parts[1]:" "});
             }
         } catch (Exception e) {
         }
@@ -219,6 +219,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                         database.addMediaInfo(movie);
 
                         Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
+                        this.setMessage(movie.SearchString);
                     }
                 }
             }
@@ -301,6 +302,24 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                         String SeriesName = filtered.replaceAll(" s\\d+\\D?e\\D?\\d+.*", "");
                         SeriesName = SeriesName.replaceAll(" \\d+\\D?x\\D?\\d+.*", "");
 
+                        {
+                            Pattern pCharNumber = Pattern.compile("\\D{1,}");
+                            Matcher mCharNumber = pCharNumber.matcher(SeriesName);
+
+                            String newFiltered = "";
+
+                            while (mCharNumber.find())
+                                newFiltered += mCharNumber.group() + " ";
+
+                            pCharNumber = Pattern.compile("\\d{1,}");
+                            mCharNumber = pCharNumber.matcher(SeriesName);
+
+                            while (mCharNumber.find())
+                                newFiltered += mCharNumber.group() + " ";
+
+                            SeriesName = newFiltered;
+                        }
+
                         //Sometimes the release groups insert their name in front of the title, so letzs check if the frist word contains a '-'
                         /*String firstWord = "";
                         String[] spaceSplit = SeriesName.split(" ", 2);
@@ -314,6 +333,8 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                         if (minusSplit.length == 2) {
                             SeriesName = minusSplit[1] + (spaceSplit.length == 2 ? " " + spaceSplit[1] : "");
                         }*/
+
+
 
                         {
                             Pattern pSeasonEpisode = Pattern.compile(" s(\\d+)\\D?e\\D?(\\d+)");
@@ -335,7 +356,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         //Sometimes the Season and Episode info is like this 812 for Season: 8 Episode: 12
                         if (movie.Season == 0 && movie.Episode == 0) {
-                            Pattern pSeasonEpisode = Pattern.compile(" (\\d+)(\\d\\d)");
+                            Pattern pSeasonEpisode = Pattern.compile("(\\d{1,20})(\\d{2})");
                             Matcher mSeasonEpisode = pSeasonEpisode.matcher(filtered);
                             String seasonStr="";
                             while (mSeasonEpisode.find()) { //use last one found because year 2008 is also that pattern
@@ -349,6 +370,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         movie.SearchString = SeriesName.trim();
                         Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
+                        this.setMessage(movie.SearchString);
 
                         if(movie.SearchString.length() > 0) {
                             movie.Ignoring = false;
