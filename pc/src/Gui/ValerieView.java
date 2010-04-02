@@ -1864,8 +1864,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
             //Charset cset = Charset.defaultCharset();
             //Object c = Charset.availableCharsets();
 
-            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),"ISO-8859-1");
-            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),"ISO-8859-1");
+            String charset = "UTF-8";
+            //String charset = "ISO-8859-1";
+
+            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),charset);
+            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),charset);
             //Writer fwMovie = new FileWriter("db/moviedb.txt");
             //Writer fwSeries = new FileWriter("db/seriesdb.txt");
 
@@ -1889,7 +1892,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     } else if (movie.isSeries) {
                         fwSeries.append(movie.toString());
                     } else if (movie.isEpisode) {
-                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),"ISO-8859-1");
+                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),charset);
                         //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
                         fwEpisode.close();
