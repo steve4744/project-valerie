@@ -16,7 +16,7 @@ from enigma import getDesktop
 printl("Init")
 
 # the currentVersion should be renewed every major update
-currentVersion          = 103
+currentVersion          = 100
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/MediaCenter/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultSkin             = "default"
@@ -33,10 +33,13 @@ config.plugins.dmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.dmc.autostart         = ConfigYesNo(default = True)
 config.plugins.dmc.checkforupdate    = ConfigYesNo(default = True)
 
+config.plugins.dmc.uselocal           = ConfigYesNo(default = False)
+
 printl("language="       + str(config.plugins.dmc.language.value))
 printl("showwizard="     + str(config.plugins.dmc.showwizard.value))
 printl("autostart="      + str(config.plugins.dmc.autostart.value))
 printl("checkforupdate=" + str(config.plugins.dmc.checkforupdate.value))
+printl("uselocal=" + str(config.plugins.dmc.uselocal.value))
 
 config.plugins.dmc.version           = ConfigInteger(0, (0, 999))
 config.plugins.dmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
@@ -44,6 +47,8 @@ config.plugins.dmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPat
 config.plugins.dmc.skin              = ConfigText(default = defaultSkin)
 config.plugins.dmc.url               = ConfigText(default = defaultURL)
 config.plugins.dmc.updatexml         = ConfigText(default = defaultUpdateXML)
+
+
 
 # We updated to a newer version, so redisplay wizard
 if config.plugins.dmc.version.value != currentVersion:

@@ -34,6 +34,15 @@ class DMC_Wizard(WizardLanguage):
 			config.plugins.dmc.checkforupdate.value = False
 		printl("config.plugins.dmc.checkforupdate -> " + str(config.plugins.dmc.checkforupdate.value))
 
+	def uselocal(self, selection = None):
+		if selection is None:
+			selection = self.selection
+		if selection == "yes":
+			config.plugins.dmc.uselocal.value = True
+		else:
+			config.plugins.dmc.uselocal.value = False
+		printl("config.plugins.dmc.uselocal -> " + str(config.plugins.dmc.uselocal.value))
+
 	def saveConfig(self):
 		config.plugins.dmc.showwizard.value = False
 		config.save() 

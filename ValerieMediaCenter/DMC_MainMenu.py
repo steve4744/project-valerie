@@ -1,4 +1,4 @@
-from enigma import eTimer, eDVBDB, getDesktop
+from enigma import eListboxPythonMultiContent, gFont, eTimer, eDVBDB, getDesktop
 from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
@@ -14,6 +14,8 @@ from Components.config import *
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
+
+from Components.ConfigList import ConfigListScreen
 
 import os
 
@@ -36,6 +38,68 @@ except Exception, e:
 
 #------------------------------------------------------------------------------------------
 	
+class Settings(Screen, ConfigListScreen):
+	skin = """
+		<screen name="DMC_Settings" position="160,150" size="450,200" title="Settings">
+			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on" />
+			<widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget name="config" position="10,44" size="430,146" />
+		</screen>"""
+
+	def __init__(self, session, parent):
+		from Components.Sources.StaticText import StaticText
+		Screen.__init__(self, session)
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Save"))
+
+		ConfigListScreen.__init__(self, [])
+		self.parent = parent
+		self.initConfigList()
+		config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
+
+		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
+		{
+		    "green": self.save,
+		    "red": self.cancel,
+		    "cancel": self.cancel,
+		    "ok": self.ok,
+		}, -2)
+
+	def initConfigList(self, element=None):
+		print "[initConfigList]", element
+		try:
+			self.list = []
+			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.dmc.showwizard))
+			self.list.append(getConfigListEntry(_("autostart"), config.plugins.dmc.autostart))
+			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.dmc.checkforupdate))
+			self.list.append(getConfigListEntry(_("uselocal"), config.plugins.dmc.uselocal))
+			self["config"].setList(self.list)
+		except KeyError:
+			print "keyError"
+
+	def changedConfigList(self):
+		self.initConfigList()
+
+	def ok(self):
+		print "ok"
+
+	def LocationBoxClosed(self, path):
+		print "PathBrowserClosed:", path
+		#if path is not None:
+		#	config.mediaplayer.defaultDir.setValue(path)
+
+	def save(self):
+		print "save"
+		for x in self["config"].list:
+			x[1].save()
+		self.close()
+
+	def cancel(self):
+		self.close()
+
+
 class DMC_MainMenu(Screen):
 	def __init__(self, session):
 		printl("DMC_MainMenu:__init__")
@@ -59,7 +123,7 @@ class DMC_MainMenu(Screen):
 		listWatch.append((" ", "dummy", "menu_dummy", "50"))
 		listWatch.append(("Movies", "DMC_Movies", "menu_movies", "50"))
 		listWatch.append(("Series", "DMC_Series", "menu_series", "50"))
-		listWatch.append(("Series", "MC_VideoPlayer", "menu_watch_all", "50"))
+		#listWatch.append(("Series", "MC_VideoPlayer", "menu_watch_all", "50"))
 		self["menuWatch"] = List(listWatch, True)
 		self.Watch = False
 
@@ -130,12 +194,13 @@ class DMC_MainMenu(Screen):
 				elif selection[1] == "MC_AudioPlayer":
 					self.session.open(MC_AudioPlayer)
 				elif selection[1] == "MC_Settings":
-					from Menu import MainMenu, mdom
-					menu = mdom.getroot()
-					assert menu.tag == "menu", "root element in menu must be 'menu'!"
+					self.session.open(Settings, self)
+#					from Menu import MainMenu, mdom
+#					menu = mdom.getroot()
+#					assert menu.tag == "menu", "root element in menu must be 'menu'!"
 
 
-					self.session.open(MainMenu, menu)
+#					self.session.open(MainMenu, menu)
 				elif selection[1] == "InfoBar":
 					self.Exit()
 					#eDVBDB.getInstance().reloadBouquets()
