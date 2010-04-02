@@ -20,8 +20,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +55,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -1861,8 +1860,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         //create db file
         try {
-            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),"UTF-8");
-            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),"UTF-8");
+
+            //Charset cset = Charset.defaultCharset();
+            //Object c = Charset.availableCharsets();
+
+            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),"ISO-8859-1");
+            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),"ISO-8859-1");
             //Writer fwMovie = new FileWriter("db/moviedb.txt");
             //Writer fwSeries = new FileWriter("db/seriesdb.txt");
 
@@ -1886,7 +1889,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     } else if (movie.isSeries) {
                         fwSeries.append(movie.toString());
                     } else if (movie.isEpisode) {
-                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),"UTF-8");
+                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),"ISO-8859-1");
                         //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
                         fwEpisode.close();
