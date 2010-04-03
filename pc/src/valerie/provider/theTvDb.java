@@ -223,9 +223,7 @@ public class theTvDb extends provider {
             	   try{
             		   info.Year = Integer.parseInt(eYear.getText().split("-")[0]);
             		   info.Releasedate=eYear.getText();
-            	   }catch(Exception e){
-            		   ;
-            	   }
+            	   }catch(Exception e){ }
                }
                /*org.jdom.Element eID = eMovie.getChild("id");
                if(eID != null)
@@ -235,9 +233,22 @@ public class theTvDb extends provider {
                if(eTitle != null)
                     info.Title = eTitle.getText();
 
+               org.jdom.Element eDirector = eMovie.getChild("Director");
+               if(eDirector != null)
+                    info.Directors = eDirector.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+
+               org.jdom.Element eWriter = eMovie.getChild("Writer");
+               if(eWriter != null)
+                    info.Writers = eWriter.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+
+
+               org.jdom.Element eRuntime = eMovie.getChild("Runtime");
+               if(eRuntime != null)
+                    info.Runtime = eRuntime.getText().replaceAll("\r\n", " ").replaceAll("\n"," ") + " min";
                break;
            }
-           
+
+           // LOCAL
            try {
                //String url = apiSearchEpisode.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
                String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));

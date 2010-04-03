@@ -233,12 +233,16 @@ public class Imdb extends provider {
             }
         }
 
-        Pattern pTag = Pattern.compile("<h5>Tagline:</h5>.*?<");
+        // <h5>Tagline:</h5><div class="info-content">In the Year
+        // /title/tt0088247/taglines
+        // This site should be parsed later and alternativ taglines displayed if the first one is to long.
+        
+        Pattern pTag = Pattern.compile("<h5>Tagline:</h5><div class=\"info-content\">.*?<");
         Matcher mTag = pTag.matcher(details);
         if(mTag.find()) {
             String sTag = mTag.group();
 
-            sTag = sTag.replaceAll("<h5>Tagline:</h5>", "");
+            sTag = sTag.replaceAll("<h5>Tagline:</h5><div class=\"info-content\">", "");
             sTag = sTag.replaceAll("<", "");
             info.Tag = sTag;
         }
@@ -252,7 +256,7 @@ public class Imdb extends provider {
             info.Releasedate = mReleaseDate.group(3)+"-"+sMonth+"-"+String.format("%02d", Integer.parseInt(mReleaseDate.group(1)));
         }
         
-        Pattern pPopularity = Pattern.compile("<div class=\"meta\">.*?<b>(\\d+.\\d+)/10</b>");
+        Pattern pPopularity = Pattern.compile("<div class=\"(starbar-)?meta\">.*?<b>(\\d+.\\d+)/10</b>");
         Matcher mPopularity = pPopularity.matcher(details);
         if(mPopularity.find()) {
             String sPopularity = mPopularity.group();
