@@ -5,8 +5,12 @@ from os import environ, popen, makedirs
 class Showiframe():
 	def __init__(self):
 		self.showiframe = dlopen(config.plugins.dmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
-		self.showSinglePic = dlsym(self.showiframe, "_Z13showSinglePicPKc")
-		self.finishShowSinglePic = dlsym(self.showiframe, "_Z19finishShowSinglePicv")
+		try:
+			self.showSinglePic = dlsym(self.showiframe, "showSinglePic")
+			self.finishShowSinglePic = dlsym(self.showiframe, "finishShowSinglePic")
+		except OSError, e: 
+			self.showSinglePic = dlsym(self.showiframe, "_Z13showSinglePicPKc")
+			self.finishShowSinglePic = dlsym(self.showiframe, "_Z19finishShowSinglePicv")
 
 	def  showStillpicture(self, pic):
 		call_function(self.showSinglePic, (pic, ))
