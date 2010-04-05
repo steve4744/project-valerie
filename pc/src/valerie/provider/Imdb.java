@@ -291,6 +291,34 @@ public class Imdb extends provider {
             }
         }
 
+        //alternatives
+        info.AlternativesCount = 0;
+        while(mMovies.find() && info.AlternativesCount < 4) {
+            String sMovie = mMovies.group();
+
+            Pattern pImdbId = Pattern.compile("/title/tt\\d*/");
+            Matcher mImdbId = pImdbId.matcher(sMovie);
+            if(mImdbId.find()) {
+                String sImdbId = mImdbId.group();
+                sImdbId = sImdbId.replaceAll("/title/tt", "");
+                sImdbId = sImdbId.replaceAll("/", "");
+
+                info.AlternativImdbs[info.AlternativesCount] = Integer.valueOf(sImdbId);
+            }
+
+            Pattern pTitle = Pattern.compile(";\">[^<]+</a>");
+            Matcher mTitle = pTitle.matcher(sMovie);
+            if(mTitle.find()) {
+                String sTitle = mTitle.group();
+                sTitle = sTitle.replaceAll(";\">", "");
+                sTitle = sTitle.replaceAll("</a>", "");
+
+                info.AlternativTitles[info.AlternativesCount] = sTitle;
+            }
+
+            info.AlternativesCount++;
+        }
+
         return;
      }
 }

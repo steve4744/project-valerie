@@ -32,9 +32,12 @@ public class MediaInfo {
     //TODO: change Searchstring to regex, as a series could hava multiple possible searchstrings
     public String SearchString = "";
     public String Title = "";
+    public int AlternativesCount = 0;
+    public String AlternativTitles[] = new String[4];
     public String LocalTitle = "";
     public int Year = 0;
     public int Imdb = 0;
+    public int AlternativImdbs[] = new int[4];
     public String Poster = "";
     public String Backdrop = "";
     public String Banner = "";

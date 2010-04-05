@@ -7,6 +7,8 @@ import valerie.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Image;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -19,46 +21,44 @@ import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.Timer;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import valerie.tools.BoxInfo;
-import valerie.tools.DebugOutput;
-import valerie.tools.ImageFilter;
-import valerie.tools.Resize;
-import valerie.tools.FileUtils;
-import valerie.tools.Encode;
-import valerie.tools.mencoder;
-import valerie.tools.pngquant;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.SortOrder;
+import javax.swing.table.DefaultTableModel;
+import valerie.tools.DebugOutput;
+import valerie.tools.Encode;
+import valerie.tools.FileUtils;
+import valerie.tools.ImageFilter;
+import valerie.tools.Resize;
+import valerie.tools.mencoder;
+import valerie.tools.pngquant;
 
 
 /**
@@ -759,7 +759,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE))
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -900,7 +900,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
@@ -973,7 +973,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -1000,7 +1000,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         .addContainerGap()
                         .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1323,17 +1323,46 @@ public class ValerieView extends FrameView implements WindowStateListener {
     }
 
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
-        int row = jTableFilelist.getSelectedRow();
-        int id = (Integer) jTableFilelist.getValueAt(row, 4);
 
-        //Toolkit tk = Toolkit.getDefaultToolkit();
+        if (evt.getClickCount() == 1) {
+            int row = jTableFilelist.getSelectedRow();
+            int id = (Integer) jTableFilelist.getValueAt(row, 4);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo info = database.getMediaInfoById(id);
+            //Toolkit tk = Toolkit.getDefaultToolkit();
 
-        jTextAreaDescription.setText(info.toString());
-        //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
-        drawPosters("tt" + info.Imdb);
+            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            MediaInfo info = database.getMediaInfoById(id);
+
+            jTextAreaDescription.setText(info.toString());
+            //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
+            drawPosters("tt" + info.Imdb);
+        }
+        else {
+            int row = jTableFilelist.getSelectedRow();
+            int id = (Integer) jTableFilelist.getValueAt(row, 4);
+
+            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            MediaInfo info = database.getMediaInfoById(id);
+
+
+            String[] possibilities = new String[info.AlternativesCount + 1];
+            possibilities[0] = info.Title;
+            for(int i = 0; i < info.AlternativesCount; i++)
+                possibilities[i+1] = info.AlternativTitles[i];
+
+            String s = (String)JOptionPane.showInputDialog(
+                    this.mainPanel,
+                    "Select alternativ:\n",
+                    "Dialog",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    possibilities,
+                    info.Title);
+
+
+            if((s != null) && s.length() > 0)
+                jTableFilelist.setValueAt(s, row, 2);
+        }
     }//GEN-LAST:event_jTableFilelistMouseClicked
 
     private void jTableFilelistKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistKeyPressed
