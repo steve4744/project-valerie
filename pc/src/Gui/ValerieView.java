@@ -570,6 +570,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         jMenuItemSettings = new javax.swing.JMenuItem();
@@ -1013,6 +1014,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenuItem1.setText(resourceMap.getString("jMenuItem1.text")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         fileMenu.add(jMenuItem1);
+
+        jMenuItem2.setAction(actionMap.get("exportFilelist")); // NOI18N
+        jMenuItem2.setText(resourceMap.getString("jMenuItem2.text")); // NOI18N
+        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        fileMenu.add(jMenuItem2);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -2027,6 +2033,34 @@ public class ValerieView extends FrameView implements WindowStateListener {
         saveTables();
     }
 
+    @Action
+    public void exportFilelist() {
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        MediaInfo[] movies = database.getMediaInfo();
+
+        try {
+            String charset = "UTF-8";
+            //String charset = "ISO-8859-1";
+
+            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("export_movies.txt"), charset);
+            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("export_series.txt"), charset);
+
+            for (MediaInfo movie : movies) {
+                if (movie.isMovie) {
+                    fwMovie.append(movie.Path.toString() + "\n");
+                } else if (movie.isEpisode) {
+                    fwSeries.append(movie.Path.toString() + "\n");
+                }
+            }
+            
+            fwMovie.close();
+            fwSeries.close();
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+        
+    }
+
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2054,6 +2088,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JLabel jLabelPoster1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
