@@ -7,6 +7,7 @@ package valerie.Tasks;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,7 +107,17 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         Logger.setProgress(progress.intValue());
 
-                        MediaInfo movie = new MediaInfo(entries[f]);
+                        String entry = "";
+                        try {
+                            entry = new String(entries[f].getBytes("ISO-8859-1"), "UTF-8");
+                        }
+
+                        catch( UnsupportedEncodingException  uee )
+                        {
+                            System.out.println( "Exception: "  + uee);
+                        }
+
+                        MediaInfo movie = new MediaInfo(entry);
 
                         Pattern pFileFilter = Pattern.compile(".*(" + new valerie.tools.Properties().getPropertyString("FILTER_MOVIES") + ")$");
                         Matcher mFileFilter = pFileFilter.matcher(movie.Filename);
@@ -248,7 +259,17 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         Logger.setProgress(progress.intValue());
 
-                        MediaInfo movie = new MediaInfo(entries[f]);
+                        String entry = "";
+                        try {
+                            entry = new String(entries[f].getBytes("ISO-8859-1"), "UTF-8");
+                        }
+
+                        catch( UnsupportedEncodingException  uee )
+                        {
+                            System.out.println( "Exception: "  + uee);
+                        }
+
+                        MediaInfo movie = new MediaInfo(entry);
 
                         //FileFilter
                         Pattern pFileFilter = Pattern.compile(".*(" + new valerie.tools.Properties().getPropertyString("FILTER_SERIES") + ")$");

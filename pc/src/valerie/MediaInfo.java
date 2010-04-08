@@ -7,6 +7,7 @@ package valerie;
 
 import java.io.File;
 import valerie.provider.provider;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  *
@@ -131,9 +132,10 @@ public class MediaInfo {
         }
     }
 
-    public String cleanString(String str){
-    	str = str.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "").replaceAll("&#xE4;", "�");
-    	str = str.replaceAll("&#xB7;", "-").replaceAll("&#xFC;", "�").replaceAll("&#xDF;", "�").replaceAll("&#xF6;", "�").replaceAll("<.*?>", "");
+    public String cleanString(String str){ /// "Lange Beine, kurze L&#xFC;gen (und ein F&#xFC;nkchen Wahrheit...)"
+        str = StringEscapeUtils.unescapeHtml(str);
+    	//str = str.replaceAll("&#x27;", "'").replaceAll("&#x26;", "&").replaceAll("&#x22;", "").replaceAll("&#xE4;", "�");
+    	//str = str.replaceAll("&#xB7;", "-").replaceAll("&#xFC;", "�").replaceAll("&#xDF;", "�").replaceAll("&#xF6;", "�").replaceAll("<.*?>", "");
     	
     	return str;
     }
