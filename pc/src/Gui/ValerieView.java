@@ -254,7 +254,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         class WListener implements WindowListener {
             public void windowDeactivated(WindowEvent e) {
-                System.out.print(e);
+                //System.out.print(e);
             }
             public void windowActivated(WindowEvent e) {
                 if(firstFocus) {
