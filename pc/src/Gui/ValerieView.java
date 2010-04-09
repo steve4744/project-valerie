@@ -70,9 +70,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         long startTimer = 0;
 
+        DefaultTableModel tmodel;
+
         UIOutputHandler()
         {
             super();
+
+            tmodel = (DefaultTableModel)jTableTasks.getModel();
 
             //popup = new StatusPopup(null, true);
         }
@@ -116,15 +120,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 System.out.println("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
                 Logger.print("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
                 startTimer = 0;
-
-                            /*//Give the user time to read the duration.
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e){
-                                // the VM doesn't want us to sleep anymore,
-                                // so get back to work
-                            }*/
-            }
+           }
 
             setWorking(s);
 
@@ -132,6 +128,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
             Container rootPane = mainPanel.getParent().getParent().getParent();
             Container frame = rootPane.getParent();
             frame.setEnabled(!s);
+
+            if(!s) {
+                int c = tmodel.getRowCount();
+                for(int i = 0; i < c; i++)
+                tmodel.removeRow(0);
+            }
 
             //if(frame.isVisible() == false)
             //    statusPopup.
@@ -158,6 +160,21 @@ public class ValerieView extends FrameView implements WindowStateListener {
             jTableTasks.setValueAt(t, t, 0);
             jTableTasks.setValueAt(s, t, 2);
             //progressBar.setValue(s);
+        }
+
+        @Override
+        public void register(int t) {
+            System.out.println("register: " + t);
+            Object row[] = {t,0,""};
+            tmodel.addRow(row);
+        }
+
+        @Override
+        public void unregister(int t) {
+            System.out.println("unregister: " + t);
+            jTableTasks.setValueAt((int)100, t, 1);
+            jTableTasks.setValueAt("Done", t, 2);
+            //tmodel.removeRow(t);
         }
     }
 
@@ -1137,16 +1154,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         });
         jTableTasks.setName("jTableTasks"); // NOI18N
+        jTableTasks.getColumnModel().getColumn(0).setMinWidth(40);
+        jTableTasks.getColumnModel().getColumn(0).setPreferredWidth(40);
+
+        jTableTasks.getColumnModel().getColumn(1).setMinWidth(60);
+        jTableTasks.getColumnModel().getColumn(1).setPreferredWidth(60);
+
+        jTableTasks.getColumnModel().getColumn(2).setMinWidth(800);
+        jTableTasks.getColumnModel().getColumn(2).setPreferredWidth(800);
         jScrollPane2.setViewportView(jTableTasks);
-        jTableTasks.getColumnModel().getColumn(0).setResizable(false);
-        jTableTasks.getColumnModel().getColumn(0).setPreferredWidth(60);
-        jTableTasks.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title0")); // NOI18N
-        jTableTasks.getColumnModel().getColumn(1).setResizable(false);
-        jTableTasks.getColumnModel().getColumn(1).setPreferredWidth(200);
-        jTableTasks.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title1")); // NOI18N
-        jTableTasks.getColumnModel().getColumn(2).setResizable(false);
-        jTableTasks.getColumnModel().getColumn(2).setPreferredWidth(500);
-        jTableTasks.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableTasks.columnModel.title2")); // NOI18N
         jTableTasks.getColumnModel().getColumn(1).setCellRenderer( new ProgressRenderer() );
 
         jPanel2.add(jScrollPane2, java.awt.BorderLayout.CENTER);

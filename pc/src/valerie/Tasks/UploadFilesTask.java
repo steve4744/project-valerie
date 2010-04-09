@@ -63,6 +63,8 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
 
         this.setProgress((int)100);
         this.setMessage("db upload finsihed");
+        Logger.register((int)1);
+        Logger.unregister((int)0);
         this.setDescription("1");
         this.setProgress((int)0);
 
@@ -94,6 +96,8 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
 
         this.setProgress((int)100);
         this.setMessage("converted pic upload finsihed");
+        Logger.register((int)2);
+        Logger.unregister((int)1);
         this.setDescription("2");
         this.setProgress((int)0);
 
@@ -117,6 +121,8 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
 
         this.setProgress((int)100);
         this.setMessage("import pic upload finsihed");
+        Logger.register((int)3);
+        Logger.unregister((int)2);
         this.setDescription("3");
         this.setProgress((int)0);
 
@@ -140,6 +146,7 @@ public class UploadFilesTask extends org.jdesktop.application.Task<Object, Void>
         this.setProgress((int)100);
         this.setMessage("import default upload finsihed");
         this.setDescription("-1");
+        Logger.unregister((int)3);
 
 
         Logger.printBlocked("Finished");

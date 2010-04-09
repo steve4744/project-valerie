@@ -17,4 +17,6 @@ public class OutputHandler {
     public void setProgress(int s) { }
     public void setProgress(int s, int t) { }
     public void setMessage(String s, int t) { }
+    public void register( int t) { }
+    public void unregister( int t) { }
 }

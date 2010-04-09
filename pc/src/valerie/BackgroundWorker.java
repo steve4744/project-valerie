@@ -62,6 +62,7 @@ public class BackgroundWorker {
         public void failed(TaskEvent evt) {
         }
         public void succeeded(TaskEvent evt) {
+            Logger.unregister(pTaskIdInt);
             pParent.done(pTaskIdInt, pTaskCountInt, pTaskId.toString());
         }
         public void process(TaskEvent evt) {
@@ -128,6 +129,8 @@ public class BackgroundWorker {
         int iTaskId = 0;
         int iTaskCount = 1;
 
+
+
         switch(taskId) {
             case CHECK_ARGUMENTS:
                 vTask = new valerie.Tasks.CheckArgumentsTask(pApp,
@@ -175,9 +178,12 @@ public class BackgroundWorker {
                 break;
         }
 
+        Logger.register((int)iTaskId);
+
         if(vTask != null) {
             if(mode == Mode.NORMAL) {
                 vTask.run();
+                Logger.unregister((int)iTaskId);
                 
             } else if (mode == Mode.BACKGROUND) {
                 vTask.addTaskListener(new Listener(parent, taskId, iTaskId, iTaskCount));

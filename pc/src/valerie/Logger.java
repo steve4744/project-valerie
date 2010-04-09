@@ -52,4 +52,14 @@ public class Logger {
         for(Object out : outputHandlers)
             ((OutputHandler)out).setMessage(s, t);
     }
+
+    public static void register(int t) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).register(t);
+    }
+
+    public static void unregister(int t) {
+        for(Object out : outputHandlers)
+            ((OutputHandler)out).unregister(t);
+    }
 }
