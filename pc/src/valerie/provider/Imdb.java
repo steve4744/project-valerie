@@ -213,7 +213,7 @@ public class Imdb extends provider {
         if(mRuntime.find()) {
             String sRuntime = mRuntime.group();
 
-            sRuntime = sRuntime.replaceAll("<h5>Runtime:</h5>", "");
+            sRuntime = sRuntime.replaceAll("<h5>Runtime:</h5>(<div class=\"info-content\">)?", "");
             info.Runtime = sRuntime;
         }
 
@@ -293,7 +293,7 @@ public class Imdb extends provider {
 
         //alternatives
         info.AlternativesCount = 0;
-        while(mMovies.find() && info.AlternativesCount < 4) {
+        while(mMovies.find() && info.AlternativesCount < MediaInfo.alternativesMax) {
             String sMovie = mMovies.group();
 
             Pattern pImdbId = Pattern.compile("/title/tt\\d*/");

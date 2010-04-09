@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  */
 public class MediaInfo {
 
+    public static int alternativesMax = 30;
 
     public provider DataProvider;
     public provider ArtProvider;
@@ -34,11 +35,11 @@ public class MediaInfo {
     public String SearchString = "";
     public String Title = "";
     public int AlternativesCount = 0;
-    public String AlternativTitles[] = new String[4];
+    public String AlternativTitles[] = new String[alternativesMax];
     public String LocalTitle = "";
     public int Year = 0;
     public int Imdb = 0;
-    public int AlternativImdbs[] = new int[4];
+    public int AlternativImdbs[] = new int[alternativesMax];
     public String Poster = "";
     public String Backdrop = "";
     public String Banner = "";
@@ -150,6 +151,9 @@ public class MediaInfo {
         Writers = cleanString(Writers);
         Genres = cleanString(Genres);
         Tag = cleanString(Tag);
+
+        for(int i = 0; i < alternativesMax; i++)
+            AlternativTitles[i] = cleanString(AlternativTitles[i]);
     }
 
     public String toString() {

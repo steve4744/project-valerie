@@ -356,10 +356,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             MediaInfo toUpdate = database.getMediaInfoById(id);
                             toUpdate.Ignoring = !use;
 
-                            Pattern pImdb = Pattern.compile("tt\\d{7}");
+                            Pattern pImdb = Pattern.compile("tt\\d{4,7}");
                             Matcher mImdb = pImdb.matcher(searchstring);
-                            if (mImdb.matches()) {
-                                toUpdate.Imdb = Integer.valueOf(searchstring.substring(2));
+                            if (mImdb.find()/*.matches()*/) {
+                                toUpdate.Imdb = Integer.valueOf(mImdb.group().substring(2));
                                 toUpdate.SearchString = searchstring;
                             } else {
                                 toUpdate.Imdb = 0;
@@ -1352,9 +1352,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
 
             String[] possibilities = new String[info.AlternativesCount + 1];
-            possibilities[0] = info.Title;
+            possibilities[0] = info.Title + " (tt" + info.Imdb + ")";
             for(int i = 0; i < info.AlternativesCount; i++)
-                possibilities[i+1] = info.AlternativTitles[i];
+                possibilities[i+1] = info.AlternativTitles[i] + " (tt" + info.AlternativImdbs[i] + ")";
 
             String s = (String)JOptionPane.showInputDialog(
                     this.mainPanel,
