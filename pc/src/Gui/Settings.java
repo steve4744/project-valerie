@@ -55,15 +55,15 @@ public class Settings extends javax.swing.JDialog {
     private void initComponents() {
 
         jSplitPaneApplyCancel = new javax.swing.JSplitPane();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonApply = new javax.swing.JButton();
+        jButtonCancel = new javax.swing.JButton();
         jSplitPaneTree = new javax.swing.JSplitPane();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
         jLayeredPaneSettings = new javax.swing.JLayeredPane();
         jPanelGeneral = new javax.swing.JPanel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBoxUpdate = new javax.swing.JCheckBox();
         jPanelFileManagment = new javax.swing.JPanel();
         jTextFieldFilter = new javax.swing.JTextField();
         jLabelFilter = new javax.swing.JLabel();
@@ -97,23 +97,23 @@ public class Settings extends javax.swing.JDialog {
         jSplitPaneApplyCancel.setDividerSize(0);
         jSplitPaneApplyCancel.setName("jSplitPaneApplyCancel"); // NOI18N
 
-        jButton1.setText(resourceMap.getString("jButtonApply.text")); // NOI18N
-        jButton1.setName("jButtonApply"); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonApply.setText(resourceMap.getString("jButtonApply.text")); // NOI18N
+        jButtonApply.setName("jButtonApply"); // NOI18N
+        jButtonApply.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonApplyActionPerformed(evt);
             }
         });
-        jSplitPaneApplyCancel.setLeftComponent(jButton1);
+        jSplitPaneApplyCancel.setLeftComponent(jButtonApply);
 
-        jButton2.setText(resourceMap.getString("jButtonCancel.text")); // NOI18N
-        jButton2.setName("jButtonCancel"); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancel.setText(resourceMap.getString("jButtonCancel.text")); // NOI18N
+        jButtonCancel.setName("jButtonCancel"); // NOI18N
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonCancelActionPerformed(evt);
             }
         });
-        jSplitPaneApplyCancel.setRightComponent(jButton2);
+        jSplitPaneApplyCancel.setRightComponent(jButtonCancel);
 
         jSplitPaneTree.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jSplitPaneTree.setDividerSize(1);
@@ -179,9 +179,9 @@ public class Settings extends javax.swing.JDialog {
         jPanelGeneral.setName("jPanelGeneral"); // NOI18N
         jPanelGeneral.setOpaque(false);
 
-        jCheckBox1.setText(resourceMap.getString("jCheckBox1.text")); // NOI18N
-        jCheckBox1.setName("jCheckBox1"); // NOI18N
-        jCheckBox1.setOpaque(false);
+        jCheckBoxUpdate.setText(resourceMap.getString("jCheckBoxUpdate.text")); // NOI18N
+        jCheckBoxUpdate.setName("jCheckBoxUpdate"); // NOI18N
+        jCheckBoxUpdate.setOpaque(false);
 
         javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
         jPanelGeneral.setLayout(jPanelGeneralLayout);
@@ -189,14 +189,14 @@ public class Settings extends javax.swing.JDialog {
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
                 .addContainerGap(36, Short.MAX_VALUE)
-                .addComponent(jCheckBox1)
+                .addComponent(jCheckBoxUpdate)
                 .addGap(31, 31, 31))
         );
         jPanelGeneralLayout.setVerticalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelGeneralLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCheckBox1)
+                .addComponent(jCheckBoxUpdate)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -444,6 +444,9 @@ public class Settings extends javax.swing.JDialog {
             jPanelFileManagment.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
+
+            jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyString("AUTO_UPDATE").equals("True")?true:false);
+
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
@@ -488,9 +491,6 @@ public class Settings extends javax.swing.JDialog {
             String[] pathsMovies = WorkPathMovies.split("\\|");
             ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
 
-            //String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
-            //((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
-
             int iteratorMovies = 0;
             for(String pathMovies : pathsMovies) {
                     jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
@@ -518,9 +518,6 @@ public class Settings extends javax.swing.JDialog {
             String[] pathsMovies = WorkPathTV.split("\\|");
             ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
 
-            //String[] pathsMovies = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
-            //((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
-
             int iteratorMovies = 0;
             for(String pathMovies : pathsMovies) {
                     jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
@@ -535,22 +532,13 @@ public class Settings extends javax.swing.JDialog {
         if(pathToAdd != null && pathToAdd.length() > 0) {
             Object path[] = jTree1.getSelectionPaths()[0].getPath();
             if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-                //String paths = prop.getPropertyString("PATHS_MOVIES");
                 
                 if(!WorkPathMovies.contains(pathToAdd))
                     WorkPathMovies +=(pathToAdd + "|");
 
-                //if(!paths.contains(pathToAdd))
-                //    prop.setProperty("PATHS_MOVIES", paths + pathToAdd + "|");
-
             } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-                //String paths = prop.getPropertyString("PATHS_SERIES");
-
                 if(!WorkPathTV.contains(pathToAdd))
                     WorkPathTV += (pathToAdd + "|");
-
-                //if(!paths.contains(pathToAdd))
-                //    prop.setProperty("PATHS_SERIES", paths + pathToAdd + "|");
             }
         }
 
@@ -568,20 +556,10 @@ public class Settings extends javax.swing.JDialog {
 
             WorkPathMovies = WorkPathMovies.replaceAll(pathToDelete + "\\|", "");
 
-            //String paths = prop.getPropertyString("PATHS_MOVIES");
-            //paths = paths.replaceAll(pathToDelete + "\\|", "");
-
-            //prop.setProperty("PATHS_MOVIES", paths);
-
         } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
             String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
 
             WorkPathTV = WorkPathTV.replaceAll(pathToDelete + "\\|", "");
-
-            //String paths = prop.getPropertyString("PATHS_SERIES");
-            //paths = paths.replaceAll((pathToDelete + "\\|"), "");
-
-            //prop.setProperty("PATHS_SERIES", paths);
         }
 
         //prop.save();
@@ -589,8 +567,9 @@ public class Settings extends javax.swing.JDialog {
         jTree1ValueChanged(null);
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonApplyActionPerformed
         valerie.tools.Properties prop = new valerie.tools.Properties();
+        prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected()?"True":"False");
         prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
         prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
         prop.setProperty("RESIZE_TYPE", Integer.toString(jComboBoxResize.getSelectedIndex()));
@@ -600,11 +579,11 @@ public class Settings extends javax.swing.JDialog {
         prop.setProperty("PATHS_SERIES", WorkPathTV);
         prop.save();
         setVisible(false);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonApplyActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
         setVisible(false);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void SettingShow(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_SettingShow
         WorkPathMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES");
@@ -612,11 +591,11 @@ public class Settings extends javax.swing.JDialog {
     }//GEN-LAST:event_SettingShow
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JButton jButtonApply;
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JCheckBox jCheckBoxUpdate;
     private javax.swing.JComboBox jComboBoxEncoder;
     private javax.swing.JComboBox jComboBoxResize;
     private javax.swing.JComboBox jComboBoxResolution;

@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -52,6 +53,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import org.jdom.Document;
 import valerie.tools.DebugOutput;
 import valerie.tools.Encode;
 import valerie.tools.FileUtils;
@@ -592,6 +594,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenu1 = new javax.swing.JMenu();
         jMenuItemSettings = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
+        updateMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
         javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
@@ -1056,7 +1059,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
         helpMenu.setText(resourceMap.getString("helpMenu.text")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
+        updateMenuItem.setAction(actionMap.get("checkForUpdate")); // NOI18N
+        updateMenuItem.setText(resourceMap.getString("updateMenuItem.text")); // NOI18N
+        updateMenuItem.setName("updateMenuItem"); // NOI18N
+        helpMenu.add(updateMenuItem);
+
         aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
+        aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
         aboutMenuItem.setName("aboutMenuItem"); // NOI18N
         helpMenu.add(aboutMenuItem);
 
@@ -2077,6 +2086,54 @@ public class ValerieView extends FrameView implements WindowStateListener {
         
     }
 
+    @Action
+    public void checkForUpdate() {
+
+        String cServer = "http://www.duckbox.info/valerie/update.xml";
+
+        String version = "unknown";
+        String url = "";
+
+        Document xml = null;
+        try {
+            xml = new valerie.tools.webgrabber().getXML(new URL(cServer));
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+
+        if (xml == null)
+            return;
+
+        List update = ((org.jdom.Element)xml.getRootElement().getChildren("update").get(0)).getChildren();
+        for(int i = 0; i < update.size(); i++)
+        {
+            org.jdom.Element type = (org.jdom.Element) update.get(i);
+            if(type.getName().equals("pc"))
+            {
+                version = type.getChild("version").getText();
+                url = type.getChild("url").getText();
+            }
+        }
+
+        boolean foundUpdate = !getResourceMap().getString("Application.version").equals(version);
+
+        if(foundUpdate) {
+            int i = JOptionPane.showConfirmDialog(
+                    this.mainPanel,
+                    "Update found!\nVersion: " + version + "\n\nDo you want to update?",
+                    "Update found!",
+                    JOptionPane.YES_NO_OPTION);
+
+                if(i == 0/*TRUE*/)
+                    System.out.println("Updating...");
+        } else {
+            JOptionPane.showMessageDialog(this.mainPanel, "Already up to Date");
+        }
+
+        System.out.println(update.toString());
+           
+    }
+
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2136,6 +2193,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JFrame statusPopup;
+    private javax.swing.JMenuItem updateMenuItem;
     // End of variables declaration//GEN-END:variables
     private final Timer messageTimer;
     private final Timer busyIconTimer;
