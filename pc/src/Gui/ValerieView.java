@@ -22,9 +22,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ import valerie.tools.Encode;
 import valerie.tools.FileUtils;
 import valerie.tools.ImageFilter;
 import valerie.tools.Resize;
+import valerie.tools.Restart;
 import valerie.tools.mencoder;
 import valerie.tools.pngquant;
 
@@ -174,8 +177,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
         @Override
         public void unregister(int t) {
             System.out.println("unregister: " + t);
-            jTableTasks.setValueAt((int)100, t, 1);
-            jTableTasks.setValueAt("Done", t, 2);
+            if(jTableTasks.getRowCount() > 0) {
+                jTableTasks.setValueAt((int)100, t, 1);
+                jTableTasks.setValueAt("Done", t, 2);
+            }
             //tmodel.removeRow(t);
         }
     }
@@ -2124,8 +2129,58 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     "Update found!",
                     JOptionPane.YES_NO_OPTION);
 
-                if(i == 0/*TRUE*/)
+                if(i == 0/*TRUE*/) {
                     System.out.println("Updating...");
+                    new valerie.tools.webgrabber().getFile("http://www.duckbox.info/download.php?pv.jar", "pv.jar");
+                    String cmd = "java -jar pv.jar -options options.txt";
+                    try {
+                        File f = new File("options.txt");
+                        f.createNewFile();
+                        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
+
+                        String parent = f.getAbsoluteFile().getParent();
+                        parent = parent.replaceAll("\\\\", "\\\\\\\\");
+
+                        System.out.println("Target: " + parent);
+                        fw.write("INSTALL_PATH=" + parent);
+                        fw.close();
+                    } catch(Exception ex) {
+                        System.out.println(ex.toString());
+                    }
+                    
+                    Process process;
+                    int exitval;
+
+                    Restart restart = new Restart();
+
+                    try {
+                        process = Runtime.getRuntime().exec(cmd);
+                        //process.getErrorStream().close();
+                        
+                        process.getOutputStream().close();
+
+                        InputStreamReader r = new InputStreamReader(process.getErrorStream());
+                        BufferedReader in = new BufferedReader(r);
+
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            System.out.print(line);
+                        }
+
+                        process.getInputStream().close();
+                        process.getErrorStream().close();
+
+                        process.waitFor();
+                        exitval = process.exitValue();
+                        System.out.printf("update: %d\n",  exitval);
+                        
+                    } catch(Exception ex) {
+                        
+                    }
+
+                    restart.restartApplication(this);
+
+                }
         } else {
             JOptionPane.showMessageDialog(this.mainPanel, "Already up to Date");
         }
