@@ -2175,7 +2175,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         System.out.printf("update: %d\n",  exitval);
                         
                     } catch(Exception ex) {
-                        
+                        System.out.println(ex.toString());
                     }
 
                     restart.restartApplication(this);
