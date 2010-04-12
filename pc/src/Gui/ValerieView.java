@@ -155,29 +155,35 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         @Override
         public void setProgress(int s, int t) {
-            jTableTasks.setValueAt((int)t, t, 0);
-            jTableTasks.setValueAt((int)s, t, 1);
+            if(tmodel.getRowCount() > t) {
+                jTableTasks.setValueAt((int)t, t, 0);
+                jTableTasks.setValueAt((int)s, t, 1);
+            }
             //progressBar.setValue(s);
         }
 
         @Override
         public void setMessage(String s, int t) {
-            jTableTasks.setValueAt(t, t, 0);
-            jTableTasks.setValueAt(s, t, 2);
+            if(tmodel.getRowCount() > t) {
+                jTableTasks.setValueAt(t, t, 0);
+                jTableTasks.setValueAt(s, t, 2);
+            }
             //progressBar.setValue(s);
         }
 
         @Override
         public void register(int t) {
             System.out.println("register: " + t);
-            Object row[] = {t,0,""};
-            tmodel.addRow(row);
+            if(tmodel.getRowCount() <= t) {
+                Object row[] = {t,0,""};
+                tmodel.addRow(row);
+            }
         }
 
         @Override
         public void unregister(int t) {
             System.out.println("unregister: " + t);
-            if(jTableTasks.getRowCount() > 0) {
+            if(tmodel.getRowCount() > t) {
                 jTableTasks.setValueAt((int)100, t, 1);
                 jTableTasks.setValueAt("Done", t, 2);
             }

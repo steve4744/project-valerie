@@ -32,23 +32,27 @@ public class ValerieAboutBox extends javax.swing.JDialog {
         javax.swing.JLabel imageLabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jPanelLeft = new javax.swing.JPanel();
         javax.swing.JLabel versionLabel = new javax.swing.JLabel();
-        javax.swing.JLabel appVersionLabel = new javax.swing.JLabel();
         javax.swing.JLabel vendorLabel = new javax.swing.JLabel();
-        javax.swing.JLabel appVendorLabel = new javax.swing.JLabel();
-        javax.swing.JLabel homepageLabel = new javax.swing.JLabel();
-        javax.swing.JLabel appHomepageLabel = new javax.swing.JLabel();
         argumentsLabel = new javax.swing.JLabel();
+        javax.swing.JLabel homepageLabel = new javax.swing.JLabel();
+        jPanelMiddle = new javax.swing.JPanel();
+        javax.swing.JLabel appVersionLabel = new javax.swing.JLabel();
+        javax.swing.JLabel appVendorLabel = new javax.swing.JLabel();
         appArgumentsLabel = new javax.swing.JLabel();
+        javax.swing.JLabel appHomepageLabel = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         javax.swing.JLabel appTitleLabel = new javax.swing.JLabel();
         javax.swing.JLabel appDescLabel = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
         jPanel5 = new javax.swing.JPanel();
         closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(ValerieAboutBox.class);
         setTitle(resourceMap.getString("title")); // NOI18N
+        setMinimumSize(new java.awt.Dimension(444, 187));
         setModal(true);
         setName("aboutBox"); // NOI18N
         setResizable(false);
@@ -65,57 +69,70 @@ public class ValerieAboutBox extends javax.swing.JDialog {
         jPanel2.setLayout(new java.awt.BorderLayout());
 
         jPanel3.setName("jPanel3"); // NOI18N
-        jPanel3.setLayout(new java.awt.GridLayout(4, 2));
+        jPanel3.setLayout(new java.awt.BorderLayout());
+
+        jPanelLeft.setName("jPanelLeft"); // NOI18N
+        jPanelLeft.setLayout(new java.awt.GridLayout(4, 1));
 
         versionLabel.setFont(versionLabel.getFont().deriveFont(versionLabel.getFont().getStyle() | java.awt.Font.BOLD));
         versionLabel.setText(resourceMap.getString("versionLabel.text")); // NOI18N
         versionLabel.setName("versionLabel"); // NOI18N
-        jPanel3.add(versionLabel);
-
-        appVersionLabel.setText(resourceMap.getString("Application.version")); // NOI18N
-        appVersionLabel.setName("appVersionLabel"); // NOI18N
-        jPanel3.add(appVersionLabel);
+        jPanelLeft.add(versionLabel);
 
         vendorLabel.setFont(vendorLabel.getFont().deriveFont(vendorLabel.getFont().getStyle() | java.awt.Font.BOLD));
         vendorLabel.setText(resourceMap.getString("vendorLabel.text")); // NOI18N
         vendorLabel.setName("vendorLabel"); // NOI18N
-        jPanel3.add(vendorLabel);
-
-        appVendorLabel.setText(resourceMap.getString("Application.vendor")); // NOI18N
-        appVendorLabel.setName("appVendorLabel"); // NOI18N
-        jPanel3.add(appVendorLabel);
-
-        homepageLabel.setFont(homepageLabel.getFont().deriveFont(homepageLabel.getFont().getStyle() | java.awt.Font.BOLD));
-        homepageLabel.setText(resourceMap.getString("homepageLabel.text")); // NOI18N
-        homepageLabel.setName("homepageLabel"); // NOI18N
-        jPanel3.add(homepageLabel);
-
-        appHomepageLabel.setText(resourceMap.getString("Application.homepage")); // NOI18N
-        appHomepageLabel.setName("appHomepageLabel"); // NOI18N
-        jPanel3.add(appHomepageLabel);
+        jPanelLeft.add(vendorLabel);
 
         argumentsLabel.setFont(resourceMap.getFont("argumentsLabel.font")); // NOI18N
         argumentsLabel.setText(resourceMap.getString("argumentsLabel.text")); // NOI18N
         argumentsLabel.setName("argumentsLabel"); // NOI18N
-        jPanel3.add(argumentsLabel);
+        jPanelLeft.add(argumentsLabel);
+
+        homepageLabel.setFont(homepageLabel.getFont().deriveFont(homepageLabel.getFont().getStyle() | java.awt.Font.BOLD));
+        homepageLabel.setText(resourceMap.getString("homepageLabel.text")); // NOI18N
+        homepageLabel.setName("homepageLabel"); // NOI18N
+        jPanelLeft.add(homepageLabel);
+
+        jPanel3.add(jPanelLeft, java.awt.BorderLayout.WEST);
+
+        jPanelMiddle.setName("jPanelMiddle"); // NOI18N
+        jPanelMiddle.setLayout(new java.awt.GridLayout(4, 1));
+
+        appVersionLabel.setText(resourceMap.getString("Application.version")); // NOI18N
+        appVersionLabel.setName("appVersionLabel"); // NOI18N
+        jPanelMiddle.add(appVersionLabel);
+
+        appVendorLabel.setText(resourceMap.getString("Application.vendor")); // NOI18N
+        appVendorLabel.setName("appVendorLabel"); // NOI18N
+        jPanelMiddle.add(appVendorLabel);
 
         appArgumentsLabel.setText(resourceMap.getString("appArgumentsLabel.text")); // NOI18N
         appArgumentsLabel.setName("appArgumentsLabel"); // NOI18N
-        jPanel3.add(appArgumentsLabel);
+        jPanelMiddle.add(appArgumentsLabel);
+
+        appHomepageLabel.setText(resourceMap.getString("Application.homepage")); // NOI18N
+        appHomepageLabel.setName("appHomepageLabel"); // NOI18N
+        jPanelMiddle.add(appHomepageLabel);
+
+        jPanel3.add(jPanelMiddle, java.awt.BorderLayout.CENTER);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.CENTER);
 
         jPanel4.setName("jPanel4"); // NOI18N
-        jPanel4.setLayout(new java.awt.GridLayout(2, 1));
+        jPanel4.setLayout(new java.awt.GridLayout(3, 1));
 
         appTitleLabel.setFont(appTitleLabel.getFont().deriveFont(appTitleLabel.getFont().getStyle() | java.awt.Font.BOLD, appTitleLabel.getFont().getSize()+4));
         appTitleLabel.setText(resourceMap.getString("Application.title")); // NOI18N
         appTitleLabel.setName("appTitleLabel"); // NOI18N
         jPanel4.add(appTitleLabel);
 
-        appDescLabel.setText(resourceMap.getString("appDescLabel.text")); // NOI18N
+        appDescLabel.setText(resourceMap.getString("Application.description"));
         appDescLabel.setName("appDescLabel"); // NOI18N
         jPanel4.add(appDescLabel);
+
+        jSeparator1.setName("jSeparator1"); // NOI18N
+        jPanel4.add(jSeparator1);
 
         jPanel2.add(jPanel4, java.awt.BorderLayout.NORTH);
 
@@ -142,6 +159,9 @@ public class ValerieAboutBox extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanelLeft;
+    private javax.swing.JPanel jPanelMiddle;
+    private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
     
 }

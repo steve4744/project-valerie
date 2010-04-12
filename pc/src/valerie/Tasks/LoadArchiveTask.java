@@ -6,7 +6,9 @@
 package valerie.Tasks;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import valerie.BackgroundWorker;
 import valerie.Logger;
 import valerie.MediaInfo;
@@ -41,8 +43,11 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
         theMovieDb theMovieDB = new valerie.provider.theMovieDb();
         MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
 
+        String charset = "UTF-8";
+        //String charset = "ISO-8859-1";
+
         try {
-            BufferedReader frMovie = new BufferedReader(new FileReader("db/moviedb.txt"));
+            BufferedReader frMovie = new BufferedReader(new InputStreamReader(new FileInputStream("db/moviedb.txt"), charset));
             String line;
             String Movie="";
             while ((line = frMovie.readLine()) != null) {
@@ -76,7 +81,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
 
         try {
 
-            BufferedReader frMovie = new BufferedReader(new FileReader("db/seriesdb.txt"));
+            BufferedReader frMovie = new BufferedReader(new InputStreamReader(new FileInputStream("db/seriesdb.txt"), charset));
             String line;
             String Movie="";
 
@@ -112,7 +117,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
             MediaInfo infos[] = database.getMediaInfo();
             for (MediaInfo info : infos) {
                 if (info.isSeries) {
-                    BufferedReader frMovie = new BufferedReader(new FileReader("db/episodes/" + info.TheTvDb + ".txt"));
+                    BufferedReader frMovie = new BufferedReader(new InputStreamReader(new FileInputStream("db/episodes/" + info.TheTvDb + ".txt"), charset));
                     String line;
                     String Movie="";
                     while ((line = frMovie.readLine()) != null) {
