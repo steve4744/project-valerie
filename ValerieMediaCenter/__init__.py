@@ -60,15 +60,26 @@ dSize = getDesktop(0).size()
 
 
 # Load Skin, first try to find it, if not found reset to default skin
+skinLoaded = False
 try:
 	loadSkin(config.plugins.dmc.skinfolderpath.value + config.plugins.dmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+	skinLoaded = True
 except Exception, e:
 	print e
+	skinLoaded = False
 	config.plugins.dmc.skinfolderpath.value = defaultSkinFolderPath
 	config.plugins.dmc.skin.value           = defaultSkin
 	
-	# we could do an try at this point, but if the skin is missing we have lost anyway
-	loadSkin(config.plugins.dmc.skinfolderpath.value + config.plugins.dmc.skin.value + "/skin.xml")
+if skinLoaded == False:
+	try:
+		loadSkin(config.plugins.dmc.skinfolderpath.value + config.plugins.dmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+		skinLoaded = True
+	except Exception, e:
+		print e
+		skinLoaded = False
+		config.plugins.dmc.skinfolderpath.value = defaultSkinFolderPath
+		config.plugins.dmc.skin.value           = defaultSkin
+
 
 config.save()
 
