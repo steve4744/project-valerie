@@ -94,9 +94,9 @@
 				transparent="1" 
 				zPosition="1" 
 				halign="center"
-				position="264,48" 
-				size="496,32" 
-				font="Regular;32" 
+				position="264,44" 
+				size="496,36" 
+				font="Regular;30" 
 			/>
 
 			<!-- This Element does not realy exist-->
@@ -146,9 +146,9 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="48,312" 
-				size="174,20" 
-				font="Regular;20" 
+				position="48,308" 
+				size="174,24" 
+				font="Regular;18" 
 			/>
 
 <!-- #################### -->
@@ -186,9 +186,9 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="240,312" 
-				size="174,20" 
-				font="Regular;20" 
+				position="240,308" 
+				size="174,24" 
+				font="Regular;18" 
 			/>
 
 <!-- #################### -->
@@ -226,9 +226,9 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="432,312" 
-				size="174,20" 
-				font="Regular;20" 
+				position="432,308" 
+				size="174,24" 
+				font="Regular;18" 
 			/>
 
 <!-- |||||||||||||||||| -->
@@ -275,8 +275,8 @@
 				halign="center"
 				zPosition="4" 
 				position="336,400" 
-				size="174,20" 
-				font="Regular;20" >
+				size="174,24" 
+				font="Regular;18" >
 				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
@@ -311,8 +311,8 @@
 				halign="center"
 				zPosition="4" 
 				position="528,400" 
-				size="174,20" 
-				font="Regular;20" >
+				size="174,24" 
+				font="Regular;18" >
 				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
@@ -353,9 +353,9 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="624,312" 
-				size="174,20" 
-				font="Regular;20" 
+				position="624,308" 
+				size="174,24" 
+				font="Regular;18" 
 			/>
 
 <!-- #################### -->
@@ -393,9 +393,9 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="816,312" 
-				size="174,20" 
-				font="Regular;20" 
+				position="816,308" 
+				size="174,24" 
+				font="Regular;18" 
 			/>
 
 <!-- #################### -->
@@ -422,30 +422,30 @@
 				backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/fanart_list_sub_nofocus_720-fs8.png" 
 			/>
 
-			<widget name="title" transparent="1" zPosition="5" halign="center" position="160,20" size="704,24" font="Regular;24" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="title" transparent="1" zPosition="5" halign="center" position="160,20" size="704,28" font="Regular;22" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 
 
-			<widget name="star0" transparent="1" zPosition="6" position="392,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star1" transparent="1" zPosition="6" position="416,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star2" transparent="1" zPosition="6" position="440,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star3" transparent="1" zPosition="6" position="464,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star4" transparent="1" zPosition="6" position="488,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star5" transparent="1" zPosition="6" position="512,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star6" transparent="1" zPosition="6" position="536,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star7" transparent="1" zPosition="6" position="560,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star8" transparent="1" zPosition="6" position="584,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
-			<widget name="star9" transparent="1" zPosition="6" position="608,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star0" transparent="1" zPosition="6" position="396,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star1" transparent="1" zPosition="6" position="420,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star2" transparent="1" zPosition="6" position="444,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star3" transparent="1" zPosition="6" position="468,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star4" transparent="1" zPosition="6" position="492,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star5" transparent="1" zPosition="6" position="516,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star6" transparent="1" zPosition="6" position="540,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star7" transparent="1" zPosition="6" position="564,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star8" transparent="1" zPosition="6" position="588,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
+			<widget name="star9" transparent="1" zPosition="6" position="612,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/Star.png" alphatest="on" />
 
-			<widget name="nostar0" transparent="1" zPosition="5" position="392,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar1" transparent="1" zPosition="5" position="416,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar2" transparent="1" zPosition="5" position="440,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar3" transparent="1" zPosition="5" position="464,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar4" transparent="1" zPosition="5" position="488,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar5" transparent="1" zPosition="5" position="512,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar6" transparent="1" zPosition="5" position="536,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar7" transparent="1" zPosition="5" position="560,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar8" transparent="1" zPosition="5" position="584,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
-			<widget name="nostar9" transparent="1" zPosition="5" position="608,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar0" transparent="1" zPosition="5" position="396,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar1" transparent="1" zPosition="5" position="420,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar2" transparent="1" zPosition="5" position="444,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar3" transparent="1" zPosition="5" position="468,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar4" transparent="1" zPosition="5" position="492,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar5" transparent="1" zPosition="5" position="516,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar6" transparent="1" zPosition="5" position="540,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar7" transparent="1" zPosition="5" position="564,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar8" transparent="1" zPosition="5" position="588,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
+			<widget name="nostar9" transparent="1" zPosition="5" position="612,48" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MediaCenter/skins/default/1024x576/images/NoStar.png" alphatest="on" />
 
 			<eLabel text="" zPosition="5" halign="left" position="99,90" size="826,1" backgroundColor="#FFFFFF"/>
 
@@ -453,23 +453,23 @@
 
 			<widget name="poster" transparent="1" zPosition="5" position="46,400" size="124,171" alphatest="on" />
 
-			<widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="172,400" size="500,149" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
+			<widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="194,410" size="500,149" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
 
-			<eLabel text="" zPosition="5" halign="left" position="702,404" size="1,150" backgroundColor="#FFFFFF"/>
+			<eLabel text="" zPosition="5" halign="left" position="702,400" size="1,171" backgroundColor="#FFFFFF"/>
 
-			<eLabel text="O. Title:" transparent="1" zPosition="5" halign="left" position="722,402" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Director:" transparent="1" zPosition="5" halign="left" position="722,425" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Writer:" transparent="1" zPosition="5" halign="left" position="722,448" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Genre:" transparent="1" zPosition="5" halign="left" position="722,471" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Year:" transparent="1" zPosition="5" halign="left" position="722,494" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Runtime:" transparent="1" zPosition="5" halign="left" position="722,518" size="88,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="O. Title:" transparent="1" zPosition="5" halign="left" position="722,402" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Director:" transparent="1" zPosition="5" halign="left" position="722,425" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Writer:" transparent="1" zPosition="5" halign="left" position="722,448" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Genre:" transparent="1" zPosition="5" halign="left" position="722,471" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Year:" transparent="1" zPosition="5" halign="left" position="722,494" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Runtime:" transparent="1" zPosition="5" halign="left" position="722,518" size="88,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 			
-			<widget name="otitle" transparent="1" zPosition="5" halign="left" position="797,402" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="director" transparent="1" zPosition="5" halign="left" position="797,425" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="writer" transparent="1" zPosition="5" halign="left" position="797,448" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="genre" transparent="1" zPosition="5" halign="left" position="797,471" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="year" transparent="1" zPosition="5" halign="left" position="797,494" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="797,518" size="280,16" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="otitle" transparent="1" zPosition="5" halign="left" position="797,402" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="director" transparent="1" zPosition="5" halign="left" position="797,425" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="writer" transparent="1" zPosition="5" halign="left" position="797,448" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="genre" transparent="1" zPosition="5" halign="left" position="797,471" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="year" transparent="1" zPosition="5" halign="left" position="797,494" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="797,518" size="280,20" font="Regular;16" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 		</screen>
 		
 
