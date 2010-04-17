@@ -144,29 +144,46 @@ public class webgrabber {
 
     public void getFile(String surl, String SaveAs) {
 
+        getFile(surl, SaveAs, 3);
+    }
+
+    public void getFile(String surl, String SaveAs, int retry) {
+
         //DebugOutput.printl(surl);
 
-        try {
-            URL url = new URL(surl);
-            URLConnection urlc = url.openConnection();
-            urlc.addRequestProperty("user-agent", "Firefox");
-            InputStream in = urlc.getInputStream();
+        boolean success = false;
 
-            byte[] buf = new byte[4 * 1024]; // 4K buffer
-            int bytesRead;
+        for(int i = 0; i < retry && !success; i++) {
+
+            success = true;
 
             File outputfile = new File (SaveAs);
-            FileOutputStream out = new FileOutputStream(outputfile);
 
-            while ((bytesRead = in.read(buf)) != -1) {
-                out.write(buf, 0, bytesRead);
+            try {
+                URL url = new URL(surl);
+                DebugOutput.printl(surl + " --> " + SaveAs);
+                URLConnection urlc = url.openConnection();
+                urlc.addRequestProperty("user-agent", "Firefox");
+                InputStream in = urlc.getInputStream();
+
+                byte[] buf = new byte[4 * 1024]; // 4K buffer
+                int bytesRead;
+
+                FileOutputStream out = new FileOutputStream(outputfile);
+
+                while ((bytesRead = in.read(buf)) != -1) {
+                    out.write(buf, 0, bytesRead);
+                }
+                out.close();
+                in.close();
+            } catch (Exception ex) {
+                System.out.printf("error %s\n", ex.getMessage());
+                outputfile.delete();
+
+                success = false;
             }
-        } catch (Exception ex) {
-            System.out.printf("error %s\n", ex.getMessage());
         }
 
         //DebugOutput.printl("<-");
-
-        return;
     }
 }

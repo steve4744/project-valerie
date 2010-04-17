@@ -667,6 +667,20 @@
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="showConsole" methodName="showConsole"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem3.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem3" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator6">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator6" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemSettings">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -695,6 +709,11 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="updateMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="updateMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator5" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">

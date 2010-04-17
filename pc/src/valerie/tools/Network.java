@@ -93,11 +93,12 @@ public class Network {
                         DatagramPacket Recieve = new DatagramPacket (RecieveBuf, RecieveBuf.length);
                         socket.receive(Recieve);
 
-                        rtv += new String(Recieve.getData()).trim();
+                        String boxinfo = new String(Recieve.getData()).trim();
+                        boxinfo += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
 
-                        rtv += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
+                        DebugOutput.printl(boxinfo.trim());
 
-                        DebugOutput.printl(rtv.trim());
+                        rtv += boxinfo;
 
                         //We only want the Boxinfo an the BoxIP for now.
                         //break;
@@ -217,13 +218,13 @@ public class Network {
             String line;
             while((line=reader.readLine())!=null){
             	list.add(line.substring(2));
-            	System.out.printf("[%03d] %s\n", line.length(),line.substring(2));
+            	DebugOutput.print(String.format("[%03d] %s\n", line.length(),line.substring(2)));
             }
 
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
-            System.out.println(ex.toString());
+            DebugOutput.printl(ex.toString());
         }
 
         DebugOutput.printl("<-");

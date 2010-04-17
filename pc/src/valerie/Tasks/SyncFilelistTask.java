@@ -16,6 +16,7 @@ import valerie.Logger;
 import valerie.MediaInfo;
 import valerie.MediaInfoDB;
 import valerie.tools.BoxInfo;
+import valerie.tools.DebugOutput;
 
 /**
  *
@@ -114,7 +115,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         catch( UnsupportedEncodingException  uee )
                         {
-                            System.out.println( "Exception: "  + uee);
+                            DebugOutput.printl( "Exception: "  + uee);
                         }
 
                         MediaInfo movie = new MediaInfo(entry);
@@ -146,7 +147,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                         Pattern p = Pattern.compile("tt\\d{7}");
                         Matcher m = p.matcher(movie.Filename);
                         if (m.find()) {
-                            System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
+                            DebugOutput.printl(String.format("Imdb found: %d", Integer.valueOf(m.group())));
                         }
 
                         String filtered = movie.Filename.toLowerCase();
@@ -194,7 +195,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                             Matcher mYear = pYear.matcher(filtered);
                             if (mYear.find()) {
                                     filtered = mYear.group(1);
-                                    System.out.println(mYear.group(1)+":"+mYear.group(2));
+                                    DebugOutput.printl(mYear.group(1)+":"+mYear.group(2));
                             }
 
                         }
@@ -266,7 +267,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
                         catch( UnsupportedEncodingException  uee )
                         {
-                            System.out.println( "Exception: "  + uee);
+                            DebugOutput.printl( "Exception: "  + uee);
                         }
 
                         MediaInfo movie = new MediaInfo(entry);
@@ -299,7 +300,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                         Pattern p = Pattern.compile("tt\\d{7}");
                         Matcher m = p.matcher(movie.Filename);
                         if (m.find()) {
-                            System.out.printf("Imdb found: %d", Integer.valueOf(m.group()));
+                            DebugOutput.printl(String.format("Imdb found: %d", Integer.valueOf(m.group())));
                         }
 
                         String filtered = movie.Filename.toLowerCase();

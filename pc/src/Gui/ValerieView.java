@@ -363,6 +363,16 @@ public class ValerieView extends FrameView implements WindowStateListener {
         });
 
         //MY OWN CODE
+        showConsole(false);
+
+        DebugOutput.add(new DebugOutput.OutputHandler() {
+            @Override
+            public void print(String s) {
+                System.out.print(s);
+            }
+        }
+        );
+
         Logger.add(new UIOutputHandler());
 
         class TableChangedMovies implements TableModelListener {
@@ -603,9 +613,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenuItem2 = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
         jMenuItemSettings = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         updateMenuItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
         javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
@@ -1060,6 +1073,14 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
+        jMenuItem3.setAction(actionMap.get("showConsole")); // NOI18N
+        jMenuItem3.setText(resourceMap.getString("jMenuItem3.text")); // NOI18N
+        jMenuItem3.setName("jMenuItem3"); // NOI18N
+        jMenu1.add(jMenuItem3);
+
+        jSeparator6.setName("jSeparator6"); // NOI18N
+        jMenu1.add(jSeparator6);
+
         jMenuItemSettings.setAction(actionMap.get("jMenuItemEditSettingsClicked")); // NOI18N
         jMenuItemSettings.setText(resourceMap.getString("jMenuItemSettings.text")); // NOI18N
         jMenuItemSettings.setName("jMenuItemSettings"); // NOI18N
@@ -1074,6 +1095,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         updateMenuItem.setText(resourceMap.getString("updateMenuItem.text")); // NOI18N
         updateMenuItem.setName("updateMenuItem"); // NOI18N
         helpMenu.add(updateMenuItem);
+
+        jSeparator5.setName("jSeparator5"); // NOI18N
+        helpMenu.add(jSeparator5);
 
         aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
         aboutMenuItem.setText(resourceMap.getString("aboutMenuItem.text")); // NOI18N
@@ -2196,7 +2220,21 @@ public class ValerieView extends FrameView implements WindowStateListener {
     }
 
     
+
+    @Action
+    public void showConsole() {
+        showConsole(true);
+    }
+
+    public void showConsole(boolean visible) {
+        if(jFrameConsole == null)
+            jFrameConsole = new Console(this.getFrame(), false);
+
+        jFrameConsole.setVisible(visible);
+    }
+
     
+    private static Console jFrameConsole = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descLabel;
     private javax.swing.JButton jButton1;
@@ -2223,6 +2261,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -2238,6 +2277,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTabbedPane jTabbedPane;
