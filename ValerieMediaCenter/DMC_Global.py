@@ -2,6 +2,54 @@ from Components.config import config
 from _ctypes import *
 from os import environ, popen, makedirs
 
+#------------------------------------------------------------------------------------------
+
+def getBoxtype():
+	file = open("/proc/stb/info/model", "r")
+	box = file.readline().strip()
+	file.close()
+	manu = "Unknown"
+	model = "UNKNOWN"
+	arch = "sh4"
+	version = ""
+	if box == "ufs910":
+		manu = "Kathrein"
+		model = "UFS-910"
+		arch = "sh4"
+	elif box == "ufs912":
+		manu = "Kathrein"
+		model = "UFS-912"
+		arch = "sh4"
+	elif box == "ufs922":
+		manu = "Kathrein"
+		model = "UFS-922"
+		arch = "sh4"
+	elif box == "tf7700hdpvr":
+		manu = "Topfield"
+		model = "HDPVR-7700"
+		arch = "sh4"
+	elif box == "dm800":
+		manu = "Dreambox"
+		model = "800"
+		arch = "mipsel"
+	elif box == "dm8000":
+		manu = "Dreambox"
+		model = "8000"
+		arch = "mipsel"
+	elif box == "dm500hd":
+		manu = "Dreambox"
+		model = "500hd"
+		arch = "mipsel"
+	
+	if arch == "mipsel":
+		file = open(config.plugins.dmc.pluginfolderpath.value + "oe.txt", "r")
+		version = file.readline().strip()
+		file.close()
+		
+	return (manu, model, arch, version)
+	
+#------------------------------------------------------------------------------------------
+
 class Showiframe():
 	def __init__(self):
 		self.showiframe = dlopen(config.plugins.dmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
@@ -21,7 +69,9 @@ class Showiframe():
 
 def printl(string):
 	print "[Project Valerie] ", string
+
 #------------------------------------------------------------------------------------------
+
 class E2Control():
 	def __init__(self):
 		# TODO: Change dinaicaly
@@ -40,30 +90,8 @@ class E2Control():
 
 		self.close()
 
-		file = open("/proc/stb/info/model", "r")
-		box = file.readline().strip()
-		file.close()
-		manu = "Unknown"
-		model = "UNKNOWN"
-		if box == "ufs910":
-			manu = "Kathrein"
-			model = "UFS-910"
-		elif box == "ufs912":
-			manu = "Kathrein"
-			model = "UFS-912"
-		elif box == "ufs922":
-			manu = "Kathrein"
-			model = "UFS-922"
-		elif box == "tf7700hdpvr":
-			manu = "Topfield"
-			model = "HDPVR-7700"
-		elif box == "dm800":
-			manu = "Dreambox"
-			model = "800"
-		elif box == "dm8000":
-			manu = "Dreambox"
-			model = "8000"
-		environ['BOXSYSTEM'] = "MANUFACTOR="+manu+";MODEL="+model+";"
+		box = getBoxtype()
+		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
 		s = config.plugins.dmc.pluginfolderpath.value + "e2control"
 		printl(s)
 		try:

@@ -7,6 +7,8 @@ from Components.Label import Label
 from Screens.MessageBox import MessageBox
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
+from Components.Console import Console
+from Components.ScrollLabel import ScrollLabel
 
 from Components.ConfigList import ConfigList
 from Components.config import *
@@ -28,13 +30,14 @@ from MC_Settings import MC_Settings, MCS_Update
 
 
 from Components.MenuList import MenuList
-from DMC_Global import printl
+from DMC_Global import printl, getBoxtype
 
+import urllib2
 # Unfortunaly not everyone has twisted installed ...
 try:
-	from twisted.web.client import getPage
+	from twisted.web.microdom import parseString
 except Exception, e:
-	printl("import twisted.web.client failed")
+	printl("import twisted.web.microdom failed")
 
 #------------------------------------------------------------------------------------------
 	
@@ -57,7 +60,7 @@ class Settings(Screen, ConfigListScreen):
 		ConfigListScreen.__init__(self, [])
 		self.parent = parent
 		self.initConfigList()
-		config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
+		#config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
 
 		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
@@ -98,6 +101,50 @@ class Settings(Screen, ConfigListScreen):
 
 	def cancel(self):
 		self.close()
+
+
+
+class DMC_Update(Screen):
+	skin = """
+		<screen position="100,100" size="500,380" title="Software Update" >
+			<widget name="text" position="10,10" size="480,360" font="Regular;22" />
+		</screen>"""
+
+	def __init__(self, session, remoteurl):
+		self.skin = DMC_Update.skin
+		Screen.__init__(self, session)
+
+		self.working = False
+		self.Console = Console()
+		self["text"] = ScrollLabel("Checking for updates ...")
+		
+		self["actions"] = NumberActionMap(["WizardActions", "InputActions", "EPGSelectActions"],
+		{
+			"ok": self.close,
+			"back": self.close
+		}, -1)
+		
+		self.url = remoteurl
+		
+		self.onFirstExecBegin.append(self.initupdate)
+
+	def initupdate(self):
+		self.working = True
+		
+		cmd = "ipkg install -force-overwrite " + str(self.url)
+		
+		self["text"].setText("Updating MediaCenter ...\n\n\nStay tuned :-)")
+		self.Console.ePopen(cmd, self.startupdate)
+
+	def startupdate(self, result, retval, extra_args):
+		if retval == 0:
+			self.working = True
+			self["text"].setText(result)
+			self.session.open(MessageBox,("Your MediaCenter was hopefully updated now ...\n\nYou have to restart Enigma now!"),  MessageBox.TYPE_INFO)
+		else:
+			self.working = False
+			
+
 
 
 class DMC_MainMenu(Screen):
@@ -150,25 +197,38 @@ class DMC_MainMenu(Screen):
 
 
 	def checkForUpdate(self):
+		box = getBoxtype()
+		printl(box)
 		self.url = config.plugins.dmc.url.value + config.plugins.dmc.updatexml.value
 		printl("Checking URL: " + self.url) 
 		try:
-			getPage(self.url).addCallback(self.gotUpdateInformation).addErrback(self.Error)
+			f = urllib2.urlopen(self.url)
+			html = f.read()
+			dom = parseString(html)
+			update = dom.getElementsByTagName("update")[0]
+			stb = update.getElementsByTagName("stb")[0]
+			version = stb.getElementsByTagName("version")[0]
+			remoteversion = version.childNodes[0].data
+			urls = stb.getElementsByTagName("url")
+			self.remoteurl = ""
+			for url in urls:
+				if url.getAttribute("arch") == box[2]:
+					printl(url.getAttribute("version"))
+					if url.getAttribute("version") is None or url.getAttribute("version") == box[3]:
+						self.remoteurl = url.childNodes[0].data
+			
+			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl))
+			
+			if config.plugins.dmc.version.value != remoteversion and self.remoteurl != "":
+				self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_YESNO)
+
 		except Exception, e:
-			printl("""Could not download HTTP Page (%s)""" % e)
+			print """Could not download HTTP Page (%s)""" % e
 
-	def gotUpdateInformation(self, html):
-		printl(str(html))
-		tmp_infolines = html.splitlines()     
-		remoteversion = int(tmp_infolines[0])
-
-		if config.plugins.dmc.version.value < remoteversion:
-			self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_INFO)
 
 	def startUpdate(self, answer):
 		if answer is True:
-			printl("Updating not yet supported!")
-			#self.session.open(MCS_Update)
+			self.session.open(DMC_Update, self.remoteurl)
 
 	def Error(self, error):
 		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)

@@ -16,11 +16,11 @@ from enigma import getDesktop
 printl("Init")
 
 # the currentVersion should be renewed every major update
-currentVersion          = 100
+currentVersion          = "r001"
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/MediaCenter/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultSkin             = "default"
-defaultURL              = "http://project-valerie.googlecode.com/svn/trunk/"
+defaultURL              = "http://www.duckbox.info/valerie/"
 defaultUpdateXML        = "update.xml"
 
 printl("defaultPluginFolderPath=" + defaultPluginFolderPath)
@@ -41,7 +41,7 @@ printl("autostart="      + str(config.plugins.dmc.autostart.value))
 printl("checkforupdate=" + str(config.plugins.dmc.checkforupdate.value))
 printl("uselocal=" + str(config.plugins.dmc.uselocal.value))
 
-config.plugins.dmc.version           = ConfigInteger(0, (0, 999))
+config.plugins.dmc.version           = ConfigText(default = "r001")
 config.plugins.dmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
 config.plugins.dmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPath)
 config.plugins.dmc.skin              = ConfigText(default = defaultSkin)
