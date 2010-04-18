@@ -21,6 +21,8 @@ from Components.ConfigList import ConfigListScreen
 
 import os
 
+from enigma import quitMainloop
+
 # Plugins
 from MC_AudioPlayer import MC_AudioPlayer
 from MC_VideoPlayer import MC_VideoPlayer
@@ -140,7 +142,8 @@ class DMC_Update(Screen):
 		if retval == 0:
 			self.working = True
 			self["text"].setText(result)
-			self.session.open(MessageBox,("Your MediaCenter was hopefully updated now ...\n\nYou have to restart Enigma now!"),  MessageBox.TYPE_INFO)
+			self.session.open(MessageBox,("Your MediaCenter was hopefully updated now ...\n\nEnigma will restart now!"),  MessageBox.TYPE_INFO)
+			quitMainloop(3)
 		else:
 			self.working = False
 			
