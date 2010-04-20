@@ -76,7 +76,7 @@ public class webgrabber {
                     byte[] bufTrimmed = new byte[bytesRead];
                     for(int j = 0; j < bytesRead; j++)
                         bufTrimmed[j] = buf[j];
-                    String fragment = new String(bufTrimmed);
+                    String fragment = new String(bufTrimmed, "UTF8");
                     out.append(fragment);
 
                 }
