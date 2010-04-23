@@ -65,7 +65,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
     protected void succeeded(Object result) {
     }
 
-    private ArrayList<String[]> getReplacements(){
+    private ArrayList<String[]> getReplacements(String s){
         ArrayList<String[]> replacements = new ArrayList<String[]>();
 
         replacements.add(new String[]{"[.]", " "});
@@ -75,7 +75,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         replacements.add(new String[]{"(\\b(avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|(?-i)FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)\\b([-].+?$)?)", ""});
         BufferedReader frMovie;
         try {
-            frMovie = new BufferedReader(new FileReader("replacements.txt"));
+            frMovie = new BufferedReader(new FileReader("replacements_" + s + ".txt"));
             String line;
             while ((line = frMovie.readLine()) != null) {
                 String[] parts = line.split("=");
@@ -89,7 +89,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
     private void searchMovies( MediaInfoDB database) {
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
-        ArrayList<String[]> replacements=getReplacements();
+        ArrayList<String[]> replacements = getReplacements("movie");
         for (int row = 0; row < paths.length; row++) {
             String filterString = "";
             String filter = new valerie.tools.Properties().getPropertyString("FILTER_MOVIES");
@@ -240,7 +240,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
     private void searchSeries( MediaInfoDB database) {
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
-        ArrayList<String[]> replacements = getReplacements();
+        ArrayList<String[]> replacements = getReplacements("tv");
         for (int row = 0; row < paths.length; row++) {
             if(paths[row].length() <= 0)
                 continue;
