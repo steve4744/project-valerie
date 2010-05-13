@@ -17,7 +17,7 @@ printl("Init")
 
 # the currentVersion should be renewed every major update
 currentVersion          = "r001"
-defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/MediaCenter/")
+defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerie/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultSkin             = "default"
 defaultURL              = "http://www.duckbox.info/valerie/"
