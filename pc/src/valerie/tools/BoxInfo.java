@@ -17,19 +17,6 @@ public class BoxInfo {
     public InetAddress IpAddress;
 
     BoxInfo() {
-        try {
-         String vManu = new valerie.tools.Properties().getPropertyString("MANUAL_MANUFACTOR");
-         if(vManu != null && vManu.length() > 0)
-             Manufactor = vManu;
-
-         String vModel = new valerie.tools.Properties().getPropertyString("MANUAL_MODEL");
-         if(vModel != null && vModel.length() > 0)
-             Model = vModel;
-
-         String vIp = new valerie.tools.Properties().getPropertyString("MANUAL_IPADDRESS");
-         if(vIp != null && vIp.length() > 0)
-             IpAddress = InetAddress.getByName(vIp);
-        }catch(Exception e) {}
     }
 
     @Override

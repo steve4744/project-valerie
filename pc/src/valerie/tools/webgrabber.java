@@ -49,7 +49,7 @@ public class webgrabber {
 
     //private static Semaphore sem = new Semaphore(10, true);
 
-    private int RETRIES = 20;
+    private int RETRIES = 40;
         
     public Document getXML(URL url) {
     	int x;
@@ -92,6 +92,15 @@ public class webgrabber {
             } catch (Exception ex) {
                 System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
             }
+            try {
+                Thread.sleep(100);
+                if(i%10 == 0)
+                  Thread.sleep(5000);
+            } catch (Exception ex) {
+                System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
+
+            }
+
         }
 
         //DebugOutput.printl("<-");
