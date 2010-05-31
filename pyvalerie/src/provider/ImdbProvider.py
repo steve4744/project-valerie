@@ -1,0 +1,188 @@
+'''
+Created on 21.05.2010
+
+@author: i7
+'''
+
+import re
+from WebGrabber import WebGrabber
+from HtmlEncoding import decode_htmlentities
+
+class ImdbProvider(object):
+    '''
+    classdocs
+    '''
+
+    apiSearchTV = "http://www.imdb.com/search/title?title=<title>&title_type=tv_series"
+    apiImdbLookup = "http://akas.imdb.com/title/"
+    apiSearch = "http://akas.imdb.com/find?s=tt;q="
+
+
+    def __init__(self):
+        '''
+        Constructor
+        '''
+   
+    def getMoviesByImdbId(self, mediaInfo):
+        
+        if mediaInfo.ImdbId == "tt0000000":
+            return mediaInfo
+        
+        pageHtml = WebGrabber().grab(self.apiImdbLookup + mediaInfo.ImdbId)
+        
+        if not pageHtml:
+            return mediaInfo
+       
+        pageHtml = decode_htmlentities(pageHtml)
+
+        m = re.search(r'<title>.+?\(\d{4}[\/IVX]*\).*?</title>', pageHtml)
+        if m and m.group():
+            mediaInfo = self.parseDetailsScreen(mediaInfo, pageHtml)
+        
+        
+        return mediaInfo
+   
+    def getMovieByTitle(self, mediaInfo):
+       
+        if mediaInfo.isEpisode:
+            urlTitle = mediaInfo.SearchString
+            urlTitle = re.sub(" ", "+", urlTitle)
+            
+            pageHtml = WebGrabber().grab(re.sub("<title>", urlTitle, self.apiSearchTV))
+       
+            if not pageHtml:
+                return mediaInfo
+           
+            pageHtml = decode_htmlentities(pageHtml)
+            
+            m = re.search(r'Most Popular TV Series With Title Matching', pageHtml)
+            if m and m.group():
+                mediaInfo = self.parseAdvancedSearchResultScreen(mediaInfo, pageHtml)
+                mediaInfo = self.getMoviesByImdbId(mediaInfo)
+                if mediaInfo.ImdbId != "tt0000000":
+                    return mediaInfo
+       
+        urlTitle = mediaInfo.SearchString
+        urlTitle = re.sub(" ", "+", urlTitle)
+        
+        pageHtml = WebGrabber().grab(self.apiSearch + urlTitle)
+   
+        if not pageHtml:
+            return mediaInfo
+       
+        pageHtml = decode_htmlentities(pageHtml)
+        
+        m = re.search(r'<title>IMDb Title Search</title>', pageHtml)
+        if m and m.group():
+            mediaInfo = self.parseSearchResultScreen(mediaInfo, pageHtml)
+            mediaInfo = self.getMoviesByImdbId(mediaInfo)
+        else:
+            #m = re.search(r'<title>.+?\(?P<year>\d{4}[\/IVX]*\).*?</title>', pageHtml)
+            #if m and m.group():
+            mediaInfo = self.parseDetailsScreen(mediaInfo, pageHtml)
+   
+        return mediaInfo
+    
+    def getPlot(self, mediaInfo):
+        if mediaInfo.ImdbId == "tt0000000":
+            return mediaInfo
+        
+        pageHtml = WebGrabber().grab(self.apiImdbLookup + mediaInfo.ImdbId + "/plotsummary")
+   
+        if not pageHtml:
+            return mediaInfo
+        
+        pageHtml = decode_htmlentities(pageHtml)
+
+        m = re.search(r'<p class=\"plotpar\">\s*(?P<plot>[^<]+?)<i>', pageHtml)
+        if m and m.group("plot"):
+            mediaInfo.Plot = m.group("plot").strip()
+            
+        return mediaInfo
+    
+    def parseDetailsScreen(self, mediaInfo, pageHtml):
+        
+        if mediaInfo.Title == "" or mediaInfo.Year == 0:
+            # <title>Austin Powers: The Spy Who Shagged Me (1999)</title>
+            m = re.search(r'<title>(?P<title>[^(]+)\((?P<year>\d{4})\)[\/IVX]*[^<]*</title>', pageHtml)
+            if m and m.group("title") and m.group("year"):
+                mediaInfo.Title = m.group("title").strip()
+                mediaInfo.Year = int(m.group("year").strip())
+                
+        if mediaInfo.ImdbId == "tt0000000":
+            m = re.search(r'/title/(?P<imdbid>tt\d{7})/', pageHtml)
+            if m and m.group("imdbid"):
+                mediaInfo.ImdbId = m.group("imdbid").strip()
+
+        
+        m = re.search(r'<h5>Director[s]?[^:]*:</h5>(.*?)</div>', pageHtml, re.DOTALL)
+        if m and m.group(0):
+            for m in re.findall(r'<a href="/name/nm\d{7}/"[^>]*>(?P<dname>[^<]+)</a>', m.group(0)):
+                if m :
+                    mediaInfo.Directors.append(m.strip())
+                    
+        m = re.search(r'<h5>Writer[s]?[^:]*:</h5>(.*?)</div>', pageHtml, re.DOTALL)
+        if m and m.group(0):
+            for m in re.findall(r'<a href="/name/nm\d{7}/"[^>]*>(?P<dname>[^<]+)</a>', m.group(0)):
+                if m :
+                    mediaInfo.Writers.append(m.strip())
+    
+        m = re.search(r'<h5>Runtime:</h5>\D*(?P<runtime>\d+) min', pageHtml)
+        if m and m.group("runtime"):
+            mediaInfo.Runtime = int(m.group("runtime").strip())
+    
+        m = re.search(r'\/Sections\/Genres\/(?P<genres>[^\/]+)', pageHtml)
+        if m and m.group("genres"):
+            mediaInfo.Genres = m.group("genres").strip()
+
+        m = re.search(r'<h5>Tagline:</h5>[^<]*<div class=\"info-content\">(?P<tag>[^<]*)<', pageHtml)
+        if m and m.group("tag"):
+            mediaInfo.TagLine = m.group("tag").strip()
+        
+        
+        m = re.search(r'<div class=\"(starbar-)?meta\">[^<]*<b>(?P<pop>\d+).\d+/10</b>', pageHtml)
+        if m and m.group("pop"):
+            mediaInfo.Popularity = m.group("pop").strip()
+        
+        mediaInfo = self.getPlot(mediaInfo)
+        
+        return mediaInfo
+    
+    def parseSearchResultScreen(self, mediaInfo, pageHtml):
+        m = re.search(r'><a href=\"/title/(?P<imdbid>tt\d{7})/\"[^>]+>(?!&#34;)(?P<title>[^<]+)</a> \((?P<year>\d{4})[\/IVX]*\)(?! \(VG\))([^<]*<br>&#160;aka(.+?)</td>)?', pageHtml)
+        if m:
+            if m.group("imdbid"):
+                mediaInfo.ImdbId = m.group("imdbid")
+            if m.group("title"):
+                mediaInfo.Title = m.group("title")
+            if m.group("year"):
+                mediaInfo.Year = int(m.group("year"))
+        
+        for m in re.findall(r'><a href=\"/title/(?P<imdbid>tt\d{7})/\"[^>]+>(?!&#34;)(?P<title>[^<]+)</a> \((?P<year>\d{4})[\/IVX]*\)(?! \(VG\))([^<]*<br>&#160;aka(.+?)</td>)?', pageHtml):
+            if m:
+                if m[0] and m[1] and m[2]:
+                    mediaInfo.Alternatives[m[0]] = [m[1], m[2]]
+            else:
+                break
+            
+        return mediaInfo
+    
+    def parseAdvancedSearchResultScreen(self, mediaInfo, pageHtml):
+        # <a href="/title/tt1219024/" title="Castle (2009 TV Series)">
+        m = re.search(r'<a href=\"/title/(?P<imdbid>tt\d{7})/\" title=\"(?P<title>[^\(]+)\((?P<year>\d{4})[^)]*\)\">', pageHtml)
+        if m:
+            if m.group("imdbid"):
+                mediaInfo.ImdbId = m.group("imdbid")
+            if m.group("title"):
+                mediaInfo.Title = m.group("title")
+            if m.group("year"):
+                mediaInfo.Year = int(m.group("year"))
+        
+        for m in re.findall(r'<a href=\"/title/(?P<imdbid>tt\d{7})/\" title=\"(?P<title>[^\(]+)\((?P<year>\d{4})[^)]*\)\">', pageHtml):
+            if m:
+                if m[0] and m[1] and m[2]:
+                    mediaInfo.Alternatives[m[0]] = [m[1], m[2]]
+            else:
+                break
+            
+        return mediaInfo
