@@ -64,7 +64,30 @@ class MediaInfo(object):
         l["pre"].append([r' (dd5|web|hdtv|dimension|avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)'," "])
         return l   
     
+    def isEnigma2Recording(self, name):
+        try:
+            f = open(name + ".meta", "r")
+            f.close()
+        except Exception, ex:
+            print ex
+            return False
+        return True
+        
+    def getEnigma2RecordingName(self, name):
+        f = open(name + ".meta", "r")
+        f.readline()
+        name = f.readline()
+        f.close()
+        return name
+ 
+    
     def parse(self):
+        absFilename = str(self.Path) + "/" + str(self.Filename) + "." + str(self.Extension)
+        if self.isEnigma2Recording(absFilename) is True:
+            self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
+            return
+        
+        
         name = str(self.Filename).lower()
         
         name = re.sub(r'[.]', " ", name)
