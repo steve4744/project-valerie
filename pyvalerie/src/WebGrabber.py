@@ -9,19 +9,23 @@ import os
 import re
 import urllib2
 
+from HtmlEncoding import decode_htmlentities
+
 class WebGrabber(object):
     '''
     classdocs
     '''
 
     cacheDir = "cache"
+    downloadDir = "dl"
 
-    def __init__(selfparams):
+    def __init__(self):
         '''
         Constructor
         '''
         
-    def grab(self, url):
+    def grab(self, url, encoding="latin-1"):
+        print "URL", url
         cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
         pageHtml = None
         if os.path.isfile(self.cacheDir + "/" + cacheFile + ".cache"):
@@ -29,10 +33,42 @@ class WebGrabber(object):
             pageHtml = f.read()
             f.close()
         else:
-            page = urllib2.urlopen(url)
-            pageHtml = page.read()
+            try:
+                page = urllib2.urlopen(url)
+            except Exception, ex:
+                print ex
+                return None
+            if encoding == "utf-8":
+                pageHtml = unicode('')
+                try:
+                    pageHtml += page.read()
+                except UnicodeDecodeError, ex:
+                    print ex
+            elif encoding == "latin-1":
+                pageHtml = page.read() # read as latin-1
+                print type(pageHtml)
+                pageHtml = pageHtml.decode("latin-1")
+                #pageHtml = unicode(pageHtml, "utf-8")
+            
             f = open(self.cacheDir + "/" + cacheFile + ".cache", 'w')
             f.write(pageHtml)
             f.close()
-            
+                     
         return pageHtml
+    
+    def grabFile(self, url, name):
+        #cacheFile = url.split('/')
+        #cacheFile = cacheFile[len(cacheFile)-1]
+        #pageHtml = None
+        if os.path.isfile(self.downloadDir + "/" + name) is False:
+            for i in range(3):
+                try:
+                    page = urllib2.urlopen(url)
+                    f = open(self.downloadDir + "/" + name, 'wb')
+                    f.write(page.read())
+                    f.close()
+                    break
+                except Exception, ex:
+                    print ex
+            
+        return

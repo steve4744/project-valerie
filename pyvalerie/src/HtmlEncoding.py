@@ -27,5 +27,16 @@ def decode_htmlentities(string):
             else: return match.group()
     
     entity_re = re.compile(r'&(#?)(x?)(\w+);')
-    return entity_re.subn(substitute_entity, string)[0]
+    try:
+        var = entity_re.subn(substitute_entity, string)[0]
+    except Exception, ex:
+        print ex
+        #source_encoding = "iso-8859-1"
+        #string = string.encode(source_encoding)
+        #string = unicode(string, 'utf-8')
+        #var = entity_re.subn(substitute_entity, string)[0]
+        var = ""
+        
+        
+    return var
         

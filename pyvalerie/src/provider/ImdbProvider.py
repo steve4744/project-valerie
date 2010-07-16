@@ -44,7 +44,7 @@ class ImdbProvider(object):
    
     def getMovieByTitle(self, mediaInfo):
        
-        if mediaInfo.isEpisode:
+        if mediaInfo.isSerie:
             urlTitle = mediaInfo.SearchString
             urlTitle = re.sub(" ", "+", urlTitle)
             
@@ -152,11 +152,11 @@ class ImdbProvider(object):
         m = re.search(r'><a href=\"/title/(?P<imdbid>tt\d{7})/\"[^>]+>(?!&#34;)(?P<title>[^<]+)</a> \((?P<year>\d{4})[\/IVX]*\)(?! \(VG\))([^<]*<br>&#160;aka(.+?)</td>)?', pageHtml)
         if m:
             if m.group("imdbid"):
-                mediaInfo.ImdbId = m.group("imdbid")
+                mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = m.group("title")
+                mediaInfo.Title = m.group("title").strip()
             if m.group("year"):
-                mediaInfo.Year = int(m.group("year"))
+                mediaInfo.Year = int(m.group("year").strip())
         
         for m in re.findall(r'><a href=\"/title/(?P<imdbid>tt\d{7})/\"[^>]+>(?!&#34;)(?P<title>[^<]+)</a> \((?P<year>\d{4})[\/IVX]*\)(?! \(VG\))([^<]*<br>&#160;aka(.+?)</td>)?', pageHtml):
             if m:
@@ -172,11 +172,11 @@ class ImdbProvider(object):
         m = re.search(r'<a href=\"/title/(?P<imdbid>tt\d{7})/\" title=\"(?P<title>[^\(]+)\((?P<year>\d{4})[^)]*\)\">', pageHtml)
         if m:
             if m.group("imdbid"):
-                mediaInfo.ImdbId = m.group("imdbid")
+                mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = m.group("title")
+                mediaInfo.Title = m.group("title").strip()
             if m.group("year"):
-                mediaInfo.Year = int(m.group("year"))
+                mediaInfo.Year = int(m.group("year").strip())
         
         for m in re.findall(r'<a href=\"/title/(?P<imdbid>tt\d{7})/\" title=\"(?P<title>[^\(]+)\((?P<year>\d{4})[^)]*\)\">', pageHtml):
             if m:
@@ -186,3 +186,4 @@ class ImdbProvider(object):
                 break
             
         return mediaInfo
+    

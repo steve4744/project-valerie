@@ -16,7 +16,7 @@ class MediaInfo(object):
     Genres = ""
     Runtime = 0
     TagLine = ""
-    Popularity = 0
+    Popularity = "0"
     Plot = ""
 
     ImdbId = "tt0000000"
@@ -56,12 +56,40 @@ class MediaInfo(object):
         self.Writers = []
            
            
-           
+    def copy(self):
+        m = MediaInfo(self.Path, self.Filename, self.Extension)
+        m.Alternatives = self.Alternatives
+        m.Directors = self.Directors
+        m.Writers = self.Writers
+        m.Genres = self.Genres
+        m.Runtime = self.Runtime
+        m.TagLine = self.TagLine
+        m.Popularity = self.Popularity
+        m.Plot = self.Plot
+        
+        m.ImdbId = self.ImdbId
+        m.TheTvDbId = self.TheTvDbId
+        m.Title = self.Title
+        m.Year = self.Year
+        m.Resolution = self.Resolution
+        m.Sound = self.Sound
+        m.isMovie = self.isMovie
+        m.isSerie = self.isSerie
+        m.isEpisode = self.isEpisode
+        m.Poster = self.Poster
+        m.Backdrop = self.Backdrop
+        m.Season = self.Season
+        m.Episode = self.Episode
+        m.SearchString = self.SearchString
+        return m
+    
     def replacements(self):
         l = {}
         l["pre"] = []
         l["post"] = []
-        l["pre"].append([r' (dd5|web|hdtv|dimension|avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)'," "])
+        l["pre"].append([r' (extended|edition|part1|part2|oar|esir|eng|rus|dd5|web|hdtv|dimension|avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)'," "])
+        
+        l["post"].append([r' (oar|esir)'," "])
         return l   
     
     def isEnigma2Recording(self, name):
@@ -69,7 +97,7 @@ class MediaInfo(object):
             f = open(name + ".meta", "r")
             f.close()
         except Exception, ex:
-            print ex
+            #print ex
             return False
         return True
         
@@ -136,9 +164,9 @@ class MediaInfo(object):
                     self.Sound = "ac3"
                 
         if self.Season == 0 or self.Episode == 0:
-            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)', name)
+            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', name)
             if m and m.group("season") and m.group("episode"):
-                self.isEpisode = True
+                self.isSerie = True
                 self.isMovie = False
                 
                 self.Season = int(m.group("season"))
@@ -147,9 +175,9 @@ class MediaInfo(object):
                 self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
               
         if self.Season == 0 or self.Episode == 0:  
-            m = re.search(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+)', name)
+            m = re.search(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+) ', name)
             if m and m.group("season") and m.group("episode"):
-                self.isEpisode = True
+                self.isSerie = True
                 self.isMovie = False
                 
                 self.Season = int(m.group("season"))
@@ -158,15 +186,18 @@ class MediaInfo(object):
                 self.SearchString = re.sub(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+).*', " ", self.SearchString)
                 
         if self.Season == 0 or self.Episode == 0:
-            m = re.search(r'(?P<season>\d{1,2})(?P<episode>\d{2})', name)
+            m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', name)
             if m and m.group("season") and m.group("episode"):
-                self.isEpisode = True
-                self.isMovie = False
-                
-                self.Season = int(m.group("season"))
-                self.Episode = int(m.group("episode"))
-                
-                self.SearchString = re.sub(r'(?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", self.SearchString)
+                s = int(m.group("season"))
+                e = int(m.group("episode"))
+                if (s == 0 or s == 19 and e >= 50 or s == 20 and e <= 14) is False:
+                    self.isSerie = True
+                    self.isMovie = False
+                    
+                    self.Season = int(m.group("season"))
+                    self.Episode = int(m.group("episode"))
+                    
+                    self.SearchString = re.sub(r'(?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", self.SearchString)
                     
         ### Replacements POST
         self.SearchString = re.sub(r'[-]', " ", self.SearchString)
@@ -192,6 +223,61 @@ class MediaInfo(object):
     "\n\tPlot:         " + str(self.Plot) + \
     "\n\tSeason:       " + str(self.Season) + \
     "\n\tEpisode:      " + str(self.Episode) + \
-    "\n\tPoster:       " + str(self.Poster) + \
-    "\n\tBackdrop:     " + str(self.Backdrop) + \
     "\n\n"
+    #"\n\tPoster:       " + str(self.Poster) + \
+    #"\n\tBackdrop:     " + str(self.Backdrop) + \
+    #"\n\n"
+
+    def export(self):
+        stri = "\n---BEGIN---"
+        if self.isMovie:
+            stri += \
+            "\nImdbId: "+ self.ImdbId[2:] + \
+            "\nTitle: "+ self.Title + \
+            "\nLocalTitle: "+ self.Title + \
+            "\nYear: "+ str(self.Year) + \
+            "\nPath: "+ self.Path + "/" + self.Filename + \
+            "\nPlot: "+ self.Plot + \
+            "\nLocalPlot: "+ self.Plot + \
+            "\nRuntime: "+ str(self.Runtime) + \
+            "\nGenres: "+ self.Genres + \
+            "\nReleasedate: "+ "2000-01-01" + \
+            "\nTag: "+ self.TagLine + \
+            "\nPopularity: "+ self.Popularity
+                        #"\nDirectors: "+ self.Directors + \
+            #"\nWriters: "+ self.Writers + \
+        elif self.isSerie:
+            stri += \
+            "\nImdbId: "+ self.ImdbId[2:] + \
+            "\nTheTvDb: "+ self.TheTvDbId + \
+            "\nTitle: "+ self.Title + \
+            "\nLocalTitle: "+ self.Title + \
+            "\nYear: "+ str(self.Year) + \
+            "\nPlot: "+ self.Plot + \
+            "\nLocalPlot: "+ self.Plot + \
+            "\nRuntime: "+ str(self.Runtime) + \
+            "\nGenres: "+ self.Genres + \
+            "\nReleasedate: "+ "2000-01-01" + \
+            "\nTag: "+ self.TagLine + \
+            "\nPopularity: "+ self.Popularity
+        elif self.isEpisode:
+            stri += \
+            "\nImdbId: "+ self.ImdbId[2:] + \
+            "\nTheTvDb: "+ self.TheTvDbId + \
+            "\nTitle: "+ self.Title + \
+            "\nLocalTitle: "+ self.Title + \
+            "\nYear: "+ str(self.Year) + \
+            "\nPath: "+ self.Path + "/" + self.Filename + \
+            "\nPlot: "+ self.Plot + \
+            "\nLocalPlot: "+ self.Plot + \
+            "\nRuntime: "+ str(self.Runtime) + \
+            "\nGenres: "+ self.Genres + \
+            "\nReleasedate: "+ "2000-01-01" + \
+            "\nTag: "+ self.TagLine + \
+            "\nPopularity: "+ self.Popularity + \
+            "\nSeason: "+ str(self.Season) + \
+            "\nEpisode: "+ str(self.Episode)
+            
+        stri += "\n----END----\n\n"
+        return stri
+            
