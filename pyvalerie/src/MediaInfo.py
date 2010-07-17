@@ -228,6 +228,55 @@ class MediaInfo(object):
     #"\n\tBackdrop:     " + str(self.Backdrop) + \
     #"\n\n"
 
+    def importStr(self, string, isMovie=False, isSerie=False, isEpisode=False):
+        
+        self.isMovie = isMovie
+        self.isSerie = isSerie
+        self.isEpisode = isEpisode
+        
+        
+        d = {} 
+        lines = string.split('\n')
+        for line in lines: 
+            #print "Line: ", line
+            if ":" in line: 
+                key, value = (s.strip() for s in line.split(":", 1)) 
+    
+            if key == "ImdbId":
+                self.ImdbId = "tt" + value
+            if key == "TheTvDb":
+                self.TheTvDbId = value
+                
+            elif key == "Title":
+                self.Title = value
+            elif key == "LocalTitle":
+                self.Title = value
+                
+            elif key == "Year":
+                self.Year = int(value)
+                
+            elif key == "Path":
+                self.Path, self.Filename = value.rsplit("/", 1)
+                print self.Filename
+                self.Filename, self.Extension = self.Filename.rsplit('.', 1)
+                
+            elif key == "Plot":
+                self.Plot = value
+            elif key == "LocalPlot":
+                self.Plot = value   
+            elif key == "Runtime":
+                self.Runtime = int(value)  
+            elif key == "Tag":
+                self.TagLine = value  
+            elif key == "Popularity":
+                self.Popularity = value  
+            elif key == "Season":
+                self.Season = int(value)  
+            elif key == "Episode":
+                self.Episode = int(value)  
+            
+            
+
     def export(self):
         stri = "\n---BEGIN---"
         if self.isMovie:
@@ -236,7 +285,7 @@ class MediaInfo(object):
             "\nTitle: "+ self.Title + \
             "\nLocalTitle: "+ self.Title + \
             "\nYear: "+ str(self.Year) + \
-            "\nPath: "+ self.Path + "/" + self.Filename + \
+            "\nPath: "+ self.Path + "/" + self.Filename + "." + self.Extension + \
             "\nPlot: "+ self.Plot + \
             "\nLocalPlot: "+ self.Plot + \
             "\nRuntime: "+ str(self.Runtime) + \
@@ -267,7 +316,7 @@ class MediaInfo(object):
             "\nTitle: "+ self.Title + \
             "\nLocalTitle: "+ self.Title + \
             "\nYear: "+ str(self.Year) + \
-            "\nPath: "+ self.Path + "/" + self.Filename + \
+            "\nPath: "+ self.Path + "/" + self.Filename + "." + self.Extension + \
             "\nPlot: "+ self.Plot + \
             "\nLocalPlot: "+ self.Plot + \
             "\nRuntime: "+ str(self.Runtime) + \

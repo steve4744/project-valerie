@@ -27,6 +27,7 @@ if __name__ == '__main__':
     Config.load()
     
     db = Database()
+    db.load()
     
     fconf = open("paths.conf", "r")
     filetypes = fconf.readline().strip().split('|')
@@ -36,12 +37,21 @@ if __name__ == '__main__':
         
         if os.path.isdir(path):
             ds = DirectoryScanner.DirectoryScanner(path)
-            elementList = ds.listDirectory(filetypes, "(-sample)")
+            elementList = ds.listDirectory(filetypes, "(sample)")
             
     i = 0
     for element in elementList:
         print "(",i,"/",len(elementList),")"
         i = i + 1
+        
+        if "RECYCLE.BIN" in element[0]:
+            continue
+        
+        if db.checkDuplicate(element[0], element[1], element[2]):
+            print "Already in db [ " + element[1] + "." + element[2] + " ]"
+            continue
+        else:
+            print "New file [ " + element[1] + "." + element[2] + " ]"
         
         elementInfo = MediaInfo.MediaInfo(element[0], element[1], element[2])
         elementInfo.parse()
