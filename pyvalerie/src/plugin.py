@@ -194,6 +194,8 @@ class pyvalerie(Thread):
 		self.output("Saving database")
 		db.save()
 		self.output("Done")
+		self.output("---------------------")
+		self.output("Press Exit / Back")
 
 def main(session, **kwargs):
 	session.open(ProjectValerieSync)
