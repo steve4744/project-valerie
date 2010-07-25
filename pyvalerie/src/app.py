@@ -44,16 +44,20 @@ if __name__ == '__main__':
         print "(",i,"/",len(elementList),")"
         i = i + 1
         
-        if "RECYCLE.BIN" in element[0]:
+        path = element[0].replace("\\", "/").decode("latin-1")
+        filename = element[1]
+        extension = element[2]
+        
+        if "RECYCLE.BIN" in path:
             continue
         
-        if db.checkDuplicate(element[0], element[1], element[2]):
+        if db.checkDuplicate(path, element[1], element[2]):
             print "Already in db [ " + element[1] + "." + element[2] + " ]"
             continue
         else:
             print "New file [ " + element[1] + "." + element[2] + " ]"
         
-        elementInfo = MediaInfo.MediaInfo(element[0], element[1], element[2])
+        elementInfo = MediaInfo.MediaInfo(path, element[1], element[2])
         elementInfo.parse()
         #print elementInfo
         
@@ -84,7 +88,7 @@ if __name__ == '__main__':
         Arts().download(elementInfo)
         
         
-        print elementInfo
+        #print elementInfo
         f = open("test.txt", "a")
         f.write(elementInfo.__str__())
         f.close()

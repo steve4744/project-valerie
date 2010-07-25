@@ -10,7 +10,7 @@ def load():
     '''
     Constructor
     '''
-    f = open("valerie.conf", "r")
+    f = open("/hdd/valerie/valerie.conf", "r")
     for line in f.readlines():
         key,value = line.split("=")
         conf[key] = value

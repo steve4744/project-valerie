@@ -35,17 +35,18 @@ class Database(object):
     def checkDuplicate(self, path, filename, extension):
         pth = path + "/" + filename + "." + extension
         pth = pth.replace("\\", "/")
+        #print pth
         return pth in self.duplicateDetector
                 
     def add(self, media):
         
         if media.isMovie or media.isEpisode:
+            media.Path = media.Path.replace("\\", "/")
             if self.checkDuplicate(media.Path, media.Filename, media.Extension):
                 return None
             else:
                 pth = media.Path + "/" + media.Filename + "." + media.Extension
-                pth = pth.replace("\\", "/")
-                self.duplicateDetector.extend(pth)
+                self.duplicateDetector.append(pth)
         
         if media.isMovie:
             self.dbMovies[media.ImdbId] = media
@@ -73,20 +74,20 @@ class Database(object):
                 "\n\n" 
                 
     def save(self):
-        f = open("db/moviedb.txt", 'wb')
+        f = open("/hdd/valerie/moviedb.txt", 'wb')
         f.write(str(date.today()))
         for key in self.dbMovies:
             f.write(self.dbMovies[key].export())
         f.close()
         
-        f = open("db/seriesdb.txt", 'wb')
+        f = open("/hdd/valerie/seriesdb.txt", 'wb')
         f.write(str(date.today()))
         for key in self.dbSeries:
             f.write(self.dbSeries[key].export())
         f.close()
         
         for serie in self.dbEpisodes:
-            f = open("db/episodes/" + serie + ".txt", 'wb')
+            f = open("/hdd/valerie/episodes/" + serie + ".txt", 'wb')
             f.write(str(date.today()))
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
@@ -94,31 +95,41 @@ class Database(object):
             f.close()
         
     def load(self):
-        db = open("db/moviedb.txt").read()[:-1]
-        movies = db.split("\n----END----\n")
-        for movie in movies:
-            movie = movie.split("---BEGIN---\n")
-            if len(movie) == 2: 
-                m = MediaInfo("","","")
-                m.importStr(movie[1], True, False, False)
-                self.add(m)
-        
-        db = open("db/seriesdb.txt").read()[:-1]
-        movies = db.split("\n----END----\n")
-        for movie in movies:
-            movie = movie.split("---BEGIN---\n")
-            if len(movie) == 2: 
-                m = MediaInfo("","","")
-                m.importStr(movie[1], False, True, False)
-                self.add(m)
-                
-        for key in self.dbSeries:
-            db = open("db/episodes/" + key + ".txt").read()[:-1]
+        try:
+            db = open("/hdd/valerie/moviedb.txt").read()[:-1]
             movies = db.split("\n----END----\n")
             for movie in movies:
                 movie = movie.split("---BEGIN---\n")
                 if len(movie) == 2: 
                     m = MediaInfo("","","")
-                    m.importStr(movie[1], False, False, True)
+                    m.importStr(movie[1], True, False, False)
                     self.add(m)
+        except Exception, ex:
+            print ex
+        
+        try:
+            db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
+            movies = db.split("\n----END----\n")
+            for movie in movies:
+                movie = movie.split("---BEGIN---\n")
+                if len(movie) == 2: 
+                    m = MediaInfo("","","")
+                    m.importStr(movie[1], False, True, False)
+                    self.add(m)
+        except Exception, ex:
+            print ex
             
+        try:    
+            for key in self.dbSeries:
+                db = open("/hdd/valerie/episodes/" + key + ".txt").read()[:-1]
+                movies = db.split("\n----END----\n")
+                for movie in movies:
+                    movie = movie.split("---BEGIN---\n")
+                    if len(movie) == 2: 
+                        m = MediaInfo("","","")
+                        m.importStr(movie[1], False, False, True)
+                        self.add(m)
+        except Exception, ex:
+            print ex
+            
+        print self.duplicateDetector
