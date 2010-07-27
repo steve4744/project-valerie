@@ -15,6 +15,8 @@ from threading import Thread
 import sys
 import os
 
+from sync import pyvalerie
+
 class ProjectValerieSync(Screen):
 	skin = """
 		<screen position="50,50" size="620,476" title="ProjectValerieSync" >
@@ -78,8 +80,9 @@ class ProjectValerieSync(Screen):
 		self["progress"].range = (0, value)
 	
 	def info(self, poster, name, year):
+		print name
 		self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
-		self["name"].setText(str(name))
+		self["name"].setText(name.encode("utf-8"))
 		self["year"].setText(str(year))
 	
 def main(session, **kwargs):

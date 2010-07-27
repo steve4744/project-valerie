@@ -87,8 +87,9 @@ class pyvalerie(Thread):
 				self.info(str(elementInfo.ImdbId) + "_poster.png", elementInfo.Title, elementInfo.Year)
 			elif elementInfo.isSerie:
 				elementInfo = TheTvDbProvider().getSerieByImdbID(elementInfo)
-				print elementInfo
+				
 				elementInfo = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
+				#print elementInfo
 				db.add(elementInfo)
 				
 				elementInfoe = elementInfo.copy()
@@ -97,7 +98,7 @@ class pyvalerie(Thread):
 				elementInfoe.isEpisode = True
 				
 				elementInfoe = TheTvDbProvider().getEpisodeByTheTvDbId(elementInfoe)
-				
+				#print elementInfoe
 				db.add(elementInfoe)
 				Arts().download(elementInfo)
 				self.info(str(elementInfo.TheTvDbId) + "_poster.png", elementInfo.Title, elementInfo.Year)

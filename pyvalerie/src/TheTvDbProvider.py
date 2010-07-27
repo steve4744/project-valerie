@@ -55,7 +55,19 @@ class TheTvDbProvider(object):
         dom = parseString(pageHtml)
         for p in dom.getElementsByTagName("Series"):
             mediaInfo.TheTvDbId = p.getElementsByTagName("seriesid")[0].childNodes[0].data
+            o = p.getElementsByTagName("Overview")[0]
+            #print p.childNodes
+            if len(o.childNodes) > 0:
+                print "Overview: ", type(o.childNodes[0].data)
+                if type(o.childNodes[0].data) is unicode:
+                    print "is unicode"
+                    mediaInfo.Plot = o.childNodes[0].data #should be alreay unicode
+                else:
+                    print "is NOT unicode"
+                    mediaInfo.Plot = unicode(o.childNodes[0].nodeValue, "utf-8")
             break
+        
+        
         
         return mediaInfo
 
@@ -87,8 +99,8 @@ class TheTvDbProvider(object):
         
         url = re.sub("<seriesid>", mediaInfo.TheTvDbId, url)
         url = re.sub("<lang>", Config.getKey("local"), url)
-        url = re.sub("<season>", str(mediaInfo.Season), url)
-        url = re.sub("<episode>", str(mediaInfo.Episode), url)
+        url = re.sub("<season>", unicode(mediaInfo.Season), url)
+        url = re.sub("<episode>", unicode(mediaInfo.Episode), url)
         
         
         pageHtml = WebGrabber().grab(url, "utf-8")
@@ -98,12 +110,27 @@ class TheTvDbProvider(object):
        
         dom = parseString(pageHtml)
         for p in dom.getElementsByTagName("EpisodeName"):
-            mediaInfo.Title = p.childNodes[0].data
-            break
+            if len(p.childNodes) > 0:
+                print "EpisodeName: ", type(p.childNodes[0].data)
+                if type(p.childNodes[0].data) is unicode:
+                    print "is unicode"
+                    mediaInfo.Title = p.childNodes[0].data #should be alreay unicode
+                else:
+                    print "is NOT unicode"
+                    mediaInfo.Title = unicode(p.childNodes[0].nodeValue, "utf-8")
+                break
                 
         for p in dom.getElementsByTagName("Overview"):
-            mediaInfo.Plot = p.childNodes[0].data
-            break      
-        
+            #print p.childNodes
+            if len(p.childNodes) > 0:
+                print "Overview: ", type(p.childNodes[0].data)
+                if type(p.childNodes[0].data) is unicode:
+                    print "is unicode"
+                    mediaInfo.Plot = p.childNodes[0].data #should be alreay unicode
+                else:
+                    print "is NOT unicode"
+                    mediaInfo.Plot = unicode(p.childNodes[0].nodeValue, "utf-8")
+                break
+        #print mediaInfo.Plot
         return mediaInfo
     

@@ -96,7 +96,7 @@ class ImdbProvider(object):
 
         m = re.search(r'<p class=\"plotpar\">\s*(?P<plot>[^<]+?)<i>', pageHtml)
         if m and m.group("plot"):
-            mediaInfo.Plot = m.group("plot").strip()
+            mediaInfo.Plot = unicode(m.group("plot").strip())
             
         return mediaInfo
     
@@ -106,7 +106,7 @@ class ImdbProvider(object):
             # <title>Austin Powers: The Spy Who Shagged Me (1999)</title>
             m = re.search(r'<title>(?P<title>[^(]+)\((?P<year>\d{4})\)[\/IVX]*[^<]*</title>', pageHtml)
             if m and m.group("title") and m.group("year"):
-                mediaInfo.Title = m.group("title").strip()
+                mediaInfo.Title = unicode(m.group("title").strip())
                 mediaInfo.Year = int(m.group("year").strip())
                 
         if mediaInfo.ImdbId == "tt0000000":
@@ -154,17 +154,34 @@ class ImdbProvider(object):
             if m.group("imdbid"):
                 mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = m.group("title").strip()
+                mediaInfo.Title = unicode(m.group("title").strip())
             if m.group("year"):
                 mediaInfo.Year = int(m.group("year").strip())
         
         for m in re.findall(r'><a href=\"/title/(?P<imdbid>tt\d{7})/\"[^>]+>(?!&#34;)(?P<title>[^<]+)</a> \((?P<year>\d{4})[\/IVX]*\)(?! \(VG\))([^<]*<br>&#160;aka(.+?)</td>)?', pageHtml):
             if m:
                 if m[0] and m[1] and m[2]:
-                    mediaInfo.Alternatives[m[0]] = [m[1], m[2]]
+                    mediaInfo.Alternatives[m[0].strip()] = [m[1].strip(), m[2].strip()]
             else:
                 break
-            
+        
+        first = True
+        
+        if mediaInfo.Title.lower() != mediaInfo.SearchString.lower():
+            for key in mediaInfo.Alternatives.iterkeys():
+                #if first:
+                #    mediaInfo.ImdbId = key
+                #    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                #    mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
+                #    first = False
+                #
+                #print mediaInfo.Alternatives[key]
+                if mediaInfo.Alternatives[key][0].lower() == mediaInfo.SearchString.lower():
+                    mediaInfo.ImdbId = key
+                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                    mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
+                    break
+        
         return mediaInfo
     
     def parseAdvancedSearchResultScreen(self, mediaInfo, pageHtml):
@@ -174,16 +191,33 @@ class ImdbProvider(object):
             if m.group("imdbid"):
                 mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = m.group("title").strip()
+                mediaInfo.Title = unicode(m.group("title").strip())
             if m.group("year"):
                 mediaInfo.Year = int(m.group("year").strip())
         
         for m in re.findall(r'<a href=\"/title/(?P<imdbid>tt\d{7})/\" title=\"(?P<title>[^\(]+)\((?P<year>\d{4})[^)]*\)\">', pageHtml):
             if m:
                 if m[0] and m[1] and m[2]:
-                    mediaInfo.Alternatives[m[0]] = [m[1], m[2]]
+                    mediaInfo.Alternatives[m[0].strip()] = [m[1].strip(), m[2].strip()]
             else:
                 break
             
+        first = True
+        
+        if mediaInfo.Title.lower() != mediaInfo.SearchString.lower():
+            for key in mediaInfo.Alternatives.iterkeys():
+                #if first:
+                #    mediaInfo.ImdbId = key
+                #    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                #    mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
+                #    first = False
+                #
+                #print mediaInfo.Alternatives[key]
+                if mediaInfo.Alternatives[key][0].lower() == mediaInfo.SearchString.lower():
+                    mediaInfo.ImdbId = key
+                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                    mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
+                    break
+        
         return mediaInfo
     

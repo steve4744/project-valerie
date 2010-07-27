@@ -61,39 +61,46 @@ class Database(object):
                 self.dbEpisodes[media.TheTvDbId][media.Season] = {}
             
             self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
-                
-        
-        
+
     def __str__(self):
         return  "dbMovies: " + \
-                "\n\t" + str(self.dbMovies) + \
+                "\n\t" + unicode(self.dbMovies) + \
                 "\ndbSeries: " + \
-                "\n\t" + str(self.dbSeries) + \
+                "\n\t" + unicode(self.dbSeries) + \
                 "\ndbEpisodes: " + \
-                "\n\t" + str(self.dbEpisodes) + \
+                "\n\t" + unicode(self.dbEpisodes) + \
                 "\n\n" 
-                
+
     def save(self):
         f = open("/hdd/valerie/moviedb.txt", 'wb')
-        f.write(str(date.today()))
+        print "a"
+        f.write(unicode(date.today()))
+        print "b"
         for key in self.dbMovies:
             f.write(self.dbMovies[key].export().encode( "utf-8" ))
+        print "c"
         f.close()
         
         f = open("/hdd/valerie/seriesdb.txt", 'wb')
-        f.write(str(date.today()))
+        print "a"
+        f.write(unicode(date.today()))
+        print "b"
         for key in self.dbSeries:
             f.write(self.dbSeries[key].export().encode( "utf-8" ))
+        print "c"
         f.close()
         
         for serie in self.dbEpisodes:
             f = open("/hdd/valerie/episodes/" + serie + ".txt", 'wb')
-            f.write(str(date.today()))
+            print "a"
+            f.write(unicode(date.today()))
+            print "b"
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
                     f.write(self.dbEpisodes[serie][season][episode].export().encode( "utf-8" ))
+            print "c"
             f.close()
-        
+
     def load(self):
         try:
             db = codecs.open("/hdd/valerie/moviedb.txt", "r", "utf-8").read()[:-1]

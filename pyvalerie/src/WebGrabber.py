@@ -8,6 +8,7 @@ import io
 import os
 import re
 import urllib2
+import codecs
 
 from HtmlEncoding import decode_htmlentities
 
@@ -25,13 +26,18 @@ class WebGrabber(object):
         '''
         
     def grab(self, url, encoding="latin-1"):
-        print "URL", url
+        #print "URL", url
         cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
         pageHtml = None
         if os.path.isfile(self.cacheDir + "/" + cacheFile + ".cache"):
-            f = open(self.cacheDir + "/" + cacheFile + ".cache", 'r')
-            pageHtml = f.read()
-            f.close()
+            if encoding == "utf-8":
+                f = codecs.open(self.cacheDir + "/" + cacheFile + ".cache", "r", "utf-8")
+                pageHtml = f.read()[:-1]
+                f.close()
+            else:
+                f = open(self.cacheDir + "/" + cacheFile + ".cache", 'r')
+                pageHtml = f.read()
+                f.close()
         else:
             try:
                 page = urllib2.urlopen(url, timeout=10)
@@ -60,10 +66,11 @@ class WebGrabber(object):
             except Exception, ex:
                 print "create cache ", ex
         
+        print "pageHtml: ", type(pageHtml)
         return pageHtml
     
     def grabFile(self, url, name):
-        print "URL", url
+        #print "URL", url
         #cacheFile = url.split('/')
         #cacheFile = cacheFile[len(cacheFile)-1]
         #pageHtml = None

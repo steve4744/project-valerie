@@ -110,13 +110,13 @@ class MediaInfo(object):
  
     
     def parse(self):
-        absFilename = str(self.Path) + "/" + str(self.Filename) + "." + str(self.Extension)
+        absFilename = unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
         if self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
             return
         
         
-        name = str(self.Filename).lower()
+        name = unicode(self.Filename).lower()
         
         name = re.sub(r'[.]', " ", name)
         
@@ -205,28 +205,31 @@ class MediaInfo(object):
         self.SearchString = self.SearchString.strip()
             
     def __str__(self):
-        return str(self.Path) + " / " + str(self.Filename) + " . " + str(self.Extension) + \
-    "\n\tImdbId:       " + str(self.ImdbId) + \
-    "\n\tTheTvDbId:    " + str(self.TheTvDbId) + \
-    "\n\tTitle:        " + str(self.Title) + \
-    "\n\tSearchString: " + str(self.SearchString) + \
-    "\n\tYear:         " + str(self.Year) + \
-    "\n\tResolution:   " + str(self.Resolution) + \
-    "\n\tSound:        " + str(self.Sound) + \
-    "\n\tAlternatives: " + str(self.Alternatives) + \
-    "\n\tDirectors:    " + str(self.Directors) + \
-    "\n\tWriters:      " + str(self.Writers) + \
-    "\n\tRuntime:      " + str(self.Runtime) + \
-    "\n\tGenres:       " + str(self.Genres) + \
-    "\n\tTagLine:      " + str(self.TagLine) + \
-    "\n\tPopularity:   " + str(self.Popularity) + \
-    "\n\tPlot:         " + str(self.Plot) + \
-    "\n\tSeason:       " + str(self.Season) + \
-    "\n\tEpisode:      " + str(self.Episode) + \
-    "\n\n"
-    #"\n\tPoster:       " + str(self.Poster) + \
-    #"\n\tBackdrop:     " + str(self.Backdrop) + \
-    #"\n\n"
+        ustr = unicode(self.Path) + " / " + unicode(self.Filename) + " . " + unicode(self.Extension)
+        print type(ustr)
+        ustr += "\n\tImdbId:       " + unicode(self.ImdbId)
+        ustr += "\n\tTheTvDbId:    " + unicode(self.TheTvDbId)
+        ustr += "\n\tTitle:        " + self.Title
+        ustr += "\n\tSearchString: " + unicode(self.SearchString)
+        ustr += "\n\tYear:         " + unicode(self.Year)
+        ustr += "\n\tResolution:   " + unicode(self.Resolution)
+        ustr += "\n\tSound:        " + unicode(self.Sound)
+        #ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
+        ustr += "\n\tDirectors:    " + unicode(self.Directors)
+        ustr += "\n\tWriters:      " + unicode(self.Writers)
+        ustr += "\n\tRuntime:      " + unicode(self.Runtime)
+        ustr += "\n\tGenres:       " + unicode(self.Genres)
+        ustr += "\n\tTagLine:      " + unicode(self.TagLine)
+        ustr += "\n\tPopularity:   " + unicode(self.Popularity)
+        ustr += "\n\tPlot:         " + self.Plot
+        ustr += "\n\tSeason:       " + unicode(self.Season)
+        ustr += "\n\tEpisode:      " + unicode(self.Episode)
+        ustr += "\n\n"
+        #ustr += "\n\tPoster:       " + unicode(self.Poster)
+        #ustr += "\n\tBackdrop:     " + unicode(self.Backdrop)
+        #ustr += "\n\n"
+        print type(ustr)
+        return ustr
 
     def importStr(self, string, isMovie=False, isSerie=False, isEpisode=False):
         
@@ -278,62 +281,58 @@ class MediaInfo(object):
             
 
     def export(self):
-        stri = "\n---BEGIN---"
-        try:
-            if self.isMovie:
-                stri += \
-                "\nImdbId: "+ self.ImdbId + \
-                "\nTitle: "+ self.Title + \
-                "\nLocalTitle: "+ self.Title + \
-                "\nYear: "+ str(self.Year) + \
-                "\nPath: "+ self.Path + "/" + self.Filename + "." + self.Extension + \
-                "\nPlot: "+ self.Plot + \
-                "\nLocalPlot: "+ self.Plot + \
-                "\nRuntime: "+ str(self.Runtime) + \
-                "\nGenres: "+ self.Genres + \
-                "\nReleasedate: "+ "2000-01-01" + \
-                "\nTag: "+ self.TagLine + \
-                "\nPopularity: "+ self.Popularity + \
-                "\nDirectors: "+ "---" + \
-                "\nWriters: "+ "---"
-            elif self.isSerie:
-                stri += \
-                "\nImdbId: "+ self.ImdbId + \
-                "\nTheTvDb: "+ self.TheTvDbId + \
-                "\nTitle: "+ self.Title + \
-                "\nLocalTitle: "+ self.Title + \
-                "\nYear: "+ str(self.Year) + \
-                "\nPlot: "+ self.Plot + \
-                "\nLocalPlot: "+ self.Plot + \
-                "\nRuntime: "+ str(self.Runtime) + \
-                "\nGenres: "+ self.Genres + \
-                "\nReleasedate: "+ "2000-01-01" + \
-                "\nTag: "+ self.TagLine + \
-                "\nPopularity: "+ self.Popularity + \
-                "\nDirectors: "+ "---" + \
-                "\nWriters: "+ "---"
-            elif self.isEpisode:
-                stri += \
-                "\nImdbId: "+ self.ImdbId + \
-                "\nTheTvDb: "+ self.TheTvDbId + \
-                "\nTitle: "+ self.Title + \
-                "\nLocalTitle: "+ self.Title + \
-                "\nYear: "+ str(self.Year) + \
-                "\nPath: "+ self.Path + "/" + self.Filename + "." + self.Extension + \
-                "\nPlot: "+ self.Plot + \
-                "\nLocalPlot: "+ self.Plot + \
-                "\nRuntime: "+ str(self.Runtime) + \
-                "\nGenres: "+ self.Genres + \
-                "\nReleasedate: "+ "2000-01-01" + \
-                "\nTag: "+ self.TagLine + \
-                "\nPopularity: "+ self.Popularity + \
-                "\nSeason: "+ str(self.Season) + \
-                "\nEpisode: "+ str(self.Episode) + \
-                "\nDirectors: "+ "---" + \
-                "\nWriters: "+ "---"
-        except Exception, ex:
-            print ex
+        stri = u'\n---BEGIN---'
+        if self.isMovie:
+            stri += u'\nImdbId: ' +     unicode(self.ImdbId)
+            stri += u'\nTitle: ' +      self.Title
+            stri += u'\nLocalTitle: ' + self.Title
+            stri += u'\nYear: ' +       unicode(self.Year)
+            stri += u'\nPath: ' +       unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
+            stri += u'\nPlot: ' +       self.Plot
+            stri += u'\nLocalPlot: ' +  self.Plot
+            stri += u'\nRuntime: ' +    unicode(self.Runtime)
+            stri += u'\nGenres: ' +     unicode(self.Genres)
+            stri += u'\nReleasedate: ' + u'2000-01-01'
+            stri += u'\nTag: ' +        unicode(self.TagLine)
+            stri += u'\nPopularity: ' + unicode(self.Popularity)
+            stri += u'\nDirectors: ' +  "---"
+            stri += u'\nWriters: ' +    "---"
+        elif self.isSerie:
+            stri += u'\nImdbId: ' +     unicode(self.ImdbId)
+            stri += u'\nTheTvDb: ' +    unicode(self.TheTvDbId)
+            stri += u'\nTitle: ' +      self.Title
+            stri += u'\nLocalTitle: ' + self.Title
+            stri += u'\nYear: ' +       unicode(self.Year)
+            stri += u'\nPlot: ' +       self.Plot
+            stri += u'\nLocalPlot: ' +  self.Plot
+            stri += u'\nRuntime: ' +    unicode(self.Runtime)
+            stri += u'\nGenres: ' +     unicode(self.Genres)
+            stri += u'\nReleasedate: ' + u'2000-01-01'
+            stri += u'\nTag: ' +        unicode(self.TagLine)
+            stri += u'\nPopularity: ' + unicode(self.Popularity)
+            stri += u'\nDirectors: ' +  "---"
+            stri += u'\nWriters: ' +    "---"
+        elif self.isEpisode:
+            stri += u'\nImdbId: ' +     unicode(self.ImdbId)
+            stri += u'\nTheTvDb: ' +    unicode(self.TheTvDbId)
+            stri += u'\nTitle: ' +      self.Title
+            stri += u'\nLocalTitle: ' + self.Title
+            stri += u'\nYear: ' +       unicode(self.Year)
+            stri += u'\nPath: ' +       unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
+            print "stri: ", type(stri)
+            print "self.Plot: ", type(self.Plot)
+            stri += u'\nPlot: ' +       self.Plot
+            stri += u'\nLocalPlot: ' +  self.Plot
+            stri += u'\nRuntime: ' +    unicode(self.Runtime)
+            stri += u'\nGenres: ' +     unicode(self.Genres)
+            stri += u'\nReleasedate: ' + u'2000-01-01'
+            stri += u'\nTag: ' +        unicode(self.TagLine)
+            stri += u'\nPopularity: ' + unicode(self.Popularity)
+            stri += u'\nSeason: ' +     unicode(self.Season)
+            stri += u'\nEpisode: ' +    unicode(self.Episode)
+            stri += u'\nDirectors: ' +  "---"
+            stri += u'\nWriters: ' +    "---"
             
-        stri += "\n----END----\n\n"
+        stri += u'\n----END----\n\n'
         return stri
             
