@@ -339,8 +339,44 @@ void * tcpRequests(void * none)
 				fclose(pFile);
 
 			}
+		} else if(!strncmp(MAGIC_REQ_FILE_MO, string, slen))
+		{
+			char * name;
 
+			{
+				short lenName = 0;
+				read(fdd, &lenName, 2);
+				printThis("lenName: %hu %04hx\n", lenName, lenName);
+				name = (char*)malloc(lenName+1);
+				read(fdd, name, lenName);
+				name[lenName] = '\0';
+				printThis("Name: %s\n", name);
+			}
 
+			{
+				int lenFile = 0;
+
+				FILE *pFile;
+				pFile = fopen( name, "rb");
+				fseek(pFile, 0, SEEK_END); // seek to end of file
+				lenFile = ftell(pFile);
+				fseek(pFile, 0, SEEK_SET);
+
+				write(fdd, &lenFile, 4);
+				printThis("Filesize: %u %08x\n", lenFile, lenFile);
+
+				char buffer[MAX_CHARS_TCP]; 
+
+				int i = 0;
+				for(i = 0; i < lenFile;) {
+					short bytesToWrite = (lenFile - i)>MAX_CHARS_TCP?MAX_CHARS_TCP:lenFile-i;
+					fread (buffer , 1 , bytesToWrite , pFile );
+					int realBytesWritten = write(fdd, &buffer, bytesToWrite);
+					i += realBytesWritten;
+				}
+
+				fclose(pFile);
+			}
 		}
 
 		close(fdd);
