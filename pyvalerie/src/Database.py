@@ -3,7 +3,7 @@ Created on 15.07.2010
 
 @author: i7
 '''
-
+import codecs
 from datetime import date
 from MediaInfo import MediaInfo
 
@@ -77,13 +77,13 @@ class Database(object):
         f = open("/hdd/valerie/moviedb.txt", 'wb')
         f.write(str(date.today()))
         for key in self.dbMovies:
-            f.write(self.dbMovies[key].export())
+            f.write(self.dbMovies[key].export().encode( "utf-8" ))
         f.close()
         
         f = open("/hdd/valerie/seriesdb.txt", 'wb')
         f.write(str(date.today()))
         for key in self.dbSeries:
-            f.write(self.dbSeries[key].export())
+            f.write(self.dbSeries[key].export().encode( "utf-8" ))
         f.close()
         
         for serie in self.dbEpisodes:
@@ -91,12 +91,12 @@ class Database(object):
             f.write(str(date.today()))
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
-                    f.write(self.dbEpisodes[serie][season][episode].export())
+                    f.write(self.dbEpisodes[serie][season][episode].export().encode( "utf-8" ))
             f.close()
         
     def load(self):
         try:
-            db = open("/hdd/valerie/moviedb.txt").read()[:-1]
+            db = codecs.open("/hdd/valerie/moviedb.txt", "r", "utf-8").read()[:-1]
             movies = db.split("\n----END----\n")
             for movie in movies:
                 movie = movie.split("---BEGIN---\n")
@@ -108,7 +108,7 @@ class Database(object):
             print ex
         
         try:
-            db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
+            db = codecs.open("/hdd/valerie/seriesdb.txt", "r", "utf-8").read()[:-1]
             movies = db.split("\n----END----\n")
             for movie in movies:
                 movie = movie.split("---BEGIN---\n")
@@ -121,7 +121,7 @@ class Database(object):
             
         try:    
             for key in self.dbSeries:
-                db = open("/hdd/valerie/episodes/" + key + ".txt").read()[:-1]
+                db = codecs.open("/hdd/valerie/episodes/" + key + ".txt", "r", "utf-8").read()[:-1]
                 movies = db.split("\n----END----\n")
                 for movie in movies:
                     movie = movie.split("---BEGIN---\n")

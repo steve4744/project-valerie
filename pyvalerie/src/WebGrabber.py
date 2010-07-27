@@ -25,7 +25,7 @@ class WebGrabber(object):
         '''
         
     def grab(self, url, encoding="latin-1"):
-        #print "URL", url
+        print "URL", url
         cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
         pageHtml = None
         if os.path.isfile(self.cacheDir + "/" + cacheFile + ".cache"):
@@ -37,14 +37,16 @@ class WebGrabber(object):
                 page = urllib2.urlopen(url, timeout=10)
             except Exception, ex:
                 print "URL", url
-                print ex
+                print "urllib2.urlopen: ", ex
                 return None
             if encoding == "utf-8":
-                pageHtml = unicode('')
+                pageUnicode = page.read()
+                #pageHtml = unicode('')
                 try:
-                    pageHtml += page.read()
+                    pageHtml =  unicode(pageUnicode, "utf-8")
+                    #pageHtml += page.read()
                 except UnicodeDecodeError, ex:
-                    print ex
+                    print "encoding == utf-8 ", ex
             elif encoding == "latin-1":
                 pageHtml = page.read() # read as latin-1
                 #print type(pageHtml)
@@ -53,14 +55,15 @@ class WebGrabber(object):
             
             try:
                 f = open(self.cacheDir + "/" + cacheFile + ".cache", 'w')
-                f.write(pageHtml)
+                f.write(pageHtml.encode( "utf-8" ))
                 f.close()
             except Exception, ex:
-                print ex
-                     
+                print "create cache ", ex
+        
         return pageHtml
     
     def grabFile(self, url, name):
+        print "URL", url
         #cacheFile = url.split('/')
         #cacheFile = cacheFile[len(cacheFile)-1]
         #pageHtml = None

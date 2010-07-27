@@ -28,13 +28,13 @@ class TheTvDbProvider(object):
         '''
         Constructor
         '''
-    
-    def getSerieByTitle(self, mediaInfo): 
+
+    def getSerieByTitle(self, mediaInfo):
         urlTitle = mediaInfo.Title
         urlTitle = re.sub(" ", "+", urlTitle)
         
         pageHtml = WebGrabber().grab(self.apiSearch + urlTitle)
-   
+        
         if not pageHtml:
             return mediaInfo
         
@@ -45,10 +45,10 @@ class TheTvDbProvider(object):
                 break
         
         return mediaInfo
+
+    def getSerieByImdbID(self, mediaInfo):
+        pageHtml = WebGrabber().grab(self.apiSeriesByImdbID + mediaInfo.ImdbId, encoding = "utf-8")
         
-    def getSerieByImdbID(self, mediaInfo):        
-        pageHtml = WebGrabber().grab(self.apiSeriesByImdbID + mediaInfo.ImdbId)
-   
         if not pageHtml:
             return mediaInfo
         
@@ -58,7 +58,7 @@ class TheTvDbProvider(object):
             break
         
         return mediaInfo
-        
+
     def getArtByTheTvDbId(self, mediaInfo):
         if mediaInfo.TheTvDbId == "0":
             return mediaInfo
