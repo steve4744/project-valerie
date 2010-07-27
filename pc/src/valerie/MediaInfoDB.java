@@ -87,10 +87,10 @@ public class MediaInfoDB {
         return list;
     }
 
-    public MediaInfo[] getMediaInfoEpisodes(int thetvdbId) {
+    public MediaInfo[] getMediaInfoEpisodes(String thetvdbId) {
         ArrayList vector = new ArrayList();
         for(Object element : DB.values()) {
-            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDb == thetvdbId)
+            if(((MediaInfo)element).isEpisode && ((MediaInfo) element).TheTvDb.equals(thetvdbId))
                 vector.add((MediaInfo)element);
         }
 
@@ -103,7 +103,7 @@ public class MediaInfoDB {
      public MediaInfo[] getMediaInfoEpisodesUnspecified() {
         ArrayList vector = new ArrayList();
         for(Object element : DB.values()) {
-            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDb == 0)
+            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDb == "0")
                 vector.add((MediaInfo)element);
         }
 
@@ -125,7 +125,7 @@ public class MediaInfoDB {
         return info;
     }
 
-    public MediaInfo getMediaInfoForSeries(int thetvdbId) {
+    public MediaInfo getMediaInfoForSeriesId(String thetvdbId) {
         MediaInfo info = null;
         for(Object element : DB.values()) {
             if(((MediaInfo)element).isSeries && ((MediaInfo)element).TheTvDb == thetvdbId) {

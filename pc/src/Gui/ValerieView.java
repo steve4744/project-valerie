@@ -49,10 +49,13 @@ import valerie.tools.BoxInfo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import org.jdom.Document;
@@ -102,13 +105,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
         public void setWorking(boolean s) {
             jButtonConnect.setEnabled(!s);            
             if (BoxIsConnected){
-                jButtonUpload.setEnabled(!s);
+                jButtonUploadToBox.setEnabled(!s);
                 jButtonParse.setEnabled(!s);
                 jButtonSync.setEnabled(!s);
                 jButtonArt.setEnabled(!s);
             }
             else {
-                jButtonUpload.setEnabled(false);
+                jButtonUploadToBox.setEnabled(false);
                 //jButtonParse.setEnabled(false);
                 jButtonSync.setEnabled(false);
                 //jButtonArt.setEnabled(false);
@@ -399,10 +402,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                             Pattern pImdb = Pattern.compile("tt\\d{4,7}");
                             Matcher mImdb = pImdb.matcher(searchstring);
                             if (mImdb.find()/*.matches()*/) {
-                                toUpdate.Imdb = Integer.valueOf(mImdb.group().substring(2));
+                                toUpdate.Imdb = searchstring;
                                 toUpdate.SearchString = searchstring;
                             } else {
-                                toUpdate.Imdb = 0;
+                                toUpdate.Imdb = toUpdate.ImdbNull;
                                 toUpdate.SearchString = searchstring;
                             }
 
@@ -526,14 +529,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
         mainPanel = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         jButtonConnect = new javax.swing.JButton();
+        jButtonDownloadFromBox = new javax.swing.JButton();
+        jButtonUploadToBox = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jButtonSync = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
         jButtonParse = new javax.swing.JButton();
-        jSeparator3 = new javax.swing.JToolBar.Separator();
         jButtonArt = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
         jSeparator4 = new javax.swing.JToolBar.Separator();
-        jButtonUpload = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         jComboBoxBoxinfo = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane = new javax.swing.JTabbedPane();
@@ -616,6 +620,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JPopupMenu.Separator();
         jMenuItemSettings = new javax.swing.JMenuItem();
+        jMenuItemalternatives = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         updateMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
@@ -650,12 +655,36 @@ public class ValerieView extends FrameView implements WindowStateListener {
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getActionMap(ValerieView.class, this);
         jButtonConnect.setAction(actionMap.get("connectNetwork")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(ValerieView.class);
+        jButtonConnect.setIcon(resourceMap.getIcon("jButtonConnect.icon")); // NOI18N
         jButtonConnect.setText(resourceMap.getString("jButtonConnect.text")); // NOI18N
+        jButtonConnect.setToolTipText(resourceMap.getString("jButtonConnect.toolTipText")); // NOI18N
         jButtonConnect.setFocusable(false);
         jButtonConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonConnect.setName("jButtonConnect"); // NOI18N
         jButtonConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonConnect);
+
+        jButtonDownloadFromBox.setAction(actionMap.get("downloadArchivFromBox")); // NOI18N
+        jButtonDownloadFromBox.setIcon(resourceMap.getIcon("jButtonDownloadFromBox.icon")); // NOI18N
+        jButtonDownloadFromBox.setText(resourceMap.getString("jButtonDownloadFromBox.text")); // NOI18N
+        jButtonDownloadFromBox.setToolTipText(resourceMap.getString("jButtonDownloadFromBox.toolTipText")); // NOI18N
+        jButtonDownloadFromBox.setFocusable(false);
+        jButtonDownloadFromBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonDownloadFromBox.setName("jButtonDownloadFromBox"); // NOI18N
+        jButtonDownloadFromBox.setPressedIcon(resourceMap.getIcon("jButtonDownloadFromBox.pressedIcon")); // NOI18N
+        jButtonDownloadFromBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButtonDownloadFromBox);
+
+        jButtonUploadToBox.setAction(actionMap.get("uploadFiles")); // NOI18N
+        jButtonUploadToBox.setIcon(resourceMap.getIcon("jButtonUploadToBox.icon")); // NOI18N
+        jButtonUploadToBox.setText(resourceMap.getString("jButtonUploadToBox.text")); // NOI18N
+        jButtonUploadToBox.setToolTipText(resourceMap.getString("jButtonUploadToBox.toolTipText")); // NOI18N
+        jButtonUploadToBox.setFocusable(false);
+        jButtonUploadToBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonUploadToBox.setName("jButtonUploadToBox"); // NOI18N
+        jButtonUploadToBox.setPressedIcon(resourceMap.getIcon("jButtonUploadToBox.pressedIcon")); // NOI18N
+        jButtonUploadToBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButtonUploadToBox);
 
         jSeparator1.setName("jSeparator1"); // NOI18N
         jToolBar1.add(jSeparator1);
@@ -668,9 +697,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jButtonSync.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonSync);
 
-        jSeparator2.setName("jSeparator2"); // NOI18N
-        jToolBar1.add(jSeparator2);
-
         jButtonParse.setAction(actionMap.get("parseFilelist")); // NOI18N
         jButtonParse.setText(resourceMap.getString("jButtonParse.text")); // NOI18N
         jButtonParse.setFocusable(false);
@@ -679,27 +705,24 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jButtonParse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonParse);
 
-        jSeparator3.setName("jSeparator3"); // NOI18N
-        jToolBar1.add(jSeparator3);
-
         jButtonArt.setAction(actionMap.get("getArt")); // NOI18N
+        jButtonArt.setIcon(resourceMap.getIcon("jButtonArt.icon")); // NOI18N
         jButtonArt.setText(resourceMap.getString("jButtonArt.text")); // NOI18N
+        jButtonArt.setToolTipText(resourceMap.getString("jButtonArt.toolTipText")); // NOI18N
         jButtonArt.setFocusable(false);
         jButtonArt.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonArt.setName("jButtonArt"); // NOI18N
         jButtonArt.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonArt);
 
+        jSeparator3.setName("jSeparator3"); // NOI18N
+        jToolBar1.add(jSeparator3);
+
         jSeparator4.setName("jSeparator4"); // NOI18N
         jToolBar1.add(jSeparator4);
 
-        jButtonUpload.setAction(actionMap.get("uploadFiles")); // NOI18N
-        jButtonUpload.setText(resourceMap.getString("jButtonUpload.text")); // NOI18N
-        jButtonUpload.setFocusable(false);
-        jButtonUpload.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonUpload.setName("jButtonUpload"); // NOI18N
-        jButtonUpload.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonUpload);
+        jSeparator2.setName("jSeparator2"); // NOI18N
+        jToolBar1.add(jSeparator2);
 
         jComboBoxBoxinfo.setBackground(resourceMap.getColor("jComboBoxBoxinfo.background")); // NOI18N
         jComboBoxBoxinfo.setName("jComboBoxBoxinfo"); // NOI18N
@@ -804,7 +827,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     .addComponent(jButton1)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 587, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -945,7 +968,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 622, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
@@ -991,20 +1014,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanelThumbs.setLayout(jPanelThumbsLayout);
         jPanelThumbsLayout.setHorizontalGroup(
             jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelThumbsLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
-                .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
+                .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanelThumbsLayout.setVerticalGroup(
             jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -1018,7 +1041,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -1029,9 +1052,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
-                .addGap(121, 121, 121)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
+                .addGap(84, 84, 84)
                 .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE)
@@ -1039,13 +1062,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jComboBoxBoxinfo)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1070,6 +1091,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         menuBar.add(fileMenu);
 
+        jMenu1.setAction(actionMap.get("showSelectAlternativeTitelPopup")); // NOI18N
         jMenu1.setText(resourceMap.getString("jMenu1.text")); // NOI18N
         jMenu1.setName("jMenu1"); // NOI18N
 
@@ -1085,6 +1107,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jMenuItemSettings.setText(resourceMap.getString("jMenuItemSettings.text")); // NOI18N
         jMenuItemSettings.setName("jMenuItemSettings"); // NOI18N
         jMenu1.add(jMenuItemSettings);
+
+        jMenuItemalternatives.setAction(actionMap.get("showSelectAlternativeTitelPopup")); // NOI18N
+        jMenuItemalternatives.setText(resourceMap.getString("jMenuItemalternatives.text")); // NOI18N
+        jMenuItemalternatives.setName("jMenuItemalternatives"); // NOI18N
+        jMenu1.add(jMenuItemalternatives);
 
         menuBar.add(jMenu1);
 
@@ -1383,14 +1410,65 @@ public class ValerieView extends FrameView implements WindowStateListener {
         String backdrop = defaultBackdrop;
         if(new File("download/" + Id + "_poster.jpg").exists())
             poster = "download/" + Id + "_poster.jpg";
+        else if(new File("converted/" + Id + "_poster.png").exists())
+            poster = "converted/" + Id + "_poster.png";
+
         if(new File("download/" + Id + "_backdrop.jpg").exists())
             backdrop = "download/" + Id + "_backdrop.jpg";
+        else if(new File("converted/" + Id + "_backdrop.png").exists())
+            backdrop = "converted/" + Id + "_backdrop.png";
+
         drawPosters(poster, backdrop);
+    }
+
+    @Action
+    public void showSelectAlternativeTitelPopup() {
+        int row = jTableFilelist.getSelectedRow();
+        int id = (Integer) jTableFilelist.getValueAt(row, 4);
+
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        MediaInfo info = database.getMediaInfoById(id);
+
+        String[] possibilities = new String[info.AlternativesCount + 1];
+        possibilities[0] = info.Title + " (" + info.Imdb + ")";
+        for(int i = 0; i < info.AlternativesCount; i++)
+            possibilities[i+1] = info.AlternativTitles[i] + " (" + info.AlternativImdbs[i] + ")";
+
+        JComboBox alt = new JComboBox(possibilities);
+        ButtonGroup group = new ButtonGroup();
+        JRadioButton movie = new JRadioButton("Movie", true);
+        JRadioButton tv = new JRadioButton("TV", false);
+        group.add (movie);
+        group.add (tv);
+
+        Object[] message = {"Select alternativ title:", alt,
+                            "TV / Movie:", movie, tv};
+
+        JOptionPane pane = new JOptionPane( message,
+            JOptionPane.PLAIN_MESSAGE,
+            JOptionPane.OK_CANCEL_OPTION);
+
+        pane.createDialog(null, "Titelmusik").setVisible(true);
+
+        String s = alt.getSelectedItem().toString();
+
+        /*String s = (String)JOptionPane.showInputDialog(
+                this.mainPanel,
+                "Select alternativ title:\n",
+                "Dialog",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                possibilities,
+                info.Title);*/
+
+
+        if((s != null) && s.length() > 0)
+            jTableFilelist.setValueAt(s, row, 2);
     }
 
     private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
 
-        if (evt.getClickCount() == 1) {
+        if (evt.getClickCount() == 1 && evt.getButton() == evt.BUTTON1) {
             int row = jTableFilelist.getSelectedRow();
             int id = (Integer) jTableFilelist.getValueAt(row, 4);
 
@@ -1401,33 +1479,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
             jTextAreaDescription.setText(info.toString());
             //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
-            drawPosters("tt" + info.Imdb);
+            drawPosters(info.Imdb);
         }
-        else {
-            int row = jTableFilelist.getSelectedRow();
-            int id = (Integer) jTableFilelist.getValueAt(row, 4);
-
-            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-            MediaInfo info = database.getMediaInfoById(id);
-
-
-            String[] possibilities = new String[info.AlternativesCount + 1];
-            possibilities[0] = info.Title + " (tt" + info.Imdb + ")";
-            for(int i = 0; i < info.AlternativesCount; i++)
-                possibilities[i+1] = info.AlternativTitles[i] + " (tt" + info.AlternativImdbs[i] + ")";
-
-            String s = (String)JOptionPane.showInputDialog(
-                    this.mainPanel,
-                    "Select alternativ:\n",
-                    "Dialog",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    possibilities,
-                    info.Title);
-
-
-            if((s != null) && s.length() > 0)
-                jTableFilelist.setValueAt(s, row, 2);
+        else if (evt.getClickCount() == 2 && evt.getButton() == evt.BUTTON1){
+            showSelectAlternativeTitelPopup();
         }
     }//GEN-LAST:event_jTableFilelistMouseClicked
 
@@ -1446,7 +1501,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jTextAreaDescription.setText(info.toString());              
         //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
-        drawPosters("tt" + info.Imdb);
+        drawPosters(info.Imdb);
     }//GEN-LAST:event_jTableFilelistKeyPressed
 
     private void jTableFilelistEpisodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesMouseClicked
@@ -1458,7 +1513,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jTextAreaDescription.setText(info.toString());        
         //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(""+info.TheTvDb);
+        drawPosters(info.TheTvDb);
     }//GEN-LAST:event_jTableFilelistEpisodesMouseClicked
 
     private void jTableFilelistEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesKeyPressed
@@ -1476,7 +1531,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jTextAreaDescription.setText(info.toString());        
        // drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(""+info.TheTvDb);
+        drawPosters(info.TheTvDb);
     }//GEN-LAST:event_jTableFilelistEpisodesKeyPressed
 
     private void jTableSeriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSeriesMouseClicked
@@ -1488,7 +1543,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         if (info != null) {
             jTextAreaDescription.setText(info.toString());            
             //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-            drawPosters(String.valueOf(info.TheTvDb));
+            drawPosters(info.TheTvDb);
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesMouseClicked
@@ -1508,7 +1563,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         if (info != null) {
             jTextAreaDescription.setText(info.toString());            
             //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-            drawPosters(String.valueOf(info.TheTvDb));
+            drawPosters(info.TheTvDb);
         }
         updateTablesEpisodes(id);
     }//GEN-LAST:event_jTableSeriesKeyPressed
@@ -1517,19 +1572,22 @@ public class ValerieView extends FrameView implements WindowStateListener {
         DebugOutput.printl("->");
 
         pWorker.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
-        //clear database
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        database.clear();
 
-        pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
-        updateTables();
+        if(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV")) {
+            //clear database
+            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            database.clear();
+
+            pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
+            updateTables();
+        }
 
         if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
-            jButtonUpload.setEnabled(false);
+            jButtonUploadToBox.setEnabled(false);
             jButtonSync.setEnabled(false);
         }
         else {
-            jButtonUpload.setEnabled(true);
+            jButtonUploadToBox.setEnabled(true);
             jButtonSync.setEnabled(true);
         }
 
@@ -1632,10 +1690,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try {
             if (BackdropWork.isMovie) {
-                FileUtils.copy("import/backdrop.jpg", "download/tt"+BackdropWork.Imdb+"_backdrop.jpg");
+                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.Imdb + "_backdrop.jpg");
             }
             else {
-                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDb+"_backdrop.jpg");
+                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDb + "_backdrop.jpg");
             }
         }
         catch(IOException e2)
@@ -1650,7 +1708,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         {
             case 0:
                 if (BackdropWork.isMovie) {
-                    new mencoder().exec("download/tt" + BackdropWork.Imdb + "_backdrop.jpg", "import/tt" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + BackdropWork.Imdb + "_backdrop.jpg", "import/" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
                 }
                 else {
                     new mencoder().exec("download/" + BackdropWork.TheTvDb + "_backdrop.jpg", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v", Resolution);
@@ -1658,7 +1716,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 break;
             case 1:
                 if (BackdropWork.isMovie) {
-                    new Encode().exec("download/tt" + BackdropWork.Imdb + "_backdrop", "import/tt" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/" + BackdropWork.Imdb + "_backdrop", "import/" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
                 }
                 else {
                     new Encode().exec("download/" + BackdropWork.TheTvDb + "_backdrop", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v",Resolution);
@@ -1668,8 +1726,8 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         try {
             if (BackdropWork.isMovie) {
-                FileUtils.copy("import/tt" + BackdropWork.Imdb + "_backdrop.m1v", "converted/tt"+BackdropWork.Imdb+"_backdrop.m1v");
-                drawPosters("converted/tt" + BackdropWork.Imdb + "_poster.png", "download/tt" + BackdropWork.Imdb + "_backdrop.jpg");
+                FileUtils.copy("import/" + BackdropWork.Imdb + "_backdrop.m1v", "converted/"+BackdropWork.Imdb+"_backdrop.m1v");
+                drawPosters("converted/" + BackdropWork.Imdb + "_poster.png", "download/" + BackdropWork.Imdb + "_backdrop.jpg");
             }
             else {
                 FileUtils.copy("import/" + BackdropWork.TheTvDb + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v");
@@ -1732,9 +1790,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private void jButtonPosterSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterSaveActionPerformed
         try {
             if (PosterWork.isMovie) {
-                FileUtils.copy("import/poster.jpg", "download/tt"+PosterWork.Imdb+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/tt"+PosterWork.Imdb+"_poster.png");                
-                FileUtils.copy("import/poster.png", "import/tt"+PosterWork.Imdb+"_poster.png");
+                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.Imdb+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/"+PosterWork.Imdb+"_poster.png");                
+                FileUtils.copy("import/poster.png", "import/"+PosterWork.Imdb+"_poster.png");
             }
             else {
                 FileUtils.copy("import/poster.jpg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
@@ -1750,7 +1808,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jImportPoster.setVisible(false);
 
         if (PosterWork.isMovie) {
-            drawPosters("download/tt" + PosterWork.Imdb + "_poster.jpg", "download/tt" + PosterWork.Imdb + "_backdrop.jpg");
+            drawPosters("download/" + PosterWork.Imdb + "_poster.jpg", "download/" + PosterWork.Imdb + "_backdrop.jpg");
         }
         else {
             drawPosters("download/" + PosterWork.TheTvDb + "_poster.jpg","download/" + PosterWork.TheTvDb + "_backdrop.jpg");
@@ -1777,7 +1835,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 row = jTableFilelist.getSelectedRow();
                 if (row >= 0){
                     id = (Integer) jTableFilelist.getValueAt(row, 4);
-                    directory = "download/tt";
+                    directory = "download/";
                 }
                 break;
             case 1:
@@ -2233,6 +2291,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jFrameConsole.setVisible(visible);
     }
 
+    @Action
+    public void downloadArchivFromBox() {
+        pWorker.doTask(BackgroundWorker.Tasks.DOWNLOAD_FROM_BOX, BackgroundWorker.Mode.NORMAL, pCallback, null);
+        //clear database
+        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        database.clear();
+
+        pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
+        updateTables();
+    }
+
     
     private static Console jFrameConsole = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2244,12 +2313,13 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JButton jButtonArt;
     private javax.swing.JButton jButtonBackdropOpen;
     private javax.swing.JButton jButtonConnect;
+    private javax.swing.JButton jButtonDownloadFromBox;
     private javax.swing.JButton jButtonParse;
     private javax.swing.JButton jButtonPosterCancel;
     private javax.swing.JButton jButtonPosterOpen;
     private javax.swing.JButton jButtonPosterSave;
     private javax.swing.JButton jButtonSync;
-    private javax.swing.JButton jButtonUpload;
+    private javax.swing.JButton jButtonUploadToBox;
     private javax.swing.JComboBox jComboBoxBoxinfo;
     private javax.swing.JFrame jImportBackdrop;
     private javax.swing.JFrame jImportPoster;
@@ -2263,6 +2333,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItemSettings;
+    private javax.swing.JMenuItem jMenuItemalternatives;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanelMovies;

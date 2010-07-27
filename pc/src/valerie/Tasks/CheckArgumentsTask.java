@@ -32,12 +32,13 @@ public class CheckArgumentsTask extends org.jdesktop.application.Task<Object, Vo
             pWorker = worker;
             pParent = parent;
 
-            Logger.setBlocked(true);
-            Logger.printBlocked("Loading Archive");
+            //Logger.setBlocked(true);
+            //Logger.printBlocked("Loading Archive");
         }
 
         @Override protected Object doInBackground() {
 
+            boolean setLoad = false;
             boolean showHelp = false;
             boolean setAuto = false;
             boolean setConnect = false;
@@ -104,8 +105,10 @@ public class CheckArgumentsTask extends org.jdesktop.application.Task<Object, Vo
                 MediaInfoDB pDatabase = (MediaInfoDB)pWorker.get("Database");
                 pDatabase.clear();
 
-                pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, null, null);
-                pParent.notify(0, 1, "UPDATE_TABLES");
+                if(setLoad) {
+                    pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, null, null);
+                    pParent.notify(0, 1, "UPDATE_TABLES");
+                }
                 
                 if(setConnect) {
                     pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.NORMAL, null, null);

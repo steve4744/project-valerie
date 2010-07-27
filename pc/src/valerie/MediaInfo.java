@@ -38,7 +38,8 @@ public class MediaInfo {
     public String AlternativTitles[] = new String[alternativesMax];
     public String LocalTitle = "";
     public int Year = 0;
-    public int Imdb = 0;
+    public String ImdbNull = "tt0000000";
+    public String Imdb = ImdbNull;
     public int AlternativImdbs[] = new int[alternativesMax];
     public String Poster = "";
     public String Backdrop = "";
@@ -54,7 +55,8 @@ public class MediaInfo {
     public int Popularity = 0;
     public int Season = 0;
     public int Episode = 0;
-    public int TheTvDb = 0;
+    public String TheTvDbNull = "0";
+    public String TheTvDb = TheTvDbNull;
     //public int ref = -1;
     public boolean Ignoring = true;
 
@@ -88,9 +90,9 @@ public class MediaInfo {
                         System.out.println("123");
 
                     if(keys[0].equals("TheTvDb"))
-                        TheTvDb = Integer.valueOf(keys[1]);
+                        TheTvDb = keys[1];
                     else if(keys[0].equals("ImdbId"))
-                        Imdb = Integer.valueOf(keys[1]);
+                        Imdb = keys[1];
                     else if(keys[0].equals("Title"))
                         Title = keys[1];
                     else if(keys[0].equals("LocalTitle"))

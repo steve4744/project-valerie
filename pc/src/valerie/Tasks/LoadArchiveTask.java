@@ -103,7 +103,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                     //As this isnt represented by any file we have to set ignoring to false
                     info.Ignoring = false;
                     if (info.Title.length() > 0) {
-                        if(database.getMediaInfoForSeries(info.TheTvDb) == null)
+                        if(database.getMediaInfoForSeriesId(info.TheTvDb) == null)
                             database.addMediaInfo(info);
                     }
                     }

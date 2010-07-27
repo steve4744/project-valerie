@@ -68,4 +68,8 @@ public class Properties {
     public void setProperty(String s, String v) {
         properties.setProperty(s, v);
     }
+
+    public void setProperty(String s, Boolean v) {
+        properties.setProperty(s, v.toString());
+    }
 }

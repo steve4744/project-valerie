@@ -48,7 +48,7 @@ public class theTvDb extends provider {
 
     private void getSeriesById(MediaInfo info) {
 
-        if(info.TheTvDb == 0)
+        if(info.TheTvDb == info.TheTvDbNull)
             return;
 
        Document xml = null;
@@ -89,7 +89,7 @@ public class theTvDb extends provider {
 
            org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
            if(eImdb != null && eImdb.getText().length() > 3)
-                info.Imdb = Integer.valueOf(eImdb.getText().substring(2));
+                info.Imdb = eImdb.getText();
 
            org.jdom.Element eTitle = eMovie.getChild("SeriesName");
            if(eTitle != null)
@@ -158,11 +158,11 @@ public class theTvDb extends provider {
 
            org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
            if(eImdb != null)
-                info.Imdb = Integer.valueOf(eImdb.getText().substring(2));
+                info.Imdb = eImdb.getText();
 
            org.jdom.Element eID = eMovie.getChild("id");
            if(eID != null)
-                 info.TheTvDb = Integer.valueOf(eID.getText());
+                 info.TheTvDb = eID.getText();
 
            org.jdom.Element eTitle = eMovie.getChild("SeriesName");
            if(eTitle != null){
@@ -180,7 +180,7 @@ public class theTvDb extends provider {
 
     private void getEpisode(MediaInfo info) {
 
-        if( info.TheTvDb == 0 || info.Episode == 0 || info.Season == 0)
+        if( info.TheTvDb == info.TheTvDbNull || info.Episode == 0 || info.Season == 0)
             return;
 
            Document xml = null;
@@ -216,7 +216,7 @@ public class theTvDb extends provider {
                    String vImdb = eImdb.getText().substring(2);
                    if(vImdb.endsWith("/"))
                        vImdb = vImdb.substring(0, vImdb.length()-1);
-                    info.Imdb = Integer.valueOf(vImdb);
+                    info.Imdb = vImdb;
                }
                org.jdom.Element eYear = eMovie.getChild("FirstAired");
                if(eYear != null) {

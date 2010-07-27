@@ -8,6 +8,7 @@ package valerie.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -176,6 +177,84 @@ public class Network {
         }
 
         DebugOutput.printl("<-");
+    }
+
+    public boolean getFile(InetAddress addr, String fileOnBox, String directoryOnPC) {
+        DebugOutput.printl("->");
+        try {
+            Socket clientSocket = new Socket(addr, 5451);
+
+            OutputStream dataOutput = clientSocket.getOutputStream();
+            InputStream dataInput = clientSocket.getInputStream();
+
+            File fileOnPC = new File(directoryOnPC + "/" + new File(fileOnBox).getName());
+            FileOutputStream fileOnPCOutStream = new FileOutputStream(fileOnPC);
+
+
+            byte[] buffer = new byte[MAX_CHARS_TCP];
+            int numread;
+
+            { // SEND REQUEST STRING
+                String sPrefix = "REQ_FILE_MO";
+                byte[] bPrefix = sPrefix.getBytes();
+                dataOutput.write(bPrefix, 0, bPrefix.length);
+            }
+
+            { // SEND FILENAME
+                String sName = fileOnBox;
+                byte[] bName = sName.getBytes();
+
+                Integer iLength = bName.length;
+                Integer iByte0 = iLength  >> 8;
+                Integer iByte1 = iLength & 0xFF;
+                byte[] bLength = new byte[2];
+                bLength[0] = (byte)(iByte1%0x100);
+                bLength[1] = (byte)(iByte0%0x100);
+                dataOutput.write(bLength, 0, bLength.length);
+                dataOutput.write(bName, 0, bName.length);
+            }
+
+            Integer iLength = 0;
+            { // GET SIZE OF REQUESTED FILE
+                byte[] bLength = new byte[4];
+                if (dataInput.read(bLength, 0, 4) != 4)
+                    return false;
+
+                iLength = 0;
+                iLength |= (int)((int) bLength[3] & 0xFF);
+                iLength <<= 8;
+                iLength |= (int)((int) bLength[2] & 0xFF);
+                iLength <<= 8;
+                iLength |= (int)((int) bLength[1] & 0xFF);
+                iLength <<= 8;
+                iLength |= (int)((int) bLength[0] & 0xFF);
+                if (iLength <= 0)
+                    return false;
+            }
+
+            {
+                int i = 0;
+                for (i = 0; i < iLength; ) {
+                    int bytesToRead = (iLength - i)>MAX_CHARS_TCP?MAX_CHARS_TCP:iLength-i;
+                    numread = dataInput.read(buffer, 0, bytesToRead);
+                    fileOnPCOutStream.write(buffer, 0, numread);
+                    i += numread;
+                    System.out.print("."); // console confirmation of transfer
+                }
+            }
+
+            fileOnPCOutStream.close();
+            dataInput.close();
+            dataOutput.close();
+            clientSocket.close();
+        } catch(Exception ex) {
+            DebugOutput.printl("");
+            DebugOutput.printl(ex.toString());
+            DebugOutput.printl("");
+        }
+
+        DebugOutput.printl("<-");
+        return true;
     }
 
     String rtvBuffer = "";

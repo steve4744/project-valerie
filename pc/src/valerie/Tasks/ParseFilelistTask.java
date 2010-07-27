@@ -59,7 +59,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
             MediaInfo movie = movies[i];
             
             if (movie.needsUpdate) {
-                if (movie.Imdb == 0) {
+                if (movie.Imdb == "tt0000000") {
                     Logger.print(movie.Filename + " : Using Title\"" + movie.SearchString + "\" to get title");
                     this.setMessage(movie.SearchString);
                     //System.out.println("movie=" + movie.SearchString + " ismovie=" + movie.isMovie);
@@ -120,7 +120,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
         
       //if we have no searchstring, than the movie was imported from the archive and we dont need to reparse
         if (movie.needsUpdate) {
-            if (movie.Imdb == 0){
+            if (movie.Imdb == movie.ImdbNull){
                 System.out.println("Getting Data by Title.");
                 movie.getDataByTitle();
             }

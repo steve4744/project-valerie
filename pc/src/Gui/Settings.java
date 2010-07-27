@@ -41,8 +41,7 @@ public class Settings extends javax.swing.JDialog {
         jPanelImportManagment.setVisible(false);
 
         jLabelHeading.setText("General");
-
-        jTextFieldFilter.setText(new valerie.tools.Properties().getPropertyString("FILTER_SERIES"));
+        jTree1ValueChanged(null);
     }
 
     /** This method is called from within the constructor to
@@ -64,6 +63,7 @@ public class Settings extends javax.swing.JDialog {
         jLayeredPaneSettings = new javax.swing.JLayeredPane();
         jPanelGeneral = new javax.swing.JPanel();
         jCheckBoxUpdate = new javax.swing.JCheckBox();
+        jCheckBoxLoadArchiv = new javax.swing.JCheckBox();
         jPanelFileManagment = new javax.swing.JPanel();
         jTextFieldFilter = new javax.swing.JTextField();
         jLabelFilter = new javax.swing.JLabel();
@@ -79,7 +79,6 @@ public class Settings extends javax.swing.JDialog {
         jComboBoxResolution = new javax.swing.JComboBox();
         jComboBoxResize = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         jLabelHeading = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -183,13 +182,18 @@ public class Settings extends javax.swing.JDialog {
         jCheckBoxUpdate.setName("jCheckBoxUpdate"); // NOI18N
         jCheckBoxUpdate.setOpaque(false);
 
+        jCheckBoxLoadArchiv.setText(resourceMap.getString("jCheckBoxLoadArchiv.text")); // NOI18N
+        jCheckBoxLoadArchiv.setName("jCheckBoxLoadArchiv"); // NOI18N
+
         javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
         jPanelGeneral.setLayout(jPanelGeneralLayout);
         jPanelGeneralLayout.setHorizontalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
-                .addContainerGap(36, Short.MAX_VALUE)
-                .addComponent(jCheckBoxUpdate)
+                .addContainerGap(352, Short.MAX_VALUE)
+                .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBoxLoadArchiv)
+                    .addComponent(jCheckBoxUpdate))
                 .addGap(31, 31, 31))
         );
         jPanelGeneralLayout.setVerticalGroup(
@@ -197,10 +201,12 @@ public class Settings extends javax.swing.JDialog {
             .addGroup(jPanelGeneralLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jCheckBoxUpdate)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jCheckBoxLoadArchiv)
+                .addContainerGap(224, Short.MAX_VALUE))
         );
 
-        jPanelGeneral.setBounds(10, 70, 180, 30);
+        jPanelGeneral.setBounds(10, 70, 510, 280);
         jLayeredPaneSettings.add(jPanelGeneral, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanelFileManagment.setName("jPanelFileManagment"); // NOI18N
@@ -220,7 +226,7 @@ public class Settings extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jLabelFilter)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextFieldFilter, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                .addComponent(jTextFieldFilter, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelFileManagmentLayout.setVerticalGroup(
@@ -230,10 +236,10 @@ public class Settings extends javax.swing.JDialog {
                 .addGroup(jPanelFileManagmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelFilter)
                     .addComponent(jTextFieldFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
 
-        jPanelFileManagment.setBounds(10, 70, 270, 140);
+        jPanelFileManagment.setBounds(10, 70, 510, 280);
         jLayeredPaneSettings.add(jPanelFileManagment, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanelImportManagment.setBackground(resourceMap.getColor("jPanelImportManagment.background")); // NOI18N
@@ -299,15 +305,15 @@ public class Settings extends javax.swing.JDialog {
         );
         jPanelImportManagmentLayout.setVerticalGroup(
             jPanelImportManagmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelImportManagmentLayout.createSequentialGroup()
-                .addContainerGap(54, Short.MAX_VALUE)
+                .addContainerGap(194, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jPanelImportManagment.setBounds(10, 70, 510, 140);
+        jPanelImportManagment.setBounds(10, 70, 510, 280);
         jLayeredPaneSettings.add(jPanelImportManagment, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanelConvert.setBackground(new java.awt.Color(250, 250, 250));
@@ -316,7 +322,7 @@ public class Settings extends javax.swing.JDialog {
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
         jLabel2.setName("jLabel2"); // NOI18N
 
-        jComboBoxEncoder.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "mencoder", "jepg2yuv + mpeg2enc" }));
+        jComboBoxEncoder.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "duckboxAPI", "mencoder", "jepg2yuv+mpeg2enc" }));
         jComboBoxEncoder.setName("jComboBoxEncoder"); // NOI18N
 
         jLabel3.setText(resourceMap.getString("jLabel3.text")); // NOI18N
@@ -331,9 +337,6 @@ public class Settings extends javax.swing.JDialog {
         jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
         jLabel4.setName("jLabel4"); // NOI18N
 
-        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
-        jLabel5.setName("jLabel5"); // NOI18N
-
         javax.swing.GroupLayout jPanelConvertLayout = new javax.swing.GroupLayout(jPanelConvert);
         jPanelConvert.setLayout(jPanelConvertLayout);
         jPanelConvertLayout.setHorizontalGroup(
@@ -341,44 +344,40 @@ public class Settings extends javax.swing.JDialog {
             .addGroup(jPanelConvertLayout.createSequentialGroup()
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelConvertLayout.createSequentialGroup()
-                        .addGap(127, 127, 127)
+                        .addGap(300, 300, 300)
                         .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3)
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jComboBoxResolution, 0, 123, Short.MAX_VALUE)
-                            .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.Alignment.LEADING, 0, 123, Short.MAX_VALUE)
-                            .addComponent(jComboBoxResize, javax.swing.GroupLayout.Alignment.LEADING, 0, 123, Short.MAX_VALUE)))
-                    .addGroup(jPanelConvertLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel5)))
+                            .addComponent(jComboBoxResize, javax.swing.GroupLayout.Alignment.LEADING, 0, 123, Short.MAX_VALUE)
+                            .addComponent(jComboBoxEncoder, 0, 123, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelConvertLayout.createSequentialGroup()
+                        .addGap(323, 323, 323)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxResolution, 0, 123, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanelConvertLayout.setVerticalGroup(
             jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelConvertLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBoxResize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(14, 14, 14)
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jComboBoxEncoder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxResize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelConvertLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jComboBoxResolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addContainerGap(25, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelConvertLayout.createSequentialGroup()
-                .addContainerGap(83, Short.MAX_VALUE)
-                .addComponent(jLabel5)
-                .addContainerGap())
+                .addContainerGap(194, Short.MAX_VALUE))
         );
 
-        jPanelConvert.setBounds(10, 70, 337, 108);
+        jPanelConvert.setBounds(10, 70, 510, 280);
         jLayeredPaneSettings.add(jPanelConvert, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jLabelHeading.setBackground(resourceMap.getColor("jLabelHeading.background")); // NOI18N
@@ -425,48 +424,56 @@ public class Settings extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
-        Object path[] = jTree1.getSelectionPaths()[0].getPath();
-
+        Object path[] = null;
         String heading = "";
-        for(int i = 1; i < path.length; i++) {
-            heading += ((DefaultMutableTreeNode)path[i]).getUserObject();
-            
-            if(i+1 < path.length)
-                heading += " : ";
+        if(evt == null) {
+            heading = "General";
+        } else {
+            path = jTree1.getSelectionPaths()[0].getPath();
+
+            for(int i = 1; i < path.length; i++) {
+                heading += ((DefaultMutableTreeNode)path[i]).getUserObject();
+
+                if(i+1 < path.length)
+                    heading += " : ";
+            }
         }
 
         jLabelHeading.setText(heading);
 
-        if(path.length == 1 /* TOP NODE SHOULD NEVER BE SELECTED */) {
+        if(evt != null && (path.length == 1 /* TOP NODE SHOULD NEVER BE SELECTED */)) {
 
-        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("General")) {
+        } else if(evt == null || (path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("General"))) {
             jPanelGeneral.setVisible(true);
             jPanelFileManagment.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
 
-            jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyString("AUTO_UPDATE").equals("True")?true:false);
+            jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyBoolean("AUTO_UPDATE"));
+            jCheckBoxLoadArchiv.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV"));
 
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
+
+            jTextFieldFilter.setText(new valerie.tools.Properties().getPropertyString("FILTER_SERIES"));
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
             jPanelFileManagment.setVisible(false);
             jPanelGeneral.setVisible(false);
             jPanelConvert.setVisible(true);
             jPanelImportManagment.setVisible(false);
 
-            if (jComboBoxResize.getItemCount()<3){                
+            if (jComboBoxResize.getItemCount()<4){
                 File checkIfConvertExists = new File("bin/convert.exe");
                 if (checkIfConvertExists.exists()){
-                    jComboBoxResize.addItem("extern by convert.exe");
+                    jComboBoxResize.addItem("convert.exe");
                 }                
             }            
 
+            jComboBoxEncoder.setSelectedItem(new valerie.tools.Properties().getPropertyString("ENCODER_TYPE"));
             jComboBoxResize.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE"));
-            jComboBoxEncoder.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE"));
             jComboBoxResolution.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE"));
 
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies")) {
@@ -569,11 +576,12 @@ public class Settings extends javax.swing.JDialog {
 
     private void jButtonApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonApplyActionPerformed
         valerie.tools.Properties prop = new valerie.tools.Properties();
-        prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected()?"True":"False");
+        prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected());
+        prop.setProperty("LOAD_ARCHIV", jCheckBoxLoadArchiv.isSelected());
         prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
         prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
         prop.setProperty("RESIZE_TYPE", Integer.toString(jComboBoxResize.getSelectedIndex()));
-        prop.setProperty("ENCODER_TYPE",Integer.toString(jComboBoxEncoder.getSelectedIndex()));
+        prop.setProperty("ENCODER_TYPE",jComboBoxEncoder.getSelectedItem().toString());
         prop.setProperty("RESOLUTION_TYPE",Integer.toString(jComboBoxResolution.getSelectedIndex()));
         prop.setProperty("PATHS_MOVIES", WorkPathMovies);
         prop.setProperty("PATHS_SERIES", WorkPathTV);
@@ -595,6 +603,7 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonApply;
     private javax.swing.JButton jButtonCancel;
+    private javax.swing.JCheckBox jCheckBoxLoadArchiv;
     private javax.swing.JCheckBox jCheckBoxUpdate;
     private javax.swing.JComboBox jComboBoxEncoder;
     private javax.swing.JComboBox jComboBoxResize;
@@ -603,7 +612,6 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelFilter;
     private javax.swing.JLabel jLabelHeading;
     private javax.swing.JLayeredPane jLayeredPaneSettings;

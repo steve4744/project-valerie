@@ -39,7 +39,7 @@ public class Imdb extends provider {
     public void getMoviesByImdbId(MediaInfo info) {
        String xml = null;
 
-       if(info.Imdb == 0)
+       if(info.Imdb == info.ImdbNull)
            return;
 
        try {
@@ -170,10 +170,10 @@ public class Imdb extends provider {
         Matcher mImdbId = pImdbId.matcher(details);
         if(mImdbId.find()) {
             String sImdbId = mImdbId.group();
-            sImdbId = sImdbId.replaceAll("/title/tt", "");
+            sImdbId = sImdbId.replaceAll("/title/", "");
             sImdbId = sImdbId.replaceAll("/", "");
 
-            info.Imdb = Integer.valueOf(sImdbId);
+            info.Imdb = sImdbId;
         }
 
         Pattern pDirectorsBlock = Pattern.compile("<h5>Director[s]?:</h5>.*?</div>");
@@ -284,10 +284,10 @@ public class Imdb extends provider {
             Matcher mImdbId = pImdbId.matcher(sMovie);
             if(mImdbId.find()) {
                 String sImdbId = mImdbId.group();
-                sImdbId = sImdbId.replaceAll("/title/tt", "");
+                sImdbId = sImdbId.replaceAll("/title/", "");
                 sImdbId = sImdbId.replaceAll("/", "");
 
-                info.Imdb = Integer.valueOf(sImdbId);
+                info.Imdb = sImdbId;
             }
         }
 
@@ -300,7 +300,7 @@ public class Imdb extends provider {
             Matcher mImdbId = pImdbId.matcher(sMovie);
             if(mImdbId.find()) {
                 String sImdbId = mImdbId.group();
-                sImdbId = sImdbId.replaceAll("/title/tt", "");
+                sImdbId = sImdbId.replaceAll("/title/", "");
                 sImdbId = sImdbId.replaceAll("/", "");
 
                 info.AlternativImdbs[info.AlternativesCount] = Integer.valueOf(sImdbId);

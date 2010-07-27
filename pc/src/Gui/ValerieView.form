@@ -10,9 +10,9 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <Component id="jToolBar1" pref="676" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="jToolBar1" pref="713" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
                   <Component id="jComboBoxBoxinfo" min="-2" pref="324" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -22,15 +22,12 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jToolBar1" min="-2" pref="25" max="-2" attributes="1"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jComboBoxBoxinfo" min="-2" pref="24" max="-2" attributes="0"/>
-                      </Group>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="jComboBoxBoxinfo" max="32767" attributes="1"/>
+                      <Component id="jToolBar1" alignment="0" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="646" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="652" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -49,10 +46,42 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="Gui.ValerieView" id="connectNetwork" methodName="connectNetwork"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonConnect.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonConnect.toolTipText"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="name" type="java.lang.String" value="jButtonConnect" noResource="true"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonDownloadFromBox">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="downloadArchivFromBox" methodName="downloadArchivFromBox"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.icon"/>
+                <Property name="text" type="java.lang.String" resourceKey="jButtonDownloadFromBox.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonDownloadFromBox.toolTipText"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="jButtonDownloadFromBox" noResource="true"/>
+                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.pressedIcon"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonUploadToBox">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="uploadFiles" methodName="uploadFiles"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.icon"/>
+                <Property name="text" type="java.lang.String" resourceKey="jButtonUploadToBox.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonUploadToBox.toolTipText"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="jButtonUploadToBox" noResource="true"/>
+                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.pressedIcon"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
@@ -73,11 +102,6 @@
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="jButtonParse">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -90,21 +114,23 @@
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="jButtonArt">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="Gui.ValerieView" id="getArt" methodName="getArt"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonArt.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonArt.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonArt.toolTipText"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="name" type="java.lang.String" value="jButtonArt" noResource="true"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
@@ -112,16 +138,9 @@
                 <Property name="name" type="java.lang.String" value="jSeparator4" noResource="true"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jButtonUpload">
+            <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
               <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="uploadFiles" methodName="uploadFiles"/>
-                </Property>
-                <Property name="text" type="java.lang.String" resourceKey="jButtonUpload.text"/>
-                <Property name="focusable" type="boolean" value="false"/>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="name" type="java.lang.String" value="jButtonUpload" noResource="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
+                <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -192,7 +211,7 @@
                                   <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane1" pref="587" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" pref="593" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -325,7 +344,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSplitPane2" alignment="0" pref="616" max="32767" attributes="0"/>
+                          <Component id="jSplitPane2" alignment="0" pref="622" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -503,7 +522,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane3" pref="403" max="32767" attributes="0"/>
+                          <Component id="jScrollPane3" pref="409" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jPanelThumbs" min="-2" pref="235" max="-2" attributes="0"/>
                       </Group>
@@ -544,11 +563,11 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabelBackdrop" min="-2" pref="400" max="-2" attributes="0"/>
-                              <EmptySpace pref="42" max="32767" attributes="0"/>
-                              <Component id="jLabelPoster" min="-2" pref="156" max="-2" attributes="0"/>
+                              <Component id="jLabelBackdrop" min="-2" pref="320" max="-2" attributes="0"/>
+                              <EmptySpace pref="132" max="32767" attributes="0"/>
+                              <Component id="jLabelPoster" min="-2" pref="146" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -557,9 +576,9 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabelPoster" alignment="0" min="-2" pref="218" max="-2" attributes="1"/>
-                                  <Component id="jLabelBackdrop" alignment="0" min="-2" pref="218" max="-2" attributes="1"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="jLabelBackdrop" alignment="1" min="-2" pref="180" max="-2" attributes="1"/>
+                                  <Component id="jLabelPoster" alignment="1" min="-2" pref="214" max="-2" attributes="1"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -663,6 +682,9 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu1">
           <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="Gui.ValerieView" id="showSelectAlternativeTitelPopup" methodName="showSelectAlternativeTitelPopup"/>
+            </Property>
             <Property name="text" type="java.lang.String" resourceKey="jMenu1.text"/>
             <Property name="name" type="java.lang.String" value="jMenu1" noResource="true"/>
           </Properties>
@@ -688,6 +710,15 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jMenuItemSettings.text"/>
                 <Property name="name" type="java.lang.String" value="jMenuItemSettings" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemalternatives">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="showSelectAlternativeTitelPopup" methodName="showSelectAlternativeTitelPopup"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItemalternatives.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItemalternatives" noResource="true"/>
               </Properties>
             </MenuItem>
           </SubComponents>

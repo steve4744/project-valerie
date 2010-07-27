@@ -109,6 +109,14 @@ public class webgrabber {
         return doc;
     }
 
+    public String getText(String url) {
+        try {
+            return getText(new URL(url));
+        } catch (Exception ex) {
+            return "";
+        }
+    }
+
     public String getText(URL url) {
     	int x;
     	if(cacheURL==null)cacheURL=new ArrayList<cachedRequestURL>();

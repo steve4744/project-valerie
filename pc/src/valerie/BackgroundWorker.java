@@ -32,6 +32,7 @@ public class BackgroundWorker {
         PARSE_FILELIST,
         GET_ART,
         UPLOAD_FILES,
+        DOWNLOAD_FROM_BOX,
     };
 
     public interface ParentObject {
@@ -151,6 +152,11 @@ public class BackgroundWorker {
 
             case SYNC_FILELIST:
                 vTask = new valerie.Tasks.SyncFilelistTask(pApp,
+                        this);
+                break;
+
+            case DOWNLOAD_FROM_BOX:
+                vTask = new valerie.Tasks.DownloadFromBoxTask(pApp,
                         this);
                 break;
 

@@ -19,7 +19,7 @@ public class BoxInfoParser {
 
         String vManu = new valerie.tools.Properties().getPropertyString("MANUAL_SETTOPBOX");
          if(vManu != null && vManu.length() > 0)
-             info = vManu + "\n" + info;
+             info = info + "\n" + vManu;
 
         String[] Boxinfos = info.split("\n");
         for(String remaining : Boxinfos) {

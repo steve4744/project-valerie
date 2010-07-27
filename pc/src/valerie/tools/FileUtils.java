@@ -13,6 +13,23 @@ import java.io.*;
 import java.nio.channels.*;
 
 public class FileUtils{
+
+    public static boolean rename(File in, File out)
+    {
+        // Rename file (or directory)
+        boolean success = in.renameTo(out);
+        if (!success) {
+            // File was not successfully renamed
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean mkdir(File in)
+    {
+        return in.mkdir();
+    }
+
     public static void copyFile(File in, File out)
         throws IOException
     {
