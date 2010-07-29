@@ -4,6 +4,7 @@ Created on 21.05.2010
 @author: i7
 '''
 import re
+import os
 
 class MediaInfo(object):
     '''
@@ -37,8 +38,8 @@ class MediaInfo(object):
     Poster = ""
     Backdrop = ""
     
-    Season = 0
-    Episode = 0
+    Season = -1
+    Episode = -1
     
     SearchString = ""
 
@@ -86,12 +87,13 @@ class MediaInfo(object):
     def replacements(self):
         l = {}
         l["pre"] = []
-        l["post"] = []
+        l["post_tv"] = []
+        l["post_movie"] = []
         l["pre"].append([r' (extended|edition|part1|part2|oar|esir|eng|rus|dd5|web|hdtv|dimension|avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)'," "])
         
-        l["post"].append([r' (oar|esir)'," "])
+        l["post_tv"].append([r' (oar|esir|miniseries)'," "])
         return l   
-    
+
     def isEnigma2Recording(self, name):
         try:
             f = open(name + ".meta", "r")
@@ -100,21 +102,56 @@ class MediaInfo(object):
             #print ex
             return False
         return True
-        
+
     def getEnigma2RecordingName(self, name):
         f = open(name + ".meta", "r")
         f.readline()
         name = f.readline()
         f.close()
         return name
- 
-    
+
+    def isValerieInfoAvailable(self, path):
+        try:
+            f = open(path + "/valerie.info", "r")
+            f.close()
+        except Exception, ex:
+            #print ex
+            return False
+        return True
+
+    def getValerieInfo(self, path):
+        f = open(path + "/valerie.info", "r")
+        name = f.readline()
+        f.close()
+        return name
+
+    def getValerieInfoLastAccessTime(self, path):
+        time = 0
+        try:
+            f = open(path + "/.access", "r")
+            time = int(f.readline())
+            f.close()
+        except Exception, ex:
+            return time #print "no .access"
+        return time
+
+    def getValerieInfoAccessTime(self, path):
+        time = 0
+        if os.path.isfile(path + "/valerie.info"):
+            time = os.path.getmtime(path + "/valerie.info")
+        return time
+
+    def setValerieInfoLastAccessTime(self, path):
+        if os.path.isfile(path + "/valerie.info"):
+            time = os.path.getmtime(path + "/valerie.info")
+            f = open(path + "/.access", "wb")
+            time = f.write(str(time))
+            f.close()
+        elif os.path.isfile(path + "/.access"):
+            os.remove(path + "/.access")
+
     def parse(self):
         absFilename = unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
-        if self.isEnigma2Recording(absFilename) is True:
-            self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
-            return
-        
         
         name = unicode(self.Filename).lower()
         
@@ -130,13 +167,13 @@ class MediaInfo(object):
         m = re.search(r'(?P<imdbid>tt\d{7})', name)
         if m and m.group("imdbid"):
             self.ImdbId = m.group("imdbid")
-            
+        
         ###  
         m = re.search(r'\D(?P<year>\d{4})\D', name)
         if m and m.group("year"):
             self.Year = int(m.group("year"))
             self.SearchString = name[:m.start()]
-            
+        
         ###    
         m = re.search(r'720p', name)
         if m:
@@ -149,7 +186,7 @@ class MediaInfo(object):
                 m = re.search(r'1080p', name)
                 if m:
                     self.Resolution = "1080p"
-            
+        
         ###    
         m = re.search(r'dts', name)
         if m:
@@ -162,8 +199,12 @@ class MediaInfo(object):
                 m = re.search(r'ac3', name)
                 if m:
                     self.Sound = "ac3"
-                
-        if self.Season == 0 or self.Episode == 0:
+        
+        nameConverted = name
+        
+        .isdigit()
+        
+        if self.Season == -1 or self.Episode == -1:
             m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', name)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
@@ -173,8 +214,19 @@ class MediaInfo(object):
                 self.Episode = int(m.group("episode"))
                 
                 self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
-              
-        if self.Season == 0 or self.Episode == 0:  
+        
+        if self.Season == -1 or self.Episode == -1:
+            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)[-]?\D?e\D?(?P<episode2>\d+) ', name)
+            if m and m.group("season") and m.group("episode"):
+                self.isSerie = True
+                self.isMovie = False
+                
+                self.Season = int(m.group("season"))
+                self.Episode = int(m.group("episode"))
+                
+                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
+        
+        if self.Season == -1 or self.Episode == -1:  
             m = re.search(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+) ', name)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
@@ -184,8 +236,8 @@ class MediaInfo(object):
                 self.Episode = int(m.group("episode"))
                 
                 self.SearchString = re.sub(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+).*', " ", self.SearchString)
-                
-        if self.Season == 0 or self.Episode == 0:
+        
+        if self.Season == -1 or self.Episode == -1:
             m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', name)
             if m and m.group("season") and m.group("episode"):
                 s = int(m.group("season"))
@@ -197,13 +249,46 @@ class MediaInfo(object):
                     self.Season = int(m.group("season"))
                     self.Episode = int(m.group("episode"))
                     
-                    self.SearchString = re.sub(r'(?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", self.SearchString)
-                    
+                    self.SearchString = re.sub(r' (?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", self.SearchString)
+        
+        if self.Season == -1 or self.Episode == -1:
+            m = re.search(r' part\D?(?P<episode>\d+) ', name)
+            if m and m.group("episode"):
+                self.isSerie = True
+                self.isMovie = False
+                
+                self.Season = int(0)
+                self.Episode = int(m.group("episode"))
+                
+                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", self.SearchString)
+        
+        
+        if self.isEnigma2Recording(absFilename) is True:
+            self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
+            print ":: ", self.SearchString
+            return
+        
+        if self.isValerieInfoAvailable(self.Path) is True:
+            self.SearchString = self.getValerieInfo(self.Path).strip()
+            print ":: ", self.SearchString
+            return
+        
         ### Replacements POST
         self.SearchString = re.sub(r'[-]', " ", self.SearchString)
         self.SearchString = re.sub(r' +', " ", self.SearchString)
-        self.SearchString = self.SearchString.strip()
+        
+        post = "post"
+        if self.isSerie:
+            post = "post_tv"
+        elif self.isMovie:
+            post = "post_movie"
             
+        for replacement in self.replacements()[post]:
+            self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
+        
+        self.SearchString = self.SearchString.strip()
+        print ":: ", self.SearchString
+        
     def __str__(self):
         ustr = unicode(self.Path) + " / " + unicode(self.Filename) + " . " + unicode(self.Extension)
         print type(ustr)
@@ -319,8 +404,8 @@ class MediaInfo(object):
             stri += u'\nLocalTitle: ' + self.Title
             stri += u'\nYear: ' +       unicode(self.Year)
             stri += u'\nPath: ' +       unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
-            print "stri: ", type(stri)
-            print "self.Plot: ", type(self.Plot)
+            #print "stri: ", type(stri)
+            #print "self.Plot: ", type(self.Plot)
             stri += u'\nPlot: ' +       self.Plot
             stri += u'\nLocalPlot: ' +  self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)

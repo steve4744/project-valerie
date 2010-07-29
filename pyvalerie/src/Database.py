@@ -3,6 +3,8 @@ Created on 15.07.2010
 
 @author: i7
 '''
+
+import os
 import codecs
 from datetime import date
 from MediaInfo import MediaInfo
@@ -78,6 +80,7 @@ class Database(object):
         print "b"
         for key in self.dbMovies:
             f.write(self.dbMovies[key].export().encode( "utf-8" ))
+            self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
         print "c"
         f.close()
         
@@ -86,7 +89,8 @@ class Database(object):
         f.write(unicode(date.today()))
         print "b"
         for key in self.dbSeries:
-            f.write(self.dbSeries[key].export().encode( "utf-8" ))
+            if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
+                f.write(self.dbSeries[key].export().encode( "utf-8" ))
         print "c"
         f.close()
         
@@ -98,6 +102,7 @@ class Database(object):
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
                     f.write(self.dbEpisodes[serie][season][episode].export().encode( "utf-8" ))
+                    self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path)
             print "c"
             f.close()
 
@@ -110,7 +115,12 @@ class Database(object):
                 if len(movie) == 2: 
                     m = MediaInfo("","","")
                     m.importStr(movie[1], True, False, False)
-                    self.add(m)
+                    path = unicode(m.Path) + "/" + unicode(m.Filename) + "." + unicode(m.Extension)
+                    
+                    if os.path.isfile(path) and m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
+                        self.add(m)
+                    else:
+                        print path
         except Exception, ex:
             print ex
         
@@ -135,8 +145,12 @@ class Database(object):
                     if len(movie) == 2: 
                         m = MediaInfo("","","")
                         m.importStr(movie[1], False, False, True)
-                        self.add(m)
+                        path = unicode(m.Path) + "/" + unicode(m.Filename) + "." + unicode(m.Extension)
+                        if os.path.isfile(path) and m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
+                            self.add(m)
+                        else:
+                            print path
         except Exception, ex:
             print ex
             
-        print self.duplicateDetector
+        #print self.duplicateDetector

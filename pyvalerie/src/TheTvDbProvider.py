@@ -92,7 +92,7 @@ class TheTvDbProvider(object):
         return mediaInfo
     
     def getEpisodeByTheTvDbId(self, mediaInfo):
-        if mediaInfo.TheTvDbId == "0":
+        if mediaInfo.TheTvDbId == "0" or mediaInfo.Season == -1 or mediaInfo.Episode == -1:
             return mediaInfo
         
         url = self.apiSearchEpisode

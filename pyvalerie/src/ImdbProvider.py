@@ -106,7 +106,7 @@ class ImdbProvider(object):
             # <title>Austin Powers: The Spy Who Shagged Me (1999)</title>
             m = re.search(r'<title>(?P<title>[^(]+)\((?P<year>\d{4})\)[\/IVX]*[^<]*</title>', pageHtml)
             if m and m.group("title") and m.group("year"):
-                mediaInfo.Title = unicode(m.group("title").strip())
+                mediaInfo.Title = unicode(m.group("title").strip().strip("\""))
                 mediaInfo.Year = int(m.group("year").strip())
                 
         if mediaInfo.ImdbId == "tt0000000":
@@ -154,7 +154,7 @@ class ImdbProvider(object):
             if m.group("imdbid"):
                 mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = unicode(m.group("title").strip())
+                mediaInfo.Title = unicode(m.group("title").strip().strip("\""))
             if m.group("year"):
                 mediaInfo.Year = int(m.group("year").strip())
         
@@ -178,7 +178,7 @@ class ImdbProvider(object):
                 #print mediaInfo.Alternatives[key]
                 if mediaInfo.Alternatives[key][0].lower() == mediaInfo.SearchString.lower():
                     mediaInfo.ImdbId = key
-                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0].strip("\""))
                     mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
                     break
         
@@ -191,7 +191,7 @@ class ImdbProvider(object):
             if m.group("imdbid"):
                 mediaInfo.ImdbId = m.group("imdbid").strip()
             if m.group("title"):
-                mediaInfo.Title = unicode(m.group("title").strip())
+                mediaInfo.Title = unicode(m.group("title").strip().strip("\""))
             if m.group("year"):
                 mediaInfo.Year = int(m.group("year").strip())
         
@@ -215,7 +215,7 @@ class ImdbProvider(object):
                 #print mediaInfo.Alternatives[key]
                 if mediaInfo.Alternatives[key][0].lower() == mediaInfo.SearchString.lower():
                     mediaInfo.ImdbId = key
-                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0])
+                    mediaInfo.Title = unicode(mediaInfo.Alternatives[key][0].strip("\""))
                     mediaInfo.Year = int(mediaInfo.Alternatives[key][1])
                     break
         
