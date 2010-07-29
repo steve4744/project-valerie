@@ -144,8 +144,8 @@ class MediaInfo(object):
     def setValerieInfoLastAccessTime(self, path):
         if os.path.isfile(path + "/valerie.info"):
             time = os.path.getmtime(path + "/valerie.info")
-            f = open(path + "/.access", "wb")
-            time = f.write(str(time))
+            f = open(path + "/.access", "w")
+            time = f.write(str(time)+"\n")
             f.close()
         elif os.path.isfile(path + "/.access"):
             os.remove(path + "/.access")
@@ -200,9 +200,11 @@ class MediaInfo(object):
                 if m:
                     self.Sound = "ac3"
         
-        nameConverted = name
+        #nameConverted = name
         
-        .isdigit()
+        #####
+        #####  s03e05
+        #####
         
         if self.Season == -1 or self.Episode == -1:
             m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', name)
@@ -213,7 +215,11 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", name)
+        
+        #####
+        #####  s03e05e06 s03e05-e06
+        #####
         
         if self.Season == -1 or self.Episode == -1:
             m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)[-]?\D?e\D?(?P<episode2>\d+) ', name)
@@ -224,7 +230,11 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", name)
+        
+        #####
+        #####  3x05
+        #####
         
         if self.Season == -1 or self.Episode == -1:  
             m = re.search(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+) ', name)
@@ -235,21 +245,11 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+).*', " ", name)
         
-        if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', name)
-            if m and m.group("season") and m.group("episode"):
-                s = int(m.group("season"))
-                e = int(m.group("episode"))
-                if (s == 0 or s == 19 and e >= 50 or s == 20 and e <= 14) is False:
-                    self.isSerie = True
-                    self.isMovie = False
-                    
-                    self.Season = int(m.group("season"))
-                    self.Episode = int(m.group("episode"))
-                    
-                    self.SearchString = re.sub(r' (?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", self.SearchString)
+        #####
+        #####  part 3
+        #####
         
         if self.Season == -1 or self.Episode == -1:
             m = re.search(r' part\D?(?P<episode>\d+) ', name)
@@ -260,8 +260,37 @@ class MediaInfo(object):
                 self.Season = int(0)
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", name)
         
+        #####
+        #####  305
+        #####
+        
+        if self.Season == -1 or self.Episode == -1:
+        
+            nameConverted = ""
+            prevc = "a"
+            for c in name:
+                if (prevc.isdigit() and c.isdigit()) or (prevc.isdigit() is False and c.isdigit() is False):
+                    nameConverted += c
+                else:
+                    nameConverted += " " + c
+                prevc = c
+            
+            print "[[[ ", nameConverted
+            
+            m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', nameConverted)
+            if m and m.group("season") and m.group("episode"):
+                s = int(m.group("season"))
+                e = int(m.group("episode"))
+                if (s == 0 or s == 19 and e >= 50 or s == 20 and e <= 14) is False:
+                    self.isSerie = True
+                    self.isMovie = False
+                    
+                    self.Season = int(m.group("season"))
+                    self.Episode = int(m.group("episode"))
+                    
+                    self.SearchString = re.sub(r' (?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", nameConverted)
         
         if self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
