@@ -5,6 +5,7 @@ Created on 21.05.2010
 '''
 import re
 import os
+import replace
 
 class MediaInfo(object):
     '''
@@ -84,15 +85,7 @@ class MediaInfo(object):
         m.SearchString = self.SearchString
         return m
     
-    def replacements(self):
-        l = {}
-        l["pre"] = []
-        l["post_tv"] = []
-        l["post_movie"] = []
-        l["pre"].append([r' (extended|edition|part1|part2|oar|esir|eng|rus|dd5|web|hdtv|dimension|avi|vob|dth|vc1|ac3d|dl|extcut|mkv|nhd|576p|720p|1080p|1080i|dircut|directors cut|dvdrip|dvdscreener|dvdscr|avchd|wmv|ntsc|pal|mpeg|dsr|hd|r5|dvd|dvdr|dvd5|dvd9|bd5|bd9|dts|ac3|bluray|blu-ray|hdtv|pdtv|stv|hddvd|xvid|divx|x264|dxva|m2ts|FESTIVAL|LIMITED|WS|FS|PROPER|REPACK|RERIP|REAL|RETAIL|EXTENDED|REMASTERED|UNRATED|CHRONO|THEATRICAL|DC|SE|UNCUT|INTERNAL|DUBBED|SUBBED)'," "])
-        
-        l["post_tv"].append([r' (oar|esir|miniseries)'," "])
-        return l   
+    
 
     def isEnigma2Recording(self, name):
         try:
@@ -153,15 +146,20 @@ class MediaInfo(object):
     def parse(self):
         absFilename = unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
         
+        #print ":-3: ", self.Filename
         name = unicode(self.Filename).lower()
-        
-        name = re.sub(r'[.]', " ", name)
+        #print ":-2: ", name
+        name = re.sub('[.]', " ", name) #replace point with space
+        name = name.strip()
+        self.SearchString = name
+        #print ":-1b: ", self.SearchString
         
         ### Replacements PRE
-        self.SearchString = name
-        for replacement in self.replacements()["pre"]:
+        for replacement in replace.replacements("pre"):
+            #print "[pre] ", replacement[0], " --> ", replacement[1]
             self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
-        self.SearchString = self.SearchString.strip()
+        
+        #print ":-1: ", self.SearchString
         
         ###
         m = re.search(r'(?P<imdbid>tt\d{7})', name)
@@ -171,8 +169,12 @@ class MediaInfo(object):
         ###  
         m = re.search(r'\D(?P<year>\d{4})\D', name)
         if m and m.group("year"):
-            self.Year = int(m.group("year"))
-            self.SearchString = name[:m.start()]
+            year = int(m.group("year"))
+            if year > 1940 and year < 2012:
+                self.Year = year
+                self.SearchString = name[:m.start()]
+        
+        #print ":0: ", self.SearchString
         
         ###    
         m = re.search(r'720p', name)
@@ -207,7 +209,7 @@ class MediaInfo(object):
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', name)
+            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -215,14 +217,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", name)
+                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  s03e05e06 s03e05-e06
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)[-]?\D?e\D?(?P<episode2>\d+) ', name)
+            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)[-]?\D?e?\D?(?P<episode2>\d+) ', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -230,14 +232,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", name)
+                self.SearchString = re.sub(r' s(?P<season>\d+)[-]?\D?e?\D?(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  3x05
         #####
         
         if self.Season == -1 or self.Episode == -1:  
-            m = re.search(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+) ', name)
+            m = re.search(r' (?P<season>\d+)x(?P<episode>\d+) ', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -245,14 +247,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' (?P<season>\d+)\D?x\D?(?P<episode>\d+).*', " ", name)
+                self.SearchString = re.sub(r' (?P<season>\d+)x(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  part 3
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' part\D?(?P<episode>\d+) ', name)
+            m = re.search(r' part\D?(?P<episode>\d+) ', self.SearchString)
             if m and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -260,7 +262,7 @@ class MediaInfo(object):
                 self.Season = int(0)
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", name)
+                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  305
@@ -270,7 +272,7 @@ class MediaInfo(object):
         
             nameConverted = ""
             prevc = "a"
-            for c in name:
+            for c in self.SearchString:
                 if (prevc.isdigit() and c.isdigit()) or (prevc.isdigit() is False and c.isdigit() is False):
                     nameConverted += c
                 else:
@@ -283,7 +285,7 @@ class MediaInfo(object):
             if m and m.group("season") and m.group("episode"):
                 s = int(m.group("season"))
                 e = int(m.group("episode"))
-                if (s == 0 or s == 19 and e >= 50 or s == 20 and e <= 14) is False:
+                if (s == 2 and e == 64 or s == 7 and e == 20 or s == 10 and e == 80 or s == 0 or s == 19 and e >= 40 or s == 20 and e <= 14) is False:
                     self.isSerie = True
                     self.isMovie = False
                     
@@ -302,9 +304,11 @@ class MediaInfo(object):
             print ":: ", self.SearchString
             return
         
+        #print ":1: ", self.SearchString
         ### Replacements POST
         self.SearchString = re.sub(r'[-]', " ", self.SearchString)
         self.SearchString = re.sub(r' +', " ", self.SearchString)
+        print ":2: ", self.SearchString
         
         post = "post"
         if self.isSerie:
@@ -312,11 +316,12 @@ class MediaInfo(object):
         elif self.isMovie:
             post = "post_movie"
             
-        for replacement in self.replacements()[post]:
+        for replacement in replace.replacements(post):
+            #print "[" + post + "] ", replacement[0], " --> ", replacement[1]
             self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
         
         self.SearchString = self.SearchString.strip()
-        print ":: ", self.SearchString
+        print ":3: ", self.SearchString
         
     def __str__(self):
         ustr = unicode(self.Path) + " / " + unicode(self.Filename) + " . " + unicode(self.Extension)

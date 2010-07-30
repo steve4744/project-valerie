@@ -13,6 +13,7 @@ from ImdbProvider import ImdbProvider
 from TheMovieDbProvider import TheMovieDbProvider
 from TheTvDbProvider import TheTvDbProvider
 from Database import Database
+import replace
 
 class pyvalerie(Thread):
 	def __init__ (self, output, progress, range, info):
@@ -34,6 +35,9 @@ class pyvalerie(Thread):
 		self.output("Loading Database")
 		db = Database()
 		db.reload()
+		
+		self.output("Loading Replacements")
+		replace.load()
 		
 		self.output("Searching for media files")
 		fconf = open("/hdd/valerie/paths.conf", "r")

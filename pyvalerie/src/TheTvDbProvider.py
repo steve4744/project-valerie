@@ -82,12 +82,14 @@ class TheTvDbProvider(object):
        
         dom = parseString(pageHtml)
         for p in dom.getElementsByTagName("poster"):
-            mediaInfo.Poster = self.apiArt + p.childNodes[0].data
-            break
+            if len(p.childNodes) > 0:
+                mediaInfo.Poster = self.apiArt + p.childNodes[0].data
+                break
                 
         for p in dom.getElementsByTagName("fanart"):
-            mediaInfo.Backdrop = self.apiArt + p.childNodes[0].data
-            break      
+            if len(p.childNodes) > 0:
+                mediaInfo.Backdrop = self.apiArt + p.childNodes[0].data
+                break      
         
         return mediaInfo
     

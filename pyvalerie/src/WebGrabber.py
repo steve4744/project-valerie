@@ -25,8 +25,8 @@ class WebGrabber(object):
         Constructor
         '''
         
-    def grab(self, url, encoding="latin-1"):
-        #print "URL", url
+    def grab(self, url, encoding="utf-8"): #encoding="latin-1"):
+        print "URL", url
         cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
         pageHtml = None
         if os.path.isfile(self.cacheDir + "/" + cacheFile + ".cache"):
@@ -70,7 +70,7 @@ class WebGrabber(object):
         return pageHtml
     
     def grabFile(self, url, name):
-        #print "URL", url
+        print "URL", url
         #cacheFile = url.split('/')
         #cacheFile = cacheFile[len(cacheFile)-1]
         #pageHtml = None

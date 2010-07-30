@@ -48,7 +48,7 @@ class ImdbProvider(object):
             urlTitle = mediaInfo.SearchString
             urlTitle = re.sub(" ", "+", urlTitle)
             
-            pageHtml = WebGrabber().grab(re.sub("<title>", urlTitle, self.apiSearchTV))
+            pageHtml = WebGrabber().grab(re.sub("<title>", urlTitle, self.apiSearchTV), "utf-8")
        
             if not pageHtml:
                 return mediaInfo
