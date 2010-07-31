@@ -150,10 +150,10 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self.moviedb[d["ImdbId"]] = d
 					if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
 						print "adding ", d["LocalTitle"]
-						list.append((d["LocalTitle"], d["ImdbId"], "menu_globalsettings", "45"))
+						list.append(("  " + d["LocalTitle"], d["ImdbId"], "menu_globalsettings", "45"))
 					else:
 						print "adding ", d["Title"]
-						list.append((d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
+						list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
 			
 		except OSError, e: 
 			print "OSError: ", e

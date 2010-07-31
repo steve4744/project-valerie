@@ -472,18 +472,18 @@
 			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="996,647" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 		</screen>
 		
-<!-- DMC PosterDemo -->
+<!-- DMC_Movies -->
 		<screen name="DMC_Movies" position="0,0" size="1280,720" title="Media Center - PosterDemo" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay_720-fs8.png" />
 
 
-			<widget name="listview" transparent="1" zPosition="2" position="44,120" size="410,380" scrollbarMode="showNever" backgroundColor="#F200FF" 
-				selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_sub_focus_720-fs8.png" 
-				backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_sub_nofocus_720-fs8.png" 
+			<widget name="listview" transparent="1" zPosition="2" position="44,120" size="400,384" itemHeight="32" scrollbarMode="showNever" backgroundColor="#F200FF"
+				selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_sub_focus_720_400x30px-fs8.png"
+				backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_sub_nofocus_720_400x30px-fs8.png"
 			/>
 
-			<widget name="title" transparent="1" zPosition="5" halign="center" position="200,25" size="880,30" font="Regular;30" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="title" transparent="1" zPosition="5" halign="center" position="200,25" size="880,35" font="Regular;30" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 
 
 			<widget name="star0" transparent="1" zPosition="6" position="490,60" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/Star.png" alphatest="on" />
@@ -511,26 +511,26 @@
 
 			<eLabel text="" zPosition="5" halign="left" position="124,112" size="1032,1" backgroundColor="#FFFFFF"/>
 
-			<widget name="tag" transparent="1" zPosition="5" halign="center" position="130,85" size="1020,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="tag" transparent="1" zPosition="5" halign="center" position="130,85" size="1020,25" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 
 			<widget name="poster" transparent="1" zPosition="5" position="58,500" size="156,214" alphatest="on" />
 
-			<widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="216,500" size="626,186" font="Regular;20" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
+			<widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="216,512" size="626,186" font="Regular;20" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
 
-			<eLabel text="" zPosition="5" halign="left" position="877,505" size="1,188" backgroundColor="#FFFFFF"/>
+			<eLabel text="" zPosition="5" halign="left" position="877,515" size="1,188" backgroundColor="#FFFFFF"/>
 
-			<eLabel text="O. Title:" transparent="1" zPosition="5" halign="left" position="902,502" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Director:" transparent="1" zPosition="5" halign="left" position="902,531" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Writer:" transparent="1" zPosition="5" halign="left" position="902,560" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Genre:" transparent="1" zPosition="5" halign="left" position="902,589" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Year:" transparent="1" zPosition="5" halign="left" position="902,618" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<eLabel text="Runtime:" transparent="1" zPosition="5" halign="left" position="902,647" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="O. Title:" transparent="1" zPosition="5" halign="left" position="902,512" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Director:" transparent="1" zPosition="5" halign="left" position="902,541" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Writer:" transparent="1" zPosition="5" halign="left" position="902,570" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Genre:" transparent="1" zPosition="5" halign="left" position="902,599" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Year:" transparent="1" zPosition="5" halign="left" position="902,628" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<eLabel text="Runtime:" transparent="1" zPosition="5" halign="left" position="902,657" size="110,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 			
-			<widget name="otitle" transparent="1" zPosition="5" halign="left" position="996,502" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="director" transparent="1" zPosition="5" halign="left" position="996,531" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="writer" transparent="1" zPosition="5" halign="left" position="996,560" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="genre" transparent="1" zPosition="5" halign="left" position="996,589" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="year" transparent="1" zPosition="5" halign="left" position="996,618" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
-			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="996,647" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="otitle" transparent="1" zPosition="5" halign="left" position="996,512" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="director" transparent="1" zPosition="5" halign="left" position="996,541" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="writer" transparent="1" zPosition="5" halign="left" position="996,570" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="genre" transparent="1" zPosition="5" halign="left" position="996,599" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="year" transparent="1" zPosition="5" halign="left" position="996,628" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
+			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="996,657" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 		</screen>
 </skin>
