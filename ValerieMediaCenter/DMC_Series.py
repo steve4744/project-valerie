@@ -284,11 +284,11 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 				selection = self["listview"].getCurrent()
 				if selection is not None:
-					if os.path.isfile(self.moviedb[selection[1]]["Path"]):
-					self.showiframe.finishStillPicture()
-					self.session.openWithCallback(self.leaveMoviePlayer, MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.episodesdb[selection[1]]["Path"] + ":" + selection[0]))
-				else:
-					self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
+					if os.path.isfile(self.episodesdb[selection[1]]["Path"]):
+						self.showiframe.finishStillPicture()
+						self.session.openWithCallback(self.leaveMoviePlayer, MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.episodesdb[selection[1]]["Path"] + ":" + selection[0]))
+					else:
+						self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 
 					
 
