@@ -95,7 +95,7 @@
 				zPosition="1" 
 				halign="center"
 				position="330,60" 
-				size="620,40" 
+				size="620,50"
 				font="Regular;40" 
 			/>
 
@@ -129,7 +129,7 @@
 				position="50,280" 
 				size="238,156" 
 				alphatest="on" >
-				<convert type="MenuEntryCompare">menu_pictures</convert>
+				<convert type="MenuEntryCompare">menu_sync</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -142,12 +142,12 @@
 				alphatest="blend"
 			/>
 
-			<eLabel text="My Weather" 
-				transparent="1" 
+			<eLabel text="Sync"
+				transparent="1"
 				halign="center"
 				zPosition="4" 
-				position="60,390" 
-				size="218,25" 
+				position="60,385"
+				size="218,30"
 				font="Regular;25" 
 			/>
 
@@ -186,8 +186,8 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="300,390" 
-				size="218,25" 
+				position="300,385"
+				size="218,30"
 				font="Regular;25" 
 			/>
 
@@ -226,8 +226,8 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="540,390" 
-				size="218,25" 
+				position="540,385"
+				size="218,30"
 				font="Regular;25" 
 			/>
 
@@ -274,8 +274,8 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="420,500" 
-				size="218,25" 
+				position="420,500"
+				size="218,30"
 				font="Regular;25" >
 				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
@@ -310,8 +310,8 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="660,500" 
-				size="218,25" 
+				position="660,500"
+				size="218,30"
 				font="Regular;25" >
 				<convert type="MenuEntryCompare">menu_watch</convert>
 				<convert type="ConditionalShowHide" />
@@ -353,8 +353,8 @@
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="780,390" 
-				size="218,25" 
+				position="780,385"
+				size="218,30"
 				font="Regular;25" 
 			/>
 
@@ -389,12 +389,12 @@
 				alphatest="blend"
 			/>
 
-			<eLabel text="Options" 
+			<eLabel text="Settings"
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
-				position="1020,390" 
-				size="218,25" 
+				position="1020,385"
+				size="218,30"
 				font="Regular;25" 
 			/>
 

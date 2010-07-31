@@ -163,8 +163,8 @@ class DMC_MainMenu(Screen):
 		list.append(("Movies", "DMC_Watch", "menu_watch", "50"))
 		list.append(("TV", "InfoBar", "menu_tv", "50"))
 		#list.append(("TV", "Exit", "menu_exit", "50"))
-		list.append(("Settings", "MC_Settings", "menu_settings", "50"))
-		list.append(("Pictures", "MC_PictureViewer", "menu_pictures", "50"))
+		list.append(("Settings", "DMC_Settings", "menu_settings", "50"))
+		list.append(("Sync", "DMC_Sync", "menu_sync", "50"))
 		list.append(("Music", "MC_AudioPlayer", "menu_music", "50"))
 		#list.append(("Exit", "Exit", "menu_exit", "50"))
 		self["menu"] = List(list, True)
@@ -193,11 +193,15 @@ class DMC_MainMenu(Screen):
 				"right": self.right,
 				"up": self.up,
 				"down": self.down,
+				"power": self.power,
 			}, -1)
 
 		if config.plugins.dmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
 
+	def power(self):
+		import Screens.Standby
+		self.session.open(Screens.Standby.TryQuitMainloop, 1)
 
 	def checkForUpdate(self):
 		box = getBoxtype()
@@ -255,9 +259,17 @@ class DMC_MainMenu(Screen):
 					self["menuWatch"].setIndex(2)
 					self.Watch = True;
 				elif selection[1] == "MC_AudioPlayer":
-					self.session.open(MC_AudioPlayer)
-				elif selection[1] == "MC_Settings":
+					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
+					#self.session.open(MC_AudioPlayer)
+				elif selection[1] == "DMC_Settings":
 					self.session.open(Settings, self)
+				elif selection[1] == "DMC_Sync":
+					try:
+						from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
+						self.session.open(ProjectValerieSync)
+					except Exception, ex:
+						self.session.open(MessageBox, "Please install the plugin \nProjectValerieSync\n to use this feature.", type = MessageBox.TYPE_INFO)
+					#self.session.open(Settings, self)
 #					from Menu import MainMenu, mdom
 #					menu = mdom.getroot()
 #					assert menu.tag == "menu", "root element in menu must be 'menu'!"

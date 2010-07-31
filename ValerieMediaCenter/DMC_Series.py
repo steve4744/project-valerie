@@ -190,6 +190,8 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if self.inSeries is True:
 				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v", os.F_OK):
 					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+				elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi")
 				else:
 					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 				if self["poster"].instance is not None:
@@ -204,8 +206,10 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				else:
 					self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
 
-				self["director"].setText(self.moviedb[selection[1]]["Directors"])
-				self["writer"].setText(self.moviedb[selection[1]]["Writers"])
+				if self.moviedb[selection[1]].has_key("Directors"):
+					self["director"].setText(self.moviedb[selection[1]]["Directors"])
+				if self.moviedb[selection[1]].has_key("Writers"):
+					self["writer"].setText(self.moviedb[selection[1]]["Writers"])
 				self["genre"].setText(self.moviedb[selection[1]]["Genres"])
 				self["year"].setText(self.moviedb[selection[1]]["Year"])
 				self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
@@ -278,11 +282,15 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self.visibility()
 					return
 		
-				self.showiframe.finishStillPicture()
-		
 				selection = self["listview"].getCurrent()
 				if selection is not None:
+					if os.path.isfile(self.moviedb[selection[1]]["Path"]):
+					self.showiframe.finishStillPicture()
 					self.session.openWithCallback(self.leaveMoviePlayer, MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.episodesdb[selection[1]]["Path"] + ":" + selection[0]))
+				else:
+					self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
+
+					
 
 
 	def leaveMoviePlayer(self): 
