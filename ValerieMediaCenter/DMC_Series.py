@@ -147,22 +147,22 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 						if not d["Title"] in entrys:
 							entrys.append(d["Title"])
 							if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
-								self.serieslist.append((d["LocalTitle"], d["TheTvDb"], "menu_globalsettings", "50"))
+								self.serieslist.append(("  " + d["LocalTitle"], d["TheTvDb"], "menu_globalsettings", "50"))
 							else:
-								self.serieslist.append((d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
+								self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
 					elif self.inSeasons:
 						if not d["Season"] in entrys:
 							entrys.append(d["Season"])
-							list.append(("Season " + d["Season"], d["Season"], "menu_globalsettings", "50"))			
+							list.append(("  " + "Season " + d["Season"], d["Season"], "menu_globalsettings", "50"))			
 					else:
 						if d["Season"] == self.selectedSeason:
 							if not d["Episode"] in entrys:
 								entrys.append(d["Episode"])
 								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
 								if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
-									list.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["LocalTitle"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
+									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["LocalTitle"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
 								else:
-									list.append((d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
+									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
 								
 						
 		except OSError, e: 
@@ -195,7 +195,10 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				else:
 					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 				if self["poster"].instance is not None:
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+					if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
+						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+					else:
+						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 				self["title"].setText(selection[0])
 				self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 				self["tag"].setText(self.moviedb[selection[1]]["Tag"])

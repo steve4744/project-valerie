@@ -206,10 +206,10 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 #			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			elif os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop.mvi", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.mvi")
+			if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
+			elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi")
 			else:
 				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 			self["title"].setText(selection[0])
@@ -227,7 +227,10 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self["year"].setText(self.moviedb[selection[1]]["Year"])
 			self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
 			if self["poster"].instance is not None:
-				self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/tt" + selection[1] + "_poster.png")
+				if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+				else:
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(i)].instance is not None:
