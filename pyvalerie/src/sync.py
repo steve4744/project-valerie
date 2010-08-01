@@ -30,6 +30,31 @@ class pyvalerie(Thread):
 		#sys.setdefaultencoding( "utf-8" )
 		
 		self.output("Loading Config")
+		
+		try: 
+			print("Check "+"/hdd/valerie")
+			makedirs("/hdd/valerie") 
+		except OSError, e:
+			printl(" - OK")
+		else:
+			printl(" - Created")
+		
+		try: 
+			print("Check "+"/hdd/valerie/cache")
+			makedirs("/hdd/valerie/cache") 
+		except OSError, e:
+			printl(" - OK")
+		else:
+			printl(" - Created")
+		
+		try: 
+			print("Check "+"/hdd/valerie/dl")
+			makedirs("/hdd/valerie/dl"") 
+		except OSError, e:
+			printl(" - OK")
+		else:
+			printl(" - Created")
+		
 		Config.load()
 		
 		self.output("Loading Database")

@@ -5,6 +5,9 @@ replacementsOptions = ["pre", "post_tv", "post_movie"]
 replacementsList = {}
 
 def load():
+    
+    
+    
     for rf in replacementsOptions:
         replacementsList[rf] = []
         try:
