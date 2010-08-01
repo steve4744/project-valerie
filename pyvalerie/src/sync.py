@@ -64,6 +64,22 @@ class pyvalerie(Thread):
 		self.output("Loading Replacements")
 		replace.load()
 		
+		# Check default config
+		try:
+		print("Check "+"/hdd/valerie/paths.conf")
+			if os.path.isfile("/hdd/valerie/paths.conf") is False:
+				f = open("/hdd/valerie/paths.conf", "wb")
+				f.write("mkv|ts|avi|m2ts\n")
+				f.write("/hdd\n")
+				f.write("/autofs\n")
+				f.write("/mnt\n")
+				f.close()
+				printl(" - Created")
+			else:
+				printl(" - OK")
+		except Exception:
+				printl(" - ERROR")
+		
 		self.output("Searching for media files")
 		fconf = open("/hdd/valerie/paths.conf", "r")
 		filetypes = fconf.readline().strip().split('|')
