@@ -5,7 +5,6 @@ Created on 26.06.2010
 '''
 
 import Config
-import subprocess
 from WebGrabber import WebGrabber
 from os import path
 class Arts():
