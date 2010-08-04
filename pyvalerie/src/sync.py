@@ -66,7 +66,7 @@ class pyvalerie(Thread):
 		
 		# Check default config
 		try:
-		print("Check "+"/hdd/valerie/paths.conf")
+			print("Check "+"/hdd/valerie/paths.conf")
 			if os.path.isfile("/hdd/valerie/paths.conf") is False:
 				f = open("/hdd/valerie/paths.conf", "wb")
 				f.write("mkv|ts|avi|m2ts\n")
@@ -78,7 +78,7 @@ class pyvalerie(Thread):
 			else:
 				printl(" - OK")
 		except Exception:
-				printl(" - ERROR")
+			printl(" - ERROR")
 		
 		self.output("Searching for media files")
 		fconf = open("/hdd/valerie/paths.conf", "r")
