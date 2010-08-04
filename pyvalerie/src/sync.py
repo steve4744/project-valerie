@@ -49,7 +49,7 @@ class pyvalerie(Thread):
 		
 		try: 
 			print("Check "+"/hdd/valerie/dl")
-			makedirs("/hdd/valerie/dl"") 
+			makedirs("/hdd/valerie/dl")
 		except OSError, e:
 			printl(" - OK")
 		else:
