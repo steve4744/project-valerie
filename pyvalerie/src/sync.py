@@ -33,7 +33,7 @@ class pyvalerie(Thread):
 		
 		try: 
 			print("Check "+"/hdd/valerie")
-			makedirs("/hdd/valerie") 
+			os.makedirs("/hdd/valerie") 
 		except OSError, e:
 			printl(" - OK")
 		else:
@@ -41,7 +41,7 @@ class pyvalerie(Thread):
 		
 		try: 
 			print("Check "+"/hdd/valerie/cache")
-			makedirs("/hdd/valerie/cache") 
+			os.makedirs("/hdd/valerie/cache") 
 		except OSError, e:
 			printl(" - OK")
 		else:
@@ -49,7 +49,15 @@ class pyvalerie(Thread):
 		
 		try: 
 			print("Check "+"/hdd/valerie/dl")
-			makedirs("/hdd/valerie/dl")
+			os.makedirs("/hdd/valerie/dl")
+		except OSError, e:
+			printl(" - OK")
+		else:
+			printl(" - Created")
+		
+		try: 
+			print("Check "+"/hdd/valerie/episodes")
+			os.makedirs("/hdd/valerie/episodes")
 		except OSError, e:
 			printl(" - OK")
 		else:
