@@ -4,7 +4,6 @@ Created on 22.05.2010
 @author: i3
 '''
 
-import io
 import os
 import re
 import urllib2
