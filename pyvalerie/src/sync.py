@@ -35,33 +35,33 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie")
 			os.makedirs("/hdd/valerie") 
 		except OSError, e:
-			printl(" - OK")
+			print(" - OK\n")
 		else:
-			printl(" - Created")
+			print(" - Created\n")
 		
 		try: 
 			print("Check "+"/hdd/valerie/cache")
 			os.makedirs("/hdd/valerie/cache") 
 		except OSError, e:
-			printl(" - OK")
+			print(" - OK\n")
 		else:
-			printl(" - Created")
+			print(" - Created\n")
 		
 		try: 
 			print("Check "+"/hdd/valerie/dl")
 			os.makedirs("/hdd/valerie/dl")
 		except OSError, e:
-			printl(" - OK")
+			print(" - OK\n")
 		else:
-			printl(" - Created")
+			print(" - Created\n")
 		
 		try: 
 			print("Check "+"/hdd/valerie/episodes")
 			os.makedirs("/hdd/valerie/episodes")
 		except OSError, e:
-			printl(" - OK")
+			print(" - OK\n")
 		else:
-			printl(" - Created")
+			print(" - Created\n")
 		
 		Config.load()
 		
@@ -82,11 +82,11 @@ class pyvalerie(Thread):
 				f.write("/autofs\n")
 				f.write("/mnt\n")
 				f.close()
-				printl(" - Created")
+				print(" - Created\n")
 			else:
-				printl(" - OK")
+				print(" - OK\n")
 		except Exception:
-			printl(" - ERROR")
+			print(" - ERROR\n")
 		
 		self.output("Searching for media files")
 		fconf = open("/hdd/valerie/paths.conf", "r")

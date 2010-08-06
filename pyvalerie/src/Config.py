@@ -4,6 +4,8 @@ Created on 26.06.2010
 @author: i3
 '''
 
+import os
+
 conf = {}
 
 def load():
@@ -11,14 +13,14 @@ def load():
     try:
         print("Check "+"/hdd/valerie/valerie.conf")
         if os.path.isfile("/hdd/valerie/valerie.conf") is False:
-            f = open("/hdd/valerie/valerie.conf", "wb")
+            f = open("/hdd/valerie/valerie.conf", "w")
             f.write("local=en\n")
             f.close()
-            printl(" - Created")
+            print(" - Created\n")
         else:
-            printl(" - OK")
-    except Exception:
-        printl(" - ERROR")
+            print(" - OK\n")
+    except Exception, ex:
+        print(" - ERROR\n"), ex
     
     f = open("/hdd/valerie/valerie.conf", "r")
     for line in f.readlines():
