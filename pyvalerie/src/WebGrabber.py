@@ -8,6 +8,8 @@ import os
 import re
 import urllib2
 import codecs
+import socket
+from sys import version_info
 
 from HtmlEncoding import decode_htmlentities
 
@@ -25,10 +27,10 @@ class WebGrabber(object):
         '''
         
     def grab(self, url, encoding="utf-8"): #encoding="latin-1"):
-        print "URL", url
+        print "URL", url.encode('latin-1')
         cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
         pageHtml = None
-        if os.path.isfile(self.cacheDir + "/" + cacheFile + ".cache"):
+        if os.path.isfile((self.cacheDir + "/" + cacheFile + ".cache").encode('latin-1')):
             if encoding == "utf-8":
                 f = codecs.open(self.cacheDir + "/" + cacheFile + ".cache", "r", "utf-8")
                 pageHtml = f.read()[:-1]
@@ -38,20 +40,26 @@ class WebGrabber(object):
                 pageHtml = f.read()
                 f.close()
         else:
+            kwargs = {}
+            if version_info[1] >= 6:
+                kwargs['timeout'] = 10
+            else:
+                socket.setdefaulttimeout(10)
             try:
-                page = urllib2.urlopen(url, timeout=10)
+                page = urllib2.urlopen(url.encode('latin-1'), **kwargs)
             except Exception, ex:
-                print "URL", url
+                print "URL", url.encode('latin-1')
                 print "urllib2.urlopen: ", ex
                 return None
             if encoding == "utf-8":
                 pageUnicode = page.read()
-                #pageHtml = unicode('')
                 try:
                     pageHtml =  unicode(pageUnicode, "utf-8")
-                    #pageHtml += page.read()
                 except UnicodeDecodeError, ex:
-                    print "encoding == utf-8 ", ex
+                    try:
+                        pageHtml =  unicode(pageUnicode, "latin-1")
+                    except UnicodeDecodeError, ex2:
+                        print "Conversion to utf-8 failed!!!", ex2
             elif encoding == "latin-1":
                 pageHtml = page.read() # read as latin-1
                 #print type(pageHtml)
@@ -59,17 +67,17 @@ class WebGrabber(object):
                 #pageHtml = unicode(pageHtml, "utf-8")
             
             try:
-                f = open(self.cacheDir + "/" + cacheFile + ".cache", 'w')
-                f.write(pageHtml.encode( "utf-8" ))
+                f = codecs.open(self.cacheDir + "/" + cacheFile + ".cache", 'w', "utf-8")
+                f.write(pageHtml)
                 f.close()
             except Exception, ex:
-                print "create cache ", ex
+                print "create cache ", ex, type(pageHtml)
         
         print "pageHtml: ", type(pageHtml)
         return pageHtml
     
     def grabFile(self, url, name):
-        print "URL", url
+        print "URL", url.encode('latin-1')
         #cacheFile = url.split('/')
         #cacheFile = cacheFile[len(cacheFile)-1]
         #pageHtml = None

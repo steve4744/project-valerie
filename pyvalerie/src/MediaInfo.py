@@ -279,7 +279,7 @@ class MediaInfo(object):
                     nameConverted += " " + c
                 prevc = c
             
-            print "[[[ ", nameConverted
+            print "[[[ ", nameConverted.encode('latin-1')
             
             m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', nameConverted)
             if m and m.group("season") and m.group("episode"):
@@ -296,19 +296,19 @@ class MediaInfo(object):
         
         if self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
-            print ":: ", self.SearchString
+            print ":: ", self.SearchString.encode('latin-1')
             return
         
         if self.isValerieInfoAvailable(self.Path) is True:
             self.SearchString = self.getValerieInfo(self.Path).strip()
-            print ":: ", self.SearchString
+            print ":: ", self.SearchString.encode('latin-1')
             return
         
         #print ":1: ", self.SearchString
         ### Replacements POST
         self.SearchString = re.sub(r'[-]', " ", self.SearchString)
         self.SearchString = re.sub(r' +', " ", self.SearchString)
-        print ":2: ", self.SearchString
+        print ":2: ", self.SearchString.encode('latin-1')
         
         post = "post"
         if self.isSerie:
@@ -321,7 +321,7 @@ class MediaInfo(object):
             self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
         
         self.SearchString = self.SearchString.strip()
-        print ":3: ", self.SearchString
+        print ":3: ", self.SearchString.encode('latin-1')
         
     def __str__(self):
         ustr = unicode(self.Path) + " / " + unicode(self.Filename) + " . " + unicode(self.Extension)
@@ -348,7 +348,7 @@ class MediaInfo(object):
         #ustr += "\n\tBackdrop:     " + unicode(self.Backdrop)
         #ustr += "\n\n"
         print type(ustr)
-        return ustr
+        return ustr.encode('latin-1')
 
     def importStr(self, string, isMovie=False, isSerie=False, isEpisode=False):
         

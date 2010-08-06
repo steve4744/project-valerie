@@ -65,43 +65,44 @@ class Database(object):
             self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
 
     def __str__(self):
-        return  "dbMovies: " + \
+        rtv =   "dbMovies: " + \
                 "\n\t" + unicode(self.dbMovies) + \
                 "\ndbSeries: " + \
                 "\n\t" + unicode(self.dbSeries) + \
                 "\ndbEpisodes: " + \
                 "\n\t" + unicode(self.dbEpisodes) + \
-                "\n\n" 
+                "\n\n"
+        return rtv.encode('latin-1') 
 
     def save(self):
-        f = open("/hdd/valerie/moviedb.txt", 'wb')
+        f = codecs.open("/hdd/valerie/moviedb.txt", 'wb', "utf-8")
         print "a"
         f.write(unicode(date.today()))
         print "b"
         for key in self.dbMovies:
-            f.write(self.dbMovies[key].export().encode( "utf-8" ))
+            f.write(self.dbMovies[key].export())
             self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
         print "c"
         f.close()
         
-        f = open("/hdd/valerie/seriesdb.txt", 'wb')
+        f = codecs.open("/hdd/valerie/seriesdb.txt", 'wb', "utf-8")
         print "a"
         f.write(unicode(date.today()))
         print "b"
         for key in self.dbSeries:
             if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
-                f.write(self.dbSeries[key].export().encode( "utf-8" ))
+                f.write(self.dbSeries[key].export())
         print "c"
         f.close()
         
         for serie in self.dbEpisodes:
-            f = open("/hdd/valerie/episodes/" + serie + ".txt", 'wb')
+            f = codecs.open("/hdd/valerie/episodes/" + serie + ".txt", 'wb', "utf-8")
             print "a"
             f.write(unicode(date.today()))
             print "b"
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
-                    f.write(self.dbEpisodes[serie][season][episode].export().encode( "utf-8" ))
+                    f.write(self.dbEpisodes[serie][season][episode].export())
                     self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path)
             print "c"
             f.close()
@@ -116,13 +117,19 @@ class Database(object):
                     m = MediaInfo("","","")
                     m.importStr(movie[1], True, False, False)
                     path = unicode(m.Path) + "/" + unicode(m.Filename) + "." + unicode(m.Extension)
-                    
-                    if os.path.isfile(path) and m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
+                    if os.path.isfile(path.encode('latin-1')) and m.getValerieInfoAccessTime(m.Path.encode('latin-1')) == m.getValerieInfoLastAccessTime(m.Path.encode('latin-1')):
                         self.add(m)
                     else:
-                        print path
+                        print "Not found: ", path.encode('latin-1')
+                        print os.path.isfile(path.encode('latin-1'))
+                        print m.getValerieInfoAccessTime(m.Path.encode('latin-1'))
+                        print m.getValerieInfoLastAccessTime(m.Path.encode('latin-1'))
         except Exception, ex:
             print ex
+            print '-'*60
+            import sys, traceback
+            traceback.print_exc(file=sys.stdout)
+            print '-'*60
         
         try:
             db = codecs.open("/hdd/valerie/seriesdb.txt", "r", "utf-8").read()[:-1]
@@ -149,7 +156,7 @@ class Database(object):
                         if os.path.isfile(path) and m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
                             self.add(m)
                         else:
-                            print path
+                            print path.encode('latin-1')
         except Exception, ex:
             print ex
             

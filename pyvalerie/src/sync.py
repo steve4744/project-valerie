@@ -112,20 +112,20 @@ class pyvalerie(Thread):
 			self.progress(i)
 			i = i + 1
 			
-			path = element[0].replace("\\", "/").decode("latin-1")
-			filename = element[1]
-			extension = element[2]
+			path = unicode(element[0].replace("\\", "/"), "utf-8")
+			filename = unicode(element[1], "utf-8")
+			extension = unicode(element[2], "utf-8")
 			
 			if "RECYCLE.BIN" in path:
 				continue
 				
-			if db.checkDuplicate(path, element[1], element[2]):
-				#self.output("Already in db [ " + element[1] + "." + element[2] + " ]")
+			if db.checkDuplicate(path, filename, extension):
+				#self.output("Already in db [ " + filename.encode('latin-1') + "." + extension.encode('latin-1') + " ]")
 				continue
 			else:
-				self.output("-> " + element[1] + "." + element[2])
+				self.output("-> " + filename.encode('latin-1') + "." + extension.encode('latin-1'))
 				
-			elementInfo = MediaInfo.MediaInfo(path, element[1], element[2])
+			elementInfo = MediaInfo.MediaInfo(path, filename, extension)
 			elementInfo.parse()
 			#print elementInfo
 			
