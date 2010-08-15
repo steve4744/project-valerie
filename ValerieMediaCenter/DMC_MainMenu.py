@@ -24,11 +24,8 @@ import os
 from enigma import quitMainloop
 
 # Plugins
-from MC_AudioPlayer import MC_AudioPlayer
-from MC_VideoPlayer import MC_VideoPlayer
 from DMC_Movies import DMC_Movies
 from DMC_Series import DMC_Series
-from MC_Settings import MC_Settings, MCS_Update
 
 
 from Components.MenuList import MenuList
@@ -165,7 +162,7 @@ class DMC_MainMenu(Screen):
 		#list.append(("TV", "Exit", "menu_exit", "50"))
 		list.append(("Settings", "DMC_Settings", "menu_settings", "50"))
 		list.append(("Sync", "DMC_Sync", "menu_sync", "50"))
-		list.append(("Music", "MC_AudioPlayer", "menu_music", "50"))
+		list.append(("Music", "DMC_AudioPlayer", "menu_music", "50"))
 		#list.append(("Exit", "Exit", "menu_exit", "50"))
 		self["menu"] = List(list, True)
 
@@ -250,15 +247,13 @@ class DMC_MainMenu(Screen):
 					self.session.open(DMC_Movies)
 				elif selection[1] == "DMC_Series":
 					self.session.open(DMC_Series)
-				elif selection[1] == "MC_VideoPlayer":
-					self.session.open(MC_VideoPlayer)
 		else:
 			selection = self["menu"].getCurrent()
 			if selection is not None:
 				if selection[1] == "DMC_Watch":
 					self["menuWatch"].setIndex(2)
 					self.Watch = True;
-				elif selection[1] == "MC_AudioPlayer":
+				elif selection[1] == "DMC_AudioPlayer":
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)
 				elif selection[1] == "DMC_Settings":
