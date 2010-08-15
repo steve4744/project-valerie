@@ -81,7 +81,7 @@ class Database(object):
         print "b"
         for key in self.dbMovies:
             f.write(self.dbMovies[key].export())
-            self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
+            self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path.encode('latin-1'))
         print "c"
         f.close()
         
@@ -103,7 +103,7 @@ class Database(object):
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season]:
                     f.write(self.dbEpisodes[serie][season][episode].export())
-                    self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path)
+                    self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path.encode('latin-1'))
             print "c"
             f.close()
 
