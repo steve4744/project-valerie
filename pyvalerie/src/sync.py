@@ -111,10 +111,19 @@ class pyvalerie(Thread):
 			self.output("(" + str(i) + "/" + str(len(elementList))  + ")")
 			self.progress(i)
 			i = i + 1
-			
-			path = unicode(element[0].replace("\\", "/"), "utf-8")
-			filename = unicode(element[1], "utf-8")
-			extension = unicode(element[2], "utf-8")
+			try:
+				path = unicode(element[0].replace("\\", "/"), "utf-8")
+				filename = unicode(element[1], "utf-8")
+				extension = unicode(element[2], "utf-8")
+			except UnicodeDecodeError, ex:
+				try:
+					print type(element[0]), type(element[1]), type(element[2])
+					path = unicode(element[0].replace("\\", "/"), "latin-1")
+					filename = unicode(element[1], "latin-1")
+					extension = unicode(element[2], "latin-1")
+				except UnicodeDecodeError, ex2:
+					print "Conversion to utf-8 failed!!!", ex2
+					#continue
 			
 			if "RECYCLE.BIN" in path:
 				continue
