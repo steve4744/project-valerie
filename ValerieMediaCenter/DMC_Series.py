@@ -81,7 +81,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 			print stars
 			self[stars] = Pixmap()
 
-		self["actions"] = HelpableActionMap(self, "MC_AudioPlayerActions", 
+		self["actions"] = HelpableActionMap(self, "DMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
 				"cancel": (self.KeyExit, "Exit Audio Player"),
