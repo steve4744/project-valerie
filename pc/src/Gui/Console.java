@@ -11,7 +11,6 @@
 
 package Gui;
 
-import java.awt.Point;
 import org.jdesktop.application.Action;
 import valerie.tools.DebugOutput;
 

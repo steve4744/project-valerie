@@ -12,14 +12,14 @@
 package Gui;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.Arrays;
+import java.util.LinkedList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import valerie.controller.ConfPaths;
 import valerie.controller.Controller;
 
@@ -561,9 +561,7 @@ public class Settings extends javax.swing.JDialog {
 
     private void SettingShow(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_SettingShow
         String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
-        for(String pathMovies : paths) {
-            WorkPathMovies.add(pathMovies);
-        }
+        WorkPathMovies.addAll(Arrays.asList(paths));
     }//GEN-LAST:event_SettingShow
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -595,5 +593,5 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldFilter;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
-    private Vector<String> WorkPathMovies = new Vector<String>();
+    private LinkedList<String> WorkPathMovies = new LinkedList<String>();
 }
