@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class BoxInfoParser {
     public BoxInfo[] parse(String info) {
 
-        ArrayList list = new ArrayList();
+        ArrayList<BoxInfo> list = new ArrayList<BoxInfo>();
 
         String vManu = new valerie.tools.Properties().getPropertyString("MANUAL_SETTOPBOX");
          if(vManu != null && vManu.length() > 0)

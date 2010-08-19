@@ -265,7 +265,7 @@ public class Network {
         //As we dont get stderr, lets 'disable' it here
         cmd = cmd + " 2> /dev/null";
 
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
         try {
             Socket clientSocket = new Socket(addr, 5451);
 

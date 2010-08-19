@@ -7,7 +7,7 @@ package valerie.controller;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Hashtable;
+import java.util.HashMap;
 import valerie.Database;
 import valerie.MediaInfo;
 import valerie.provider.ImdbProvider;
@@ -22,7 +22,7 @@ import valerie.tools.FileUtils;
  */
 public final class Controller extends Notifier {
 
-     Hashtable pObjects = new Hashtable();
+     HashMap<String, Object> pObjects = new HashMap<String, Object>();
 
     public Controller() {
         set("Database", new Database(this));

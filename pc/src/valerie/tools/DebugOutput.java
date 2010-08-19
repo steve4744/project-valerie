@@ -5,8 +5,9 @@
 
 package valerie.tools;
 
+import java.util.Calendar;
 import java.util.Date;
-import java.util.Vector;
+import java.util.LinkedList;
 
 /**
  *
@@ -18,7 +19,7 @@ public class DebugOutput {
         public void print(String s) { }
     }
 
-    static Vector outputHandlers = new Vector();
+    static LinkedList<OutputHandler> outputHandlers = new LinkedList<OutputHandler>();
 
     public static void add(OutputHandler out) {
         outputHandlers.add(out);
@@ -33,11 +34,11 @@ public class DebugOutput {
     }
 
     private static void _print(String msg) {
-        Date d = new Date();
+        Calendar d = Calendar.getInstance();
         java.lang.Exception e = new java.lang.Exception();
         StackTraceElement ste[] = e.getStackTrace();
         String s = String.format("%02d:%02d:%02d %s %s %s[%4d] : %s",
-                d.getHours(), d.getMinutes(), d.getSeconds(),
+                d.get(Calendar.HOUR), d.get(Calendar.MINUTE), d.get(Calendar.SECOND),
                 ste[2].getFileName(),   ste[2].getClassName(),
                 ste[2].getMethodName(), ste[2].getLineNumber(), msg);
 

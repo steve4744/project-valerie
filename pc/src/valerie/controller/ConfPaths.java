@@ -6,8 +6,7 @@
 package valerie.controller;
 
 import java.util.Arrays;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.LinkedList;
 import valerie.Utf8;
 
 /**
@@ -17,7 +16,7 @@ import valerie.Utf8;
 public final class ConfPaths {
 
     private String Filter = null;
-    private Vector<String> Paths = new Vector<String>();
+    private LinkedList<String> Paths = new LinkedList<String>();
 
     public ConfPaths() {
         load();
@@ -64,6 +63,6 @@ public final class ConfPaths {
     }
 
     public void setPaths(String[] paths) {
-        this.Paths = new Vector<String>(Arrays.asList(paths));
+        this.Paths = new LinkedList<String>(Arrays.asList(paths));
     }
 }

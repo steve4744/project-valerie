@@ -8,26 +8,13 @@ package valerie.provider;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jdom.Document;
 import valerie.MediaInfo;
 
 /**
  *
  * @author Admin
  */
-public class ImdbProvider extends provider {
-     public void getDataByTitle(MediaInfo info) {
-        if(info.isMovie)
-            getMoviesByTitle(info);
-    }
-
-    public void getDataById(MediaInfo info) {
-        if(info.isMovie)
-            getMoviesByImdbId(info);
-    }
-
-    public void getArtById(MediaInfo info) {
-    }
+public class ImdbProvider {
 
 
     //////////////////////////////////////////////////

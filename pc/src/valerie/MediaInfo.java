@@ -5,10 +5,8 @@
 
 package valerie;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import valerie.provider.provider;
 import org.apache.commons.lang.StringEscapeUtils;
 import valerie.controller.Controller;
 import valerie.controller.Replace;
@@ -21,9 +19,6 @@ import valerie.tools.BoxInfo;
 public class MediaInfo implements Comparable<MediaInfo>{
 
     public static int alternativesMax = 30;
-
-    public provider DataProvider;
-    public provider ArtProvider;
 
     public int ID = 0;
 
@@ -69,13 +64,6 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
     // This is only used in the sync process
     public boolean NotFound = false;
-
-    public void getDataById() {
-        DataProvider.getDataById(this);
-    }
-    public void getDataByTitle() {
-        DataProvider.getDataByTitle(this);
-    }
 
     /**
      * @deprecated
@@ -546,9 +534,6 @@ public class MediaInfo implements Comparable<MediaInfo>{
     @Override
     public MediaInfo clone() {
         MediaInfo rtv = new MediaInfo(Filename);
-
-        rtv.DataProvider = DataProvider;
-        rtv.ArtProvider = ArtProvider;
 
         rtv.isMovie = isMovie;
         rtv.isSerie = isSerie;

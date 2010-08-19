@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.LinkedList;
 import valerie.controller.Notifier;
 
 /**
@@ -20,7 +20,7 @@ public class Database {
         pNotifier = notifier;
     }
 
-    private LinkedHashMap DB = new LinkedHashMap();
+    private LinkedHashMap<Integer, MediaInfo> DB = new LinkedHashMap<Integer, MediaInfo>();
 
     private int IDCounter = 0;
 
@@ -95,7 +95,11 @@ public class Database {
             f.close();
             String[] movies = db.split("\n----END----\n");
 
-            count = Integer.valueOf(movies[0].split("\n")[1]);
+            try {
+                count = Integer.valueOf(movies[0].split("\n")[1]);
+            } catch(Exception ex) {
+                count = 1000;
+            }
             countVar = 0;
 
             for (String movie : movies) {
@@ -122,7 +126,11 @@ public class Database {
             f.close();
             String[] movies = db.split("\n----END----\n");
 
-            count = Integer.valueOf(movies[0].split("\n")[1]);
+            try {
+                count = Integer.valueOf(movies[0].split("\n")[1]);
+            } catch(Exception ex) {
+                count = 1000;
+            }
             countVar = 0;
 
             for (String movie : movies) {
@@ -226,7 +234,7 @@ public class Database {
 
 
     public MediaInfo[] getMediaInfoEpisodeAsArray() {
-        ArrayList vector = new ArrayList();
+        ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
             if(((MediaInfo)element).isEpisode)
                 vector.add((MediaInfo)element);
@@ -239,7 +247,7 @@ public class Database {
     }
 
     public MediaInfo[] getMovieAsArray() {
-        ArrayList vector = new ArrayList();
+        ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
             if(((MediaInfo)element).isMovie)
                 vector.add((MediaInfo)element);
@@ -250,8 +258,8 @@ public class Database {
         return list;
     }
 
-    public Vector<MediaInfo> getSerieAsVector() {
-        Vector<MediaInfo> vector = new Vector<MediaInfo>();
+    public LinkedList<MediaInfo> getSerieAsVector() {
+        LinkedList<MediaInfo> vector = new LinkedList<MediaInfo>();
         for(Object element : DB.values()) {
             if(((MediaInfo)element).isSerie)
                 vector.add((MediaInfo)element);
@@ -265,7 +273,7 @@ public class Database {
     }
 
     public MediaInfo[] getEpisodeAsArray() {
-        ArrayList vector = new ArrayList();
+        ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
             if(((MediaInfo)element).isEpisode)
                 vector.add((MediaInfo)element);
@@ -277,9 +285,9 @@ public class Database {
     }
 
     public MediaInfo[] getEpisodeAsArray(String thetvdbId) {
-        ArrayList vector = new ArrayList();
+        ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
-            if(((MediaInfo)element).isEpisode && ((MediaInfo) element).TheTvDbId.equals(thetvdbId))
+            if(((MediaInfo)element).isEpisode && ((MediaInfo) element).TheTvDbId.equals(((MediaInfo) element).TheTvDbIdNull))
                 vector.add((MediaInfo)element);
         }
 
@@ -290,9 +298,9 @@ public class Database {
     }
 
      public MediaInfo[] getMediaInfoEpisodesUnspecified() {
-        ArrayList vector = new ArrayList();
+        ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
-            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDbId == "0")
+            if(((MediaInfo)element).isEpisode && ((MediaInfo)element).TheTvDbId.equals("0"))
                 vector.add((MediaInfo)element);
         }
 

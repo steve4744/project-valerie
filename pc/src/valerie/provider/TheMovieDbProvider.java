@@ -14,22 +14,7 @@ import valerie.MediaInfo;
  *
  * @author Admin
  */
-public class TheMovieDbProvider extends provider {
-
-    public void getDataByTitle(MediaInfo info) {
-        if(info.isMovie)
-            getMoviesByTitle(info);
-    }
-
-    public void getDataById(MediaInfo info) {
-        if(info.isMovie)
-            getMoviesById(info);        
-    }
-
-    public void getArtById(MediaInfo info) {
-        if(info.isMovie)
-            getMoviesArtById(info);
-    }
+public class TheMovieDbProvider {
 
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
@@ -113,7 +98,7 @@ public class TheMovieDbProvider extends provider {
            return;
         }
 
-    public void getMoviesArtById(MediaInfo info) {
+    public void getArtById(MediaInfo info) {
            Document xml = null;
            try {
                xml =  new valerie.tools.WebGrabber().getXML(new URL(apiImdbLookup + info.ImdbId));

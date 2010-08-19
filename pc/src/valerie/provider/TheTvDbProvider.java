@@ -14,26 +14,7 @@ import valerie.MediaInfo;
  *
  * @author Admin
  */
-public class TheTvDbProvider extends provider {
-
-    public void getDataById(MediaInfo info) {
-        if(info.isSerie)
-            getSeriesById(info);
-    }
-
-    public void getArtById(MediaInfo info) {
-        if(info.isSerie)
-            getSeriesArtById(info);
-    }
-
-    public void getDataByTitle(MediaInfo info) {
-        if(info.isSerie) {
-            getSeriesByTitle(info);
-            getSeriesById(info);
-        }
-        else if(info.isEpisode)
-            getEpisode(info);
-    }
+public class TheTvDbProvider {
 
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
@@ -99,7 +80,7 @@ public class TheTvDbProvider extends provider {
 
     private void getSeriesById(MediaInfo info) {
 
-        if(info.TheTvDbId == info.TheTvDbIdNull)
+        if(info.TheTvDbId.equals(info.TheTvDbIdNull))
             return;
 
        Document xml = null;
@@ -231,7 +212,7 @@ public class TheTvDbProvider extends provider {
 
     public void getEpisode(MediaInfo info) {
 
-        if( info.TheTvDbId == info.TheTvDbIdNull || info.Episode == -1 || info.Season == -1)
+        if( info.TheTvDbId.equals(info.TheTvDbIdNull) || info.Episode == -1 || info.Season == -1)
             return;
 
            Document xml = null;
@@ -336,7 +317,7 @@ public class TheTvDbProvider extends provider {
             return;
         }
 
-    public void getSeriesArtById(MediaInfo info) {
+    public void getArtById(MediaInfo info) {
        Document xml = null;
        try {
            String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));

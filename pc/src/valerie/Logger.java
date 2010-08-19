@@ -5,14 +5,15 @@
 
 package valerie;
 
-import java.util.Vector;
+import java.util.LinkedList;
+
 
 /**
  *
  * @author Admin
  */
 public class Logger {
-    static Vector outputHandlers = new Vector();
+    static LinkedList<OutputHandler> outputHandlers = new LinkedList<OutputHandler>();
 
     public static void add(OutputHandler out) {
         outputHandlers.add(out);

@@ -43,7 +43,7 @@ public class Arts {
         }
         else if(eInfo.isSerie) {
             if(eInfo.Poster.length() == 0 || eInfo.Backdrop.length() == 0)
-                new TheTvDbProvider().getSeriesArtById(eInfo);
+                new TheTvDbProvider().getArtById(eInfo);
 
             if(eInfo.Poster.length() > 0) {
                 if(new File("converted/" + eInfo.TheTvDbId + "_poster.png").isFile() == false) {

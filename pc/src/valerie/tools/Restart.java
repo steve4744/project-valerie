@@ -31,9 +31,9 @@ public class Restart {
 
         String  toExec[] = new String[] { javaBin, "-jar", jarFile.getPath() };
         try{
-            Process p = Runtime.getRuntime().exec( toExec );
+            Runtime.getRuntime().exec( toExec );
         } catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
 
