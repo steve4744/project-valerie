@@ -8,7 +8,7 @@ package valerie.Tasks;
 import valerie.BackgroundWorker;
 import valerie.Logger;
 import valerie.MediaInfo;
-import valerie.MediaInfoDB;
+import valerie.Database;
 
 /**
  *
@@ -46,8 +46,8 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
         }
         this.setProgress((int)0);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = database.getMediaInfo();
+        Database database = (Database)pWorker.get("Database");
+        MediaInfo[] movies = database.getAsArray();
 
         for (int i = pThreadId; i < movies.length; i += pThreadCount) {
             Float progress = (float) i * 100;
@@ -59,14 +59,14 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
             MediaInfo movie = movies[i];
             
             if (movie.needsUpdate) {
-                if (movie.Imdb == "tt0000000") {
+                if (movie.ImdbId == "tt0000000") {
                     Logger.print(movie.Filename + " : Using Title\"" + movie.SearchString + "\" to get title");
                     this.setMessage(movie.SearchString);
                     //System.out.println("movie=" + movie.SearchString + " ismovie=" + movie.isMovie);
 
                     if (movie.isMovie) {
                         getMediaInfoMovie(database, movie);
-                    } else if (movie.isEpisode || movie.isSeries) {
+                    } else if (movie.isEpisode || movie.isSerie) {
                         getMediaInfoSeries(database, movie);
                     }
 
@@ -75,13 +75,13 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
                     Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\".");
                 }
                 else {
-                    Logger.print(movie.Filename + " : Using Imdb\"" + movie.Imdb + "\" to get title");
-                    this.setMessage("Imdb: "+movie.Imdb);
+                    Logger.print(movie.Filename + " : Using Imdb\"" + movie.ImdbId + "\" to get title");
+                    this.setMessage("Imdb: "+movie.ImdbId);
                     //System.out.println("movie=" + movie.Imdb + " ismovie=" + movie.isMovie);
 
                     if (movie.isMovie) {
                         getMediaInfoMovie(database, movie);
-                    } else if (movie.isEpisode || movie.isSeries) {
+                    } else if (movie.isEpisode || movie.isSerie) {
                         getMediaInfoSeries(database, movie);
                     }
 
@@ -95,11 +95,11 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
 
 
         // We have to recheck if alle series got episodes, else delete unneeded series
-        MediaInfo[] series = database.getMediaInfoSeries();
+        MediaInfo[] series = database.getSerieAsArray();
         for(MediaInfo info : series) {
-            MediaInfo[] episodes = database.getMediaInfoEpisodes(info.TheTvDb);
+            MediaInfo[] episodes = database.getEpisodeAsArray(info.TheTvDbId);
             if(episodes.length == 0)
-                database.deleteMediaInfo(info.ID);
+                database.delete(info.ID);
         }
 
         this.setProgress(100);
@@ -116,11 +116,11 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
     protected void succeeded(Object result) {
      }
 
-    private void getMediaInfoMovie(MediaInfoDB database, MediaInfo movie) {
+    private void getMediaInfoMovie(Database database, MediaInfo movie) {
         
       //if we have no searchstring, than the movie was imported from the archive and we dont need to reparse
         if (movie.needsUpdate) {
-            if (movie.Imdb == movie.ImdbNull){
+            if (movie.ImdbId == movie.ImdbIdNull){
                 System.out.println("Getting Data by Title.");
                 movie.getDataByTitle();
             }
@@ -139,18 +139,18 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
         }
     }
 
-    private void getMediaInfoSeries(MediaInfoDB database, MediaInfo movie) {
+    private void getMediaInfoSeries(Database database, MediaInfo movie) {
 
         //Ignore all series and only check episodes
-        if (!movie.isSeries && movie.needsUpdate) {
+        if (!movie.isSerie && movie.needsUpdate) {
             MediaInfo Series;
-            if(movie.ArtProvider == null)movie.ArtProvider = new valerie.provider.theTvDb();
-            if(movie.DataProvider == null)movie.DataProvider = new valerie.provider.theTvDb();
+            if(movie.ArtProvider == null)movie.ArtProvider = new valerie.provider.TheTvDbProvider();
+            if(movie.DataProvider == null)movie.DataProvider = new valerie.provider.TheTvDbProvider();
 
             if (database.getMediaInfoForSeries(movie.SearchString) == null) {
                 Series = movie.clone();
 
-                Series.isSeries = true;
+                Series.isSerie = true;
                 Series.isEpisode = false;
                 Series.getDataByTitle();
                 Series.Filename = "";
@@ -161,9 +161,9 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
                     Series.needsUpdate = false;
 
                     //check if this is a duplicate
-                    MediaInfo duplicate = database.getMediaInfoForSeries(Series.TheTvDb);
+                    MediaInfo duplicate = database.getMediaInfoForSeries(Series.TheTvDbId);
                     if (duplicate == null) {
-                        database.addMediaInfo(Series);
+                        database.add(Series);
                     } else {
                         if(duplicate.SearchString.length() > 0)
                             duplicate.SearchString = duplicate.SearchString.substring(0, duplicate.SearchString.length()) + "|" + movie.SearchString + ")";
@@ -178,7 +178,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
             if (Series != null) {
                 movie.Title = Series.Title;
                 movie.Year = Series.Year;
-                movie.Imdb = Series.Imdb;
+                movie.ImdbId = Series.ImdbId;
                 movie.Poster = Series.Poster;
                 movie.Backdrop = Series.Backdrop;
                 movie.Banner = Series.Banner;
@@ -189,7 +189,7 @@ public class ParseFilelistTask extends org.jdesktop.application.Task<Object, Voi
                 movie.Genres = Series.Genres;
                 movie.Tag = Series.Tag;
                 movie.Popularity = Series.Popularity;
-                movie.TheTvDb = Series.TheTvDb;
+                movie.TheTvDbId = Series.TheTvDbId;
 
 
             } else {

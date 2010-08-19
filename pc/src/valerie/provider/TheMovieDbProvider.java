@@ -14,7 +14,7 @@ import valerie.MediaInfo;
  *
  * @author Admin
  */
-public class theMovieDb extends provider {
+public class TheMovieDbProvider extends provider {
 
     public void getDataByTitle(MediaInfo info) {
         if(info.isMovie)
@@ -44,7 +44,7 @@ public class theMovieDb extends provider {
            try {
                String urlTitle = info.SearchString;
                urlTitle = urlTitle.replaceAll(" ", "+");
-               xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(apiSearch + urlTitle));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -80,7 +80,7 @@ public class theMovieDb extends provider {
     public void getMoviesById(MediaInfo info) {
            Document xml = null;
            try {               
-               xml =  new valerie.tools.webgrabber().getXML(new URL(apiImdbLookup + "/tt" + String.format("%07d", info.Imdb)));
+               xml =  new valerie.tools.WebGrabber().getXML(new URL(apiImdbLookup + "/" + info.ImdbId));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -116,7 +116,7 @@ public class theMovieDb extends provider {
     public void getMoviesArtById(MediaInfo info) {
            Document xml = null;
            try {
-               xml =  new valerie.tools.webgrabber().getXML(new URL(apiImdbLookup + "tt" + String.format("%07d", info.Imdb)));
+               xml =  new valerie.tools.WebGrabber().getXML(new URL(apiImdbLookup + info.ImdbId));
            } catch (Exception ex) {}
 
            if (xml == null)

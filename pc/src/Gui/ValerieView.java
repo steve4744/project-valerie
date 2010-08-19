@@ -3,6 +3,8 @@
  */
 package Gui;
 
+import java.awt.event.MouseEvent;
+import org.jdesktop.application.Task;
 import valerie.*;
 import java.awt.Color;
 import java.awt.Component;
@@ -54,11 +56,15 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import org.jdom.Document;
+import valerie.controller.Controller;
+import valerie.controller.Notification;
 import valerie.tools.DebugOutput;
 import valerie.tools.Encode;
 import valerie.tools.FileUtils;
@@ -72,8 +78,8 @@ import valerie.tools.pngquant;
 /**
  * The application's main frame.
  */
-public class ValerieView extends FrameView implements WindowStateListener {
-
+public class ValerieView extends FrameView /*implements WindowStateListener*/ {
+/*
     class UIOutputHandler extends OutputHandler {
 
         long startTimer = 0;
@@ -263,49 +269,46 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 }
             }
             else if(id.equals("UPDATE_TABLES")) {
-                pParent.updateTables();
+                pParent.tablesUpdate();
             }
 
         }
     }
+*/
+    Controller pController;
 
-    public ValerieView(SingleFrameApplication app, String[] arguments) {
+    public ValerieView(SingleFrameApplication app, Controller controller, String[] arguments) {
         super(app);
 
-        pCallback = new Callback(this);
 
-        pWorker = new BackgroundWorker(this.getApplication());
+        pController = controller;
 
-        pWorker.set("CmdArguments", arguments);
+        pController.add(new Notification() {
 
-        //vArguments = arguments;
-
-        pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
-                pCallback, "pre");
-
-        this.getFrame().addWindowStateListener(this);
-
-        class WListener implements WindowListener {
-            public void windowDeactivated(WindowEvent e) {
-                //System.out.print(e);
+            @Override
+            public void init() {
+                Type = "DB_REFRESH";
             }
-            public void windowActivated(WindowEvent e) {
-                if(firstFocus) {
-                    firstFocus = false;
 
-                    pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.BACKGROUND,
-                        pCallback, "post");
-                }
+            @Override
+            public void callback(Object o) {
+                tablesUpdate();
             }
-            public void windowIconified(WindowEvent e) { }
-            public void windowDeiconified(WindowEvent e) { }
-            public void windowClosed(WindowEvent e) { }
-            public void windowClosing(WindowEvent e) { }
-            public void windowOpened(WindowEvent e) { }
-         }
+        });
 
-        this.getFrame().addWindowListener(new WListener());
+        pController.add(new Notification() {
 
+            @Override
+            public void init() {
+                Type = "BI_REFRESH";
+            }
+
+            @Override
+            public void callback(Object o) {
+                boxInfosUpdate();
+            }
+        });
+     
         initComponents();
 
         // status bar initialization - message timeout, idle icon and busy animation, etc
@@ -346,12 +349,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         busyIconTimer.start();
                     }
                     progressBar.setVisible(true);
-                    //progressBar.setIndeterminate(true);
+                    progressBar.setIndeterminate(true);
                 } else if ("done".equals(propertyName)) {
                     busyIconTimer.stop();
                     statusAnimationLabel.setIcon(idleIcon);
                     progressBar.setVisible(false);
-                    //progressBar.setValue(0);
+                    progressBar.setValue(0);
                 } else if ("message".equals(propertyName)) {
                     String text = (String) (evt.getNewValue());
                     statusMessageLabel.setText((text == null) ? "" : text);
@@ -359,14 +362,14 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 } else if ("progress".equals(propertyName)) {
                     int value = (Integer) (evt.getNewValue());
                     progressBar.setVisible(true);
-                    //progressBar.setIndeterminate(false);
-                    //progressBar.setValue(value);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(value);
                 }
             }
         });
 
         //MY OWN CODE
-        showConsole(false);
+        //showConsole(false);
 
         DebugOutput.add(new DebugOutput.OutputHandler() {
             @Override
@@ -376,7 +379,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
         );
 
-        Logger.add(new UIOutputHandler());
+        //.add(new UIOutputHandler());
 
         class TableChangedMovies implements TableModelListener {
 
@@ -388,29 +391,57 @@ public class ValerieView extends FrameView implements WindowStateListener {
                         int row = e.getFirstRow();
                         int column = e.getColumn();
 
-                        if (column == 0 || column == 2) {
-                            TableModel model = jTableFilelist.getModel();
-                           // int imdb = ((Integer) model.getValueAt(row, 4)).intValue();
-                            int id = ((Integer) model.getValueAt(row, 4)).intValue();
-                            boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
-                            String searchstring = ((String) model.getValueAt(row, 2));
+                        if (column == 1) {
+                            TableModel model = jTableMovies.getModel();
+                            int id = ((Integer) model.getValueAt(row, 3)).intValue();
+                            String searchstring = ((String) model.getValueAt(row, 1));
 
-                            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+                            Database database = (Database)pController.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
-                            toUpdate.Ignoring = !use;
 
-                            Pattern pImdb = Pattern.compile("tt\\d{4,7}");
-                            Matcher mImdb = pImdb.matcher(searchstring);
+                            Matcher mImdb = Pattern.compile("tt\\d{4,7}").matcher(searchstring);
                             if (mImdb.find()/*.matches()*/) {
-                                toUpdate.Imdb = searchstring;
+                                toUpdate.ImdbId = searchstring;
                                 toUpdate.SearchString = searchstring;
                             } else {
-                                toUpdate.Imdb = toUpdate.ImdbNull;
+                                toUpdate.ImdbId = toUpdate.ImdbIdNull;
                                 toUpdate.SearchString = searchstring;
                             }
+                            toUpdate.needsUpdate = true;
+
+                            model.setValueAt(toUpdate.needsUpdate, row, 4);
+                        }
+                    }
+                }
+            }
+        }
+        jTableMovies.getModel().addTableModelListener(new TableChangedMovies());
+
+        class TableChangedEpisodes implements TableModelListener {
+
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    if(!isUpdating) {
+                        //System.out.println(e.getSource());
+
+                        int row = e.getFirstRow();
+                        int column = e.getColumn();
+
+                        if (column == 1 || column == 2 || column == 3) {
+                            TableModel model = jTableEpisodes.getModel();
+                            int id = ((Integer) model.getValueAt(row, 4)).intValue();
+                            String searchstring = ((String) model.getValueAt(row, 1));
+                            int season = ((Integer) model.getValueAt(row, 2)).intValue();
+                            int episode = ((Integer) model.getValueAt(row, 3)).intValue();
+
+                            Database database = (Database)pController.get("Database");
+                            MediaInfo toUpdate = database.getMediaInfoById(id);
+
+                            toUpdate.SearchString = searchstring;
+                            toUpdate.Season = season;
+                            toUpdate.Episode = episode;
 
                             toUpdate.needsUpdate = true;
-                            //toUpdate.Imdb = imdb;
 
                             model.setValueAt(toUpdate.needsUpdate, row, 5);
                         }
@@ -418,48 +449,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 }
             }
         }
-        jTableFilelist.getModel().addTableModelListener(new TableChangedMovies());
-
-        class TableChangedEpisodes implements TableModelListener {
-
-            public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.UPDATE) {
-                    if(!isUpdating) {
-                        System.out.println(e.getSource());
-
-                        int row = e.getFirstRow();
-                        int column = e.getColumn();
-
-                        if (column == 0 || column == 2 || column == 3 || column == 4) {
-                            TableModel model = jTableFilelistEpisodes.getModel();
-                            int id = ((Integer) model.getValueAt(row, 5)).intValue();
-                            boolean use = ((Boolean) model.getValueAt(row, 0)).booleanValue();
-                            String searchstring = ((String) model.getValueAt(row, 2));
-                            int season = ((Integer) model.getValueAt(row, 3)).intValue();
-                            int episode = ((Integer) model.getValueAt(row, 4)).intValue();
-
-                            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-                            MediaInfo toUpdate = database.getMediaInfoById(id);
-                            toUpdate.Ignoring = !use;
-
-                            toUpdate.SearchString = searchstring;
-                            toUpdate.Season = season;
-                            toUpdate.Episode = episode;
-                            toUpdate.needsUpdate = true;
-
-                            model.setValueAt(toUpdate.needsUpdate, row, 6);
-                        }
-                    }
-                }
-            }
-        }
-
-        jTableFilelistEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
+        jTableEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
     }
 
     boolean firstFocus = true;
 
-    public void windowStateChanged(java.awt.event.WindowEvent event)
+    /*public void windowStateChanged(java.awt.event.WindowEvent event)
     {
         if(event.getNewState() == java.awt.event.WindowEvent.WINDOW_OPENED) {
             pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
@@ -474,7 +469,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
                 pCallback, "post");
         }
-    }
+    }*/
 
     @Action
     public void showAboutBox() {
@@ -489,33 +484,36 @@ public class ValerieView extends FrameView implements WindowStateListener {
     }
 
     class ProgressRenderer extends DefaultTableCellRenderer {
-  private final JProgressBar b = new JProgressBar(0, 100);
-  public ProgressRenderer() {
-    super();
-    setOpaque(true);
-    b.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-  }
-  public Component getTableCellRendererComponent(JTable table, Object value,
-                                               boolean isSelected, boolean hasFocus,
-                                               int row, int column) {
-    Integer i = (Integer)value;
-    String text = "Done";
-    if(i != null) {
-        if(i < 0) {
-          text = "Canceled";
-        }else if(i < 100) {
-          b.setValue(i);
-          return b;
-        }
-    } else {
-        b.setValue(0);
-        return b;
-    }
+        private final JProgressBar b = new JProgressBar(0, 100);
 
-    super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
-    return this;
-  }
-}
+        public ProgressRenderer() {
+            super();
+            setOpaque(true);
+            b.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                        boolean isSelected, boolean hasFocus,
+                                                        int row, int column) {
+            Integer i = (Integer)value;
+            String text = "Done";
+            if(i != null) {
+                if(i < 0) {
+                    text = "Canceled";
+                }else if(i < 100) {
+                    b.setValue(i);
+                    return b;
+                }
+            } else {
+                b.setValue(0);
+                return b;
+            }
+
+            super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
+            return this;
+        }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -536,36 +534,33 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jButtonParse = new javax.swing.JButton();
         jButtonArt = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
-        jSeparator4 = new javax.swing.JToolBar.Separator();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
         jComboBoxBoxinfo = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane = new javax.swing.JTabbedPane();
         jPanelMovies = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTableFilelist = new javax.swing.JTable() {
+        jTableMovies = new javax.swing.JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
                 Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
                     Object jo = getValueAt(rowIndex, vColIndex);
-                    if(jo != null)
-                    jc.setToolTipText(jo.toString());
-
+                    if(jo != null) {
+                        jc.setToolTipText(String.valueOf(jo));
+                    }
                     if(!super.isRowSelected(rowIndex)) {
-                        jo = getValueAt(rowIndex, 5);
-                        if(jo != null && jo.toString() == "true") {
+                        jo = getValueAt(rowIndex, 4);
+                        if(jo != null && Boolean.valueOf(jo.toString()) == true) {
                             jc.setBackground(Color.orange);
-                        } else
-                        jc.setBackground(null/*Color.white*/);
+                        } else {
+                            jc.setBackground(null/*Color.white*/);
+                        }
                     }
                 }
                 return c;
             }
         }
         ;
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jPanelSeries = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane6 = new javax.swing.JScrollPane();
@@ -575,29 +570,31 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
                     Object jo = getValueAt(rowIndex, vColIndex);
-                    if(jo != null)
-                    jc.setToolTipText(jo.toString());
+                    if(jo != null) {
+                        jc.setToolTipText(jo.toString());
+                    }
                 }
                 return c;
             }
         }
         ;
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTableFilelistEpisodes = new javax.swing.JTable() {
+        jTableEpisodes = new javax.swing.JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
                 Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
                 if (c instanceof JComponent) {
                     JComponent jc = (JComponent) c;
                     Object jo = getValueAt(rowIndex, vColIndex);
-                    if(jo != null)
-                    jc.setToolTipText(jo.toString());
-
+                    if(jo != null) {
+                        jc.setToolTipText(String.valueOf(jo));
+                    }
                     if(!super.isRowSelected(rowIndex)) {
-                        jo = getValueAt(rowIndex, 6);
-                        if(jo != null && jo.toString() == "true")
-                        jc.setBackground(Color.orange);
-                        else
-                        jc.setBackground(null/*Color.white*/);
+                        jo = getValueAt(rowIndex, 5);
+                        if(jo != null && Boolean.valueOf(jo.toString()) == true) {
+                            jc.setBackground(Color.orange);
+                        } else {
+                            jc.setBackground(null/*Color.white*/);
+                        }
                     }
                 }
 
@@ -605,12 +602,27 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         }
         ;
-        jPanel1 = new javax.swing.JPanel();
+        jPanelDetails = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaDescription = new javax.swing.JTextArea();
-        jPanelThumbs = new javax.swing.JPanel();
-        jLabelPoster = new javax.swing.JLabel();
-        jLabelBackdrop = new javax.swing.JLabel();
+        jLabelDetailsTitle = new javax.swing.JLabel();
+        jLabelDetailsPoster = new javax.swing.JLabel();
+        jLabelDetailsBackdrop = new javax.swing.JLabel();
+        jLabelDetailsTagline = new javax.swing.JLabel();
+        jLabelDetailsPlot = new javax.swing.JLabel();
+        jScrollPaneDetailsPlot = new javax.swing.JScrollPane();
+        jTextAreaDetailsPlot = new javax.swing.JTextArea();
+        jLabelDetailsStar1 = new javax.swing.JLabel();
+        jLabelDetailsStar2 = new javax.swing.JLabel();
+        jLabelDetailsStar3 = new javax.swing.JLabel();
+        jLabelDetailsStar4 = new javax.swing.JLabel();
+        jLabelDetailsStar5 = new javax.swing.JLabel();
+        jLabelDetailsStar6 = new javax.swing.JLabel();
+        jLabelDetailsStar7 = new javax.swing.JLabel();
+        jLabelDetailsStar8 = new javax.swing.JLabel();
+        jLabelDetailsStar9 = new javax.swing.JLabel();
+        jLabelDetailsStar10 = new javax.swing.JLabel();
+        jLabelDetailsYear = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -625,6 +637,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
         updateMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
+        jMenuDebug = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         statusPanel = new javax.swing.JPanel();
         javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
         statusMessageLabel = new javax.swing.JLabel();
@@ -653,7 +674,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jToolBar1.setName("jToolBar1"); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getActionMap(ValerieView.class, this);
-        jButtonConnect.setAction(actionMap.get("connectNetwork")); // NOI18N
+        jButtonConnect.setAction(actionMap.get("actionNetworkConnect")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(ValerieView.class);
         jButtonConnect.setIcon(resourceMap.getIcon("jButtonConnect.icon")); // NOI18N
         jButtonConnect.setText(resourceMap.getString("jButtonConnect.text")); // NOI18N
@@ -664,10 +685,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jButtonConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonConnect);
 
-        jButtonDownloadFromBox.setAction(actionMap.get("downloadArchivFromBox")); // NOI18N
+        jButtonDownloadFromBox.setAction(actionMap.get("actionNetworkTransferMO")); // NOI18N
         jButtonDownloadFromBox.setIcon(resourceMap.getIcon("jButtonDownloadFromBox.icon")); // NOI18N
         jButtonDownloadFromBox.setText(resourceMap.getString("jButtonDownloadFromBox.text")); // NOI18N
         jButtonDownloadFromBox.setToolTipText(resourceMap.getString("jButtonDownloadFromBox.toolTipText")); // NOI18N
+        jButtonDownloadFromBox.setEnabled(false);
         jButtonDownloadFromBox.setFocusable(false);
         jButtonDownloadFromBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonDownloadFromBox.setName("jButtonDownloadFromBox"); // NOI18N
@@ -675,10 +697,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jButtonDownloadFromBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonDownloadFromBox);
 
-        jButtonUploadToBox.setAction(actionMap.get("uploadFiles")); // NOI18N
+        jButtonUploadToBox.setAction(actionMap.get("actionNetworkTransferMT")); // NOI18N
         jButtonUploadToBox.setIcon(resourceMap.getIcon("jButtonUploadToBox.icon")); // NOI18N
         jButtonUploadToBox.setText(resourceMap.getString("jButtonUploadToBox.text")); // NOI18N
         jButtonUploadToBox.setToolTipText(resourceMap.getString("jButtonUploadToBox.toolTipText")); // NOI18N
+        jButtonUploadToBox.setEnabled(false);
         jButtonUploadToBox.setFocusable(false);
         jButtonUploadToBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonUploadToBox.setName("jButtonUploadToBox"); // NOI18N
@@ -689,23 +712,28 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jSeparator1.setName("jSeparator1"); // NOI18N
         jToolBar1.add(jSeparator1);
 
-        jButtonSync.setAction(actionMap.get("syncFilelist")); // NOI18N
+        jButtonSync.setAction(actionMap.get("actionNetworkFilesystem")); // NOI18N
+        jButtonSync.setIcon(resourceMap.getIcon("jButtonSync.icon")); // NOI18N
         jButtonSync.setText(resourceMap.getString("jButtonSync.text")); // NOI18N
+        jButtonSync.setToolTipText(resourceMap.getString("jButtonSync.toolTipText")); // NOI18N
+        jButtonSync.setEnabled(false);
         jButtonSync.setFocusable(false);
         jButtonSync.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSync.setName("jButtonSync"); // NOI18N
         jButtonSync.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonSync);
 
-        jButtonParse.setAction(actionMap.get("parseFilelist")); // NOI18N
+        jButtonParse.setAction(actionMap.get("actionJobParse")); // NOI18N
+        jButtonParse.setIcon(resourceMap.getIcon("jButtonParse.icon")); // NOI18N
         jButtonParse.setText(resourceMap.getString("jButtonParse.text")); // NOI18N
+        jButtonParse.setToolTipText(resourceMap.getString("jButtonParse.toolTipText")); // NOI18N
         jButtonParse.setFocusable(false);
         jButtonParse.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonParse.setName("jButtonParse"); // NOI18N
         jButtonParse.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButtonParse);
 
-        jButtonArt.setAction(actionMap.get("getArt")); // NOI18N
+        jButtonArt.setAction(actionMap.get("actionJobArts")); // NOI18N
         jButtonArt.setIcon(resourceMap.getIcon("jButtonArt.icon")); // NOI18N
         jButtonArt.setText(resourceMap.getString("jButtonArt.text")); // NOI18N
         jButtonArt.setToolTipText(resourceMap.getString("jButtonArt.toolTipText")); // NOI18N
@@ -717,12 +745,6 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         jToolBar1.add(jSeparator3);
-
-        jSeparator4.setName("jSeparator4"); // NOI18N
-        jToolBar1.add(jSeparator4);
-
-        jSeparator2.setName("jSeparator2"); // NOI18N
-        jToolBar1.add(jSeparator2);
 
         jComboBoxBoxinfo.setBackground(resourceMap.getColor("jComboBoxBoxinfo.background")); // NOI18N
         jComboBoxBoxinfo.setName("jComboBoxBoxinfo"); // NOI18N
@@ -743,20 +765,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
-        jTableFilelist.setAutoCreateRowSorter(true);
-        jTableFilelist.setModel(new javax.swing.table.DefaultTableModel(
+        jTableMovies.setAutoCreateRowSorter(true);
+        jTableMovies.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null}
+                {null, null, null, null, null}
             },
             new String [] {
-                "Usage", "Title", "Searchstring", "Year", "ID", "Update"
+                "Title", "Searchstring", "Year", "ID", "U"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, false, false, false
+                false, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -767,67 +789,42 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 return canEdit [columnIndex];
             }
         });
-        List <RowSorter.SortKey> sortKeysMovies
-        = new ArrayList<RowSorter.SortKey>();
-        sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-        sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
-
-        jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);
-        jTableFilelist.setName("jTableFilelist"); // NOI18N
-        jTableFilelist.getTableHeader().setReorderingAllowed(false);
-        jTableFilelist.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTableMovies.setColumnSelectionAllowed(true);
+        jTableMovies.setName("jTableMovies"); // NOI18N
+        jTableMovies.getTableHeader().setReorderingAllowed(false);
+        jTableMovies.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableFilelistMouseClicked(evt);
+                jTableMoviesMouseClicked(evt);
             }
         });
-        jTableFilelist.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTableMovies.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTableFilelistKeyPressed(evt);
+                jTableMoviesKeyPressed(evt);
             }
         });
-        jScrollPane1.setViewportView(jTableFilelist);
+        jScrollPane1.setViewportView(jTableMovies);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("Gui/resources/ValerieView"); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(0).setMinWidth(20);
-        jTableFilelist.getColumnModel().getColumn(0).setPreferredWidth(15);
-        jTableFilelist.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(1).setPreferredWidth(150);
-        jTableFilelist.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title1")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(2).setPreferredWidth(100);
-        jTableFilelist.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title2")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(3).setPreferredWidth(30);
-        jTableFilelist.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(4).setPreferredWidth(10);
-        jTableFilelist.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title5")); // NOI18N
-        jTableFilelist.getColumnModel().getColumn(5).setPreferredWidth(1);
-        jTableFilelist.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
-
-        jButton1.setAction(actionMap.get("SelectAllMovies")); // NOI18N
-        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
-        jButton1.setName("jButton1"); // NOI18N
-
-        jButton2.setAction(actionMap.get("UnselectAllMovies")); // NOI18N
-        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-        jButton2.setName("jButton2"); // NOI18N
+        jTableMovies.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTableMovies.getColumnModel().getColumn(0).setPreferredWidth(150);
+        jTableMovies.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title1")); // NOI18N
+        jTableMovies.getColumnModel().getColumn(1).setPreferredWidth(100);
+        jTableMovies.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title2")); // NOI18N
+        jTableMovies.getColumnModel().getColumn(2).setPreferredWidth(30);
+        jTableMovies.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title3")); // NOI18N
+        jTableMovies.getColumnModel().getColumn(3).setPreferredWidth(10);
+        jTableMovies.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title5")); // NOI18N
+        jTableMovies.getColumnModel().getColumn(4).setPreferredWidth(1);
+        jTableMovies.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("jTableFilelist.columnModel.title0")); // NOI18N
 
         javax.swing.GroupLayout jPanelMoviesLayout = new javax.swing.GroupLayout(jPanelMovies);
         jPanelMovies.setLayout(jPanelMoviesLayout);
         jPanelMoviesLayout.setHorizontalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelMoviesLayout.createSequentialGroup()
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addContainerGap(328, Short.MAX_VALUE))
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
         );
         jPanelMoviesLayout.setVerticalGroup(
             jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelMoviesLayout.createSequentialGroup()
-                .addGroup(jPanelMoviesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelMovies.TabConstraints.tabTitle"), jPanelMovies); // NOI18N
@@ -853,7 +850,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false
@@ -867,12 +864,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 return canEdit [columnIndex];
             }
         });
-        List <RowSorter.SortKey> sortKeysSeries
-        = new ArrayList<RowSorter.SortKey>();
-        sortKeysSeries.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-
-        jTableSeries.getRowSorter().setSortKeys(sortKeysSeries);
+        jTableSeries.setColumnSelectionAllowed(true);
         jTableSeries.setName("jTableSeries"); // NOI18N
+        jTableSeries.getTableHeader().setReorderingAllowed(false);
         jTableSeries.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableSeriesMouseClicked(evt);
@@ -884,6 +878,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             }
         });
         jScrollPane6.setViewportView(jTableSeries);
+        jTableSeries.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTableSeries.getColumnModel().getColumn(0).setResizable(false);
         jTableSeries.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableSeries.columnModel.title0")); // NOI18N
         jTableSeries.getColumnModel().getColumn(1).setResizable(false);
@@ -894,20 +889,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         jScrollPane5.setName("jScrollPane5"); // NOI18N
 
-        jTableFilelistEpisodes.setAutoCreateRowSorter(true);
-        jTableFilelistEpisodes.setModel(new javax.swing.table.DefaultTableModel(
+        jTableEpisodes.setAutoCreateRowSorter(true);
+        jTableEpisodes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Use", "Title", "Searchstring", "S", "E", "ID", "Update"
+                "Title", "Searchstring", "S", "E", "ID", "U"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false, true, true, true, false, false
+                false, true, true, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -918,45 +913,38 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 return canEdit [columnIndex];
             }
         });
-        List <RowSorter.SortKey> sortKeysEpisodes
-        = new ArrayList<RowSorter.SortKey>();
-        sortKeysEpisodes.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-        sortKeysEpisodes.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-        sortKeysEpisodes.add(new RowSorter.SortKey(4, SortOrder.ASCENDING));
-
-        jTableFilelistEpisodes.getRowSorter().setSortKeys(sortKeysEpisodes);
-        jTableFilelistEpisodes.setName("jTableFilelistEpisodes"); // NOI18N
-        jTableFilelistEpisodes.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTableEpisodes.setColumnSelectionAllowed(true);
+        jTableEpisodes.setName("jTableEpisodes"); // NOI18N
+        jTableEpisodes.getTableHeader().setReorderingAllowed(false);
+        jTableEpisodes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableFilelistEpisodesMouseClicked(evt);
+                jTableEpisodesMouseClicked(evt);
             }
         });
-        jTableFilelistEpisodes.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTableEpisodes.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTableFilelistEpisodesKeyPressed(evt);
+                jTableEpisodesKeyPressed(evt);
             }
         });
-        jScrollPane5.setViewportView(jTableFilelistEpisodes);
-        jTableFilelistEpisodes.getColumnModel().getColumn(0).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(0).setPreferredWidth(10);
-        jTableFilelistEpisodes.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title5")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(1).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(1).setPreferredWidth(150);
-        jTableFilelistEpisodes.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title1")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(2).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title3")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(3).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(3).setPreferredWidth(15);
-        jTableFilelistEpisodes.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title7")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(4).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(4).setPreferredWidth(15);
-        jTableFilelistEpisodes.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title8")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(5).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(5).setPreferredWidth(10);
-        jTableFilelistEpisodes.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
-        jTableFilelistEpisodes.getColumnModel().getColumn(6).setResizable(false);
-        jTableFilelistEpisodes.getColumnModel().getColumn(6).setPreferredWidth(1);
-        jTableFilelistEpisodes.getColumnModel().getColumn(6).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
+        jScrollPane5.setViewportView(jTableEpisodes);
+        jTableEpisodes.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTableEpisodes.getColumnModel().getColumn(0).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(0).setPreferredWidth(150);
+        jTableEpisodes.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableFilelist.columnModel.title1")); // NOI18N
+        jTableEpisodes.getColumnModel().getColumn(1).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableEpisodes.columnModel.title0")); // NOI18N
+        jTableEpisodes.getColumnModel().getColumn(2).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(2).setPreferredWidth(15);
+        jTableEpisodes.getColumnModel().getColumn(2).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title7")); // NOI18N
+        jTableEpisodes.getColumnModel().getColumn(3).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(3).setPreferredWidth(15);
+        jTableEpisodes.getColumnModel().getColumn(3).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title8")); // NOI18N
+        jTableEpisodes.getColumnModel().getColumn(4).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(4).setPreferredWidth(10);
+        jTableEpisodes.getColumnModel().getColumn(4).setHeaderValue(resourceMap.getString("jTableFilelistEpisodes.columnModel.title6")); // NOI18N
+        jTableEpisodes.getColumnModel().getColumn(5).setResizable(false);
+        jTableEpisodes.getColumnModel().getColumn(5).setPreferredWidth(1);
+        jTableEpisodes.getColumnModel().getColumn(5).setHeaderValue(resourceMap.getString("jTableEpisodes.columnModel.title6")); // NOI18N
 
         jSplitPane2.setRightComponent(jScrollPane5);
 
@@ -968,14 +956,14 @@ public class ValerieView extends FrameView implements WindowStateListener {
         );
         jPanelSeriesLayout.setVerticalGroup(
             jPanelSeriesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 622, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
         );
 
         jTabbedPane.addTab(resourceMap.getString("jPanelSeries.TabConstraints.tabTitle"), jPanelSeries); // NOI18N
 
         jSplitPane1.setLeftComponent(jTabbedPane);
 
-        jPanel1.setName("jPanel1"); // NOI18N
+        jPanelDetails.setName("jPanelDetails"); // NOI18N
 
         jScrollPane3.setName("jScrollPane3"); // NOI18N
 
@@ -984,80 +972,186 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jTextAreaDescription.setName("jTextAreaDescription"); // NOI18N
         jScrollPane3.setViewportView(jTextAreaDescription);
 
-        jPanelThumbs.setBackground(resourceMap.getColor("jPanelThumbs.background")); // NOI18N
-        jPanelThumbs.setBorder(new javax.swing.border.MatteBorder(null));
-        jPanelThumbs.setName("jPanelThumbs"); // NOI18N
+        jLabelDetailsTitle.setFont(resourceMap.getFont("jLabelDetailsTitle.font")); // NOI18N
+        jLabelDetailsTitle.setText(resourceMap.getString("jLabelDetailsTitle.text")); // NOI18N
+        jLabelDetailsTitle.setAutoscrolls(true);
+        jLabelDetailsTitle.setName("jLabelDetailsTitle"); // NOI18N
 
-        jLabelPoster.setBackground(resourceMap.getColor("jLabelPoster.background")); // NOI18N
-        jLabelPoster.setText(resourceMap.getString("jLabelPoster.text")); // NOI18N
-        jLabelPoster.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jLabelPoster.setName("jLabelPoster"); // NOI18N
-        jLabelPoster.setOpaque(true);
-        jLabelPoster.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabelDetailsPoster.setBackground(resourceMap.getColor("jLabelDetailsPoster.background")); // NOI18N
+        jLabelDetailsPoster.setText(resourceMap.getString("jLabelDetailsPoster.text")); // NOI18N
+        jLabelDetailsPoster.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jLabelDetailsPoster.setName("jLabelDetailsPoster"); // NOI18N
+        jLabelDetailsPoster.setOpaque(true);
+        jLabelDetailsPoster.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabelPosterMouseClicked(evt);
+                jLabelDetailsPosterMouseClicked(evt);
             }
         });
 
-        jLabelBackdrop.setBackground(resourceMap.getColor("jLabelBackdrop.background")); // NOI18N
-        jLabelBackdrop.setText(resourceMap.getString("jLabelBackdrop.text")); // NOI18N
-        jLabelBackdrop.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jLabelBackdrop.setName("jLabelBackdrop"); // NOI18N
-        jLabelBackdrop.setOpaque(true);
-        jLabelBackdrop.addMouseListener(new java.awt.event.MouseAdapter() {
+        jLabelDetailsBackdrop.setBackground(resourceMap.getColor("jLabelDetailsBackdrop.background")); // NOI18N
+        jLabelDetailsBackdrop.setText(resourceMap.getString("jLabelDetailsBackdrop.text")); // NOI18N
+        jLabelDetailsBackdrop.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jLabelDetailsBackdrop.setName("jLabelDetailsBackdrop"); // NOI18N
+        jLabelDetailsBackdrop.setOpaque(true);
+        jLabelDetailsBackdrop.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabelBackdropMouseClicked(evt);
+                jLabelDetailsBackdropMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanelThumbsLayout = new javax.swing.GroupLayout(jPanelThumbs);
-        jPanelThumbs.setLayout(jPanelThumbsLayout);
-        jPanelThumbsLayout.setHorizontalGroup(
-            jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
+        jLabelDetailsTagline.setFont(resourceMap.getFont("jLabelDetailsTagline.font")); // NOI18N
+        jLabelDetailsTagline.setText(resourceMap.getString("jLabelDetailsTagline.text")); // NOI18N
+        jLabelDetailsTagline.setName("jLabelDetailsTagline"); // NOI18N
+
+        jLabelDetailsPlot.setFont(resourceMap.getFont("jLabelDetailsPlot.font")); // NOI18N
+        jLabelDetailsPlot.setText(resourceMap.getString("jLabelDetailsPlot.text")); // NOI18N
+        jLabelDetailsPlot.setName("jLabelDetailsPlot"); // NOI18N
+
+        jScrollPaneDetailsPlot.setName("jScrollPaneDetailsPlot"); // NOI18N
+
+        jTextAreaDetailsPlot.setBackground(resourceMap.getColor("jTextAreaDetailsPlot.background")); // NOI18N
+        jTextAreaDetailsPlot.setColumns(20);
+        jTextAreaDetailsPlot.setEditable(false);
+        jTextAreaDetailsPlot.setLineWrap(true);
+        jTextAreaDetailsPlot.setRows(5);
+        jTextAreaDetailsPlot.setWrapStyleWord(true);
+        jTextAreaDetailsPlot.setAutoscrolls(false);
+        jTextAreaDetailsPlot.setName("jTextAreaDetailsPlot"); // NOI18N
+        jTextAreaDetailsPlot.setVerifyInputWhenFocusTarget(false);
+        jScrollPaneDetailsPlot.setViewportView(jTextAreaDetailsPlot);
+
+        jLabelDetailsStar1.setIcon(resourceMap.getIcon("jLabelDetailsStar1.icon")); // NOI18N
+        jLabelDetailsStar1.setText(resourceMap.getString("jLabelDetailsStar1.text")); // NOI18N
+        jLabelDetailsStar1.setName("jLabelDetailsStar1"); // NOI18N
+
+        jLabelDetailsStar2.setIcon(resourceMap.getIcon("jLabelDetailsStar2.icon")); // NOI18N
+        jLabelDetailsStar2.setName("jLabelDetailsStar2"); // NOI18N
+
+        jLabelDetailsStar3.setIcon(resourceMap.getIcon("jLabelDetailsStar3.icon")); // NOI18N
+        jLabelDetailsStar3.setName("jLabelDetailsStar3"); // NOI18N
+
+        jLabelDetailsStar4.setIcon(resourceMap.getIcon("jLabelDetailsStar4.icon")); // NOI18N
+        jLabelDetailsStar4.setName("jLabelDetailsStar4"); // NOI18N
+
+        jLabelDetailsStar5.setIcon(resourceMap.getIcon("jLabelDetailsStar5.icon")); // NOI18N
+        jLabelDetailsStar5.setName("jLabelDetailsStar5"); // NOI18N
+
+        jLabelDetailsStar6.setIcon(resourceMap.getIcon("jLabelDetailsStar6.icon")); // NOI18N
+        jLabelDetailsStar6.setName("jLabelDetailsStar6"); // NOI18N
+
+        jLabelDetailsStar7.setIcon(resourceMap.getIcon("jLabelDetailsStar7.icon")); // NOI18N
+        jLabelDetailsStar7.setName("jLabelDetailsStar7"); // NOI18N
+
+        jLabelDetailsStar8.setIcon(resourceMap.getIcon("jLabelDetailsStar8.icon")); // NOI18N
+        jLabelDetailsStar8.setName("jLabelDetailsStar8"); // NOI18N
+
+        jLabelDetailsStar9.setIcon(resourceMap.getIcon("jLabelDetailsStar9.icon")); // NOI18N
+        jLabelDetailsStar9.setName("jLabelDetailsStar9"); // NOI18N
+
+        jLabelDetailsStar10.setIcon(resourceMap.getIcon("jLabelDetailsStar10.icon")); // NOI18N
+        jLabelDetailsStar10.setName("jLabelDetailsStar10"); // NOI18N
+
+        jLabelDetailsYear.setFont(resourceMap.getFont("jLabelDetailsYear.font")); // NOI18N
+        jLabelDetailsYear.setText(resourceMap.getString("jLabelDetailsYear.text")); // NOI18N
+        jLabelDetailsYear.setName("jLabelDetailsYear"); // NOI18N
+
+        javax.swing.GroupLayout jPanelDetailsLayout = new javax.swing.GroupLayout(jPanelDetails);
+        jPanelDetails.setLayout(jPanelDetailsLayout);
+        jPanelDetailsLayout.setHorizontalGroup(
+            jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
-                .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelDetailsTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailsLayout.createSequentialGroup()
+                        .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabelDetailsTagline, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanelDetailsLayout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPaneDetailsPlot, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE))))
+                        .addGap(24, 24, 24))
+                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                        .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                                .addComponent(jLabelDetailsStar1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsStar10)
+                                .addGap(30, 30, 30)
+                                .addComponent(jLabelDetailsYear))
+                            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                                .addComponent(jLabelDetailsPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelDetailsBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabelDetailsPlot))
+                        .addContainerGap(52, Short.MAX_VALUE))))
         );
-        jPanelThumbsLayout.setVerticalGroup(
-            jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelThumbsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanelThumbsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabelBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
-            .addComponent(jPanelThumbs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+        jPanelDetailsLayout.setVerticalGroup(
+            jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelDetailsTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanelThumbs, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabelDetailsStar1)
+                    .addComponent(jLabelDetailsStar2)
+                    .addComponent(jLabelDetailsStar3)
+                    .addComponent(jLabelDetailsStar4)
+                    .addComponent(jLabelDetailsStar5)
+                    .addComponent(jLabelDetailsStar6)
+                    .addComponent(jLabelDetailsStar7)
+                    .addComponent(jLabelDetailsStar8)
+                    .addComponent(jLabelDetailsStar9)
+                    .addComponent(jLabelDetailsStar10)
+                    .addComponent(jLabelDetailsYear))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelDetailsTagline)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelDetailsBackdrop, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanelDetailsLayout.createSequentialGroup()
+                        .addComponent(jLabelDetailsPoster, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabelDetailsPlot)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPaneDetailsPlot, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
         );
 
-        jSplitPane1.setRightComponent(jPanel1);
+        jSplitPane1.setRightComponent(jPanelDetails);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 713, Short.MAX_VALUE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 637, Short.MAX_VALUE)
                 .addGap(84, 84, 84)
                 .addComponent(jComboBoxBoxinfo, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1066,7 +1160,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     .addComponent(jComboBoxBoxinfo)
                     .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE))
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1133,6 +1227,51 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         menuBar.add(helpMenu);
 
+        jMenuDebug.setText(resourceMap.getString("jMenuDebug.text")); // NOI18N
+        jMenuDebug.setName("jMenuDebug"); // NOI18N
+
+        jMenuItem4.setAction(actionMap.get("actionDatabaseLoad")); // NOI18N
+        jMenuItem4.setText(resourceMap.getString("jMenuItem4.text")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        jMenuDebug.add(jMenuItem4);
+
+        jMenuItem5.setAction(actionMap.get("actionDatabaseSave")); // NOI18N
+        jMenuItem5.setText(resourceMap.getString("jMenuItem5.text")); // NOI18N
+        jMenuItem5.setName("jMenuItem5"); // NOI18N
+        jMenuDebug.add(jMenuItem5);
+
+        jMenuItem6.setAction(actionMap.get("actionNetworkConnect")); // NOI18N
+        jMenuItem6.setText(resourceMap.getString("jMenuItem6.text")); // NOI18N
+        jMenuItem6.setName("jMenuItem6"); // NOI18N
+        jMenuDebug.add(jMenuItem6);
+
+        jMenuItem7.setAction(actionMap.get("actionNetworkTransferMO")); // NOI18N
+        jMenuItem7.setText(resourceMap.getString("jMenuItem7.text")); // NOI18N
+        jMenuItem7.setName("jMenuItem7"); // NOI18N
+        jMenuDebug.add(jMenuItem7);
+
+        jMenuItem8.setAction(actionMap.get("actionNetworkTransferMT")); // NOI18N
+        jMenuItem8.setText(resourceMap.getString("jMenuItem8.text")); // NOI18N
+        jMenuItem8.setName("jMenuItem8"); // NOI18N
+        jMenuDebug.add(jMenuItem8);
+
+        jMenuItem9.setAction(actionMap.get("actionNetworkFilesystem")); // NOI18N
+        jMenuItem9.setText(resourceMap.getString("jMenuItem9.text")); // NOI18N
+        jMenuItem9.setName("jMenuItem9"); // NOI18N
+        jMenuDebug.add(jMenuItem9);
+
+        jMenuItem10.setAction(actionMap.get("actionJobParse")); // NOI18N
+        jMenuItem10.setText(resourceMap.getString("jMenuItem10.text")); // NOI18N
+        jMenuItem10.setName("jMenuItem10"); // NOI18N
+        jMenuDebug.add(jMenuItem10);
+
+        jMenuItem11.setAction(actionMap.get("actionJobArts")); // NOI18N
+        jMenuItem11.setText(resourceMap.getString("jMenuItem11.text")); // NOI18N
+        jMenuItem11.setName("jMenuItem11"); // NOI18N
+        jMenuDebug.add(jMenuItem11);
+
+        menuBar.add(jMenuDebug);
+
         statusPanel.setName("statusPanel"); // NOI18N
 
         statusPanelSeparator.setName("statusPanelSeparator"); // NOI18N
@@ -1148,15 +1287,15 @@ public class ValerieView extends FrameView implements WindowStateListener {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1131, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 1055, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1111, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1035, Short.MAX_VALUE)
                 .addComponent(statusAnimationLabel)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
-                .addContainerGap(824, Short.MAX_VALUE)
+                .addContainerGap(748, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1374,7 +1513,28 @@ public class ValerieView extends FrameView implements WindowStateListener {
             setStatusBar(statusPanel);
         }// </editor-fold>//GEN-END:initComponents
 
-    private void drawPosters(String posterfile, String backdropfile) {
+    private void detailsDrawStars(int value) {
+
+        JLabel[] stars = {
+            jLabelDetailsStar1,
+            jLabelDetailsStar2,
+            jLabelDetailsStar3,
+            jLabelDetailsStar4,
+            jLabelDetailsStar5,
+            jLabelDetailsStar6,
+            jLabelDetailsStar7,
+            jLabelDetailsStar8,
+            jLabelDetailsStar9,
+            jLabelDetailsStar10, };
+
+        for(int i = 0; i < value; i++)
+            stars[i].setIcon(new javax.swing.ImageIcon(getClass().getResource("/Gui/resources/Star.png")));
+
+        for(int i = value; i < 10; i++)
+            stars[i].setIcon(new javax.swing.ImageIcon(getClass().getResource("/Gui/resources/NoStar.png")));
+    }
+
+    private void detailsDrawPosters(String posterfile, String backdropfile) {
         ImageIcon poster = new ImageIcon(posterfile);
         ImageIcon backdrop = new ImageIcon(backdropfile);
         poster.getImage().flush();
@@ -1383,28 +1543,28 @@ public class ValerieView extends FrameView implements WindowStateListener {
         backdrop = new ImageIcon(backdropfile);
 
         if(poster.getIconWidth() != -1){
-            jLabelPoster.setDoubleBuffered(true);
-            jLabelPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster.getWidth(), jLabelPoster.getHeight(), 0)));
+            jLabelDetailsPoster.setDoubleBuffered(true);
+            jLabelDetailsPoster.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelDetailsPoster.getWidth(), jLabelDetailsPoster.getHeight(), 0)));
         }            
         else {
-            jLabelPoster.setDoubleBuffered(true);            
-            jLabelPoster.setIcon(null);
+            jLabelDetailsPoster.setDoubleBuffered(true);
+            jLabelDetailsPoster.setIcon(null);
         }
 
         if(backdrop.getIconWidth() != -1){            
-            jLabelBackdrop.setDoubleBuffered(true);
-            jLabelBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop.getWidth(), jLabelBackdrop.getHeight(), 0)));            
+            jLabelDetailsBackdrop.setDoubleBuffered(true);
+            jLabelDetailsBackdrop.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelDetailsBackdrop.getWidth(), jLabelDetailsBackdrop.getHeight(), 0)));
         }
         else {            
-            jLabelBackdrop.setDoubleBuffered(true);            
-            jLabelBackdrop.setIcon(null);
+            jLabelDetailsBackdrop.setDoubleBuffered(true);
+            jLabelDetailsBackdrop.setIcon(null);
         }
     }
 
     private final String defaultPoster = "default/defaultposter.jpg";
     private final String defaultBackdrop = "default/defaultbackdrop.jpg";
 
-    private void drawPosters(String Id){
+    private void detailsDrawPosters(String Id){
 
         String poster = defaultPoster;
         String backdrop = defaultBackdrop;
@@ -1418,19 +1578,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
         else if(new File("converted/" + Id + "_backdrop.png").exists())
             backdrop = "converted/" + Id + "_backdrop.png";
 
-        drawPosters(poster, backdrop);
+        detailsDrawPosters(poster, backdrop);
     }
 
     @Action
     public void showSelectAlternativeTitelPopup() {
-        int row = jTableFilelist.getSelectedRow();
-        int id = (Integer) jTableFilelist.getValueAt(row, 4);
+        int row = jTableMovies.getSelectedRow();
+        int id = (Integer) jTableMovies.getValueAt(row, 2);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pController.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
         String[] possibilities = new String[info.AlternativesCount + 1];
-        possibilities[0] = info.Title + " (" + info.Imdb + ")";
+        possibilities[0] = info.Title + " (" + info.ImdbId + ")";
         for(int i = 0; i < info.AlternativesCount; i++)
             possibilities[i+1] = info.AlternativTitles[i] + " (" + info.AlternativImdbs[i] + ")";
 
@@ -1463,89 +1623,99 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
 
         if((s != null) && s.length() > 0)
-            jTableFilelist.setValueAt(s, row, 2);
+            jTableMovies.setValueAt(s, row, 2);
     }
 
-    private void jTableFilelistMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistMouseClicked
-
-        if (evt.getClickCount() == 1 && evt.getButton() == evt.BUTTON1) {
-            int row = jTableFilelist.getSelectedRow();
-            int id = (Integer) jTableFilelist.getValueAt(row, 4);
-
-            //Toolkit tk = Toolkit.getDefaultToolkit();
-
-            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-            MediaInfo info = database.getMediaInfoById(id);
+    private void detailsRefresh(MediaInfo info) {
+        if (info != null) {
+            if(info.Title.length() > 0)
+                jLabelDetailsTitle.setText(info.Title);
+            else
+                jLabelDetailsTitle.setText("[S] " + info.SearchString);
+            if(info.Tag.length() > 0)
+                jLabelDetailsTagline.setText(info.Tag);
+            else
+                jLabelDetailsTagline.setText("No tagline available.");
+            jTextAreaDetailsPlot.setText(info.Plot);
+            jTextAreaDetailsPlot.setCaretPosition(0);
+            jLabelDetailsYear.setText("[" + info.Year + "]");
 
             jTextAreaDescription.setText(info.toString());
-            //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
-            drawPosters(info.Imdb);
+            jTextAreaDescription.setCaretPosition(0);
+
+            detailsDrawPosters(info.isMovie?info.ImdbId:info.TheTvDbId);
+            detailsDrawStars(info.Popularity);
         }
-        else if (evt.getClickCount() == 2 && evt.getButton() == evt.BUTTON1){
+    }
+
+    private void jTableMoviesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMoviesMouseClicked
+
+        if (evt.getClickCount() == 1 && evt.getButton() == MouseEvent.BUTTON1) {
+            int row = jTableMovies.getSelectedRow();
+            int id = (Integer) jTableMovies.getValueAt(row, 3);
+
+            Database database = (Database)pController.get("Database");
+            MediaInfo info = database.getMediaInfoById(id);
+            
+            detailsRefresh(info);
+        }
+        else if (evt.getClickCount() == 2 && evt.getButton() == MouseEvent.BUTTON1){
             showSelectAlternativeTitelPopup();
         }
-    }//GEN-LAST:event_jTableFilelistMouseClicked
+    }//GEN-LAST:event_jTableMoviesMouseClicked
 
-    private void jTableFilelistKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistKeyPressed
-        int row = jTableFilelist.getSelectedRow();
-
-        if (evt.getKeyCode() == 38 && row > 0) {
-            row--;
-        } else if (evt.getKeyCode() == 40 && row + 1 < jTableFilelist.getRowCount()) {
-            row++;
-        }
-
-        int id = (Integer) jTableFilelist.getValueAt(row, 4);
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo info = database.getMediaInfoById(id);
-
-        jTextAreaDescription.setText(info.toString());              
-        //drawPosters("converted/tt" + info.Imdb + "_poster.png", "download/tt" + info.Imdb + "_backdrop.jpg");
-        drawPosters(info.Imdb);
-    }//GEN-LAST:event_jTableFilelistKeyPressed
-
-    private void jTableFilelistEpisodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesMouseClicked
-        int row = jTableFilelistEpisodes.getSelectedRow();
-        int id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
-
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo info = database.getMediaInfoById(id);
-
-        jTextAreaDescription.setText(info.toString());        
-        //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(info.TheTvDb);
-    }//GEN-LAST:event_jTableFilelistEpisodesMouseClicked
-
-    private void jTableFilelistEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableFilelistEpisodesKeyPressed
-        int row = jTableFilelistEpisodes.getSelectedRow();
+    private void jTableMoviesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableMoviesKeyPressed
+        int row = jTableMovies.getSelectedRow();
 
         if (evt.getKeyCode() == 38 && row > 0) {
             row--;
-        } else if (evt.getKeyCode() == 40 && row + 1 < jTableFilelistEpisodes.getRowCount()) {
+        } else if (evt.getKeyCode() == 40 && row + 1 < jTableMovies.getRowCount()) {
             row++;
         }
 
-        int id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        int id = (Integer) jTableMovies.getValueAt(row, 3);
+        Database database = (Database)pController.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
 
-        jTextAreaDescription.setText(info.toString());        
-       // drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-        drawPosters(info.TheTvDb);
-    }//GEN-LAST:event_jTableFilelistEpisodesKeyPressed
+        detailsRefresh(info);
+    }//GEN-LAST:event_jTableMoviesKeyPressed
+
+    private void jTableEpisodesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableEpisodesMouseClicked
+        int row = jTableEpisodes.getSelectedRow();
+        int id = (Integer) jTableEpisodes.getValueAt(row, 4);
+
+        Database database = (Database)pController.get("Database");
+        MediaInfo info = database.getMediaInfoById(id);
+
+        detailsRefresh(info);
+    }//GEN-LAST:event_jTableEpisodesMouseClicked
+
+    private void jTableEpisodesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableEpisodesKeyPressed
+        int row = jTableEpisodes.getSelectedRow();
+
+        if (evt.getKeyCode() == 38 && row > 0) {
+            row--;
+        } else if (evt.getKeyCode() == 40 && row + 1 < jTableEpisodes.getRowCount()) {
+            row++;
+        }
+
+        int id = (Integer) jTableEpisodes.getValueAt(row, 4);
+        Database database = (Database)pController.get("Database");
+        MediaInfo info = database.getMediaInfoById(id);
+
+        detailsRefresh(info);
+    }//GEN-LAST:event_jTableEpisodesKeyPressed
 
     private void jTableSeriesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSeriesMouseClicked
         int row = jTableSeries.getSelectedRow();
         int id = (Integer) jTableSeries.getValueAt(row, 1);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pController.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
-        if (info != null) {
-            jTextAreaDescription.setText(info.toString());            
-            //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-            drawPosters(info.TheTvDb);
-        }
-        updateTablesEpisodes(id);
+
+        detailsRefresh(info);
+
+        tablesEpisodesUpdate(id);
     }//GEN-LAST:event_jTableSeriesMouseClicked
 
     private void jTableSeriesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableSeriesKeyPressed
@@ -1558,45 +1728,44 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         int id = (Integer) jTableSeries.getValueAt(row, 1);
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pController.get("Database");
         MediaInfo info = database.getMediaInfoById(id);
-        if (info != null) {
-            jTextAreaDescription.setText(info.toString());            
-            //drawPosters("converted/" + info.TheTvDb + "_poster.png", "download/" + info.TheTvDb + "_backdrop.jpg");
-            drawPosters(info.TheTvDb);
-        }
-        updateTablesEpisodes(id);
+
+        detailsRefresh(info);
+        tablesEpisodesUpdate(id);
     }//GEN-LAST:event_jTableSeriesKeyPressed
 
     private void jComboBoxBoxinfoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxBoxinfoItemStateChanged
         DebugOutput.printl("->");
 
-        pWorker.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
+        pController.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
 
-        if(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV")) {
+        /*if(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV")) {
             //clear database
-            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            Database database = (Database)pWorker.get("Database");
             database.clear();
 
             pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
-            updateTables();
-        }
+            tablesUpdate();
+        }*/
 
         if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
             jButtonUploadToBox.setEnabled(false);
+            jButtonDownloadFromBox.setEnabled(false);
             jButtonSync.setEnabled(false);
         }
         else {
             jButtonUploadToBox.setEnabled(true);
+            jButtonDownloadFromBox.setEnabled(true);
             jButtonSync.setEnabled(true);
         }
 
         DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
 
-    private void jLabelBackdropMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelBackdropMouseClicked
+    private void jLabelDetailsBackdropMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelDetailsBackdropMouseClicked
 
-        int row = 0;
+        /*int row = 0;
         int id = 0;
         String directory = "";
         ImageIcon backdrop;        
@@ -1605,9 +1774,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         switch(jTabbedPane.getSelectedIndex()){
             case 0:
-                row = jTableFilelist.getSelectedRow();
+                row = jTableMovies.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    id = (Integer) jTableMovies.getValueAt(row, 4);
                     directory = "download/tt";
                 }
                 break;
@@ -1619,10 +1788,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     directory = "download/";
                 }
                 else {
-                    row = jTableFilelistEpisodes.getSelectedRow();
+                    row = jTableEpisodes.getSelectedRow();
 
                     if (row > 1){
-                        id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
+                        id = (Integer) jTableEpisodes.getValueAt(row, 5);
                         directory = "download/";
                     }
                 }
@@ -1630,20 +1799,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         if (directory.contains("download")){
-            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            Database database = (Database)pWorker.get("Database");
             BackdropWork = database.getMediaInfoById(id);
 
             if (BackdropWork.isMovie){
-                directory = directory + BackdropWork.Imdb + "_backdrop.jpg";
+                directory = directory + BackdropWork.ImdbId + "_backdrop.jpg";
             }
             else {
-                directory = directory + BackdropWork.TheTvDb + "_backdrop.jpg";
+                directory = directory + BackdropWork.TheTvDbId + "_backdrop.jpg";
             }            
 
             jImportBackdrop.setLocationRelativeTo(mainPanel);
             jImportBackdrop.validate();
             jImportBackdrop.setVisible(true);
-            jImportBackdrop.setTitle("Import Backdrop (Imdb: "+BackdropWork.Imdb+")");
+            jImportBackdrop.setTitle("Import Backdrop (Imdb: "+BackdropWork.ImdbId+")");
 
             backdrop = new ImageIcon(directory);
 
@@ -1655,11 +1824,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jLabelBackdrop1.setDoubleBuffered(true);
                 jLabelBackdrop1.setIcon(null);
             }
-        }
-    }//GEN-LAST:event_jLabelBackdropMouseClicked
+        }*/
+    }//GEN-LAST:event_jLabelDetailsBackdropMouseClicked
 
     private void jButtonBackdropOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackdropOpenActionPerformed
-        Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
+        /*Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
         Integer Resize = new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE");
 
         jJPEGOpen.addChoosableFileFilter(new ImageFilter());
@@ -1683,17 +1852,17 @@ public class ValerieView extends FrameView implements WindowStateListener {
             
             ImageIcon backdrop = new ImageIcon("import/backdrop.jpg");
             jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
-        }
+        }*/
 
     }//GEN-LAST:event_jButtonBackdropOpenActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        try {
+        /*try {
             if (BackdropWork.isMovie) {
-                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.Imdb + "_backdrop.jpg");
+                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.ImdbId + "_backdrop.jpg");
             }
             else {
-                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDb + "_backdrop.jpg");
+                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDbId + "_backdrop.jpg");
             }
         }
         catch(IOException e2)
@@ -1708,30 +1877,30 @@ public class ValerieView extends FrameView implements WindowStateListener {
         {
             case 0:
                 if (BackdropWork.isMovie) {
-                    new mencoder().exec("download/" + BackdropWork.Imdb + "_backdrop.jpg", "import/" + BackdropWork.Imdb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + BackdropWork.ImdbId + "_backdrop.jpg", "import/" + BackdropWork.ImdbId + "_backdrop.m1v", Resolution);
                 }
                 else {
-                    new mencoder().exec("download/" + BackdropWork.TheTvDb + "_backdrop.jpg", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + BackdropWork.TheTvDbId + "_backdrop.jpg", "import/" + BackdropWork.TheTvDbId + "_backdrop.m1v", Resolution);
                 }
                 break;
             case 1:
                 if (BackdropWork.isMovie) {
-                    new Encode().exec("download/" + BackdropWork.Imdb + "_backdrop", "import/" + BackdropWork.Imdb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/" + BackdropWork.ImdbId + "_backdrop", "import/" + BackdropWork.ImdbId + "_backdrop.m1v",Resolution);
                 }
                 else {
-                    new Encode().exec("download/" + BackdropWork.TheTvDb + "_backdrop", "import/" + BackdropWork.TheTvDb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/" + BackdropWork.TheTvDbId + "_backdrop", "import/" + BackdropWork.TheTvDbId + "_backdrop.m1v",Resolution);
                 }
                 break;
         }
 
         try {
             if (BackdropWork.isMovie) {
-                FileUtils.copy("import/" + BackdropWork.Imdb + "_backdrop.m1v", "converted/"+BackdropWork.Imdb+"_backdrop.m1v");
-                drawPosters("converted/" + BackdropWork.Imdb + "_poster.png", "download/" + BackdropWork.Imdb + "_backdrop.jpg");
+                FileUtils.copy("import/" + BackdropWork.ImdbId + "_backdrop.m1v", "converted/"+BackdropWork.ImdbId+"_backdrop.m1v");
+                detailsDrawPosters("converted/" + BackdropWork.ImdbId + "_poster.png", "download/" + BackdropWork.ImdbId + "_backdrop.jpg");
             }
             else {
-                FileUtils.copy("import/" + BackdropWork.TheTvDb + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDb + "_backdrop.m1v");
-                drawPosters("converted/" + BackdropWork.TheTvDb + "_poster.png","download/" + BackdropWork.TheTvDb + "_backdrop.jpg");
+                FileUtils.copy("import/" + BackdropWork.TheTvDbId + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDbId + "_backdrop.m1v");
+                detailsDrawPosters("converted/" + BackdropWork.TheTvDbId + "_poster.png","download/" + BackdropWork.TheTvDbId + "_backdrop.jpg");
             }
         }
         catch(IOException e2)
@@ -1740,11 +1909,11 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         jImportBackdrop.setVisible(false);
-        FileUtils.deleteFile("import/backdrop.jpg");
+        FileUtils.deleteFile("import/backdrop.jpg");*/
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButtonPosterOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterOpenActionPerformed
-        jJPEGOpen.addChoosableFileFilter(new ImageFilter());
+        /*jJPEGOpen.addChoosableFileFilter(new ImageFilter());
         int result = jJPEGOpen.showOpenDialog(null);
 
         if(result == jJPEGOpen.APPROVE_OPTION){
@@ -1784,20 +1953,20 @@ public class ValerieView extends FrameView implements WindowStateListener {
             ImageIcon poster = new ImageIcon("import/poster.png");
             jLabelPoster1.setDoubleBuffered(true);
             jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster1.getWidth(), jLabelPoster1.getHeight(), 0)));
-        }
+        }*/
     }//GEN-LAST:event_jButtonPosterOpenActionPerformed
 
     private void jButtonPosterSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterSaveActionPerformed
-        try {
+        /*try {
             if (PosterWork.isMovie) {
-                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.Imdb+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/"+PosterWork.Imdb+"_poster.png");                
-                FileUtils.copy("import/poster.png", "import/"+PosterWork.Imdb+"_poster.png");
+                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.ImdbId+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/"+PosterWork.ImdbId+"_poster.png");
+                FileUtils.copy("import/poster.png", "import/"+PosterWork.ImdbId+"_poster.png");
             }
             else {
-                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.TheTvDb+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDb+"_poster.png");                
-                FileUtils.copy("import/poster.png", "import/"+PosterWork.TheTvDb+"_poster.png");
+                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.TheTvDbId+"_poster.jpg");
+                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDbId+"_poster.png");
+                FileUtils.copy("import/poster.png", "import/"+PosterWork.TheTvDbId+"_poster.png");
             }
         }
         catch(IOException e2)
@@ -1808,33 +1977,33 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jImportPoster.setVisible(false);
 
         if (PosterWork.isMovie) {
-            drawPosters("download/" + PosterWork.Imdb + "_poster.jpg", "download/" + PosterWork.Imdb + "_backdrop.jpg");
+            detailsDrawPosters("download/" + PosterWork.ImdbId + "_poster.jpg", "download/" + PosterWork.ImdbId + "_backdrop.jpg");
         }
         else {
-            drawPosters("download/" + PosterWork.TheTvDb + "_poster.jpg","download/" + PosterWork.TheTvDb + "_backdrop.jpg");
+            detailsDrawPosters("download/" + PosterWork.TheTvDbId + "_poster.jpg","download/" + PosterWork.TheTvDbId + "_backdrop.jpg");
         }
 
         FileUtils.deleteFile("import/poster.jpg");
-        FileUtils.deleteFile("import/poster.png");
+        FileUtils.deleteFile("import/poster.png");*/
     }//GEN-LAST:event_jButtonPosterSaveActionPerformed
 
     private void jButtonPosterCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterCancelActionPerformed
-        jImportPoster.setVisible(false);
+        /*jImportPoster.setVisible(false);
         FileUtils.deleteFile("import/poster.jpg");
-        FileUtils.deleteFile("import/poster.png");
+        FileUtils.deleteFile("import/poster.png");*/
     }//GEN-LAST:event_jButtonPosterCancelActionPerformed
 
-    private void jLabelPosterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelPosterMouseClicked
-        int row = 0;
+    private void jLabelDetailsPosterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelDetailsPosterMouseClicked
+        /*int row = 0;
         int id = 0;
         String directory = "";
         ImageIcon poster;        
 
         switch(jTabbedPane.getSelectedIndex()){
             case 0:
-                row = jTableFilelist.getSelectedRow();
+                row = jTableMovies.getSelectedRow();
                 if (row >= 0){
-                    id = (Integer) jTableFilelist.getValueAt(row, 4);
+                    id = (Integer) jTableMovies.getValueAt(row, 4);
                     directory = "download/";
                 }
                 break;
@@ -1846,10 +2015,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                     directory = "download/";
                 }
                 else {
-                    row = jTableFilelistEpisodes.getSelectedRow();
+                    row = jTableEpisodes.getSelectedRow();
 
                     if (row > 1){
-                        id = (Integer) jTableFilelistEpisodes.getValueAt(row, 5);
+                        id = (Integer) jTableEpisodes.getValueAt(row, 5);
                         directory = "download/";
                     }
                 }
@@ -1857,14 +2026,14 @@ public class ValerieView extends FrameView implements WindowStateListener {
         }
 
         if (directory.contains("download")){
-            MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+            Database database = (Database)pController.get("Database");
             PosterWork = database.getMediaInfoById(id);
 
             if (PosterWork.isMovie){
-                directory = directory + PosterWork.Imdb + "_poster.jpg";
+                directory = directory + PosterWork.ImdbId + "_poster.jpg";
             }
             else {
-                directory = directory + PosterWork.TheTvDb + "_poster.jpg";
+                directory = directory + PosterWork.TheTvDbId + "_poster.jpg";
             }
 
             System.out.println(directory);
@@ -1872,7 +2041,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
             jImportPoster.setLocationRelativeTo(mainPanel);
             jImportPoster.validate();
             jImportPoster.setVisible(true);
-            jImportPoster.setTitle("Import Poster (Imdb: "+PosterWork.Imdb+")");
+            jImportPoster.setTitle("Import Poster (Imdb: "+PosterWork.ImdbId+")");
 
             poster = new ImageIcon(directory);
 
@@ -1884,30 +2053,49 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 jLabelPoster1.setDoubleBuffered(true);
                 jLabelPoster1.setIcon(null);
             }
-        }
-    }//GEN-LAST:event_jLabelPosterMouseClicked
+        }*/
+    }//GEN-LAST:event_jLabelDetailsPosterMouseClicked
     
+    public void boxInfosUpdate() {
+        DebugOutput.printl("->");
+        jComboBoxBoxinfo.removeAllItems();
+        BoxInfo[] boxInfos = (BoxInfo[])pController.get("BoxInfos");
+        if (boxInfos != null) {
+            for (int i = 0; i < boxInfos.length; i++) {
+                String vInfo = boxInfos[i].toShortString();
+                jComboBoxBoxinfo.addItem (vInfo);
+            }
+            pController.set("SelectedBoxInfo", (int)0);
+            jComboBoxBoxinfo.setSelectedIndex( 0 );
+        } else {
+            pController.set("SelectedBoxInfo", (int)-1);
+            jComboBoxBoxinfo.setSelectedIndex( -1 );
+            //BoxIsConnected = false;
+        }
+
+        DebugOutput.printl("<-");
+    }
 
     boolean isUpdating = false;
 
-    public void updateTables() {
+    public void tablesUpdate() {
         DebugOutput.printl("->");
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = database.getMediaInfo();
+        Database database = ((Database)pController.get("Database"));
+        MediaInfo[] movies = database.getAsArray();
 
-        ((DefaultTableModel) jTableFilelist.getModel()).setRowCount(database.getMediaInfoMoviesCount());
-        ((DefaultTableModel) jTableFilelistEpisodes.getModel()).setRowCount(database.getMediaInfoEpisodesCount());
-        ((DefaultTableModel) jTableSeries.getModel()).setRowCount(database.getMediaInfoSeriesCount() + 2);
+        ((DefaultTableModel) jTableMovies.getModel()).setRowCount(database.getMoviesCount());
+        ((DefaultTableModel) jTableEpisodes.getModel()).setRowCount(database.getEpisodesCount());
+        ((DefaultTableModel) jTableSeries.getModel()).setRowCount(database.getSeriesCount() + 2);
 
         int iteratorMovies = 0;
-        int iteratorEpisodes = 0;
+        //int iteratorEpisodes = 0;
         int iteratorSeries = 0;
 
         isUpdating = true;
-        jTableFilelist.setEnabled(false);
+        jTableMovies.setEnabled(false);
         jTableSeries.setEnabled(false);
-        jTableFilelistEpisodes.setEnabled(false);
+        jTableEpisodes.setEnabled(false);
 
         ///
         jTableSeries.setValueAt("_Show all_", iteratorSeries, 0);
@@ -1920,96 +2108,77 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         for (MediaInfo movie : movies) {
             if (movie.isMovie) {
-                jTableFilelist.setValueAt(!movie.Ignoring, iteratorMovies, 0);
-
-                jTableFilelist.setValueAt(movie.SearchString, iteratorMovies, 2);
-                jTableFilelist.setValueAt(movie.Title, iteratorMovies, 1);
-
-                jTableFilelist.setValueAt(movie.Year, iteratorMovies, 3);
-                //jTableFilelist.setValueAt(movie.Imdb, iteratorMovies, 4);
-                jTableFilelist.setValueAt(movie.ID, iteratorMovies, 4);
-
-                jTableFilelist.setValueAt(movie.needsUpdate, iteratorMovies, 5);
-
+                jTableMovies.setValueAt(String.valueOf(movie.Title), iteratorMovies, 0);
+                jTableMovies.setValueAt(String.valueOf(movie.SearchString), iteratorMovies, 1);
+                jTableMovies.setValueAt(Integer.valueOf(movie.Year), iteratorMovies, 2);
+                jTableMovies.setValueAt(Integer.valueOf(movie.ID), iteratorMovies, 3);
+                jTableMovies.setValueAt(Boolean.valueOf(movie.needsUpdate), iteratorMovies, 4);
                 iteratorMovies++;
-            } else if (movie.isEpisode) {
-                jTableFilelistEpisodes.setValueAt(!movie.Ignoring, iteratorEpisodes, 0);
-
-                jTableFilelistEpisodes.setValueAt(movie.SearchString, iteratorEpisodes, 2);
-                jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
-
-                jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
-                jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
-                jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
-
-                jTableFilelistEpisodes.setValueAt(movie.needsUpdate, iteratorEpisodes, 6);
-
-                iteratorEpisodes++;
-            } else if (movie.isSeries) {
-                jTableSeries.setValueAt(movie.Title, iteratorSeries, 0);
-                jTableSeries.setValueAt(movie.ID, iteratorSeries, 1);
+            } else if (movie.isSerie) {
+                jTableSeries.setValueAt(String.valueOf(movie.Title), iteratorSeries, 0);
+                jTableSeries.setValueAt(Integer.valueOf(movie.ID), iteratorSeries, 1);
                 iteratorSeries++;
             }
         }
+        tablesEpisodesUpdate(-1);
 
-        jTableFilelist.setEnabled(true);
+        jTableMovies.setEnabled(true);
         jTableSeries.setEnabled(true);
-        jTableFilelistEpisodes.setEnabled(true);
+        jTableEpisodes.setEnabled(true);
 
-        jTableFilelist.getRowSorter().allRowsChanged();
+        jTableMovies.getRowSorter().allRowsChanged();
         jTableSeries.getRowSorter().allRowsChanged();
-        jTableFilelistEpisodes.getRowSorter().allRowsChanged();
+        jTableEpisodes.getRowSorter().allRowsChanged();
 
         isUpdating = false;
+
+        if (movies.length > 0) detailsRefresh(movies[0]);
 
         DebugOutput.printl("<-");
     }
 
-    public void updateTablesEpisodes(int id) {
+    public void tablesEpisodesUpdate(int id) {
 
         MediaInfo[] movies;
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pController.get("Database");
 
         if (id == -1) {
-            movies = database.getMediaInfoEpisodes();
+            movies = database.getMediaInfoEpisodeAsArray();
         } else if (id == -2) {
             movies = database.getMediaInfoEpisodesUnspecified();
         } else {
             MediaInfo series = database.getMediaInfoById(id);
-            movies = database.getMediaInfoEpisodes(series.TheTvDb);
+            movies = database.getEpisodeAsArray(series.TheTvDbId);
         }
 
-        ((DefaultTableModel) jTableFilelistEpisodes.getModel()).setRowCount(movies.length);
+        ((DefaultTableModel) jTableEpisodes.getModel()).setRowCount(movies.length);
 
         isUpdating = true;
-        jTableFilelistEpisodes.setEnabled(false);
+        jTableEpisodes.setEnabled(false);
 
         int iteratorEpisodes = 0;
         for (MediaInfo movie : movies) {
-            jTableFilelistEpisodes.setValueAt(!movie.Ignoring, iteratorEpisodes, 0);
-            jTableFilelistEpisodes.setValueAt(movie.SearchString, iteratorEpisodes, 2);
-            jTableFilelistEpisodes.setValueAt(movie.Title, iteratorEpisodes, 1);
-
-            jTableFilelistEpisodes.setValueAt(movie.Season, iteratorEpisodes, 3);
-            jTableFilelistEpisodes.setValueAt(movie.Episode, iteratorEpisodes, 4);
-            jTableFilelistEpisodes.setValueAt(movie.ID, iteratorEpisodes, 5);
-
-            jTableFilelistEpisodes.setValueAt(movie.needsUpdate, iteratorEpisodes, 6);
+            jTableEpisodes.setValueAt(String.valueOf(movie.Title), iteratorEpisodes, 0);
+            jTableEpisodes.setValueAt(String.valueOf(movie.SearchString), iteratorEpisodes, 1);
+            jTableEpisodes.setValueAt(Integer.valueOf(movie.Season), iteratorEpisodes, 2);
+            jTableEpisodes.setValueAt(Integer.valueOf(movie.Episode), iteratorEpisodes, 3);
+            jTableEpisodes.setValueAt(Integer.valueOf(movie.ID), iteratorEpisodes, 4);
+            jTableEpisodes.setValueAt(Boolean.valueOf(movie.needsUpdate), iteratorEpisodes, 5);
 
             iteratorEpisodes++;
         }
 
-        jTableFilelistEpisodes.setEnabled(true);
+        jTableEpisodes.setEnabled(true);
 
-        jTableFilelistEpisodes.getRowSorter().allRowsChanged();
+        jTableEpisodes.getRowSorter().allRowsChanged();
 
         isUpdating = false;
     }
 
-    private void saveTables() {
+    /*private void saveTables() {
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = database.getMediaInfo();
+        Database database = (Database)pController.get("Database");
+        MediaInfo[] movies = database.getAsArray();
 
         //create db file
         try {
@@ -2042,10 +2211,10 @@ public class ValerieView extends FrameView implements WindowStateListener {
                 if (!movie.Ignoring) {
                     if (movie.isMovie) {
                         fwMovie.append(movie.toString());
-                    } else if (movie.isSeries) {
+                    } else if (movie.isSerie) {
                         fwSeries.append(movie.toString());
                     } else if (movie.isEpisode) {
-                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDb + ".txt", true),charset);
+                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDbId + ".txt", true),charset);
                         //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
                         fwEpisode.append(movie.toString());
                         fwEpisode.close();
@@ -2057,9 +2226,9 @@ public class ValerieView extends FrameView implements WindowStateListener {
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-    }
+    }*/
 
-    @Action
+    /*@Action
     public void connectNetwork() {
         pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
     }
@@ -2094,28 +2263,28 @@ public class ValerieView extends FrameView implements WindowStateListener {
     @Action
     public void uploadFiles() {
         pWorker.doTask(BackgroundWorker.Tasks.UPLOAD_FILES, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
-    }
+    }*/
 
     @Action
     public void jMenuItemEditSettingsClicked() {
         JDialog settingsDialog;
         {
             JFrame mainFrame = ValerieApp.getApplication().getMainFrame();
-            settingsDialog = new Settings(mainFrame, true);
+            settingsDialog = new Settings(mainFrame, true, pController);
             settingsDialog.setLocationRelativeTo(mainFrame);
         }
         ValerieApp.getApplication().show(settingsDialog);
     }
 
-    @Action
+    /*@Action
     public void SelectAllMovies() {
         //int tablecount = jTableFilelist.getRowCount();
 
         //for (int counter=0; counter<tablecount; counter++){
         //    jTableFilelist.setValueAt(true, counter, 0);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = database.getMediaInfo();
+        Database database = (Database)pWorker.get("Database");
+        MediaInfo[] movies = database.getAsArray();
 
         for (int i = 0; i < movies.length; i ++) {
             MediaInfo movie = movies[i];
@@ -2123,19 +2292,19 @@ public class ValerieView extends FrameView implements WindowStateListener {
             movie.needsUpdate = false;
         }
 
-        updateTables();
+        tablesUpdate();
     }
 
     @Action
     public void UnselectAllMovies() {
-        int tablecount = jTableFilelist.getRowCount();
+        int tablecount = jTableMovies.getRowCount();
 
         for (int counter=0; counter<tablecount; counter++){
-            jTableFilelist.setValueAt(false, counter, 0);
+            jTableMovies.setValueAt(false, counter, 0);
         }
-    }
+    }*/
 
-    @Action
+    /*@Action
     public void importBackdropCancel() {
         jImportBackdrop.setVisible(false);
         FileUtils.deleteFile("import/backdrop.jpg");
@@ -2149,12 +2318,12 @@ public class ValerieView extends FrameView implements WindowStateListener {
     @Action
     public void SaveDB() {
         saveTables();
-    }
+    }*/
 
     @Action
     public void exportFilelist() {
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = database.getMediaInfo();
+        Database database = (Database)pController.get("Database");
+        MediaInfo[] movies = database.getAsArray();
 
         try {
             String charset = "UTF-8";
@@ -2189,7 +2358,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
         Document xml = null;
         try {
-            xml = new valerie.tools.webgrabber().getXML(new URL(cServer));
+            xml = new valerie.tools.WebGrabber().getXML(new URL(cServer));
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
@@ -2219,7 +2388,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                 if(i == 0/*TRUE*/) {
                     System.out.println("Updating...");
-                    new valerie.tools.webgrabber().getFile("http://www.duckbox.info/download.php?pv.jar", "pv.jar");
+                    new valerie.tools.WebGrabber().getFile("http://www.duckbox.info/download.php?pv.jar", "pv.jar");
                     String cmd = "java -jar pv.jar -options options.txt";
                     try {
                         File f = new File("options.txt");
@@ -2270,7 +2439,7 @@ public class ValerieView extends FrameView implements WindowStateListener {
 
                 }
         } else {
-            JOptionPane.showMessageDialog(this.mainPanel, "Already up to Date");
+            JOptionPane.showMessageDialog(this.mainPanel, "Already up to date");
         }
 
         System.out.println(update.toString());
@@ -2291,23 +2460,361 @@ public class ValerieView extends FrameView implements WindowStateListener {
         jFrameConsole.setVisible(visible);
     }
 
-    @Action
+    /*@Action
     public void downloadArchivFromBox() {
         pWorker.doTask(BackgroundWorker.Tasks.DOWNLOAD_FROM_BOX, BackgroundWorker.Mode.NORMAL, pCallback, null);
         //clear database
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pWorker.get("Database");
         database.clear();
 
         pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
-        updateTables();
+        tablesUpdate();
+    }*/
+
+    @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionDatabaseLoad() {
+        return new ActionDatabaseLoadTask(getApplication());
     }
+
+    private class ActionDatabaseLoadTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionDatabaseLoadTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionDatabaseLoadTask fields, here.
+            super(app);
+            
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+
+            
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+            
+            pController.databaseLoad();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+    @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionDatabaseSave() {
+        return new ActionDatabaseSaveTask(getApplication());
+    }
+
+    private class ActionDatabaseSaveTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionDatabaseSaveTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionDatabaseSaveTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.databaseSave();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+        @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionNetworkConnect() {
+        return new ActionNetworkConnectTask(getApplication());
+    }
+
+    private class ActionNetworkConnectTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionNetworkConnectTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionNetworkConnectTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.networkConnect();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+                @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionNetworkTransferMO() {
+        return new ActionNetworkTransferMOTask(getApplication());
+    }
+
+    private class ActionNetworkTransferMOTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionNetworkTransferMOTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionNetworkTransferMOTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.networkTransferMO();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+        @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionNetworkTransferMT() {
+        return new ActionNetworkTransferMTTask(getApplication());
+    }
+
+    private class ActionNetworkTransferMTTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionNetworkTransferMTTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionNetworkTransferMTTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.networkTransferMT();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+                @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionNetworkFilesystem() {
+        return new ActionNetworkFilesystemTask(getApplication());
+    }
+
+    private class ActionNetworkFilesystemTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionNetworkFilesystemTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionNetworkFilesystemTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.networkFilesystem();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+                @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionJobParse() {
+        return new ActionJobParseTask(getApplication());
+    }
+
+    private class ActionJobParseTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionJobParseTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionJobParseTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.jobParse();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
+                @Action(block = Task.BlockingScope.WINDOW)
+    public Task actionJobArts() {
+        return new ActionJobArtsTask(getApplication());
+    }
+
+    private class ActionJobArtsTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionJobArtsTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionJobArtsTask fields, here.
+            super(app);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+            pController.jobArts();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
 
     
     private static Console jFrameConsole = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descLabel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonArt;
@@ -2324,40 +2831,62 @@ public class ValerieView extends FrameView implements WindowStateListener {
     private javax.swing.JFrame jImportBackdrop;
     private javax.swing.JFrame jImportPoster;
     private javax.swing.JFileChooser jJPEGOpen;
-    private javax.swing.JLabel jLabelBackdrop;
     private javax.swing.JLabel jLabelBackdrop1;
-    private javax.swing.JLabel jLabelPoster;
+    private javax.swing.JLabel jLabelDetailsBackdrop;
+    private javax.swing.JLabel jLabelDetailsPlot;
+    private javax.swing.JLabel jLabelDetailsPoster;
+    private javax.swing.JLabel jLabelDetailsStar1;
+    private javax.swing.JLabel jLabelDetailsStar10;
+    private javax.swing.JLabel jLabelDetailsStar2;
+    private javax.swing.JLabel jLabelDetailsStar3;
+    private javax.swing.JLabel jLabelDetailsStar4;
+    private javax.swing.JLabel jLabelDetailsStar5;
+    private javax.swing.JLabel jLabelDetailsStar6;
+    private javax.swing.JLabel jLabelDetailsStar7;
+    private javax.swing.JLabel jLabelDetailsStar8;
+    private javax.swing.JLabel jLabelDetailsStar9;
+    private javax.swing.JLabel jLabelDetailsTagline;
+    private javax.swing.JLabel jLabelDetailsTitle;
+    private javax.swing.JLabel jLabelDetailsYear;
     private javax.swing.JLabel jLabelPoster1;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenuDebug;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItemSettings;
     private javax.swing.JMenuItem jMenuItemalternatives;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanelDetails;
     private javax.swing.JPanel jPanelMovies;
     private javax.swing.JPanel jPanelSeries;
-    private javax.swing.JPanel jPanelThumbs;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPaneDetailsPlot;
     private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
-    private javax.swing.JToolBar.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JTabbedPane jTabbedPane;
-    private javax.swing.JTable jTableFilelist;
-    private javax.swing.JTable jTableFilelistEpisodes;
+    private javax.swing.JTable jTableEpisodes;
+    private javax.swing.JTable jTableMovies;
     private javax.swing.JTable jTableSeries;
     private javax.swing.JTable jTableTasks;
     private javax.swing.JTextArea jTextAreaDescription;
+    private javax.swing.JTextArea jTextAreaDetailsPlot;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;

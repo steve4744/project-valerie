@@ -118,7 +118,7 @@ public class BackgroundWorker {
     public BackgroundWorker(org.jdesktop.application.Application app) {
         pApp = app;
 
-        set("Database", new MediaInfoDB());
+        set("Database", new Database(null));
         set("SelectedBoxInfo", (int)-1);
         //set("BoxInfos", (valerie.tools.BoxInfo[])null);
     }

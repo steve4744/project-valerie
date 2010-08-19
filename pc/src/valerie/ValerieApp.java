@@ -7,6 +7,7 @@ package valerie;
 import Gui.ValerieView;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
+import valerie.controller.Controller;
 
 /**
  * The main class of the application.
@@ -15,15 +16,14 @@ public class ValerieApp extends SingleFrameApplication {
 
 
     static String[] vArguments;
+    static Controller controller;
 
     /**
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
-
-        show(new ValerieView(this, vArguments));
-        //ValerieView v = new ValerieView(this, vArguments);
-        //v.getFrame().setVisible(true);
+        controller = new Controller();
+        show(new ValerieView(this, controller, vArguments));
     }
 
     /**

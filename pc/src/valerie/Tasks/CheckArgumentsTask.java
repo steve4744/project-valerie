@@ -6,7 +6,7 @@
 package valerie.Tasks;
 
 import valerie.Logger;
-import valerie.MediaInfoDB;
+import valerie.Database;
 import valerie.BackgroundWorker;
 import valerie.BackgroundWorker.ParentObject;
 
@@ -102,7 +102,7 @@ public class CheckArgumentsTask extends org.jdesktop.application.Task<Object, Vo
 
                 //INIT ALL
                 //clear database
-                MediaInfoDB pDatabase = (MediaInfoDB)pWorker.get("Database");
+                Database pDatabase = (Database)pWorker.get("Database");
                 pDatabase.clear();
 
                 if(setLoad) {

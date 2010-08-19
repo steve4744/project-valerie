@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import valerie.BackgroundWorker;
 import valerie.Logger;
 import valerie.MediaInfo;
-import valerie.MediaInfoDB;
+import valerie.Database;
 import valerie.tools.BoxInfo;
 import valerie.tools.DebugOutput;
 
@@ -41,17 +41,17 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
 
         Logger.setProgress((int)0);
 
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        Database database = (Database)pWorker.get("Database");
 
         searchMovies(database);
         searchSeries(database);
 
         //Walk through the databasse and delete all failed entries
         
-        MediaInfo[] movies = database.getMediaInfo();
+        MediaInfo[] movies = database.getAsArray();
         for (MediaInfo info : movies) {
             if(info.isArchiv && info.Ignoring)
-                database.deleteMediaInfo(info.ID);
+                database.delete(info.ID);
         }
 
         Logger.printBlocked("Finished");
@@ -87,7 +87,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         return replacements;
     }
 
-    private void searchMovies( MediaInfoDB database) {
+    private void searchMovies( Database database) {
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES").split("\\|");
         ArrayList<String[]> replacements = getReplacements("movie");
         for (int row = 0; row < paths.length; row++) {
@@ -225,10 +225,10 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                             movie.needsUpdate = false;
                         }
 
-                        movie.DataProvider = new valerie.provider.Imdb();
-                        movie.ArtProvider = new valerie.provider.theMovieDb();
+                        movie.DataProvider = new valerie.provider.ImdbProvider();
+                        movie.ArtProvider = new valerie.provider.TheMovieDbProvider();
 
-                        database.addMediaInfo(movie);
+                        database.add(movie);
 
                         Logger.print(movie.Filename + " : Using \"" + movie.SearchString + "\" to get title");
                         this.setMessage(movie.SearchString);
@@ -238,7 +238,7 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
         }
     }
 
-    private void searchSeries( MediaInfoDB database) {
+    private void searchSeries( Database database) {
         String[] paths = new valerie.tools.Properties().getPropertyString("PATHS_SERIES").split("\\|");
         ArrayList<String[]> replacements = getReplacements("tv");
         for (int row = 0; row < paths.length; row++) {
@@ -402,10 +402,10 @@ public class SyncFilelistTask extends org.jdesktop.application.Task<Object, Void
                             movie.needsUpdate = false;
                         }
 
-                        movie.DataProvider = new valerie.provider.theTvDb();
-                        movie.ArtProvider = new valerie.provider.theTvDb();
+                        movie.DataProvider = new valerie.provider.TheTvDbProvider();
+                        movie.ArtProvider = new valerie.provider.TheTvDbProvider();
 
-                        database.addMediaInfo(movie);
+                        database.add(movie);
                     }
                 }
             }

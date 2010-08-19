@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7">
   <NonVisualComponents>
@@ -11,12 +11,12 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <Component id="jToolBar1" pref="713" max="32767" attributes="0"/>
+                  <Component id="jToolBar1" pref="637" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
                   <Component id="jComboBoxBoxinfo" min="-2" pref="324" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
-              <Component id="jSplitPane1" alignment="0" pref="1131" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" alignment="0" pref="1055" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -27,7 +27,7 @@
                       <Component id="jToolBar1" alignment="0" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jSplitPane1" pref="652" max="32767" attributes="0"/>
+                  <Component id="jSplitPane1" pref="658" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -44,7 +44,7 @@
             <Component class="javax.swing.JButton" name="jButtonConnect">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="connectNetwork" methodName="connectNetwork"/>
+                  <action class="Gui.ValerieView" id="actionNetworkConnect" methodName="actionNetworkConnect"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonConnect.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
@@ -58,7 +58,7 @@
             <Component class="javax.swing.JButton" name="jButtonDownloadFromBox">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="downloadArchivFromBox" methodName="downloadArchivFromBox"/>
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMO" methodName="actionNetworkTransferMO"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonDownloadFromBox.text"/>
@@ -73,7 +73,7 @@
             <Component class="javax.swing.JButton" name="jButtonUploadToBox">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="uploadFiles" methodName="uploadFiles"/>
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMT" methodName="actionNetworkTransferMT"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonUploadToBox.text"/>
@@ -93,9 +93,11 @@
             <Component class="javax.swing.JButton" name="jButtonSync">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="syncFilelist" methodName="syncFilelist"/>
+                  <action class="Gui.ValerieView" id="actionNetworkFilesystem" methodName="actionNetworkFilesystem"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonSync.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonSync.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonSync.toolTipText"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="name" type="java.lang.String" value="jButtonSync" noResource="true"/>
@@ -105,9 +107,11 @@
             <Component class="javax.swing.JButton" name="jButtonParse">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="parseFilelist" methodName="parseFilelist"/>
+                  <action class="Gui.ValerieView" id="actionJobParse" methodName="actionJobParse"/>
                 </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonParse.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonParse.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonParse.toolTipText"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="name" type="java.lang.String" value="jButtonParse" noResource="true"/>
@@ -117,7 +121,7 @@
             <Component class="javax.swing.JButton" name="jButtonArt">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="getArt" methodName="getArt"/>
+                  <action class="Gui.ValerieView" id="actionJobArts" methodName="actionJobArts"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonArt.icon"/>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonArt.text"/>
@@ -131,16 +135,6 @@
             <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator4" noResource="true"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator2">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -194,25 +188,12 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="328" max="32767" attributes="0"/>
-                          </Group>
                           <Component id="jScrollPane1" alignment="0" pref="494" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane1" pref="593" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="jScrollPane1" alignment="1" pref="628" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -227,28 +208,20 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTable" name="jTableFilelist">
+                        <Component class="javax.swing.JTable" name="jTableMovies">
                           <Properties>
                             <Property name="autoCreateRowSorter" type="boolean" value="true"/>
-                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysMovies &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysMovies.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysMovies.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelist.getRowSorter().setSortKeys(sortKeysMovies);">
-                              <Table columnCount="6" rowCount="1">
-                                <Column editable="true" title="Usage" type="java.lang.Boolean"/>
+                            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                              <Table columnCount="5" rowCount="1">
                                 <Column editable="false" title="Title" type="java.lang.String"/>
                                 <Column editable="true" title="Searchstring" type="java.lang.String"/>
-                                <Column editable="false" title="Year" type="java.lang.String"/>
-                                <Column editable="false" title="ID" type="java.lang.String"/>
-                                <Column editable="false" title="Update" type="java.lang.Boolean"/>
+                                <Column editable="false" title="Year" type="java.lang.Integer"/>
+                                <Column editable="false" title="ID" type="java.lang.Integer"/>
+                                <Column editable="false" title="U" type="java.lang.Boolean"/>
                               </Table>
                             </Property>
                             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                              <TableColumnModel selectionModel="0">
-                                <Column maxWidth="-1" minWidth="20" prefWidth="15" resizable="true">
-                                  <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                    <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                                  </Title>
-                                  <Editor/>
-                                  <Renderer/>
-                                </Column>
+                              <TableColumnModel selectionModel="1">
                                 <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="true">
                                   <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                     <ResourceString bundle="Gui/resources/ValerieView.properties" key="jTableFilelist.columnModel.title1" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -286,39 +259,22 @@
                                 </Column>
                               </TableColumnModel>
                             </Property>
-                            <Property name="name" type="java.lang.String" value="jTableFilelist" noResource="true"/>
+                            <Property name="columnSelectionAllowed" type="boolean" value="true"/>
+                            <Property name="name" type="java.lang.String" value="jTableMovies" noResource="true"/>
                             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                               <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableFilelistMouseClicked"/>
-                            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableFilelistKeyPressed"/>
+                            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableMoviesMouseClicked"/>
+                            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableMoviesKeyPressed"/>
                           </Events>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null)&#xa;            jc.setToolTipText(jo.toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 5);&#xa;                if(jo != null &amp;&amp; jo.toString() == &quot;true&quot;) {&#xa;                    jc.setBackground(Color.orange);&#xa;                } else&#xa;                jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null) {&#xa;                jc.setToolTipText(String.valueOf(jo));&#xa;            }&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 4);&#xa;                if(jo != null &amp;&amp; Boolean.valueOf(jo.toString()) == true) {&#xa;                    jc.setBackground(Color.orange);&#xa;                } else {&#xa;                    jc.setBackground(null/*Color.white*/);&#xa;                }&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Component class="javax.swing.JButton" name="jButton1">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="Gui.ValerieView" id="SelectAllMovies" methodName="SelectAllMovies"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
-                        <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JButton" name="jButton2">
-                      <Properties>
-                        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                          <action class="Gui.ValerieView" id="UnselectAllMovies" methodName="UnselectAllMovies"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
-                        <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
-                      </Properties>
-                    </Component>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="jPanelSeries">
@@ -344,7 +300,7 @@
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jSplitPane2" alignment="0" pref="622" max="32767" attributes="0"/>
+                          <Component id="jSplitPane2" alignment="0" pref="628" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -378,14 +334,14 @@
                             <Component class="javax.swing.JTable" name="jTableSeries">
                               <Properties>
                                 <Property name="autoCreateRowSorter" type="boolean" value="true"/>
-                                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysSeries &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysSeries.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;       &#xa;jTableSeries.getRowSorter().setSortKeys(sortKeysSeries);">
+                                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                                   <Table columnCount="2" rowCount="1">
                                     <Column editable="false" title="Series" type="java.lang.String"/>
-                                    <Column editable="false" title="ID" type="java.lang.String"/>
+                                    <Column editable="false" title="ID" type="java.lang.Integer"/>
                                   </Table>
                                 </Property>
                                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                                  <TableColumnModel selectionModel="0">
+                                  <TableColumnModel selectionModel="1">
                                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
                                       <Title resourceKey="jTableSeries.columnModel.title0"/>
                                       <Editor/>
@@ -398,9 +354,10 @@
                                     </Column>
                                   </TableColumnModel>
                                 </Property>
+                                <Property name="columnSelectionAllowed" type="boolean" value="true"/>
                                 <Property name="name" type="java.lang.String" value="jTableSeries" noResource="true"/>
                                 <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
-                                  <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
+                                  <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                                 </Property>
                               </Properties>
                               <Events>
@@ -408,7 +365,7 @@
                                 <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableSeriesKeyPressed"/>
                               </Events>
                               <AuxValues>
-                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null)&#xa;                jc.setToolTipText(jo.toString());&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null) {&#xa;                jc.setToolTipText(jo.toString());&#xa;            }&#xa;        }&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                               </AuxValues>
                             </Component>
                           </SubComponents>
@@ -428,34 +385,28 @@
 
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
-                            <Component class="javax.swing.JTable" name="jTableFilelistEpisodes">
+                            <Component class="javax.swing.JTable" name="jTableEpisodes">
                               <Properties>
                                 <Property name="autoCreateRowSorter" type="boolean" value="true"/>
-                                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="List &lt;RowSorter.SortKey&gt; sortKeysEpisodes &#xa;    = new ArrayList&lt;RowSorter.SortKey&gt;();&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));&#xa;sortKeysEpisodes.add(new RowSorter.SortKey(4, SortOrder.ASCENDING));&#xa;       &#xa;jTableFilelistEpisodes.getRowSorter().setSortKeys(sortKeysEpisodes);">
-                                  <Table columnCount="7" rowCount="1">
-                                    <Column editable="true" title="Use" type="java.lang.Boolean"/>
+                                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                                  <Table columnCount="6" rowCount="1">
                                     <Column editable="false" title="Title" type="java.lang.String"/>
                                     <Column editable="true" title="Searchstring" type="java.lang.String"/>
                                     <Column editable="true" title="S" type="java.lang.Integer"/>
                                     <Column editable="true" title="E" type="java.lang.Integer"/>
-                                    <Column editable="false" title="ID" type="java.lang.String"/>
-                                    <Column editable="false" title="Update" type="java.lang.Boolean"/>
+                                    <Column editable="false" title="ID" type="java.lang.Integer"/>
+                                    <Column editable="false" title="U" type="java.lang.Boolean"/>
                                   </Table>
                                 </Property>
                                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                                  <TableColumnModel selectionModel="0">
-                                    <Column maxWidth="-1" minWidth="-1" prefWidth="10" resizable="false">
-                                      <Title resourceKey="jTableFilelist.columnModel.title5"/>
-                                      <Editor/>
-                                      <Renderer/>
-                                    </Column>
+                                  <TableColumnModel selectionModel="1">
                                     <Column maxWidth="-1" minWidth="-1" prefWidth="150" resizable="false">
                                       <Title resourceKey="jTableFilelist.columnModel.title1"/>
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
                                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
-                                      <Title resourceKey="jTableFilelist.columnModel.title3"/>
+                                      <Title resourceKey="jTableEpisodes.columnModel.title0"/>
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
@@ -475,23 +426,24 @@
                                       <Renderer/>
                                     </Column>
                                     <Column maxWidth="-1" minWidth="-1" prefWidth="1" resizable="false">
-                                      <Title resourceKey="jTableFilelistEpisodes.columnModel.title6"/>
+                                      <Title resourceKey="jTableEpisodes.columnModel.title6"/>
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
                                   </TableColumnModel>
                                 </Property>
-                                <Property name="name" type="java.lang.String" value="jTableFilelistEpisodes" noResource="true"/>
+                                <Property name="columnSelectionAllowed" type="boolean" value="true"/>
+                                <Property name="name" type="java.lang.String" value="jTableEpisodes" noResource="true"/>
                                 <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
-                                  <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
+                                  <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableFilelistEpisodesMouseClicked"/>
-                                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableFilelistEpisodesKeyPressed"/>
+                                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableEpisodesMouseClicked"/>
+                                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTableEpisodesKeyPressed"/>
                               </Events>
                               <AuxValues>
-                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null)&#xa;            jc.setToolTipText(jo.toString());&#xa;&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 6);&#xa;                if(jo != null &amp;&amp; jo.toString() == &quot;true&quot;)&#xa;                jc.setBackground(Color.orange);&#xa;                else&#xa;                jc.setBackground(null/*Color.white*/);&#xa;            }&#xa;        }&#xa;&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
+                                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable() {&#xa;    public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {&#xa;        Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);&#xa;        if (c instanceof JComponent) {&#xa;            JComponent jc = (JComponent) c;&#xa;            Object jo = getValueAt(rowIndex, vColIndex);&#xa;            if(jo != null) {&#xa;                jc.setToolTipText(String.valueOf(jo));&#xa;            }&#xa;            if(!super.isRowSelected(rowIndex)) {&#xa;                jo = getValueAt(rowIndex, 5);&#xa;                if(jo != null &amp;&amp; Boolean.valueOf(jo.toString()) == true) {&#xa;                    jc.setBackground(Color.orange);&#xa;                } else {&#xa;                    jc.setBackground(null/*Color.white*/);&#xa;                }&#xa;            }&#xa;        }&#xa;&#xa;        return c;&#xa;    }&#xa;}&#xa;"/>
                               </AuxValues>
                             </Component>
                           </SubComponents>
@@ -502,9 +454,9 @@
                 </Container>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel1">
+            <Container class="javax.swing.JPanel" name="jPanelDetails">
               <Properties>
-                <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="jPanelDetails" noResource="true"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
@@ -515,16 +467,100 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane3" alignment="0" pref="620" max="32767" attributes="1"/>
-                      <Component id="jPanelThumbs" alignment="1" max="32767" attributes="1"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabelDetailsTitle" pref="524" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Component id="jLabelDetailsTagline" alignment="0" pref="500" max="32767" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jScrollPaneDetailsPlot" alignment="1" pref="480" max="32767" attributes="2"/>
+                                              <Component id="jScrollPane3" alignment="0" pref="480" max="32767" attributes="2"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabelDetailsStar1" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar2" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar3" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar4" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar5" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar6" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar7" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar8" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar9" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsStar10" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsYear" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabelDetailsPoster" min="-2" pref="146" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabelDetailsBackdrop" min="-2" pref="320" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="jLabelDetailsPlot" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace pref="52" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
-                          <Component id="jScrollPane3" pref="409" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jPanelThumbs" min="-2" pref="235" max="-2" attributes="0"/>
+                          <Component id="jLabelDetailsTitle" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="jLabelDetailsStar1" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar2" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar4" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar5" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar6" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar7" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar8" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar9" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsStar10" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabelDetailsYear" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabelDetailsTagline" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jLabelDetailsBackdrop" alignment="0" min="-2" pref="180" max="-2" attributes="1"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabelDetailsPoster" min="-2" pref="214" max="-2" attributes="1"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="jLabelDetailsPlot" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jScrollPaneDetailsPlot" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="jScrollPane3" min="-2" pref="169" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -549,77 +585,153 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="jPanelThumbs">
+                <Component class="javax.swing.JLabel" name="jLabelDetailsTitle">
                   <Properties>
-                    <Property name="background" type="java.awt.Color" resourceKey="jPanelThumbs.background"/>
+                    <Property name="font" type="java.awt.Font" resourceKey="jLabelDetailsTitle.font"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsTitle.text"/>
+                    <Property name="autoscrolls" type="boolean" value="true"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsTitle" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsPoster">
+                  <Properties>
+                    <Property name="background" type="java.awt.Color" resourceKey="jLabelDetailsPoster.background"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsPoster.text"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.MatteColorBorderInfo">
-                        <MatteColorBorder/>
+                      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                        <LineBorder/>
                       </Border>
                     </Property>
-                    <Property name="name" type="java.lang.String" value="jPanelThumbs" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsPoster" noResource="true"/>
+                    <Property name="opaque" type="boolean" value="true"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelDetailsPosterMouseClicked"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsBackdrop">
+                  <Properties>
+                    <Property name="background" type="java.awt.Color" resourceKey="jLabelDetailsBackdrop.background"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsBackdrop.text"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                        <LineBorder/>
+                      </Border>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsBackdrop" noResource="true"/>
+                    <Property name="opaque" type="boolean" value="true"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelDetailsBackdropMouseClicked"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsTagline">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" resourceKey="jLabelDetailsTagline.font"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsTagline.text"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsTagline" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsPlot">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" resourceKey="jLabelDetailsPlot.font"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsPlot.text"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsPlot" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Container class="javax.swing.JScrollPane" name="jScrollPaneDetailsPlot">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="jScrollPaneDetailsPlot" noResource="true"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                  </AuxValues>
 
-                  <Layout>
-                    <DimensionLayout dim="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jLabelBackdrop" min="-2" pref="320" max="-2" attributes="0"/>
-                              <EmptySpace pref="132" max="32767" attributes="0"/>
-                              <Component id="jLabelPoster" min="-2" pref="146" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                    <DimensionLayout dim="1">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="jLabelBackdrop" alignment="1" min="-2" pref="180" max="-2" attributes="1"/>
-                                  <Component id="jLabelPoster" alignment="1" min="-2" pref="214" max="-2" attributes="1"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                    </DimensionLayout>
-                  </Layout>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JLabel" name="jLabelPoster">
+                    <Component class="javax.swing.JTextArea" name="jTextAreaDetailsPlot">
                       <Properties>
-                        <Property name="background" type="java.awt.Color" resourceKey="jLabelPoster.background"/>
-                        <Property name="text" type="java.lang.String" resourceKey="jLabelPoster.text"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                            <LineBorder/>
-                          </Border>
-                        </Property>
-                        <Property name="name" type="java.lang.String" value="jLabelPoster" noResource="true"/>
-                        <Property name="opaque" type="boolean" value="true"/>
+                        <Property name="background" type="java.awt.Color" resourceKey="jTextAreaDetailsPlot.background"/>
+                        <Property name="columns" type="int" value="20"/>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="lineWrap" type="boolean" value="true"/>
+                        <Property name="rows" type="int" value="5"/>
+                        <Property name="wrapStyleWord" type="boolean" value="true"/>
+                        <Property name="autoscrolls" type="boolean" value="false"/>
+                        <Property name="name" type="java.lang.String" value="jTextAreaDetailsPlot" noResource="true"/>
+                        <Property name="verifyInputWhenFocusTarget" type="boolean" value="false"/>
                       </Properties>
-                      <Events>
-                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelPosterMouseClicked"/>
-                      </Events>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="jLabelBackdrop">
-                      <Properties>
-                        <Property name="background" type="java.awt.Color" resourceKey="jLabelBackdrop.background"/>
-                        <Property name="text" type="java.lang.String" resourceKey="jLabelBackdrop.text"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                            <LineBorder/>
-                          </Border>
-                        </Property>
-                        <Property name="name" type="java.lang.String" value="jLabelBackdrop" noResource="true"/>
-                        <Property name="opaque" type="boolean" value="true"/>
-                      </Properties>
-                      <Events>
-                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelBackdropMouseClicked"/>
-                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar1">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar1.icon"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsStar1.text"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar1" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar2">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar2.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar2" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar3">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar3.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar3" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar4">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar4.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar4" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar5">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar5.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar5" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar6">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar6.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar6" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar7">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar7.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar7" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar8">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar8.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar8" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar9">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar9.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar9" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsStar10">
+                  <Properties>
+                    <Property name="icon" type="javax.swing.Icon" resourceKey="jLabelDetailsStar10.icon"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsStar10" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabelDetailsYear">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" resourceKey="jLabelDetailsYear.font"/>
+                    <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsYear.text"/>
+                    <Property name="name" type="java.lang.String" value="jLabelDetailsYear" noResource="true"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -762,6 +874,86 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenuDebug">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="jMenuDebug.text"/>
+            <Property name="name" type="java.lang.String" value="jMenuDebug" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionDatabaseLoad" methodName="actionDatabaseLoad"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem4.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem4" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem5">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionDatabaseSave" methodName="actionDatabaseSave"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem5.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem5" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem6">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkConnect" methodName="actionNetworkConnect"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem6.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem6" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMO" methodName="actionNetworkTransferMO"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem7.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem7" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem8">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMT" methodName="actionNetworkTransferMT"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem8.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem8" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem9">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkFilesystem" methodName="actionNetworkFilesystem"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem9.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem9" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem10">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionJobParse" methodName="actionJobParse"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem10.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem10" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem11">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionJobArts" methodName="actionJobArts"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jMenuItem11.text"/>
+                <Property name="name" type="java.lang.String" value="jMenuItem11" noResource="true"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="statusPanel">
@@ -772,16 +964,16 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="1131" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="1055" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="1111" max="32767" attributes="0"/>
+                  <EmptySpace pref="1035" max="32767" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace pref="824" max="32767" attributes="0"/>
+                  <EmptySpace pref="748" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" pref="297" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -1127,6 +1319,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-35,0,0,4,107"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-29,0,0,4,31"/>
   </AuxValues>
 </Form>

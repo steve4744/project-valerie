@@ -260,7 +260,7 @@ public class Network {
     String rtvBuffer = "";
 
     public String[] sendCMD(InetAddress addr, String cmd) {
-        DebugOutput.printl("->");
+        DebugOutput.printl("-> " + cmd);
 
         //As we dont get stderr, lets 'disable' it here
         cmd = cmd + " 2> /dev/null";

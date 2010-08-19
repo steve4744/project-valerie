@@ -54,8 +54,8 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
         String Encoder = new valerie.tools.Properties().getPropertyString("ENCODER_TYPE");
         Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
 
-        MediaInfoDB pDatabase = (MediaInfoDB)pWorker.get("Database");
-        MediaInfo[] movies = pDatabase.getMediaInfo();
+        Database pDatabase = (Database)pWorker.get("Database");
+        MediaInfo[] movies = pDatabase.getAsArray();
 
         int moviesSize = movies.length;
 
@@ -71,7 +71,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
                 if (movie.isMovie) {
                     getMediaArtMovie(movie, Resize, Encoder, Resolution);
                 }
-                if (movie.isSeries) {
+                if (movie.isSerie) {
                     getMediaArtSeries(movie, Resize, Encoder, Resolution);
                 }
             }
@@ -96,20 +96,20 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
     private void getMediaArtDuckboxAPI(MediaInfo media) {
 
-        if (media.isMovie || media.isSeries) {
+        if (media.isMovie || media.isSerie) {
 
             media.ArtProvider.getArtById(media);
 
-            String id = media.isMovie?media.Imdb:media.TheTvDb;
-            if (id.equals(media.ImdbNull) || id.equals(media.TheTvDbNull))
+            String id = media.isMovie?media.ImdbId:media.TheTvDbId;
+            if (id.equals(media.ImdbIdNull) || id.equals(media.TheTvDbIdNull))
                 return;
 
             File checkIfFilePNGalreadyExists = new File("converted/" + id + "_poster.png");
             if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
                 if (media.Poster.length() > 0) {
-                    String url = new valerie.tools.webgrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + id + ";poster;" + media.Poster);
+                    String url = new valerie.tools.WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + id + ";poster;" + media.Poster);
                     if(!url.equals("NONE"))
-                        new valerie.tools.webgrabber().getFile("http://val.duckbox.info" + url, "converted/" + id + "_poster.png");
+                        new valerie.tools.WebGrabber().getFile("http://val.duckbox.info" + url, "converted/" + id + "_poster.png");
                 }
 
             }
@@ -117,10 +117,10 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
             File checkIfFileM1ValreadyExists = new File("converted/" + id + "_backdrop.m1v");
             if (checkIfFileM1ValreadyExists == null || !checkIfFileM1ValreadyExists.exists()) {
                 if (media.Backdrop.length() > 0) {
-                    String url = new valerie.tools.webgrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + id + ";backdrop;" + media.Backdrop);
+                    String url = new valerie.tools.WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + id + ";backdrop;" + media.Backdrop);
                     if(!url.equals("NONE")) {
-                        new valerie.tools.webgrabber().getFile("http://val.duckbox.info" + url, "converted/" + id + "_backdrop.m1v");
-                        new valerie.tools.webgrabber().getFile("http://val.duckbox.info" + url.replace("_mvi", "").replace("mvi", "png"), "converted/" + id + "_backdrop.png");
+                        new valerie.tools.WebGrabber().getFile("http://val.duckbox.info" + url, "converted/" + id + "_backdrop.m1v");
+                        new valerie.tools.WebGrabber().getFile("http://val.duckbox.info" + url.replace("_mvi", "").replace("mvi", "png"), "converted/" + id + "_backdrop.png");
                     }
                 }
 
@@ -131,21 +131,21 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
     private void getMediaArtMovie(MediaInfo movie, Integer Resize, String Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
-        File checkIfFilePNGalreadyExists = new File("converted/" + movie.Imdb + "_poster.png");
+        File checkIfFilePNGalreadyExists = new File("converted/" + movie.ImdbId + "_poster.png");
         if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
 
-            File checkIfFileAlreadyExists = new File("download/" + movie.Imdb + "_poster.jpg");
+            File checkIfFileAlreadyExists = new File("download/" + movie.ImdbId + "_poster.jpg");
             if (checkIfFileAlreadyExists == null || !checkIfFileAlreadyExists.exists()) {
 
                 movie.ArtProvider.getArtById(movie);
                 if (movie.Poster.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/" + movie.Imdb + "_poster.jpg");
+                    new valerie.tools.WebGrabber().getFile(movie.Poster, "download/" + movie.ImdbId + "_poster.jpg");
                 }
             }
 
 
 
-            checkIfFileAlreadyExists = new File("download/" + movie.Imdb + "_poster.jpg");
+            checkIfFileAlreadyExists = new File("download/" + movie.ImdbId + "_poster.jpg");
             if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
                 try {
                     BufferedImage image = ImageIO.read(checkIfFileAlreadyExists);
@@ -160,7 +160,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
                     ImageIO.write(bi, "png", checkIfFilePNGalreadyExists);
 
-                    new pngquant().exec("converted\\" + movie.Imdb + "_poster.png", "converted\\" + movie.Imdb + "_poster.png");
+                    new pngquant().exec("converted\\" + movie.ImdbId + "_poster.png", "converted\\" + movie.ImdbId + "_poster.png");
 
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
@@ -170,23 +170,23 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading backdrops");
 
-        File converted = new File("converted/" + movie.Imdb + "_backdrop.m1v");
+        File converted = new File("converted/" + movie.ImdbId + "_backdrop.m1v");
         if (converted == null || !converted.exists()) {
 
-            File downloaded = new File("download/" + movie.Imdb + "_backdrop.jpg");
+            File downloaded = new File("download/" + movie.ImdbId + "_backdrop.jpg");
             if (downloaded == null || !downloaded.exists()) {
                 if (movie.Backdrop == null || movie.Backdrop.length() <= 0) {
                     movie.ArtProvider.getArtById(movie);
                 }
 
                 if (movie.Backdrop.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/" + movie.Imdb + "_backdrop.jpg");
+                    new valerie.tools.WebGrabber().getFile(movie.Backdrop, "download/" + movie.ImdbId + "_backdrop.jpg");
                 }
             }
 
 
 
-            downloaded = new File("download/" + movie.Imdb + "_backdrop.jpg");
+            downloaded = new File("download/" + movie.ImdbId + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
 
                 switch (Resize)
@@ -194,17 +194,17 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
                     case 0:
                         break;
                     case 1:
-                        new Resize().internalExcec("download/" + movie.Imdb + "_backdrop.jpg", "download/" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        new Resize().internalExcec("download/" + movie.ImdbId + "_backdrop.jpg", "download/" + movie.ImdbId + "_backdrop.jpg", Resolution);
                         break;
                     case 2:
-                        new Resize().exec("download/" + movie.Imdb + "_backdrop.jpg", "download/" + movie.Imdb + "_backdrop.jpg", Resolution);
+                        new Resize().exec("download/" + movie.ImdbId + "_backdrop.jpg", "download/" + movie.ImdbId + "_backdrop.jpg", Resolution);
                         break;
                 }
 
                 if (Encoder.equals("mencoder")) {
-                    new mencoder().exec("download/" + movie.Imdb + "_backdrop.jpg", "converted/" + movie.Imdb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + movie.ImdbId + "_backdrop.jpg", "converted/" + movie.ImdbId + "_backdrop.m1v", Resolution);
                 } else if(Encoder.equals("jepg2yuv+mpeg2enc")) {
-                    new Encode().exec("download/" + movie.Imdb + "_backdrop", "converted/" + movie.Imdb + "_backdrop.m1v",Resolution);
+                    new Encode().exec("download/" + movie.ImdbId + "_backdrop", "converted/" + movie.ImdbId + "_backdrop.m1v",Resolution);
                 }
                 
                 
@@ -215,21 +215,21 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
     private void getMediaArtSeries(MediaInfo movie, Integer Resize, String Encoder, Integer Resolution) {
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading posters");
 
-        File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDb + "_poster.png");
+        File checkIfFilePNGalreadyExists = new File("converted/" + movie.TheTvDbId + "_poster.png");
         if (checkIfFilePNGalreadyExists == null || !checkIfFilePNGalreadyExists.exists()) {
 
-            File checkIfFileAlreadyExists = new File("download/" + movie.TheTvDb + "_poster.jpg");
+            File checkIfFileAlreadyExists = new File("download/" + movie.TheTvDbId + "_poster.jpg");
             if (checkIfFileAlreadyExists == null || !checkIfFileAlreadyExists.exists()) {
 
                 movie.ArtProvider.getArtById(movie);
                 if (movie.Poster.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Poster, "download/" + movie.TheTvDb + "_poster.jpg");
+                    new valerie.tools.WebGrabber().getFile(movie.Poster, "download/" + movie.TheTvDbId + "_poster.jpg");
                 }
             }
 
 
 
-            checkIfFileAlreadyExists = new File("download/" + movie.TheTvDb + "_poster.jpg");
+            checkIfFileAlreadyExists = new File("download/" + movie.TheTvDbId + "_poster.jpg");
             if (checkIfFileAlreadyExists != null && checkIfFileAlreadyExists.exists()) {
                 try {
                     BufferedImage image = ImageIO.read(checkIfFileAlreadyExists);
@@ -244,7 +244,7 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
                     ImageIO.write(bi, "png", checkIfFilePNGalreadyExists);
 
-                    new pngquant().exec("converted\\" + movie.TheTvDb + "_poster.png", "converted\\" + movie.TheTvDb + "_poster.png");
+                    new pngquant().exec("converted\\" + movie.TheTvDbId + "_poster.png", "converted\\" + movie.TheTvDbId + "_poster.png");
 
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
@@ -254,23 +254,23 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
 
         Logger.print(movie.Filename + " : Got title \"" + movie.Title + "\". Downloading backdrops");
 
-        File converted = new File("converted/" + movie.TheTvDb + "_backdrop.m1v");
+        File converted = new File("converted/" + movie.TheTvDbId + "_backdrop.m1v");
         if (converted == null || !converted.exists()) {
 
-            File downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
+            File downloaded = new File("download/" + movie.TheTvDbId + "_backdrop.jpg");
             if (downloaded == null || !downloaded.exists()) {
                 if (movie.Backdrop == null || movie.Backdrop.length() <= 0) {
                     movie.ArtProvider.getArtById(movie);
                 }
 
                 if (movie.Backdrop.length() > 0) {
-                    new valerie.tools.webgrabber().getFile(movie.Backdrop, "download/" + movie.TheTvDb + "_backdrop.jpg");
+                    new valerie.tools.WebGrabber().getFile(movie.Backdrop, "download/" + movie.TheTvDbId + "_backdrop.jpg");
                 }
             }
 
 
 
-            downloaded = new File("download/" + movie.TheTvDb + "_backdrop.jpg");
+            downloaded = new File("download/" + movie.TheTvDbId + "_backdrop.jpg");
             if (downloaded != null && downloaded.exists()) {
 
                 switch (Resize)
@@ -278,17 +278,17 @@ public class GetArtTask extends org.jdesktop.application.Task<Object, Void> {
                     case 0:
                         break;
                     case 1:
-                        new Resize().internalExcec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                        new Resize().internalExcec("download/" + movie.TheTvDbId + "_backdrop.jpg", "download/" + movie.TheTvDbId + "_backdrop.jpg", Resolution);
                         break;
                     case 2:
-                        new Resize().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "download/" + movie.TheTvDb + "_backdrop.jpg", Resolution);
+                        new Resize().exec("download/" + movie.TheTvDbId + "_backdrop.jpg", "download/" + movie.TheTvDbId + "_backdrop.jpg", Resolution);
                         break;
                 }
 
                 if (Encoder.equals("mencoder")) {
-                    new mencoder().exec("download/" + movie.TheTvDb + "_backdrop.jpg", "converted/" + movie.TheTvDb + "_backdrop.m1v", Resolution);
+                    new mencoder().exec("download/" + movie.TheTvDbId + "_backdrop.jpg", "converted/" + movie.TheTvDbId + "_backdrop.m1v", Resolution);
                 } else if(Encoder.equals("jepg2yuv+mpeg2enc")) {
-                    new Encode().exec("download/" + movie.TheTvDb + "_backdrop", "converted/" + movie.TheTvDb + "_backdrop.m1v", Resolution);
+                    new Encode().exec("download/" + movie.TheTvDbId + "_backdrop", "converted/" + movie.TheTvDbId + "_backdrop.m1v", Resolution);
                 }
             }
         }

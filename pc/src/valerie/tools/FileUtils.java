@@ -14,6 +14,7 @@ import java.nio.channels.*;
 
 public class FileUtils{
 
+
     public static boolean rename(File in, File out)
     {
         // Rename file (or directory)
@@ -50,16 +51,19 @@ public class FileUtils{
         }
     }
 
-    public static void deleteFile(String Input) {
+    public static boolean deleteFile(String Input) {
 	File file = new File(Input);
+        if (file.isDirectory()) {
+            String[] children = file.list();
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteFile(Input + "\\" + children[i]);
+                if (!success) {
+                    return false;
+                }
+            }
+        }
 
-	//Zuvor alle mit dem File assoziierten Streams schließen...
-
-	if(file.exists()){
-            file.delete();
-	}
-
-		//System.out.println("File deleted");
+        return file.delete();
     }
 
     public static void copy(String from, String to) throws IOException{

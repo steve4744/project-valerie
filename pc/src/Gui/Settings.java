@@ -12,6 +12,7 @@
 package Gui;
 
 import java.io.File;
+import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,6 +20,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import valerie.controller.ConfPaths;
+import valerie.controller.Controller;
 
 /**
  *
@@ -26,10 +29,14 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class Settings extends javax.swing.JDialog {
 
+    Controller pController;
+
     /** Creates new form Settings */
-    public Settings(java.awt.Frame parent, boolean modal) {
+    public Settings(java.awt.Frame parent, boolean modal, Controller controller) {
         super(parent, modal);
         initComponents();
+
+        pController = controller;
 
         for (int i = 0; i < jTree1  .getRowCount(); i++) {
             jTree1.expandRow(i);
@@ -143,16 +150,10 @@ public class Settings extends javax.swing.JDialog {
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
         javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("General");
         treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("File Managment");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Convert");
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("File Management");
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Movies");
-        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Import Managment");
-        treeNode2.add(treeNode3);
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("TV");
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Import Managment");
+        javax.swing.tree.DefaultMutableTreeNode treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Import Management");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
@@ -452,13 +453,14 @@ public class Settings extends javax.swing.JDialog {
             jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyBoolean("AUTO_UPDATE"));
             jCheckBoxLoadArchiv.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV"));
 
-        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Managment")) {
+        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Management")) {
             jPanelFileManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelConvert.setVisible(false);
             jPanelImportManagment.setVisible(false);
 
-            jTextFieldFilter.setText(new valerie.tools.Properties().getPropertyString("FILTER_SERIES"));
+
+            jTextFieldFilter.setText(((ConfPaths)pController.get("ConfPaths")).getFilter());
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
             jPanelFileManagment.setVisible(false);
             jPanelGeneral.setVisible(false);
@@ -489,45 +491,18 @@ public class Settings extends javax.swing.JDialog {
                jTree1.setSelectionPath(tp);
             }
 
-        } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
+        } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
             jPanelImportManagment.setVisible(true);
             jPanelGeneral.setVisible(false);
             jPanelFileManagment.setVisible(false);
             jPanelConvert.setVisible(false);
 
-            String[] pathsMovies = WorkPathMovies.split("\\|");
-            ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
+            //String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
+            ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(WorkPathMovies.size());
 
             int iteratorMovies = 0;
-            for(String pathMovies : pathsMovies) {
-                    jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
-            }
-
-        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV")) {
-            /* SELECT FIRST CHILD */
-            TreeModel model = jTree1.getModel();
-            TreePath oldTreePath = jTree1.getSelectionPaths()[0];
-            TreeNode node = (TreeNode)oldTreePath.getLastPathComponent();
-            int childCount = model.getChildCount(node);
-            for (int i = 0; i < childCount; i++)
-            {
-               Object child = model.getChild(node, i);
-               TreePath tp = (oldTreePath.pathByAddingChild(child));
-               jTree1.setSelectionPath(tp);
-            }
-            
-        } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV")/* && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")*/) {
-            jPanelImportManagment.setVisible(true);
-            jPanelGeneral.setVisible(false);
-            jPanelFileManagment.setVisible(false);
-            jPanelConvert.setVisible(false);
-
-            String[] pathsMovies = WorkPathTV.split("\\|");
-            ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(pathsMovies.length);
-
-            int iteratorMovies = 0;
-            for(String pathMovies : pathsMovies) {
-                    jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
+            for(String pathMovies : WorkPathMovies) {
+                jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
             }
         }
     }//GEN-LAST:event_jTree1ValueChanged
@@ -538,14 +513,10 @@ public class Settings extends javax.swing.JDialog {
         String pathToAdd = JOptionPane.showInputDialog("New Directory:");
         if(pathToAdd != null && pathToAdd.length() > 0) {
             Object path[] = jTree1.getSelectionPaths()[0].getPath();
-            if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
+            if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
                 
                 if(!WorkPathMovies.contains(pathToAdd))
-                    WorkPathMovies +=(pathToAdd + "|");
-
-            } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-                if(!WorkPathTV.contains(pathToAdd))
-                    WorkPathTV += (pathToAdd + "|");
+                    WorkPathMovies.add(pathToAdd);
             }
         }
 
@@ -558,15 +529,10 @@ public class Settings extends javax.swing.JDialog {
         //valerie.tools.Properties prop = new valerie.tools.Properties();
 
         Object path[] = jTree1.getSelectionPaths()[0].getPath();
-        if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
+        if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
             String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
 
-            WorkPathMovies = WorkPathMovies.replaceAll(pathToDelete + "\\|", "");
-
-        } else if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("TV") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Managment")) {
-            String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
-
-            WorkPathTV = WorkPathTV.replaceAll(pathToDelete + "\\|", "");
+             WorkPathMovies.remove(pathToDelete);
         }
 
         //prop.save();
@@ -579,13 +545,13 @@ public class Settings extends javax.swing.JDialog {
         prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected());
         prop.setProperty("LOAD_ARCHIV", jCheckBoxLoadArchiv.isSelected());
         prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
-        prop.setProperty("FILTER_SERIES", jTextFieldFilter.getText());
+        ((ConfPaths)pController.get("ConfPaths")).setFilter(jTextFieldFilter.getText());
         prop.setProperty("RESIZE_TYPE", Integer.toString(jComboBoxResize.getSelectedIndex()));
         prop.setProperty("ENCODER_TYPE",jComboBoxEncoder.getSelectedItem().toString());
         prop.setProperty("RESOLUTION_TYPE",Integer.toString(jComboBoxResolution.getSelectedIndex()));
-        prop.setProperty("PATHS_MOVIES", WorkPathMovies);
-        prop.setProperty("PATHS_SERIES", WorkPathTV);
+        ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new String[1]));
         prop.save();
+        ((ConfPaths)pController.get("ConfPaths")).save();
         setVisible(false);
     }//GEN-LAST:event_jButtonApplyActionPerformed
 
@@ -594,8 +560,10 @@ public class Settings extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void SettingShow(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_SettingShow
-        WorkPathMovies = new valerie.tools.Properties().getPropertyString("PATHS_MOVIES");
-        WorkPathTV = new valerie.tools.Properties().getPropertyString("PATHS_SERIES");
+        String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
+        for(String pathMovies : paths) {
+            WorkPathMovies.add(pathMovies);
+        }
     }//GEN-LAST:event_SettingShow
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -627,6 +595,5 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldFilter;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
-    private String WorkPathMovies;
-    private String WorkPathTV;
+    private Vector<String> WorkPathMovies = new Vector<String>();
 }

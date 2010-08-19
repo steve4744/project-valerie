@@ -15,10 +15,10 @@ import valerie.MediaInfo;
  *
  * @author Admin
  */
-public class Imdb extends provider {
+public class ImdbProvider extends provider {
      public void getDataByTitle(MediaInfo info) {
         if(info.isMovie)
-            getMoviesByTitleAndYear(info);
+            getMoviesByTitle(info);
     }
 
     public void getDataById(MediaInfo info) {
@@ -33,17 +33,18 @@ public class Imdb extends provider {
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
-    String apiImdbLookup = "http://akas.imdb.com/title/tt";
+    String apiSearchTV = "http://www.imdb.com/search/title?title=<title>&title_type=tv_series,mini_series";
+    String apiImdbLookup = "http://akas.imdb.com/title/";
     String apiSearch = "http://akas.imdb.com/find?s=tt;q=";
 
     public void getMoviesByImdbId(MediaInfo info) {
        String xml = null;
 
-       if(info.Imdb == info.ImdbNull)
+       if(info.ImdbId.equals(info.ImdbIdNull))
            return;
 
        try {
-          xml = new valerie.tools.webgrabber().getText(new URL(apiImdbLookup + info.Imdb));
+          xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -58,28 +59,51 @@ public class Imdb extends provider {
      }
 
 
-     public void getMoviesByTitleAndYear(MediaInfo info) {
-       String xml = null;
-       try {
-            String urlTitle = info.SearchString;
+     public void getMoviesByTitle(MediaInfo mediaInfo) {
+       String pageHtml = null;
+
+       if(mediaInfo.isSerie ||mediaInfo.isEpisode) {
+            String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
-            xml = new valerie.tools.webgrabber().getText(new URL(apiSearch + urlTitle));
+            try {
+                pageHtml = new valerie.tools.WebGrabber().getText(new URL(apiSearchTV.replaceAll("<title>", urlTitle)));
+            } catch (Exception ex) {}
+
+            if (pageHtml == null)
+                return;
+
+            Pattern pDetails = Pattern.compile("Most Popular TV Series/Mini-Series With Title Matching");
+            Matcher mDetails = pDetails.matcher(pageHtml);
+            if(mDetails.find()) {
+                parseAdvancedSearchResultScreen(mediaInfo, pageHtml);
+                getMoviesByImdbId(mediaInfo);
+
+                if(!mediaInfo.ImdbId.equals(mediaInfo.ImdbIdNull))
+                    return;
+            }
+       }
+
+
+       try {
+            String urlTitle = mediaInfo.SearchString;
+            urlTitle = urlTitle.replaceAll(" ", "+");
+            pageHtml = new valerie.tools.WebGrabber().getText(new URL(apiSearch + urlTitle));
        } catch (Exception ex) {}
 
-       if (xml == null)
+       if (pageHtml == null)
             return;
        Pattern pDetails = Pattern.compile("<title>.+?\\(\\d{4}[\\/IVX]*\\).*?</title>.+</body>");
-       Matcher mDetails = pDetails.matcher(xml);
+       Matcher mDetails = pDetails.matcher(pageHtml);
        if(mDetails.find()) {
            //Details Screen!
-           parseDetailsScreen(info, xml/*mDetails.group()*/);
+           parseDetailsScreen(mediaInfo, pageHtml/*mDetails.group()*/);
        } else {
            //Check if its the search result screen
            Pattern pSearchResult = Pattern.compile("<title>IMDb Title Search</title>");
-           Matcher mSearchResult = pSearchResult.matcher(xml);
+           Matcher mSearchResult = pSearchResult.matcher(pageHtml);
            if(mSearchResult.find()) {
-                parseSearchResultScreen(info, xml);
-                getMoviesByImdbId(info);
+                parseSearchResultScreen(mediaInfo, pageHtml);
+                getMoviesByImdbId(mediaInfo);
            }
 
        }
@@ -90,7 +114,7 @@ public class Imdb extends provider {
      private void getMoviesPlot(MediaInfo info) {
        String xml = null;
        try {
-          xml = new valerie.tools.webgrabber().getText(new URL(apiImdbLookup + info.Imdb + "/plotsummary"));
+          xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId + "/plotsummary"));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -110,7 +134,7 @@ public class Imdb extends provider {
      private void getMoviesLocalLanguage(MediaInfo info) {
          String xml = null;
          try {
-            xml = new valerie.tools.webgrabber().getText(new URL(apiImdbLookup + info.Imdb + "/releaseinfo"));
+            xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId + "/releaseinfo"));
          } catch (Exception ex) {}
 
          if (xml == null)
@@ -173,7 +197,7 @@ public class Imdb extends provider {
             sImdbId = sImdbId.replaceAll("/title/", "");
             sImdbId = sImdbId.replaceAll("/", "");
 
-            info.Imdb = sImdbId;
+            info.ImdbId = sImdbId;
         }
 
         Pattern pDirectorsBlock = Pattern.compile("<h5>Director[s]?:</h5>.*?</div>");
@@ -287,7 +311,7 @@ public class Imdb extends provider {
                 sImdbId = sImdbId.replaceAll("/title/", "");
                 sImdbId = sImdbId.replaceAll("/", "");
 
-                info.Imdb = sImdbId;
+                info.ImdbId = sImdbId;
             }
         }
 
@@ -303,7 +327,7 @@ public class Imdb extends provider {
                 sImdbId = sImdbId.replaceAll("/title/", "");
                 sImdbId = sImdbId.replaceAll("/", "");
 
-                info.AlternativImdbs[info.AlternativesCount] = Integer.valueOf(sImdbId);
+                info.AlternativImdbs[info.AlternativesCount] = sImdbId;
             }
 
             Pattern pTitle = Pattern.compile(";\">[^<]+</a>");
@@ -317,6 +341,74 @@ public class Imdb extends provider {
             }
 
             info.AlternativesCount++;
+        }
+
+        return;
+     }
+
+     private void parseAdvancedSearchResultScreen(MediaInfo info, String xml)
+     {
+        //# <a href="/title/tt1219024/" title="Castle (2009 TV Series)">
+        Matcher mMovies = Pattern.compile("<a href=\"/title/(tt\\d{7})/\" title=\"([^\\(]+)\\((\\d{4})[^)]*\\)\">").matcher(xml);
+        if(mMovies.find()) {
+            String sMovie = mMovies.group();
+
+            Matcher mImdbId = Pattern.compile("/title/tt\\d*/").matcher(sMovie);
+            if(mImdbId.find()) {
+                String sImdbId = mImdbId.group();
+                sImdbId = sImdbId.replaceAll("/title/", "");
+                sImdbId = sImdbId.replaceAll("/", "");
+
+                info.ImdbId = sImdbId;
+            }
+
+            Matcher mTitle = Pattern.compile("title=\"([^\\(]+)\\(").matcher(sMovie);
+            if(mTitle.find()) {
+                String group = mTitle.group();
+                String title = group.replaceAll("title=\"", "");
+                title = title.substring(0, title.length()-1).trim();
+
+                info.Title = title;
+            }
+        }
+
+        //alternatives
+        info.AlternativesCount = 0;
+        while(mMovies.find() && info.AlternativesCount < MediaInfo.alternativesMax) {
+            String sMovie = mMovies.group();
+
+            Pattern pImdbId = Pattern.compile("/title/tt\\d*/");
+            Matcher mImdbId = pImdbId.matcher(sMovie);
+            if(mImdbId.find()) {
+                String sImdbId = mImdbId.group();
+                sImdbId = sImdbId.replaceAll("/title/", "");
+                sImdbId = sImdbId.replaceAll("/", "");
+
+                info.AlternativImdbs[info.AlternativesCount] = sImdbId;
+            }
+
+            Pattern pTitle = Pattern.compile("title=\"([^\\(]+)\\(");
+            Matcher mTitle = pTitle.matcher(sMovie);
+            if(mTitle.find()) {
+                String sTitle = mTitle.group();
+                sTitle = sTitle.replaceAll("title=\"", "");
+                sTitle = sTitle.substring(0, sTitle.length()-1).trim();
+
+                info.AlternativTitles[info.AlternativesCount] = sTitle;
+            }
+
+            info.AlternativesCount++;
+        }
+
+        if(!info.Title.toLowerCase().equals(info.SearchString.toLowerCase())) {
+            for(int i = 0; i < info.AlternativesCount; i++) {
+                if(info.AlternativTitles[i].toLowerCase().equals(info.SearchString.toLowerCase())) {
+                    info.ImdbId = info.AlternativImdbs[i];
+                    info.Title = info.AlternativTitles[i];
+
+                    break;
+                }
+            }
         }
 
         return;

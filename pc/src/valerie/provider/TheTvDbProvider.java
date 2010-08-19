@@ -14,20 +14,20 @@ import valerie.MediaInfo;
  *
  * @author Admin
  */
-public class theTvDb extends provider {
+public class TheTvDbProvider extends provider {
 
     public void getDataById(MediaInfo info) {
-        if(info.isSeries)
+        if(info.isSerie)
             getSeriesById(info);
     }
 
     public void getArtById(MediaInfo info) {
-        if(info.isSeries)
+        if(info.isSerie)
             getSeriesArtById(info);
     }
 
     public void getDataByTitle(MediaInfo info) {
-        if(info.isSeries) {
+        if(info.isSerie) {
             getSeriesByTitle(info);
             getSeriesById(info);
         }
@@ -45,16 +45,67 @@ public class theTvDb extends provider {
     private String apiSearchAllEpisodes = "http://www.thetvdb.com/api/" + APIKEY + "/series/<seriesid>/all/<lang>.xml";
     private String apiArt = "http://www.thetvdb.com/banners/";
     private String apiSeriesByID = "http://www.thetvdb.com/data/series/<seriesid>/";
+    private String apiSeriesByImdbID = "http://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=";
+
+    public void getSerieByImdbID(MediaInfo info) {
+        if(info.ImdbId.equals(info.ImdbIdNull))
+            return;
+
+        Document xml = null;
+        try {
+           String url = apiSeriesByImdbID + info.ImdbId;
+               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
+        } catch (Exception ex) {}
+
+        if (xml == null)
+            return;
+
+        List movieList = xml.getRootElement().getChildren("Series");
+        for(int i = 0; i < movieList.size(); i++)
+       {
+           org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+
+           int Year = 0;
+           org.jdom.Element eYear = eMovie.getChild("FirstAired");
+           if(eYear != null && !eYear.getText().equals(""))
+                Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
+
+           info.Year = Year;
+
+           org.jdom.Element ePlot = eMovie.getChild("Overview");
+           if(ePlot != null)
+                info.Plot = ePlot.getText();
+
+           //org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
+           //if(eImdb != null)
+           //     info.ImdbId = eImdb.getText();
+
+           org.jdom.Element eID = eMovie.getChild("id");
+           if(eID != null)
+                 info.TheTvDbId = eID.getText();
+
+           org.jdom.Element eTitle = eMovie.getChild("SeriesName");
+           if(eTitle != null){
+                info.Title = eTitle.getText();
+                System.out.println("this is "+info.Title);
+           }
+
+           /*if (info.Year <= 1980)
+               continue;*/
+
+           break;
+       }
+    }
 
     private void getSeriesById(MediaInfo info) {
 
-        if(info.TheTvDb == info.TheTvDbNull)
+        if(info.TheTvDbId == info.TheTvDbIdNull)
             return;
 
        Document xml = null;
        try {
-           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               xml = new valerie.tools.webgrabber().getXML(new URL(url));
+           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -64,8 +115,8 @@ public class theTvDb extends provider {
        if(movieList.size()<=0){
     	   /*No englisch result lets try german */
     	   try {
-               String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDb))+"de.xml";
-                   xml = new valerie.tools.webgrabber().getXML(new URL(url));
+               String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId))+"de.xml";
+                   xml = new valerie.tools.WebGrabber().getXML(new URL(url));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -89,7 +140,7 @@ public class theTvDb extends provider {
 
            org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
            if(eImdb != null && eImdb.getText().length() > 3)
-                info.Imdb = eImdb.getText();
+                info.ImdbId = eImdb.getText();
 
            org.jdom.Element eTitle = eMovie.getChild("SeriesName");
            if(eTitle != null)
@@ -122,7 +173,7 @@ public class theTvDb extends provider {
        try {
            String urlTitle = info.SearchString;
            urlTitle = urlTitle.replaceAll(" ", "+");
-           xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle));
+           xml = new valerie.tools.WebGrabber().getXML(new URL(apiSearch + urlTitle));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -134,7 +185,7 @@ public class theTvDb extends provider {
     	   try {
     		   String urlTitle = info.SearchString;
                urlTitle = urlTitle.replaceAll(" ", "+");
-               xml = new valerie.tools.webgrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -158,11 +209,11 @@ public class theTvDb extends provider {
 
            org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
            if(eImdb != null)
-                info.Imdb = eImdb.getText();
+                info.ImdbId = eImdb.getText();
 
            org.jdom.Element eID = eMovie.getChild("id");
            if(eID != null)
-                 info.TheTvDb = eID.getText();
+                 info.TheTvDbId = eID.getText();
 
            org.jdom.Element eTitle = eMovie.getChild("SeriesName");
            if(eTitle != null){
@@ -178,19 +229,19 @@ public class theTvDb extends provider {
         return;
     }
 
-    private void getEpisode(MediaInfo info) {
+    public void getEpisode(MediaInfo info) {
 
-        if( info.TheTvDb == info.TheTvDbNull || info.Episode == 0 || info.Season == 0)
+        if( info.TheTvDbId == info.TheTvDbIdNull || info.Episode == -1 || info.Season == -1)
             return;
 
            Document xml = null;
            try {
                //String url = apiSearchEpisode.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
+               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
                url = url.replaceAll("<season>", String.valueOf(info.Season));
                url = url.replaceAll("<episode>", String.valueOf(info.Episode));
                url = url.replaceAll("<lang>", "en");
-               xml = new valerie.tools.webgrabber().getXML(new URL(url));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -213,10 +264,10 @@ public class theTvDb extends provider {
 
                org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
                if(eImdb != null && eImdb.getText().length() > 2) {
-                   String vImdb = eImdb.getText().substring(2);
-                   if(vImdb.endsWith("/"))
+                   String vImdb = eImdb.getText();
+                   while(vImdb.endsWith("/"))
                        vImdb = vImdb.substring(0, vImdb.length()-1);
-                    info.Imdb = vImdb;
+                    info.ImdbId = vImdb;
                }
                org.jdom.Element eYear = eMovie.getChild("FirstAired");
                if(eYear != null) {
@@ -251,11 +302,11 @@ public class theTvDb extends provider {
            // LOCAL
            try {
                //String url = apiSearchEpisode.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
+               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
                url = url.replaceAll("<season>", String.valueOf(info.Season));
                url = url.replaceAll("<episode>", String.valueOf(info.Episode));
                url = url.replaceAll("<lang>", "de");
-               xml = new valerie.tools.webgrabber().getXML(new URL(url));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
            } catch (Exception ex) {}
 
            if (xml == null)
@@ -285,11 +336,11 @@ public class theTvDb extends provider {
             return;
         }
 
-    private void getSeriesArtById(MediaInfo info) {
+    public void getSeriesArtById(MediaInfo info) {
        Document xml = null;
        try {
-           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               xml = new valerie.tools.webgrabber().getXML(new URL(url));
+           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
        } catch (Exception ex) {}
 
        if (xml == null)

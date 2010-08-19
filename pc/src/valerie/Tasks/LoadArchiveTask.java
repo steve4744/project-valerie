@@ -12,10 +12,10 @@ import java.io.InputStreamReader;
 import valerie.BackgroundWorker;
 import valerie.Logger;
 import valerie.MediaInfo;
-import valerie.MediaInfoDB;
-import valerie.provider.Imdb;
-import valerie.provider.theMovieDb;
-import valerie.provider.theTvDb;
+import valerie.Database;
+import valerie.provider.ImdbProvider;
+import valerie.provider.TheMovieDbProvider;
+import valerie.provider.TheTvDbProvider;
 import valerie.tools.DebugOutput;
 
 /**
@@ -38,10 +38,10 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
     }
     @Override protected Object doInBackground() {
         DebugOutput.printl("->");
-        theTvDb tvdb = new valerie.provider.theTvDb();
-        Imdb imdb = new valerie.provider.Imdb();
-        theMovieDb theMovieDB = new valerie.provider.theMovieDb();
-        MediaInfoDB database = (MediaInfoDB)pWorker.get("Database");
+        TheTvDbProvider tvdb = new valerie.provider.TheTvDbProvider();
+        ImdbProvider imdb = new valerie.provider.ImdbProvider();
+        TheMovieDbProvider theMovieDB = new valerie.provider.TheMovieDbProvider();
+        Database database = (Database)pWorker.get("Database");
 
         String charset = "UTF-8";
         //String charset = "ISO-8859-1";
@@ -57,7 +57,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                     Movie += line + "\n";
                     if(line.equals("----END----")){
                             MediaInfo info = new MediaInfo();
-                    info.reparse(Movie);
+                    info.importStr(Movie, true, false, false);
                     info.isMovie = true;
                     info.isArchiv = true;
                     info.needsUpdate = false;
@@ -69,7 +69,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                     info.Ignoring = true;
                     if (info.Title.length() > 0) {
                         if(database.getMediaInfoByPath(info.Path) == null)
-                            database.addMediaInfo(info);
+                            database.add(info);
                     }
                     }
             }
@@ -92,8 +92,8 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                     Movie += line + "\n";
                     if(line.equals("----END----")){
                             MediaInfo info = new MediaInfo();
-                    info.reparse(Movie);
-                    info.isSeries = true;
+                    info.importStr(Movie, false, true, false);
+                    info.isSerie = true;
                     info.isArchiv = true;
                     info.needsUpdate = false;
 
@@ -103,8 +103,8 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                     //As this isnt represented by any file we have to set ignoring to false
                     info.Ignoring = false;
                     if (info.Title.length() > 0) {
-                        if(database.getMediaInfoForSeriesId(info.TheTvDb) == null)
-                            database.addMediaInfo(info);
+                        if(database.getSerieByTheTvDbId(info.TheTvDbId) == null)
+                            database.add(info);
                     }
                     }
             }
@@ -114,10 +114,10 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
         }
 
         try {
-            MediaInfo infos[] = database.getMediaInfo();
+            MediaInfo infos[] = database.getAsArray();
             for (MediaInfo info : infos) {
-                if (info.isSeries) {
-                    BufferedReader frMovie = new BufferedReader(new InputStreamReader(new FileInputStream("db/episodes/" + info.TheTvDb + ".txt"), charset));
+                if (info.isSerie) {
+                    BufferedReader frMovie = new BufferedReader(new InputStreamReader(new FileInputStream("db/episodes/" + info.TheTvDbId + ".txt"), charset));
                     String line;
                     String Movie="";
                     while ((line = frMovie.readLine()) != null) {
@@ -127,7 +127,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                             Movie += line + "\n";
                             if(line.equals("----END----")){
                                     MediaInfo movieinfo = new MediaInfo();
-                            movieinfo.reparse(Movie);
+                            movieinfo.importStr(Movie, false, false, true);
                             movieinfo.isEpisode = true;
                             movieinfo.isArchiv = true;
                             movieinfo.needsUpdate = false;
@@ -139,7 +139,7 @@ public class LoadArchiveTask extends org.jdesktop.application.Task<Object, Void>
                             movieinfo.Ignoring = true;
                             if (movieinfo.Title.length() > 0) {
                                 if(database.getMediaInfoByPath(movieinfo.Path) == null)
-                                    database.addMediaInfo(movieinfo);
+                                    database.add(movieinfo);
                             }
                             }
                     }

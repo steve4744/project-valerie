@@ -25,7 +25,7 @@ import org.jdom.input.SAXBuilder;
  *
  * @author Admin
  */
-public class webgrabber {
+public class WebGrabber {
 	
     class cachedRequestXML{
         public URL Url;
@@ -120,7 +120,7 @@ public class webgrabber {
     public String getText(URL url) {
     	int x;
     	if(cacheURL==null)cacheURL=new ArrayList<cachedRequestURL>();
-        //DebugOutput.printl(url.toString());
+        DebugOutput.printl(url.toString());
         for(x=0;x<cacheURL.size();x++){
     		if(url.equals(cacheURL.get(x).Url))return cacheURL.get(x).doc;
     	}

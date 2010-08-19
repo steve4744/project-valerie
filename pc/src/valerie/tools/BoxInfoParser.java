@@ -75,7 +75,8 @@ public class BoxInfoParser {
 
             return boxinfos;
         }
-        
-        return null;
+
+        BoxInfo[] bi = {};
+        return bi;
     }
 }
