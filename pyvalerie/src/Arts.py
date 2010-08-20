@@ -20,18 +20,18 @@ class Arts():
         
     def download(self, eInfo):
         if eInfo.isMovie:
-            if path.isfile(eInfo.ImdbId + "_poster.png") is False:
-                if len(eInfo.Poster):
+            if len(eInfo.Poster):
+                if path.isfile(eInfo.ImdbId + "_poster.png") is False:
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";poster;" + eInfo.Poster)
                     if url is not None and url != "NONE":
                         WebGrabber().grabFile("http://val.duckbox.info" + url, eInfo.ImdbId + "_poster.png")
                 
             if len(eInfo.Backdrop):
-                if path.isfile(eInfo.ImdbId + "_backdrop.mvi") is False:
+                if path.isfile(eInfo.ImdbId + "_backdrop.m1v") is False:
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop)
                     if url is not None and url != "NONE":
                         WebGrabber().grabFile("http://val.duckbox.info" + url, eInfo.ImdbId + "_backdrop.m1v")
-        else:
+        else if eInfo.isSerie:
             if len(eInfo.Poster):
                 if path.isfile(eInfo.TheTvDbId + "_poster.png") is False:
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";poster;" + eInfo.Poster)
@@ -39,7 +39,7 @@ class Arts():
                         WebGrabber().grabFile("http://val.duckbox.info" + url, eInfo.TheTvDbId + "_poster.png")
                 
             if len(eInfo.Backdrop):
-                if path.isfile(eInfo.TheTvDbId + "_backdrop.mvi") is False:
+                if path.isfile(eInfo.TheTvDbId + "_backdrop.m1v") is False:
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";backdrop;" + eInfo.Backdrop)
                     if url is not None and url != "NONE":
                         WebGrabber().grabFile("http://val.duckbox.info" + url, eInfo.TheTvDbId + "_backdrop.m1v")

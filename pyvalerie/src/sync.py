@@ -13,6 +13,7 @@ from ImdbProvider import ImdbProvider
 from TheMovieDbProvider import TheMovieDbProvider
 from TheTvDbProvider import TheTvDbProvider
 from Database import Database
+from WebGrabber import WebGrabber
 import replace
 
 class pyvalerie(Thread):
@@ -48,12 +49,19 @@ class pyvalerie(Thread):
 			print(" - Created\n")
 		
 		try: 
-			print("Check "+"/hdd/valerie/dl")
-			os.makedirs("/hdd/valerie/dl")
+			print("Check "+"/hdd/valerie/media")
+			os.makedirs("/hdd/valerie/media")
 		except OSError, e:
 			print(" - OK\n")
 		else:
 			print(" - Created\n")
+		
+		if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
+			self.output("Check defaultbackdrop.m1v - Missing -> Downloading")
+			WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pc/default/defaultbackdrop.m1v", "defaultbackdrop.m1v")
+		if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
+			self.output("Check defaultposter.png - Missing -> Downloading")
+			WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pc/default/defaultposter.png", "defaultposter.png")
 		
 		try: 
 			print("Check "+"/hdd/valerie/episodes")
@@ -76,12 +84,52 @@ class pyvalerie(Thread):
 		try:
 			print("Check "+"/hdd/valerie/paths.conf")
 			if os.path.isfile("/hdd/valerie/paths.conf") is False:
-				f = open("/hdd/valerie/paths.conf", "wb")
-				f.write("mkv|ts|avi|m2ts\n")
-				f.write("/hdd\n")
-				f.write("/autofs\n")
-				f.write("/mnt\n")
-				f.close()
+				self.output("Check paths.conf - Missing -> Downloading")
+				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/paths.conf", "../paths.conf")
+				print(" - Created\n")
+			else:
+				print(" - OK\n")
+		except Exception:
+			print(" - ERROR\n")
+			
+		try:
+			print("Check "+"/hdd/valerie/valerie.conf")
+			if os.path.isfile("/hdd/valerie/valerie.conf") is False:
+				self.output("Check valerie.conf - Missing -> Downloading")
+				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/valerie.conf", "../valerie.conf")
+				print(" - Created\n")
+			else:
+				print(" - OK\n")
+		except Exception:
+			print(" - ERROR\n")
+		
+		try:
+			print("Check "+"/hdd/valerie/pre.conf")
+			if os.path.isfile("/hdd/valerie/pre.conf") is False:
+				self.output("Check pre.conf - Missing -> Downloading")
+				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/pre.conf", "../pre.conf")
+				print(" - Created\n")
+			else:
+				print(" - OK\n")
+		except Exception:
+			print(" - ERROR\n")
+		
+		try:
+			print("Check "+"/hdd/valerie/post_movie.conf")
+			if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
+				self.output("Check post_movie.conf - Missing -> Downloading")
+				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_movie.conf", "../post_movie.conf")
+				print(" - Created\n")
+			else:
+				print(" - OK\n")
+		except Exception:
+			print(" - ERROR\n")
+		
+		try:
+			print("Check "+"/hdd/valerie/post_tv.conf")
+			if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
+				self.output("Check post_tv.conf - Missing -> Downloading")
+				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_tv.conf", "../post_tv.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")

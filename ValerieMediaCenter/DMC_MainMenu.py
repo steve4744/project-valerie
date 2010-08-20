@@ -76,7 +76,7 @@ class Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.pvmc.showwizard))
 			self.list.append(getConfigListEntry(_("autostart"), config.plugins.pvmc.autostart))
 			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.pvmc.checkforupdate))
-			self.list.append(getConfigListEntry(_("uselocal"), config.plugins.pvmc.uselocal))
+			#self.list.append(getConfigListEntry(_("uselocal"), config.plugins.pvmc.uselocal))
 			self["config"].setList(self.list)
 		except KeyError:
 			print "keyError"
@@ -132,14 +132,14 @@ class PVMC_Update(Screen):
 		
 		cmd = "ipkg install -force-overwrite " + str(self.url)
 		
-		self["text"].setText("Updating MediaCenter ...\n\n\nStay tuned :-)")
+		self["text"].setText("Updating ProjectValerie...\n\n\nStay tuned :-)")
 		self.Console.ePopen(cmd, self.startupdate)
 
 	def startupdate(self, result, retval, extra_args):
 		if retval == 0:
 			self.working = True
 			self["text"].setText(result)
-			self.session.open(MessageBox,("Your MediaCenter was hopefully updated now ...\n\nEnigma will restart now!"),  MessageBox.TYPE_INFO)
+			self.session.open(MessageBox,("ProjectValerie is now up to date...\n\nEnigma will restart now!"),  MessageBox.TYPE_INFO)
 			quitMainloop(3)
 		else:
 			self.working = False

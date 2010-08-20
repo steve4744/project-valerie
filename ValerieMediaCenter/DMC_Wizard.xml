@@ -31,18 +31,6 @@ self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>
 	</step>
-	<step id="uselocal" nextstep="end">
-		<text value="Language configuration" />
-		<list evaluation="uselocal" onselect="uselocal">
-			<listentry caption="Yes" step="yes" />
-			<listentry caption="No" step="no" />
-		</list>
-		<code>
-self["textTop"].setText("Should Project Valerie display titles and plot in your local language?")
-self["textCenter"].setText(" ")
-self["textBottom"].setText("Press OK to continue")
-		</code>
-	</step>
 	<step id="end">
 		<text value=" " />
 		<code>

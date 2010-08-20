@@ -167,7 +167,7 @@ class MediaInfo(object):
             self.ImdbId = m.group("imdbid")
         
         ###  
-        m = re.search(r'\D(?P<year>\d{4})\D', name)
+        m = re.search(r'\s(?P<year>\d{4})\s', name)
         if m and m.group("year"):
             year = int(m.group("year"))
             if year > 1940 and year < 2012:
@@ -294,7 +294,7 @@ class MediaInfo(object):
                     
                     self.SearchString = re.sub(r' (?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", nameConverted)
         
-        if self.isEnigma2Recording(absFilename) is True:
+        if self.Extension == "ts" and self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
             print ":: ", self.SearchString.encode('latin-1')
             return
