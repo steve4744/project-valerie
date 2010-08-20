@@ -13,22 +13,22 @@ def menu(menuid, **kwargs):
 	return []
 
 gE2Control = None
-gSession = None
-gReason = -1
+gSessionPV = None
+gReasonPV = -1
 
 def autostart(reason, **kwargs):
 	global gE2Control
-	global gSession
+	global gSessionPV
 
 	if kwargs.has_key("session"):
-                gSession = kwargs["session"]
+                gSessionPV = kwargs["session"]
 	printl("Reason: " + str(reason))
-	gReason = reason
+	gReasonPV = reason
 
 	from DMC_Global import E2Control
-	if gReason == 0 and gSession != None and gE2Control == None:
+	if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
 		gE2Control = E2Control()
-	elif gReason == 1 and gE2Control != None:
+	elif gReasonPV == 1 and gE2Control != None:
 #		gE2Control.stop()
 		gE2Control = None
 	

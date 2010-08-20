@@ -24,8 +24,8 @@ import os
 from enigma import quitMainloop
 
 # Plugins
-from DMC_Movies import DMC_Movies
-from DMC_Series import DMC_Series
+from DMC_Movies import PVMC_Movies
+from DMC_Series import PVMC_Series
 
 
 from Components.MenuList import MenuList
@@ -42,7 +42,7 @@ except Exception, e:
 	
 class Settings(Screen, ConfigListScreen):
 	skin = """
-		<screen name="DMC_Settings" position="160,150" size="450,200" title="Settings">
+		<screen name="PVMC_Settings" position="160,150" size="450,200" title="Settings">
 			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on" />
 			<widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
@@ -73,10 +73,10 @@ class Settings(Screen, ConfigListScreen):
 		print "[initConfigList]", element
 		try:
 			self.list = []
-			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.dmc.showwizard))
-			self.list.append(getConfigListEntry(_("autostart"), config.plugins.dmc.autostart))
-			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.dmc.checkforupdate))
-			self.list.append(getConfigListEntry(_("uselocal"), config.plugins.dmc.uselocal))
+			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.pvmc.showwizard))
+			self.list.append(getConfigListEntry(_("autostart"), config.plugins.pvmc.autostart))
+			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.pvmc.checkforupdate))
+			self.list.append(getConfigListEntry(_("uselocal"), config.plugins.pvmc.uselocal))
 			self["config"].setList(self.list)
 		except KeyError:
 			print "keyError"
@@ -103,14 +103,14 @@ class Settings(Screen, ConfigListScreen):
 
 
 
-class DMC_Update(Screen):
+class PVMC_Update(Screen):
 	skin = """
 		<screen position="100,100" size="500,380" title="Software Update" >
 			<widget name="text" position="10,10" size="480,360" font="Regular;22" />
 		</screen>"""
 
 	def __init__(self, session, remoteurl):
-		self.skin = DMC_Update.skin
+		self.skin = PVMC_Update.skin
 		Screen.__init__(self, session)
 
 		self.working = False
@@ -147,9 +147,9 @@ class DMC_Update(Screen):
 
 
 
-class DMC_MainMenu(Screen):
+class PVMC_MainMenu(Screen):
 	def __init__(self, session):
-		printl("DMC_MainMenu:__init__")
+		printl("PVMC_MainMenu:__init__")
 		Screen.__init__(self, session)
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -157,19 +157,19 @@ class DMC_MainMenu(Screen):
 
 	
 		list = []
-		list.append(("Movies", "DMC_Watch", "menu_watch", "50"))
+		list.append(("Movies", "PVMC_Watch", "menu_watch", "50"))
 		list.append(("TV", "InfoBar", "menu_tv", "50"))
 		#list.append(("TV", "Exit", "menu_exit", "50"))
-		list.append(("Settings", "DMC_Settings", "menu_settings", "50"))
-		list.append(("Sync", "DMC_Sync", "menu_sync", "50"))
-		list.append(("Music", "DMC_AudioPlayer", "menu_music", "50"))
+		list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
+		list.append(("Sync", "PVMC_Sync", "menu_sync", "50"))
+		list.append(("Music", "PVMC_AudioPlayer", "menu_music", "50"))
 		#list.append(("Exit", "Exit", "menu_exit", "50"))
 		self["menu"] = List(list, True)
 
 		listWatch = []
 		listWatch.append((" ", "dummy", "menu_dummy", "50"))
-		listWatch.append(("Movies", "DMC_Movies", "menu_movies", "50"))
-		listWatch.append(("Series", "DMC_Series", "menu_series", "50"))
+		listWatch.append(("Movies", "PVMC_Movies", "menu_movies", "50"))
+		listWatch.append(("Series", "PVMC_Series", "menu_series", "50"))
 		#listWatch.append(("Series", "MC_VideoPlayer", "menu_watch_all", "50"))
 		self["menuWatch"] = List(listWatch, True)
 		self.Watch = False
@@ -182,7 +182,7 @@ class DMC_MainMenu(Screen):
 
 		self.inter = 0
 
-		self["actions"] = HelpableActionMap(self, "DMC_MainMenuActions", 
+		self["actions"] = HelpableActionMap(self, "PVMC_MainMenuActions", 
 			{
 				"ok": self.okbuttonClick,
 				"cancel": self.cancel,
@@ -193,7 +193,7 @@ class DMC_MainMenu(Screen):
 				"power": self.power,
 			}, -1)
 
-		if config.plugins.dmc.checkforupdate.value == True:
+		if config.plugins.pvmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
 
 	def power(self):
@@ -203,7 +203,7 @@ class DMC_MainMenu(Screen):
 	def checkForUpdate(self):
 		box = getBoxtype()
 		printl(box)
-		self.url = config.plugins.dmc.url.value + config.plugins.dmc.updatexml.value
+		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 		printl("Checking URL: " + self.url) 
 		try:
 			f = urllib2.urlopen(self.url)
@@ -223,7 +223,7 @@ class DMC_MainMenu(Screen):
 			
 			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl))
 			
-			if config.plugins.dmc.version.value != remoteversion and self.remoteurl != "":
+			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
 				self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_YESNO)
 
 		except Exception, e:
@@ -232,7 +232,7 @@ class DMC_MainMenu(Screen):
 
 	def startUpdate(self, answer):
 		if answer is True:
-			self.session.open(DMC_Update, self.remoteurl)
+			self.session.open(PVMC_Update, self.remoteurl)
 
 	def Error(self, error):
 		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
@@ -243,22 +243,22 @@ class DMC_MainMenu(Screen):
 		if self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
-				if selection[1] == "DMC_Movies":
-					self.session.open(DMC_Movies)
-				elif selection[1] == "DMC_Series":
-					self.session.open(DMC_Series)
+				if selection[1] == "PVMC_Movies":
+					self.session.open(PVMC_Movies)
+				elif selection[1] == "PVMC_Series":
+					self.session.open(PVMC_Series)
 		else:
 			selection = self["menu"].getCurrent()
 			if selection is not None:
-				if selection[1] == "DMC_Watch":
+				if selection[1] == "PVMC_Watch":
 					self["menuWatch"].setIndex(2)
 					self.Watch = True;
-				elif selection[1] == "DMC_AudioPlayer":
+				elif selection[1] == "PVMC_AudioPlayer":
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)
-				elif selection[1] == "DMC_Settings":
+				elif selection[1] == "PVMC_Settings":
 					self.session.open(Settings, self)
-				elif selection[1] == "DMC_Sync":
+				elif selection[1] == "PVMC_Sync":
 					try:
 						from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
 						self.session.open(ProjectValerieSync)

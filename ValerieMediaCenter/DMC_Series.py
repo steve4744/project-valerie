@@ -19,7 +19,7 @@ from Components.config import *
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
-#from Screens.DMC_MoviePlayer import DMC_MoviePlayer
+#from Screens.DMC_MoviePlayer import PVMC_MoviePlayer
 from Screens.InfoBar import MoviePlayer
 
 from Plugins.Plugin import PluginDescriptor
@@ -35,7 +35,7 @@ from DMC_Global import Showiframe
 
 #------------------------------------------------------------------------------------------
 
-class DMC_Series(Screen, HelpableScreen, InfoBarBase):
+class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -81,7 +81,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 			print stars
 			self[stars] = Pixmap()
 
-		self["actions"] = HelpableActionMap(self, "DMC_AudioPlayerActions", 
+		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
 				"cancel": (self.KeyExit, "Exit Audio Player"),
@@ -146,7 +146,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.moviedb[d["TheTvDb"]] = d
 						if not d["Title"] in entrys:
 							entrys.append(d["Title"])
-							if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
+							if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
 								self.serieslist.append(("  " + d["LocalTitle"], d["TheTvDb"], "menu_globalsettings", "50"))
 							else:
 								self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
@@ -159,7 +159,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 							if not d["Episode"] in entrys:
 								entrys.append(d["Episode"])
 								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
-								if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
+								if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
 									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["LocalTitle"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
 								else:
 									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
@@ -204,7 +204,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self["tag"].setText(self.moviedb[selection[1]]["Tag"])
 
 
-				if self.moviedb[selection[1]]["LocalPlot"] and self.moviedb[selection[1]]["LocalPlot"] !="" and config.plugins.dmc.uselocal.value == True:
+				if self.moviedb[selection[1]]["LocalPlot"] and self.moviedb[selection[1]]["LocalPlot"] !="" and config.plugins.pvmc.uselocal.value == True:
 					self["shortDescription"].setText(self.moviedb[selection[1]]["LocalPlot"])
 				else:
 					self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
@@ -227,7 +227,7 @@ class DMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])
-				if self.episodesdb[selection[1]]["LocalPlot"] and self.episodesdb[selection[1]]["LocalPlot"] !="" and config.plugins.dmc.uselocal.value == True:
+				if self.episodesdb[selection[1]]["LocalPlot"] and self.episodesdb[selection[1]]["LocalPlot"] !="" and config.plugins.pvmc.uselocal.value == True:
 					self["shortDescription"].setText(self.episodesdb[selection[1]]["LocalPlot"])
 				else:
 					self["shortDescription"].setText(self.episodesdb[selection[1]]["Plot"])

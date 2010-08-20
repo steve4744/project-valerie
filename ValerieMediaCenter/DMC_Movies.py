@@ -39,7 +39,7 @@ from DMC_Global import Showiframe
 
 #------------------------------------------------------------------------------------------
 
-class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
+class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
@@ -83,7 +83,7 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 
 		
-		self["actions"] = HelpableActionMap(self, "DMC_AudioPlayerActions", 
+		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
 				"cancel": (self.Exit, "Exit Audio Player"),
@@ -148,7 +148,7 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 						print "skipping ", d["LocalTitle"]
 						continue
 					self.moviedb[d["ImdbId"]] = d
-					if d["LocalTitle"] != "" and config.plugins.dmc.uselocal.value == True:
+					if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
 						print "adding ", d["LocalTitle"]
 						list.append(("  " + d["LocalTitle"], d["ImdbId"], "menu_globalsettings", "45"))
 					else:
@@ -215,7 +215,7 @@ class DMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self["title"].setText(selection[0])
 			self["otitle"].setText(self.moviedb[selection[1]]["Title"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
-			if self.moviedb[selection[1]]["LocalPlot"]!="" and config.plugins.dmc.uselocal.value == True:
+			if self.moviedb[selection[1]]["LocalPlot"]!="" and config.plugins.pvmc.uselocal.value == True:
 				self["shortDescription"].setText(self.moviedb[selection[1]]["LocalPlot"])
 			else:
 				self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])

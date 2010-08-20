@@ -9,8 +9,8 @@
 		</colors>
 
 			
-<!-- DMC Wizard -->
-		<screen name="DMC_Wizard" position="0,0" size="1280,720" title="Welcome" flags="wfNoBorder" backgroundColor="#1f1f21" >
+<!-- PVMC Wizard -->
+		<screen name="PVMC_Wizard" position="0,0" size="1280,720" title="Welcome" flags="wfNoBorder" backgroundColor="#1f1f21" >
 			<ePixmap name="mb_bg" 
 				position="0,0" 
 				zPosition="0" 
@@ -81,8 +81,8 @@
 		</screen>"
 
 
-<!-- DMC Main Menu -->
-		<screen name="DMC_MainMenu" position="0,0" size="1280,720" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
+<!-- PVMC Main Menu -->
+		<screen name="PVMC_MainMenu" position="0,0" size="1280,720" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
 
 			<ePixmap name="mb_bg" 
 				position="0,0" 
@@ -411,8 +411,8 @@
 
 
 
-		<!-- DMC Series -->
-		<screen name="DMC_Series" position="0,0" size="1280,720" title="Media Center - Series" flags="wfNoBorder" backgroundColor="#ff000000" >
+		<!-- PVMC Series -->
+		<screen name="PVMC_Series" position="0,0" size="1280,720" title="Media Center - Series" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay_720-fs8.png" />
 
@@ -473,8 +473,8 @@
 			<widget name="runtime" transparent="1" zPosition="5" halign="left" position="996,657" size="350,20" font="Regular;20" foregroundColor="#FFFFFF"  backgroundColor="#F200FF"/>
 		</screen>
 		
-<!-- DMC_Movies -->
-		<screen name="DMC_Movies" position="0,0" size="1280,720" title="Media Center - PosterDemo" flags="wfNoBorder" backgroundColor="#ff000000" >
+<!-- PVMC_Movies -->
+		<screen name="PVMC_Movies" position="0,0" size="1280,720" title="Media Center - PosterDemo" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay_720-fs8.png" />
 

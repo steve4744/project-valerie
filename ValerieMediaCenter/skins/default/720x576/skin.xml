@@ -9,8 +9,8 @@
 		</colors>
 
 			
-<!-- DMC Wizard -->
-		<screen name="DMC_Wizard" position="0,0" size="1024,576" title="Welcome" flags="wfNoBorder" backgroundColor="#1f1f21" >
+<!-- PVMC Wizard -->
+		<screen name="PVMC_Wizard" position="0,0" size="1024,576" title="Welcome" flags="wfNoBorder" backgroundColor="#1f1f21" >
 			<ePixmap name="mb_bg" 
 				position="0,0" 
 				zPosition="0" 
@@ -81,8 +81,8 @@
 		</screen>"
 
 
-<!-- DMC Main Menu -->
-		<screen name="DMC_MainMenu" position="0,0" size="1024,576" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
+<!-- PVMC Main Menu -->
+		<screen name="PVMC_MainMenu" position="0,0" size="1024,576" title="Media Center - Home" flags="wfNoBorder" backgroundColor="#1f1f21" >
 
 			<ePixmap name="mb_bg" 
 				position="0,0" 
@@ -411,8 +411,8 @@
 
 
 
-		<!-- DMC Series -->
-		<screen name="DMC_Series" position="0,0" size="1024,576" title="Media Center - TV" flags="wfNoBorder" backgroundColor="#ff000000" >
+		<!-- PVMC Series -->
+		<screen name="PVMC_Series" position="0,0" size="1024,576" title="Media Center - TV" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1024,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1024x576/images/fanart_overlay_720-fs8.png" />
 
@@ -479,8 +479,8 @@
 
 
 
-<!-- DMC Movies -->
-		<screen name="DMC_Movies" position="0,0" size="1024,576" title="Media Center - Movies" flags="wfNoBorder" backgroundColor="#ff000000" >
+<!-- PVMC Movies -->
+		<screen name="PVMC_Movies" position="0,0" size="1024,576" title="Media Center - Movies" flags="wfNoBorder" backgroundColor="#ff000000" >
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1024,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1024x576/images/fanart_overlay_720-fs8.png" />
 

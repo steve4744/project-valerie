@@ -1,5 +1,5 @@
 <keymap>
-	<map context="DMC_AudioPlayerActions">
+	<map context="PVMC_AudioPlayerActions">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
@@ -19,7 +19,7 @@
 		<key id="KEY_BLUE" mapto="blue" flags="m" />
 	</map>
 	
-	<map context="DMC_VideoPlayerActions">
+	<map context="PVMC_VideoPlayerActions">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
@@ -39,7 +39,7 @@
 		<key id="KEY_BLUE" mapto="blue" flags="m" />
 	</map>
 	
-	<map context="DMC_PictureViewerActions">
+	<map context="PVMC_PictureViewerActions">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
@@ -59,7 +59,7 @@
 		<key id="KEY_BLUE" mapto="blue" flags="m" />
 	</map>
 
-	<map context="DMC_MainMenuActions">
+	<map context="PVMC_MainMenuActions">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
 		<key id="KEY_UP" mapto="up" flags="m" />
@@ -69,7 +69,7 @@
 		<key id="KEY_POWER" mapto="power" flags="m" />
 	</map>
 
-	<map context="DMC_PosterDemoActions">
+	<map context="PVMC_PosterDemoActions">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
 		<key id="KEY_UP" mapto="up" flags="m" />
