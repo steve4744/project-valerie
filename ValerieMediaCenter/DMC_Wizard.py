@@ -5,10 +5,10 @@ from Components.Pixmap import Pixmap
 from Components.Label import Label
 from DMC_Global import printl
 
-class DMC_Wizard(WizardLanguage):
+class PVMC_Wizard(WizardLanguage):
 
 	def __init__(self, session):
-		self.xmlfile = config.plugins.dmc.pluginfolderpath.value + "DMC_Wizard.xml"
+		self.xmlfile = config.plugins.pvmc.pluginfolderpath.value + "DMC_Wizard.xml"
 
 		WizardLanguage.__init__(self, session, showSteps = False, showStepSlider = False)
 		self["wizard"] = Pixmap()
@@ -20,30 +20,30 @@ class DMC_Wizard(WizardLanguage):
 		if selection is None:
 			selection = self.selection
 		if selection == "yes":
-			config.plugins.dmc.autostart.value = True
+			config.plugins.pvmc.autostart.value = True
 		else:
-			config.plugins.dmc.autostart.value = False
-		printl("config.plugins.dmc.autostart -> " + str(config.plugins.dmc.autostart.value))
+			config.plugins.pvmc.autostart.value = False
+		printl("config.plugins.pvmc.autostart -> " + str(config.plugins.pvmc.autostart.value))
 
 	def checkforupdate(self, selection = None):
 		if selection is None:
 			selection = self.selection
 		if selection == "yes":
-			config.plugins.dmc.checkforupdate.value = True
+			config.plugins.pvmc.checkforupdate.value = True
 		else:
-			config.plugins.dmc.checkforupdate.value = False
-		printl("config.plugins.dmc.checkforupdate -> " + str(config.plugins.dmc.checkforupdate.value))
+			config.plugins.pvmc.checkforupdate.value = False
+		printl("config.plugins.pvmc.checkforupdate -> " + str(config.plugins.pvmc.checkforupdate.value))
 
 	def uselocal(self, selection = None):
 		if selection is None:
 			selection = self.selection
 		if selection == "yes":
-			config.plugins.dmc.uselocal.value = True
+			config.plugins.pvmc.uselocal.value = True
 		else:
-			config.plugins.dmc.uselocal.value = False
-		printl("config.plugins.dmc.uselocal -> " + str(config.plugins.dmc.uselocal.value))
+			config.plugins.pvmc.uselocal.value = False
+		printl("config.plugins.pvmc.uselocal -> " + str(config.plugins.pvmc.uselocal.value))
 
 	def saveConfig(self):
-		config.plugins.dmc.showwizard.value = False
+		config.plugins.pvmc.showwizard.value = False
 		config.save() 
 		printl("Saved !")

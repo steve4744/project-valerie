@@ -42,7 +42,7 @@ def getBoxtype():
 		arch = "mipsel"
 	
 	if arch == "mipsel":
-		file = open(config.plugins.dmc.pluginfolderpath.value + "oe.txt", "r")
+		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
 		version = file.readline().strip()
 		file.close()
 		
@@ -52,7 +52,7 @@ def getBoxtype():
 
 class Showiframe():
 	def __init__(self):
-		self.showiframe = dlopen(config.plugins.dmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
+		self.showiframe = dlopen(config.plugins.pvmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
 		try:
 			self.showSinglePic = dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = dlsym(self.showiframe, "finishShowSinglePic")
@@ -92,7 +92,7 @@ class E2Control():
 
 		box = getBoxtype()
 		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
-		s = config.plugins.dmc.pluginfolderpath.value + "e2control"
+		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"
 		printl(s)
 		try:
 			popen(s)
@@ -100,7 +100,7 @@ class E2Control():
 			printl("OSError: " + str(e))
 
 	def close(self):
-		s = config.plugins.dmc.pluginfolderpath.value + "e2control stop"
+		s = config.plugins.pvmc.pluginfolderpath.value + "e2control stop"
 		printl(s)
 		try:
 			popen(s)
