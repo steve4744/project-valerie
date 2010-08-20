@@ -272,6 +272,7 @@ class PVMC_MainMenu(Screen):
 
 #					self.session.open(MainMenu, menu)
 				elif selection[1] == "InfoBar":
+					self.session.nav.playService(self.oldService)
 					self.Exit()
 					#eDVBDB.getInstance().reloadBouquets()
 					#from Screens.InfoBar import InfoBar
