@@ -129,7 +129,7 @@
 				position="40,224" 
 				size="190,125" 
 				alphatest="on" >
-				<convert type="MenuEntryCompare">menu_pictures</convert>
+				<convert type="MenuEntryCompare">menu_sync</convert>
 				<convert type="ConditionalShowHide" />
 			</widget>
 
@@ -142,7 +142,7 @@
 				alphatest="blend"
 			/>
 
-			<eLabel text="My Weather" 
+			<eLabel text="Sync" 
 				transparent="1" 
 				halign="center"
 				zPosition="4" 
