@@ -20,6 +20,7 @@ from Components.AVSwitch import AVSwitch
 from Components.ConfigList import ConfigListScreen
 
 import os
+import time
 
 from enigma import quitMainloop
 
@@ -128,11 +129,17 @@ class PVMC_Update(Screen):
 		self.onFirstExecBegin.append(self.initupdate)
 
 	def initupdate(self):
-		self.working = True
-		
-		cmd = "ipkg install -force-overwrite " + str(self.url)
-		
 		self["text"].setText("Updating ProjectValerie...\n\n\nStay tuned :-)")
+		
+		self.working = True
+		cmd = "ipkg install -force-overwrite " + str(self.url)
+		self.Console.ePopen(cmd, self.startupdate)
+		
+		while self.working:
+			time.sleep(1)
+		
+		self.working = True
+		cmd = "opkg install -force-overwrite " + str(self.url)
 		self.Console.ePopen(cmd, self.startupdate)
 
 	def startupdate(self, result, retval, extra_args):
