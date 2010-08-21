@@ -31,7 +31,7 @@ class Arts():
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop)
                     if url is not None and url != "NONE":
                         WebGrabber().grabFile("http://val.duckbox.info" + url, eInfo.ImdbId + "_backdrop.m1v")
-        else if eInfo.isSerie:
+        elif eInfo.isSerie:
             if len(eInfo.Poster):
                 if path.isfile(eInfo.TheTvDbId + "_poster.png") is False:
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";poster;" + eInfo.Poster)
