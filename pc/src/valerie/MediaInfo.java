@@ -329,6 +329,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
             //print "[[[ ", nameConverted.encode('latin-1')
 
+            nameConverted = nameConverted.trim();
+
             m = Pattern.compile("\\W\\d{3,4}(\\W|$)").matcher(nameConverted);
             if (m.find()) {
                 int se = -1;
