@@ -19,7 +19,7 @@ self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>
 	</step>
-	<step id="checkforupdate" nextstep="uselocal">
+	<step id="checkforupdate" nextstep="end">
 		<text value="Update configuration" />
 		<list evaluation="checkforupdate" onselect="checkforupdate">
 			<listentry caption="Yes" step="yes" />
