@@ -40,7 +40,7 @@ except Exception, e:
 
 #------------------------------------------------------------------------------------------
 	
-class Settings(Screen, ConfigListScreen):
+class PVMC_Settings(Screen, ConfigListScreen):
 	skin = """
 		<screen name="PVMC_Settings" position="160,150" size="450,200" title="Settings">
 			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
@@ -257,7 +257,7 @@ class PVMC_MainMenu(Screen):
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)
 				elif selection[1] == "PVMC_Settings":
-					self.session.open(Settings, self)
+					self.session.open(PVMC_Settings, self)
 				elif selection[1] == "PVMC_Sync":
 					try:
 						from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
