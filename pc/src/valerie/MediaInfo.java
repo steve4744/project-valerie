@@ -153,13 +153,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
     public void parse(Controller pController) {
         String absFilename = this.Path + "/" + this.Filename + "." + this.Extension;
-
         String name = this.Filename.toLowerCase();
-        //#print ":-2: ", name
-        //name = name.replace(".", " ");
-        //name = name.trim();
         this.SearchString = name;
-        //#print ":-1b: ", self.SearchString
 
         //### Replacements PRE
         for (String[] replacement : Replace.replacements("pre")) {
@@ -224,7 +219,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //#####
 
         if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\Ws\\d+\\D?e\\D?\\d+(\\W|$)").matcher(this.SearchString);
+            m = Pattern.compile("\\Ws\\d+\\s?e\\d+(\\D|$)").matcher(this.SearchString);
             if (m.find()) {
                 this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
                 this.isMovie = false;
@@ -238,7 +233,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
                     this.Episode = Integer.valueOf(m.group().substring(1).trim());
                 }
 
-                this.SearchString = this.SearchString.replaceAll("\\Ws\\d+\\D?e\\D?\\d+.*", " ");
+                this.SearchString = this.SearchString.replaceAll("s\\d+\\s?e\\d+.*", " ");
             }
         }
 
@@ -247,7 +242,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //#####
 
         if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\Ws(\\d+)\\s?e(\\d+)[-]?\\D?e?(\\d+)(\\W|$)").matcher(this.SearchString);
+            m = Pattern.compile("\\Ws(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+)(\\D|$)").matcher(this.SearchString);
             if (m.find()) {
                 this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
                 this.isMovie = false;
@@ -261,7 +256,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
                     this.Episode = Integer.valueOf(m.group().substring(1).trim());
                 }
 
-                this.SearchString = this.SearchString.replaceAll("\\Ws(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+).*", " ");
+                this.SearchString = this.SearchString.replaceAll("s(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+).*", " ");
             }
         }
 
@@ -270,7 +265,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //#####
 
         if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\W\\d+x\\d+(\\W|$)").matcher(this.SearchString);
+            m = Pattern.compile("\\D\\d+x\\d+(\\D|$)").matcher(this.SearchString);
             if (m.find()) {
                 this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
                 this.isMovie = false;
@@ -295,19 +290,19 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //#####
 
         if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile(" (part|pt)\\D?\\d+(\\W|$)").matcher(this.SearchString);
+            m = Pattern.compile("\\W(part|pt)\\s?\\d+(\\D|$)").matcher(this.SearchString);
             if (m.find()) {
                 this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
                 this.isMovie = false;
 
                 this.Season = 0;
                 String group = m.group();
-                m = Pattern.compile("\\D?\\d+").matcher(group);
+                m = Pattern.compile("\\s?\\d+").matcher(group);
                 if (m.find()) {
                     this.Episode = Integer.valueOf(m.group().trim());
                 }
 
-                this.SearchString = this.SearchString.replaceAll(" (part|pt)\\D?\\d+.*", " ");
+                this.SearchString = this.SearchString.replaceAll("(part|pt)\\s?\\d+.*", " ");
             }
         }
 
@@ -331,14 +326,14 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
             nameConverted = nameConverted.trim();
 
-            m = Pattern.compile("\\W\\d{3,4}(\\W|$)").matcher(nameConverted);
+            m = Pattern.compile("\\D\\d{3,4}(\\W|$)").matcher(nameConverted);
             if (m.find()) {
                 int se = -1;
                 int s = -1;
                 int e = -1;
 
                 String group = m.group();
-                m = Pattern.compile("\\W\\d{3,4}").matcher(group);
+                m = Pattern.compile("\\D\\d{3,4}").matcher(group);
                 if (m.find()) {
                     se = Integer.valueOf(m.group().trim());
                 }
@@ -353,7 +348,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
                     this.Season = s;
                     this.Episode = e;
 
-                    this.SearchString = nameConverted.replaceAll(" \\d{1,2}\\d{2}.*", " ");
+                    this.SearchString = nameConverted.replaceAll("\\d{3,4}.*", " ");
                 }
             }
         }

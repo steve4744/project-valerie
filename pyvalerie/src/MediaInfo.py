@@ -145,14 +145,8 @@ class MediaInfo(object):
 
     def parse(self):
         absFilename = unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
-        
-        #print ":-3: ", self.Filename
         name = unicode(self.Filename).lower()
-        #print ":-2: ", name
-        name = re.sub('[.]', " ", name) #replace point with space
-        name = name.strip()
         self.SearchString = name
-        #print ":-1b: ", self.SearchString
         
         ### Replacements PRE
         for replacement in replace.replacements("pre"):
@@ -172,7 +166,7 @@ class MediaInfo(object):
             year = int(m.group("year"))
             if year > 1940 and year < 2012:
                 self.Year = year
-                self.SearchString = name[:m.start()]
+                #self.SearchString = name[:m.start()]
         
         #print ":0: ", self.SearchString
         
@@ -209,7 +203,7 @@ class MediaInfo(object):
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+) ', self.SearchString)
+            m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -217,14 +211,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  s03e05e06 s03e05-e06
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' s(?P<season>\d+)\D?e\D?(?P<episode>\d+)[-]?\D?e?\D?(?P<episode2>\d+) ', self.SearchString)
+            m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -232,14 +226,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' s(?P<season>\d+)[-]?\D?e?\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', " ", self.SearchString)
         
         #####
         #####  3x05
         #####
         
         if self.Season == -1 or self.Episode == -1:  
-            m = re.search(r' (?P<season>\d+)x(?P<episode>\d+) ', self.SearchString)
+            m = re.search(r'\D(?P<season>\d+)x(?P<episode>\d+)(\D|$)', self.SearchString)
             if m and m.group("season") and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -247,14 +241,14 @@ class MediaInfo(object):
                 self.Season = int(m.group("season"))
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' (?P<season>\d+)x(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r'(?P<season>\d+)x(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  part 3
         #####
         
         if self.Season == -1 or self.Episode == -1:
-            m = re.search(r' part\D?(?P<episode>\d+) ', self.SearchString)
+            m = re.search(r'\W(part|pt)\s?(?P<episode>\d+)(\D|$)', self.SearchString)
             if m and m.group("episode"):
                 self.isSerie = True
                 self.isMovie = False
@@ -262,7 +256,7 @@ class MediaInfo(object):
                 self.Season = int(0)
                 self.Episode = int(m.group("episode"))
                 
-                self.SearchString = re.sub(r' part\D?(?P<episode>\d+).*', " ", self.SearchString)
+                self.SearchString = re.sub(r'(part|pt)\s?(?P<episode>\d+).*', " ", self.SearchString)
         
         #####
         #####  305
@@ -281,18 +275,27 @@ class MediaInfo(object):
             
             print "[[[ ", nameConverted.encode('latin-1')
             
-            m = re.search(r' (?P<season>\d{1,2})(?P<episode>\d{2}) ', nameConverted)
-            if m and m.group("season") and m.group("episode"):
-                s = int(m.group("season"))
-                e = int(m.group("episode"))
+            nameConverted = nameConverted.strip()
+            
+            m = re.search(r'\D(?P<seasonepisode>\d{3,4})(\D|$)', nameConverted)
+            if m and m.group("seasonepisode"):
+                se = int(-1)
+                s = int(-1)
+                e = int(-1)
+                
+                se = int(m.group("seasonepisode"))
+                
+                s = se / 100
+                e = se % 100
+                
                 if (s == 2 and e == 64 or s == 7 and e == 20 or s == 10 and e == 80 or s == 0 or s == 19 and e >= 40 or s == 20 and e <= 14) is False:
                     self.isSerie = True
                     self.isMovie = False
                     
-                    self.Season = int(m.group("season"))
-                    self.Episode = int(m.group("episode"))
+                    self.Season = s
+                    self.Episode = e
                     
-                    self.SearchString = re.sub(r' (?P<season>\d{1,2})(?P<episode>\d{2}).*', " ", nameConverted)
+                    self.SearchString = re.sub(r'(?P<seasonepisode>\d{3,4}).*', " ", nameConverted)
         
         if self.Extension == "ts" and self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
