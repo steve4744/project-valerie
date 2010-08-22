@@ -408,8 +408,12 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
                         if(key.equals("TheTvDb"))
                             TheTvDbId = value;
-                        else if(key.equals("ImdbId"))
-                            ImdbId = value;
+                        else if(key.equals("ImdbId")) {
+                            if(value.startsWith("tt"))
+                                ImdbId = value;
+                            else // Compatibility
+                                ImdbId = String.format("tt%07d", Integer.valueOf(value));
+                        }
                         else if(key.equals("Title"))
                             Title = value;
                         else if(key.equals("LocalTitle"))
