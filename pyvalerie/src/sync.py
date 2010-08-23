@@ -224,13 +224,12 @@ class pyvalerie(Thread):
 					db.add(elementInfoe)
 					Arts().download(elementInfo)
 					self.info(str(elementInfo.TheTvDbId) + "_poster.png", elementInfo.Title, elementInfo.Year)
-					
+			
+			self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
+			self.progress(i)
 			
 			
 		fconf.close()
-		
-		self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
-		self.progress(i)
 		
 		self.output("Saving database")
 		db.save()
