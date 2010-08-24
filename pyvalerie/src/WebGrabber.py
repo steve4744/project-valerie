@@ -10,6 +10,7 @@ import urllib2
 import codecs
 import socket
 from sys import version_info
+import sys, traceback
 
 from HtmlEncoding import decode_htmlentities
 
@@ -84,12 +85,17 @@ class WebGrabber(object):
         if os.path.isfile(self.downloadDir + "/" + name) is False:
             for i in range(3):
                 try:
-                    page = urllib2.urlopen(url)
-                    f = open(self.downloadDir + "/" + name, 'wb')
+                    page = urllib2.urlopen(url.encode('latin-1'))
+                    f = open(self.downloadDir + "/" + name.encode('latin-1'), 'wb')
                     f.write(page.read())
                     f.close()
                     break
                 except Exception, ex:
-                    print ex
+                    print "File download failed: ", ex
+                    print "Name: ", name
+                    print type(ex)
+                    print '-'*60
+                    traceback.print_exc(file=sys.stdout)
+                    print '-'*60
             
         return
