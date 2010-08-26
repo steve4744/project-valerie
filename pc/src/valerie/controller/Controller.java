@@ -39,6 +39,10 @@ public final class Controller extends Notifier {
         return pObjects.get(name);
     }
 
+    public void cancel() {
+        
+    }
+
     public void databaseLoad() {
 
         Database db = (Database)get("Database");

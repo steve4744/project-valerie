@@ -4,7 +4,9 @@
 package Gui;
 
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import org.jdesktop.application.Task;
+import org.jdesktop.application.TaskEvent;
 import valerie.*;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,6 +17,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,6 +48,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.table.DefaultTableModel;
+import org.jdesktop.application.TaskListener;
 import org.jdom.Document;
 import valerie.controller.Controller;
 import valerie.controller.Notification;
@@ -56,211 +60,13 @@ import valerie.tools.Restart;
 /**
  * The application's main frame.
  */
-public class ValerieView extends FrameView /*implements WindowStateListener*/ {
-/*
-    class UIOutputHandler extends OutputHandler {
-
-        long startTimer = 0;
-
-        DefaultTableModel tmodel;
-
-        UIOutputHandler()
-        {
-            super();
-
-            tmodel = (DefaultTableModel)jTableTasks.getModel();
-
-            //popup = new StatusPopup(null, true);
-        }
-
-        @Override
-        public void print(String s) {
-            statusMessageLabel.setText(s);
-        }
-
-        @Override
-        public void printBlocked(String s) {
-            statusMessageLabel.setText(s);
-            statusPopup.setTitle(s);
-            descLabel.setText(s);
-        }
-
-        @Override
-        public void setWorking(boolean s) {
-            jButtonConnect.setEnabled(!s);            
-            if (BoxIsConnected){
-                jButtonUploadToBox.setEnabled(!s);
-                jButtonParse.setEnabled(!s);
-                jButtonSync.setEnabled(!s);
-                jButtonArt.setEnabled(!s);
-            }
-            else {
-                jButtonUploadToBox.setEnabled(false);
-                //jButtonParse.setEnabled(false);
-                jButtonSync.setEnabled(false);
-                //jButtonArt.setEnabled(false);
-            }
-
-        }
-
-        @Override
-        public void setBlocked(boolean s) {
-
-            if(s && startTimer == 0) {
-                startTimer = System.currentTimeMillis();
-            } else if(!s && startTimer > 0) {
-                System.out.println("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
-                Logger.print("Duration in sec: " + (System.currentTimeMillis() - startTimer)/1000);
-                startTimer = 0;
-           }
-
-            setWorking(s);
-
-            //mainPanel.getParent()
-            Container rootPane = mainPanel.getParent().getParent().getParent();
-            Container frame = rootPane.getParent();
-            frame.setEnabled(!s);
-
-            if(!s) {
-                int c = tmodel.getRowCount();
-                for(int i = 0; i < c; i++)
-                tmodel.removeRow(0);
-            }
-
-            //if(frame.isVisible() == false)
-            //    statusPopup.
-
-            statusPopup.setLocationRelativeTo(mainPanel);
-            statusPopup.validate();
-            statusPopup.setVisible(s);
-        }
-
-        @Override
-        public void setProgress(int s) {
-            progressBar.setValue(s);
-        }
-
-        @Override
-        public void setProgress(int s, int t) {
-            if(tmodel.getRowCount() > t) {
-                jTableTasks.setValueAt((int)t, t, 0);
-                jTableTasks.setValueAt((int)s, t, 1);
-            }
-            //progressBar.setValue(s);
-        }
-
-        @Override
-        public void setMessage(String s, int t) {
-            if(tmodel.getRowCount() > t) {
-                jTableTasks.setValueAt(t, t, 0);
-                jTableTasks.setValueAt(s, t, 2);
-            }
-            //progressBar.setValue(s);
-        }
-
-        @Override
-        public void register(int t) {
-            System.out.println("register: " + t);
-            if(tmodel.getRowCount() <= t) {
-                Object row[] = {t,0,""};
-                tmodel.addRow(row);
-            }
-        }
-
-        @Override
-        public void unregister(int t) {
-            System.out.println("unregister: " + t);
-            if(tmodel.getRowCount() > t) {
-                jTableTasks.setValueAt((int)100, t, 1);
-                jTableTasks.setValueAt("Done", t, 2);
-            }
-            //tmodel.removeRow(t);
-        }
-    }
-
-    BackgroundWorker pWorker = null;
-    BackgroundWorker.ParentObject pCallback = null;
-
-    protected class Callback implements BackgroundWorker.ParentObject {
-
-        ValerieView pParent;
-        int pTaskCounter = 0;
-
-        Callback(ValerieView parent) {
-            pParent = parent;
-        }
-
-        public void done(int taskId, int taskCount, String id) {
-
-            //Only continue if the last task has finished
-            if(pTaskCounter < (taskCount - 1)) {
-                pTaskCounter++;
-                return;
-            }
-
-            pTaskCounter = 0;
-            //Logger.printBlocked("Finished");
-            Logger.setBlocked(false);
-            Logger.setProgress(0);
-
-            if(id.equals("CONNECT_NETWORK")) {
-                notify(0, 1, "UPDATE_BOXINFOS");
-            } else if(id.equals("SYNC_FILELIST")) {
-
-                notify(0, 1, "UPDATE_TABLES");
-
-                //Force Selection of Row "unspecified" and Force refresh
-                if(jTableSeries.getRowCount() > 1)
-                    jTableSeries.setRowSelectionInterval(1, 1);
-                jTableSeriesMouseClicked(null);
-
-            } else if(id.equals("PARSE_FILELIST")) {
-                done(0,1, "SYNC_FILELIST");
-
-                pParent.saveTables();
-            } else {
-                notify(0, 1, id);
-            }
-        }
-
-        public void notify(int taskId, int taskCount, String id) {
-            if(id.equals("UPDATE_BOXINFOS")) {
-                pParent.jComboBoxBoxinfo.removeAllItems();
-                BoxInfo[] boxInfos = (BoxInfo[])pWorker.get("BoxInfos");
-                if (boxInfos != null) {
-                    pWorker.set("SelectedBoxInfo", (int)0);
-                    for (int i = 0; i < boxInfos.length; i++) {
-                        String vInfo = boxInfos[i].toShortString();
-                        if (vInfo.contains("unknown")){
-                            pParent.BoxIsConnected = false;
-                        }
-                        else {
-                            pParent.BoxIsConnected = true;
-                        }
-                        jComboBoxBoxinfo.addItem (vInfo);
-                    }
-                    jComboBoxBoxinfo.setSelectedIndex( 0 );
-                } else {
-                    pWorker.set("SelectedBoxInfo", (int)-1);
-                    jComboBoxBoxinfo.setSelectedIndex( -1 );
-                    pParent.BoxIsConnected = false;
-                }
-            }
-            else if(id.equals("UPDATE_TABLES")) {
-                pParent.tablesUpdate();
-            }
-
-        }
-    }
-*/
+public class ValerieView extends FrameView {
     Controller pController;
 
     public ValerieView(SingleFrameApplication app, Controller controller, String[] arguments) {
         super(app);
 
-
         pController = controller;
-
         pController.add(new Notification() {
 
             @Override
@@ -431,23 +237,6 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
     }
 
     boolean firstFocus = true;
-
-    /*public void windowStateChanged(java.awt.event.WindowEvent event)
-    {
-        if(event.getNewState() == java.awt.event.WindowEvent.WINDOW_OPENED) {
-            pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
-                pCallback, "post");
-        }
-    }
-
-    public void focusGained(FocusEvent e) {
-        if(firstFocus) {
-            firstFocus = false;
-
-            pWorker.doTask( BackgroundWorker.Tasks.CHECK_ARGUMENTS, BackgroundWorker.Mode.NORMAL,
-                pCallback, "post");
-        }
-    }*/
 
     @Action
     public void showAboutBox() {
@@ -1718,15 +1507,6 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
 
         pController.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
 
-        /*if(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV")) {
-            //clear database
-            Database database = (Database)pWorker.get("Database");
-            database.clear();
-
-            pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
-            tablesUpdate();
-        }*/
-
         if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
             jButtonUploadToBox.setEnabled(false);
             jButtonDownloadFromBox.setEnabled(false);
@@ -1743,295 +1523,30 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
 
     private void jLabelDetailsBackdropMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelDetailsBackdropMouseClicked
 
-        /*int row = 0;
-        int id = 0;
-        String directory = "";
-        ImageIcon backdrop;        
-
-        System.out.println(jTabbedPane.getSelectedIndex());
-
-        switch(jTabbedPane.getSelectedIndex()){
-            case 0:
-                row = jTableMovies.getSelectedRow();
-                if (row >= 0){
-                    id = (Integer) jTableMovies.getValueAt(row, 4);
-                    directory = "download/tt";
-                }
-                break;
-            case 1:
-                row = jTableSeries.getSelectedRow();
-
-                if (row > 1){
-                    id = (Integer) jTableSeries.getValueAt(row, 1);
-                    directory = "download/";
-                }
-                else {
-                    row = jTableEpisodes.getSelectedRow();
-
-                    if (row > 1){
-                        id = (Integer) jTableEpisodes.getValueAt(row, 5);
-                        directory = "download/";
-                    }
-                }
-                break;
-        }
-
-        if (directory.contains("download")){
-            Database database = (Database)pWorker.get("Database");
-            BackdropWork = database.getMediaInfoById(id);
-
-            if (BackdropWork.isMovie){
-                directory = directory + BackdropWork.ImdbId + "_backdrop.jpg";
-            }
-            else {
-                directory = directory + BackdropWork.TheTvDbId + "_backdrop.jpg";
-            }            
-
-            jImportBackdrop.setLocationRelativeTo(mainPanel);
-            jImportBackdrop.validate();
-            jImportBackdrop.setVisible(true);
-            jImportBackdrop.setTitle("Import Backdrop (Imdb: "+BackdropWork.ImdbId+")");
-
-            backdrop = new ImageIcon(directory);
-
-            if(backdrop.getIconWidth() != -1){                
-                jLabelBackdrop1.setDoubleBuffered(true);                
-                jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
-            }
-            else {                
-                jLabelBackdrop1.setDoubleBuffered(true);
-                jLabelBackdrop1.setIcon(null);
-            }
-        }*/
     }//GEN-LAST:event_jLabelDetailsBackdropMouseClicked
 
     private void jButtonBackdropOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBackdropOpenActionPerformed
-        /*Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
-        Integer Resize = new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE");
-
-        jJPEGOpen.addChoosableFileFilter(new ImageFilter());
-        int result = jJPEGOpen.showOpenDialog(null);
-
-        if(result == jJPEGOpen.APPROVE_OPTION){
-            File selectedFile = jJPEGOpen.getSelectedFile();
-            System.out.println(selectedFile.toString());
-
-            switch (Resize)
-            {
-                case 0:
-                    break;
-                case 1:
-                    new Resize().internalExcec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
-                    break;
-                case 2:
-                    new Resize().exec(selectedFile.toString(), "import/backdrop.jpg", Resolution);
-                    break;
-            }
-            
-            ImageIcon backdrop = new ImageIcon("import/backdrop.jpg");
-            jLabelBackdrop1.setIcon(new ImageIcon(backdrop.getImage().getScaledInstance(jLabelBackdrop1.getWidth(), jLabelBackdrop1.getHeight(), 0)));
-        }*/
-
+      
     }//GEN-LAST:event_jButtonBackdropOpenActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        /*try {
-            if (BackdropWork.isMovie) {
-                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.ImdbId + "_backdrop.jpg");
-            }
-            else {
-                FileUtils.copy("import/backdrop.jpg", "download/"+BackdropWork.TheTvDbId + "_backdrop.jpg");
-            }
-        }
-        catch(IOException e2)
-        {
-             e2.printStackTrace();
-        }
-
-        Integer Encoder = new valerie.tools.Properties().getPropertyInt("ENCODER_TYPE");
-        Integer Resolution = new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE");
-
-        switch (Encoder)
-        {
-            case 0:
-                if (BackdropWork.isMovie) {
-                    new mencoder().exec("download/" + BackdropWork.ImdbId + "_backdrop.jpg", "import/" + BackdropWork.ImdbId + "_backdrop.m1v", Resolution);
-                }
-                else {
-                    new mencoder().exec("download/" + BackdropWork.TheTvDbId + "_backdrop.jpg", "import/" + BackdropWork.TheTvDbId + "_backdrop.m1v", Resolution);
-                }
-                break;
-            case 1:
-                if (BackdropWork.isMovie) {
-                    new Encode().exec("download/" + BackdropWork.ImdbId + "_backdrop", "import/" + BackdropWork.ImdbId + "_backdrop.m1v",Resolution);
-                }
-                else {
-                    new Encode().exec("download/" + BackdropWork.TheTvDbId + "_backdrop", "import/" + BackdropWork.TheTvDbId + "_backdrop.m1v",Resolution);
-                }
-                break;
-        }
-
-        try {
-            if (BackdropWork.isMovie) {
-                FileUtils.copy("import/" + BackdropWork.ImdbId + "_backdrop.m1v", "converted/"+BackdropWork.ImdbId+"_backdrop.m1v");
-                detailsDrawPosters("converted/" + BackdropWork.ImdbId + "_poster.png", "download/" + BackdropWork.ImdbId + "_backdrop.jpg");
-            }
-            else {
-                FileUtils.copy("import/" + BackdropWork.TheTvDbId + "_backdrop.m1v", "converted/" + BackdropWork.TheTvDbId + "_backdrop.m1v");
-                detailsDrawPosters("converted/" + BackdropWork.TheTvDbId + "_poster.png","download/" + BackdropWork.TheTvDbId + "_backdrop.jpg");
-            }
-        }
-        catch(IOException e2)
-        {
-             e2.printStackTrace();
-        }
-
-        jImportBackdrop.setVisible(false);
-        FileUtils.deleteFile("import/backdrop.jpg");*/
+      
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButtonPosterOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterOpenActionPerformed
-        /*jJPEGOpen.addChoosableFileFilter(new ImageFilter());
-        int result = jJPEGOpen.showOpenDialog(null);
-
-        if(result == jJPEGOpen.APPROVE_OPTION){
-            File selectedFile = jJPEGOpen.getSelectedFile();
-            System.out.println(selectedFile.toString());
-
-            try {
-                FileUtils.copy(selectedFile.toString(), "import/poster.jpg");
-            }
-            catch(IOException e2)
-            {
-                e2.printStackTrace();
-            }
-
-            if (selectedFile != null) {
-                try {
-                    BufferedImage image = ImageIO.read(selectedFile);
-                    Image scaled = image.getScaledInstance(156, 214, Image.SCALE_SMOOTH);
-
-                    BufferedImage bi = new BufferedImage(
-                            156,
-                            214,
-                            BufferedImage.TYPE_INT_RGB);
-                    Graphics g = bi.getGraphics();
-                    g.drawImage(scaled, 0, 0, null);
-
-                    File pngposter = new File("import/poster.png");
-                    ImageIO.write(bi, "png", pngposter);
-
-                    new pngquant().exec("import\\poster.png", "import\\poster.png");
-
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
-            }
-
-            ImageIcon poster = new ImageIcon("import/poster.png");
-            jLabelPoster1.setDoubleBuffered(true);
-            jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster1.getWidth(), jLabelPoster1.getHeight(), 0)));
-        }*/
+        
     }//GEN-LAST:event_jButtonPosterOpenActionPerformed
 
     private void jButtonPosterSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterSaveActionPerformed
-        /*try {
-            if (PosterWork.isMovie) {
-                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.ImdbId+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/"+PosterWork.ImdbId+"_poster.png");
-                FileUtils.copy("import/poster.png", "import/"+PosterWork.ImdbId+"_poster.png");
-            }
-            else {
-                FileUtils.copy("import/poster.jpg", "download/"+PosterWork.TheTvDbId+"_poster.jpg");
-                FileUtils.copy("import/poster.png", "converted/"+PosterWork.TheTvDbId+"_poster.png");
-                FileUtils.copy("import/poster.png", "import/"+PosterWork.TheTvDbId+"_poster.png");
-            }
-        }
-        catch(IOException e2)
-        {
-             e2.printStackTrace();
-        }
-
-        jImportPoster.setVisible(false);
-
-        if (PosterWork.isMovie) {
-            detailsDrawPosters("download/" + PosterWork.ImdbId + "_poster.jpg", "download/" + PosterWork.ImdbId + "_backdrop.jpg");
-        }
-        else {
-            detailsDrawPosters("download/" + PosterWork.TheTvDbId + "_poster.jpg","download/" + PosterWork.TheTvDbId + "_backdrop.jpg");
-        }
-
-        FileUtils.deleteFile("import/poster.jpg");
-        FileUtils.deleteFile("import/poster.png");*/
+       
     }//GEN-LAST:event_jButtonPosterSaveActionPerformed
 
     private void jButtonPosterCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPosterCancelActionPerformed
-        /*jImportPoster.setVisible(false);
-        FileUtils.deleteFile("import/poster.jpg");
-        FileUtils.deleteFile("import/poster.png");*/
+      
     }//GEN-LAST:event_jButtonPosterCancelActionPerformed
 
     private void jLabelDetailsPosterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelDetailsPosterMouseClicked
-        /*int row = 0;
-        int id = 0;
-        String directory = "";
-        ImageIcon poster;        
-
-        switch(jTabbedPane.getSelectedIndex()){
-            case 0:
-                row = jTableMovies.getSelectedRow();
-                if (row >= 0){
-                    id = (Integer) jTableMovies.getValueAt(row, 4);
-                    directory = "download/";
-                }
-                break;
-            case 1:
-                row = jTableSeries.getSelectedRow();
-
-                if (row > 1){
-                    id = (Integer) jTableSeries.getValueAt(row, 1);
-                    directory = "download/";
-                }
-                else {
-                    row = jTableEpisodes.getSelectedRow();
-
-                    if (row > 1){
-                        id = (Integer) jTableEpisodes.getValueAt(row, 5);
-                        directory = "download/";
-                    }
-                }
-                break;
-        }
-
-        if (directory.contains("download")){
-            Database database = (Database)pController.get("Database");
-            PosterWork = database.getMediaInfoById(id);
-
-            if (PosterWork.isMovie){
-                directory = directory + PosterWork.ImdbId + "_poster.jpg";
-            }
-            else {
-                directory = directory + PosterWork.TheTvDbId + "_poster.jpg";
-            }
-
-            System.out.println(directory);
-
-            jImportPoster.setLocationRelativeTo(mainPanel);
-            jImportPoster.validate();
-            jImportPoster.setVisible(true);
-            jImportPoster.setTitle("Import Poster (Imdb: "+PosterWork.ImdbId+")");
-
-            poster = new ImageIcon(directory);
-
-            if(poster.getIconWidth() != -1){
-                jLabelPoster1.setDoubleBuffered(true);
-                jLabelPoster1.setIcon(new ImageIcon(poster.getImage().getScaledInstance(jLabelPoster1.getWidth(), jLabelPoster1.getHeight(), 0)));
-            }
-            else {
-                jLabelPoster1.setDoubleBuffered(true);
-                jLabelPoster1.setIcon(null);
-            }
-        }*/
+        
     }//GEN-LAST:event_jLabelDetailsPosterMouseClicked
     
     public void boxInfosUpdate() {
@@ -2153,96 +1668,6 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
         isUpdating = false;
     }
 
-    /*private void saveTables() {
-
-        Database database = (Database)pController.get("Database");
-        MediaInfo[] movies = database.getAsArray();
-
-        //create db file
-        try {
-
-            //Charset cset = Charset.defaultCharset();
-            //Object c = Charset.availableCharsets();
-
-            String charset = "UTF-8";
-            //String charset = "ISO-8859-1";
-
-            OutputStreamWriter fwMovie = new OutputStreamWriter(new FileOutputStream("db/moviedb.txt"),charset);
-            OutputStreamWriter fwSeries = new OutputStreamWriter(new FileOutputStream("db/seriesdb.txt"),charset);
-            //Writer fwMovie = new FileWriter("db/moviedb.txt");
-            //Writer fwSeries = new FileWriter("db/seriesdb.txt");
-
-            File episodes = new File("db/episodes");
-            if (episodes.exists()) {
-                for (File episode : episodes.listFiles()) {
-                    episode.delete();
-                }
-            }
-
-            episodes.mkdir();
-
-            //Writer fwEpisode = new FileWriter( "db/episodedb.txt" );
-            fwMovie.write("Created on " + Calendar.getInstance().getTime() + "\n");
-            fwSeries.write("Created on " + Calendar.getInstance().getTime() + "\n");
-            //fwEpisode.write("Created on " + Calendar.getInstance().getTime() + "\n");
-            for (MediaInfo movie : movies) {
-                if (!movie.Ignoring) {
-                    if (movie.isMovie) {
-                        fwMovie.append(movie.toString());
-                    } else if (movie.isSerie) {
-                        fwSeries.append(movie.toString());
-                    } else if (movie.isEpisode) {
-                        OutputStreamWriter fwEpisode = new OutputStreamWriter(new FileOutputStream("db/episodes/" + movie.TheTvDbId + ".txt", true),charset);
-                        //Writer fwEpisode = new FileWriter("db/episodes/" + movie.TheTvDb + ".txt", true);
-                        fwEpisode.append(movie.toString());
-                        fwEpisode.close();
-                    }
-                }
-            }
-            fwMovie.close();
-            fwSeries.close();
-        } catch (Exception ex) {
-            System.out.println(ex.toString());
-        }
-    }*/
-
-    /*@Action
-    public void connectNetwork() {
-        pWorker.doTask(BackgroundWorker.Tasks.CONNECT_NETWORK, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
-    }
-
-    @Action
-    public void syncFilelist() {
-        pWorker.doTask(BackgroundWorker.Tasks.SYNC_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
-    }
-
-    @Action
-    public void parseFilelist() {
-        int ParallelTasks = 10;
-        for(int i = 0; i < ParallelTasks; i++) {
-            ThreadSize ts = new ThreadSize();
-            ts.ThreadCount = ParallelTasks;
-            ts.ThreadId = i;
-            pWorker.doTask(BackgroundWorker.Tasks.PARSE_FILELIST, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
-        }
-    }
-
-    @Action
-    public void getArt() {
-        int ParallelTasks = 10;
-        for(int i = 0; i < ParallelTasks; i++) {
-            ThreadSize ts = new ThreadSize();
-            ts.ThreadCount = ParallelTasks;
-            ts.ThreadId = i;
-            pWorker.doTask(BackgroundWorker.Tasks.GET_ART, BackgroundWorker.Mode.BACKGROUND, pCallback, ts);
-        }
-    }
-
-    @Action
-    public void uploadFiles() {
-        pWorker.doTask(BackgroundWorker.Tasks.UPLOAD_FILES, BackgroundWorker.Mode.BACKGROUND, pCallback, null);
-    }*/
-
     @Action
     public void jMenuItemEditSettingsClicked() {
         JDialog settingsDialog;
@@ -2253,50 +1678,6 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
         }
         ValerieApp.getApplication().show(settingsDialog);
     }
-
-    /*@Action
-    public void SelectAllMovies() {
-        //int tablecount = jTableFilelist.getRowCount();
-
-        //for (int counter=0; counter<tablecount; counter++){
-        //    jTableFilelist.setValueAt(true, counter, 0);
-
-        Database database = (Database)pWorker.get("Database");
-        MediaInfo[] movies = database.getAsArray();
-
-        for (int i = 0; i < movies.length; i ++) {
-            MediaInfo movie = movies[i];
-            movie.Ignoring = false;
-            movie.needsUpdate = false;
-        }
-
-        tablesUpdate();
-    }
-
-    @Action
-    public void UnselectAllMovies() {
-        int tablecount = jTableMovies.getRowCount();
-
-        for (int counter=0; counter<tablecount; counter++){
-            jTableMovies.setValueAt(false, counter, 0);
-        }
-    }*/
-
-    /*@Action
-    public void importBackdropCancel() {
-        jImportBackdrop.setVisible(false);
-        FileUtils.deleteFile("import/backdrop.jpg");
-    }
-
-    @Action
-    public void ImportBackdropOpen() {
-        jImportBackdrop.repaint();
-    }
-
-    @Action
-    public void SaveDB() {
-        saveTables();
-    }*/
 
     @Action
     public void exportFilelist() {
@@ -2438,17 +1819,6 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
         jFrameConsole.setVisible(visible);
     }
 
-    /*@Action
-    public void downloadArchivFromBox() {
-        pWorker.doTask(BackgroundWorker.Tasks.DOWNLOAD_FROM_BOX, BackgroundWorker.Mode.NORMAL, pCallback, null);
-        //clear database
-        Database database = (Database)pWorker.get("Database");
-        database.clear();
-
-        pWorker.doTask(BackgroundWorker.Tasks.LOAD_ARCHIVE, BackgroundWorker.Mode.NORMAL, pCallback, null);
-        tablesUpdate();
-    }*/
-
     @Action(block = Task.BlockingScope.WINDOW)
     public Task actionDatabaseLoad() {
         return new ActionDatabaseLoadTask(getApplication());
@@ -2460,7 +1830,48 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // doInBackground() depends on from parameters
             // to ActionDatabaseLoadTask fields, here.
             super(app);
-            
+
+            this.setUserCanCancel(false);
+
+            this.addPropertyChangeListener(new PropertyChangeListener() {
+
+                public void propertyChange(PropertyChangeEvent evt) {
+                    System.out.println(evt.getPropertyName() + evt.getNewValue());
+                }
+
+            });
+
+            this.addTaskListener(new TaskListener() {
+
+                public void doInBackground(TaskEvent te) {
+                    System.out.println("doInBackground");
+                }
+
+                public void process(TaskEvent te) {
+                    System.out.println("process");
+                }
+
+                public void succeeded(TaskEvent te) {
+                    System.out.println("succeeded");
+                }
+
+                public void failed(TaskEvent te) {
+                    System.out.println("failed");
+                }
+
+                public void cancelled(TaskEvent te) {
+                    System.out.println("cancelled");
+                }
+
+                public void interrupted(TaskEvent te) {
+                    System.out.println("interrupted");
+                }
+
+                public void finished(TaskEvent te) {
+                    System.out.println("finished");
+                }
+                
+            });
 
             pController.add(new Notification() {
                 @Override
@@ -2506,6 +1917,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // to ActionDatabaseSaveTask fields, here.
             super(app);
 
+            this.setUserCanCancel(false);
+
             pController.add(new Notification() {
                 @Override
                 public void init() {
@@ -2547,6 +1960,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // doInBackground() depends on from parameters
             // to ActionNetworkConnectTask fields, here.
             super(app);
+
+            this.setUserCanCancel(false);
 
             pController.add(new Notification() {
                 @Override
@@ -2590,6 +2005,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // to ActionNetworkTransferMOTask fields, here.
             super(app);
 
+            this.setUserCanCancel(false);
+
             pController.add(new Notification() {
                 @Override
                 public void init() {
@@ -2631,6 +2048,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // doInBackground() depends on from parameters
             // to ActionNetworkTransferMTTask fields, here.
             super(app);
+
+            this.setUserCanCancel(false);
 
             pController.add(new Notification() {
                 @Override
@@ -2674,6 +2093,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // to ActionNetworkFilesystemTask fields, here.
             super(app);
 
+            this.setUserCanCancel(false);
+
             pController.add(new Notification() {
                 @Override
                 public void init() {
@@ -2716,6 +2137,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // to ActionJobParseTask fields, here.
             super(app);
 
+            this.setUserCanCancel(false);
+
             pController.add(new Notification() {
                 @Override
                 public void init() {
@@ -2757,6 +2180,8 @@ public class ValerieView extends FrameView /*implements WindowStateListener*/ {
             // doInBackground() depends on from parameters
             // to ActionJobArtsTask fields, here.
             super(app);
+
+            this.setUserCanCancel(false);
 
             pController.add(new Notification() {
                 @Override
