@@ -7,6 +7,7 @@ from Components.Label import Label
 from Screens.MessageBox import MessageBox
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
+from Screens.Console import Console as SConsole
 from Components.Console import Console
 from Components.ScrollLabel import ScrollLabel
 
@@ -128,29 +129,30 @@ class PVMC_Update(Screen):
 		
 		self.onFirstExecBegin.append(self.initupdate)
 
-	def initupdate(self):
-		self["text"].setText("Updating ProjectValerie...\n\n\nStay tuned :-)")
-		
-		self.working = True
-		cmd = "ipkg install -force-overwrite " + str(self.url)
-		self.Console.ePopen(cmd, self.startupdate)
-		
-		while self.working:
-			time.sleep(1)
-		
-		self.working = True
-		cmd = "opkg install -force-overwrite " + str(self.url)
-		self.Console.ePopen(cmd, self.startupdate)
-
-	def startupdate(self, result, retval, extra_args):
-		if retval == 0:
-			self.working = True
-			self["text"].setText(result)
-			self.session.open(MessageBox,("ProjectValerie is now up to date...\n\nEnigma will restart now!"),  MessageBox.TYPE_INFO)
-			quitMainloop(3)
+	def checkIpkg(self, result, retval, extra_args):
+		if retval == 1:
+			self.initupdate("ipkg")
 		else:
-			self.working = False
-			
+			self.initupdate("opkg")
+
+	def initupdate(self, bin="test"):
+		
+		if bin == "test":
+			cmd = "ipkg"
+			self.Console.ePopen(cmd, self.checkIpkg)
+			return
+		
+		self["text"].setText("Updating ProjectValerie...\n\n\nStay tuned :-)")
+		cmd = " install -force-overwrite " + str(self.url)
+		print bin, cmd
+		self.session.open(SConsole,"Excecuting command: " + bin, [bin + cmd] , self.finishupdate)
+
+	def finishupdate(self):
+		time.sleep(2)
+		self.session.open(MessageBox,("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
+		time.sleep(4)
+		quitMainloop(3)
+
 
 
 
