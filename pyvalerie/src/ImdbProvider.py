@@ -57,7 +57,7 @@ class ImdbProvider(object):
         apiSearch = url + "/find?s=tt;q="
         
     def __init__(self):
-        localSites = [ImdbProviderDE, ImdbProviderIT, ImdbProviderES, ImdbProviderFR, ImdbProviderES]
+        localSites = [self.ImdbProviderDE, self.ImdbProviderIT, self.ImdbProviderES, self.ImdbProviderFR, self.ImdbProviderES]
         
         #language = Config.getKey("local")
         #for entry in localSites:
@@ -67,9 +67,9 @@ class ImdbProvider(object):
         #        self.apiSearch = entry.apiSearch
         #        return
                 
-        self.apiSearchTV = ImdbProviderCOM.apiSearchTV
-        self.apiImdbLookup = ImdbProviderCOM.apiImdbLookup
-        self.apiSearch = ImdbProviderCOM.apiSearch
+        self.apiSearchTV = self.ImdbProviderCOM.apiSearchTV
+        self.apiImdbLookup = self.ImdbProviderCOM.apiImdbLookup
+        self.apiSearch = self.ImdbProviderCOM.apiSearch
     
    
     def getMoviesByImdbId(self, mediaInfo):

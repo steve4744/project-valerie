@@ -31,9 +31,9 @@ class Arts():
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop)
                     if url is not None and url != "NONE":
                         urls = url.split("<br />")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[0], eInfo.ImdbId + "_backdrop.m1v")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[1], eInfo.ImdbId + "_backdrop_low.m1v")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[2], eInfo.ImdbId + "_backdrop.png")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[0].strip(), eInfo.ImdbId + "_backdrop.m1v")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[1].strip(), eInfo.ImdbId + "_backdrop_low.m1v")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[2].strip(), eInfo.ImdbId + "_backdrop.png")
                         
         elif eInfo.isSerie:
             if len(eInfo.Poster):
@@ -47,7 +47,7 @@ class Arts():
                     url = WebGrabber().grab("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";backdrop;" + eInfo.Backdrop)
                     if url is not None and url != "NONE":
                         urls = url.split("<br />")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[0], eInfo.TheTvDbId + "_backdrop.m1v")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[1], eInfo.TheTvDbId + "_backdrop_low.m1v")
-                        WebGrabber().grabFile("http://val.duckbox.info" + urls[2], eInfo.TheTvDbId + "_backdrop.png")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[0].strip(), eInfo.TheTvDbId + "_backdrop.m1v")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[1].strip(), eInfo.TheTvDbId + "_backdrop_low.m1v")
+                        WebGrabber().grabFile("http://val.duckbox.info" + urls[2].strip(), eInfo.TheTvDbId + "_backdrop.png")
                 
