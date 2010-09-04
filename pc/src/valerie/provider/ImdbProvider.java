@@ -117,31 +117,7 @@ public class ImdbProvider {
        }
        return;
      }
-     
-     private void getMoviesLocalLanguage(MediaInfo info) {
-         String xml = null;
-         try {
-            xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId + "/releaseinfo"));
-         } catch (Exception ex) {}
-
-         if (xml == null)
-              return;
-         Pattern pPlot = Pattern.compile("Also Known As \\(AKA\\)</a></h5>(.*?)</table>");
-         Matcher mPlot = pPlot.matcher(xml);
-         if(mPlot.find()) {
-              String sPlot = mPlot.group(1);
-              Pattern pTitle = Pattern.compile("<tr><td>(.*?)</td><td>(.*?)</td></tr>");
-              Matcher mTitle = pTitle.matcher(sPlot);
-              info.LocalTitle = "";
-              while(mTitle.find()){
-            	  if(mTitle.group(2).contains("Germany")&& !mTitle.group(2).contains("Germany (working title)"))
-            		  info.LocalTitle = mTitle.group(1);
-              }
-         }
-         return;
-       }
-
-     
+          
      private void parseDetailsScreen(MediaInfo info, String details)
      {
         Pattern pTitle = Pattern.compile("<title>.+?\\(\\d{4}[\\/IVX]*\\).*?</title>");
@@ -279,7 +255,6 @@ public class ImdbProvider {
         }
 
         getMoviesPlot(info);
-        getMoviesLocalLanguage(info);
         info.checkStrings();
         return;
      }

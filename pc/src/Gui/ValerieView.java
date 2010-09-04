@@ -1831,47 +1831,8 @@ public class ValerieView extends FrameView {
             // to ActionDatabaseLoadTask fields, here.
             super(app);
 
-            this.setUserCanCancel(false);
-
-            this.addPropertyChangeListener(new PropertyChangeListener() {
-
-                public void propertyChange(PropertyChangeEvent evt) {
-                    System.out.println(evt.getPropertyName() + evt.getNewValue());
-                }
-
-            });
-
-            this.addTaskListener(new TaskListener() {
-
-                public void doInBackground(TaskEvent te) {
-                    System.out.println("doInBackground");
-                }
-
-                public void process(TaskEvent te) {
-                    System.out.println("process");
-                }
-
-                public void succeeded(TaskEvent te) {
-                    System.out.println("succeeded");
-                }
-
-                public void failed(TaskEvent te) {
-                    System.out.println("failed");
-                }
-
-                public void cancelled(TaskEvent te) {
-                    System.out.println("cancelled");
-                }
-
-                public void interrupted(TaskEvent te) {
-                    System.out.println("interrupted");
-                }
-
-                public void finished(TaskEvent te) {
-                    System.out.println("finished");
-                }
-                
-            });
+            //this.setUserCanCancel(false);
+  
 
             pController.add(new Notification() {
                 @Override
@@ -1902,6 +1863,26 @@ public class ValerieView extends FrameView {
         @Override protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
+
+            System.out.println("succeeded");
+        }
+
+        // inputBlocker: null -> org.jdesktop.application.DefaultInputBlocker@2a2a2ae9
+                    // taskService: null -> org.jdesktop.application.TaskService@77d433c1
+                    // started: false -> true
+                    // state: PENDING -> STARTED
+                    // taskService: org.jdesktop.application.TaskService@77d433c1 -> null
+                    // done: false -> true
+                    // completed: false -> true
+        
+        @Override
+        protected void cancelled() {
+            System.out.println("cancelled");
+            try {
+                Thread.sleep(5000);
+            } catch(Exception ex) {
+
+            }
         }
     }
 
