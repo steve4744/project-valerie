@@ -33,7 +33,8 @@ config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
 config.plugins.pvmc.checkforupdate    = ConfigYesNo(default = True)
 
-config.plugins.pvmc.uselocal           = ConfigYesNo(default = False)
+config.plugins.pvmc.backdropquality   = ConfigSelection(default="High", choices = ["High", "Low", ])
+config.plugins.pvmc.uselocal          = ConfigYesNo(default = False)
 
 printl("language="       + str(config.plugins.pvmc.language.value))
 printl("showwizard="     + str(config.plugins.pvmc.showwizard.value))

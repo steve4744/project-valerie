@@ -78,6 +78,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.pvmc.showwizard))
 			self.list.append(getConfigListEntry(_("autostart"), config.plugins.pvmc.autostart))
 			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.pvmc.checkforupdate))
+			self.list.append(getConfigListEntry(_("backdropquality"), config.plugins.pvmc.backdropquality))
 			#self.list.append(getConfigListEntry(_("uselocal"), config.plugins.pvmc.uselocal))
 			self["config"].setList(self.list)
 		except KeyError:

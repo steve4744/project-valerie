@@ -80,8 +80,10 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			stars = "nostar" + str(i)
 			print stars
 			self[stars] = Pixmap()
-
-
+		
+		self.backdropquality = ""
+		if config.plugins.pvmc.backdropquality.value == "Low":
+			self.backdropquality = "_low"
 		
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
@@ -113,7 +115,6 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		list = []
 		filter.append("Tag")
 		filter.append("Plot")
-		filter.append("LocalPlot")
 		filter.append("Directors")
 		filter.append("Writers")
 		filter.append("Genres")
@@ -122,7 +123,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		filter.append("Popularity")
 		filter.append("ImdbId")
 		filter.append("Title")
-		filter.append("LocalTitle")
+		filter.append("OTitle")
 		filter.append("Path")
 		
 		try:
@@ -145,15 +146,12 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 					#print d
 					if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
-						print "skipping ", d["LocalTitle"]
+						print "skipping ", d["Title"]
 						continue
 					self.moviedb[d["ImdbId"]] = d
-					if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
-						print "adding ", d["LocalTitle"]
-						list.append(("  " + d["LocalTitle"], d["ImdbId"], "menu_globalsettings", "45"))
-					else:
-						print "adding ", d["Title"]
-						list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
+
+					print "adding ", d["Title"]
+					list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
 			
 		except OSError, e: 
 			print "OSError: ", e
@@ -205,20 +203,16 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def refresh(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-#			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
-			elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi")
+			if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+			elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
 			else:
 				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 			self["title"].setText(selection[0])
-			self["otitle"].setText(self.moviedb[selection[1]]["Title"])
+			self["otitle"].setText("---") #self.moviedb[selection[1]]["OTitle"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
-			if self.moviedb[selection[1]]["LocalPlot"]!="" and config.plugins.pvmc.uselocal.value == True:
-				self["shortDescription"].setText(self.moviedb[selection[1]]["LocalPlot"])
-			else:
-				self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
+			self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
 			if self.moviedb[selection[1]].has_key("Directors"):
 				self["director"].setText(self.moviedb[selection[1]]["Directors"])
 			if self.moviedb[selection[1]].has_key("Writers"):
@@ -276,9 +270,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self.session.nav.playService(None) 
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-#			showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
-			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop.m1v")
+			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
 			else:
 				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 

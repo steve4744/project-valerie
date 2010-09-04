@@ -80,7 +80,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			stars = "nostar" + str(i)
 			print stars
 			self[stars] = Pixmap()
-
+		
+		self.backdropquality = ""
+		if config.plugins.pvmc.backdropquality.value == "Low":
+			self.backdropquality = "_low"
+		
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
@@ -102,7 +106,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		if self.inSeries or self.inEpisode:
 			filter.append("Tag")
 			filter.append("Plot")
-			filter.append("LocalPlot")
 			filter.append("Directors")
 			filter.append("Writers")
 			filter.append("Genres")
@@ -111,7 +114,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			filter.append("Popularity")
 			filter.append("ImdbId")
 			filter.append("Title")
-			filter.append("LocalTitle")
+			filter.append("OTitle")
 			filter.append("TheTvDb")
 			filter.append("Path")
 		if self.inSeasons or self.inEpisode:
@@ -146,10 +149,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.moviedb[d["TheTvDb"]] = d
 						if not d["Title"] in entrys:
 							entrys.append(d["Title"])
-							if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
-								self.serieslist.append(("  " + d["LocalTitle"], d["TheTvDb"], "menu_globalsettings", "50"))
-							else:
-								self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
+							self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
 					elif self.inSeasons:
 						if not d["Season"] in entrys:
 							entrys.append(d["Season"])
@@ -159,10 +159,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							if not d["Episode"] in entrys:
 								entrys.append(d["Episode"])
 								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
-								if d["LocalTitle"] != "" and config.plugins.pvmc.uselocal.value == True:
-									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["LocalTitle"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
-								else:
-									list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
+								list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
 								
 						
 		except OSError, e: 
@@ -188,10 +185,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
-				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v", os.F_OK):
-					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.m1v")
-				elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi", os.F_OK):
-					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop.mvi")
+				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+				elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
 				else:
 					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 				if self["poster"].instance is not None:
@@ -200,14 +197,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					else:
 						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 				self["title"].setText(selection[0])
-				self["otitle"].setText(self.moviedb[selection[1]]["Title"])
+				self["otitle"].setText("---") #self.moviedb[selection[1]]["OTitle"])
 				self["tag"].setText(self.moviedb[selection[1]]["Tag"])
 
-
-				if self.moviedb[selection[1]]["LocalPlot"] and self.moviedb[selection[1]]["LocalPlot"] !="" and config.plugins.pvmc.uselocal.value == True:
-					self["shortDescription"].setText(self.moviedb[selection[1]]["LocalPlot"])
-				else:
-					self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
+				self["shortDescription"].setText(self.moviedb[selection[1]]["Plot"])
 
 				if self.moviedb[selection[1]].has_key("Directors"):
 					self["director"].setText(self.moviedb[selection[1]]["Directors"])
@@ -227,10 +220,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])
-				if self.episodesdb[selection[1]]["LocalPlot"] and self.episodesdb[selection[1]]["LocalPlot"] !="" and config.plugins.pvmc.uselocal.value == True:
-					self["shortDescription"].setText(self.episodesdb[selection[1]]["LocalPlot"])
-				else:
-					self["shortDescription"].setText(self.episodesdb[selection[1]]["Plot"])
+				self["shortDescription"].setText(self.episodesdb[selection[1]]["Plot"])
 			
 	def up(self):
 		self["listview"].up()
@@ -298,8 +288,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def leaveMoviePlayer(self): 
 		self.session.nav.playService(None) 
-		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v", os.F_OK):
-			self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop.m1v")
+		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+			self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v")
 		else:
 			self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
