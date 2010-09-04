@@ -5,6 +5,7 @@ Created on 21.05.2010
 '''
 
 import re
+import Config
 from WebGrabber import WebGrabber
 from HtmlEncoding import decode_htmlentities
 
@@ -13,15 +14,63 @@ class ImdbProvider(object):
     classdocs
     '''
 
-    apiSearchTV = "http://www.imdb.com/search/title?title=<title>&title_type=tv_series"
-    apiImdbLookup = "http://akas.imdb.com/title/"
-    apiSearch = "http://akas.imdb.com/find?s=tt;q="
+    class ImdbProviderCOM():
+        language = "en"
+        url = "http://akas.imdb.com"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
+        
+    class ImdbProviderDE():
+        language = "de"
+        url = "http://www.imdb.de"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
 
-
+    class ImdbProviderIT():
+        language = "it"
+        url = "http://www.imdb.it"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
+        
+    class ImdbProviderES():
+        language = "es"
+        url = "http://www.imdb.es"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
+        
+    class ImdbProviderFR():
+        language = "fr"
+        url = "http://www.imdb.fr"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
+        
+    class ImdbProviderES():
+        language = "pt"
+        url = "http://www.imdb.pt"
+        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+        apiImdbLookup = url + "/title/"
+        apiSearch = url + "/find?s=tt;q="
+        
     def __init__(self):
-        '''
-        Constructor
-        '''
+        localSites = [ImdbProviderDE, ImdbProviderIT, ImdbProviderES, ImdbProviderFR, ImdbProviderES]
+        
+        #language = Config.getKey("local")
+        #for entry in localSites:
+        #    if entry.language == language;
+        #        self.apiSearchTV = entry.apiSearchTV
+        #        self.apiImdbLookup = entry.apiImdbLookup
+        #        self.apiSearch = entry.apiSearch
+        #        return
+                
+        self.apiSearchTV = ImdbProviderCOM.apiSearchTV
+        self.apiImdbLookup = ImdbProviderCOM.apiImdbLookup
+        self.apiSearch = ImdbProviderCOM.apiSearch
+    
    
     def getMoviesByImdbId(self, mediaInfo):
         

@@ -374,8 +374,6 @@ class MediaInfo(object):
                 
             elif key == "Title":
                 self.Title = value
-            elif key == "LocalTitle":
-                self.Title = value
                 
             elif key == "Year":
                 self.Year = int(value)
@@ -387,8 +385,6 @@ class MediaInfo(object):
                 
             elif key == "Plot":
                 self.Plot = value
-            elif key == "LocalPlot":
-                self.Plot = value   
             elif key == "Runtime":
                 self.Runtime = int(value)  
             elif key == "Tag":
@@ -407,11 +403,9 @@ class MediaInfo(object):
         if self.isMovie:
             stri += u'\nImdbId: ' +     unicode(self.ImdbId)
             stri += u'\nTitle: ' +      self.Title
-            stri += u'\nLocalTitle: ' + self.Title
             stri += u'\nYear: ' +       unicode(self.Year)
             stri += u'\nPath: ' +       unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
             stri += u'\nPlot: ' +       self.Plot
-            stri += u'\nLocalPlot: ' +  self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     unicode(self.Genres)
             stri += u'\nReleasedate: ' + u'2000-01-01'
@@ -423,10 +417,8 @@ class MediaInfo(object):
             stri += u'\nImdbId: ' +     unicode(self.ImdbId)
             stri += u'\nTheTvDb: ' +    unicode(self.TheTvDbId)
             stri += u'\nTitle: ' +      self.Title
-            stri += u'\nLocalTitle: ' + self.Title
             stri += u'\nYear: ' +       unicode(self.Year)
             stri += u'\nPlot: ' +       self.Plot
-            stri += u'\nLocalPlot: ' +  self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     unicode(self.Genres)
             stri += u'\nReleasedate: ' + u'2000-01-01'
@@ -438,13 +430,11 @@ class MediaInfo(object):
             stri += u'\nImdbId: ' +     unicode(self.ImdbId)
             stri += u'\nTheTvDb: ' +    unicode(self.TheTvDbId)
             stri += u'\nTitle: ' +      self.Title
-            stri += u'\nLocalTitle: ' + self.Title
             stri += u'\nYear: ' +       unicode(self.Year)
             stri += u'\nPath: ' +       unicode(self.Path) + "/" + unicode(self.Filename) + "." + unicode(self.Extension)
             #print "stri: ", type(stri)
             #print "self.Plot: ", type(self.Plot)
             stri += u'\nPlot: ' +       self.Plot
-            stri += u'\nLocalPlot: ' +  self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     unicode(self.Genres)
             stri += u'\nReleasedate: ' + u'2000-01-01'
