@@ -187,10 +187,31 @@ class ProjectValerieSyncSettings(Screen):
 		if returnValue is not None:
 			if returnValue == "confPaths":
 				self.session.open(ProjectValerieSyncSettingsConfPaths)
+			elif returnValue == "clearCache":
+				self.removeDir("/hdd/valerie/cache")
+			elif returnValue == "delArts":
+				self.removeDir("/hdd/valerie/media")
+			elif returnValue == "delDb":
+				os.remove("/hdd/valerie/moviedb.txt")
+				os.remove("/hdd/valerie/seriesdb.txt")
+				self.removeDir("/hdd/valerie/episodes")
+			elif returnValue == "resetFl":
+				os.remove("/hdd/valerie/pre.conf")
+				os.remove("/hdd/valerie/post_movie.conf")
+				os.remove("/hdd/valerie/post_tv.conf")
+			elif returnValue == "exit":
+				self.cancel()
 	
 	def cancel(self):
 		print "cancel"
 		self.close()
+		
+	def removeDir(self, dir):
+		for root, dirs, files in os.walk(dir, topdown=False):
+			for name in files:
+				os.remove(os.path.join(root, name))
+			for name in dirs:
+				os.rmdir(os.path.join(root, name))
 
 class ProjectValerieSync(Screen):
 	skin = """
