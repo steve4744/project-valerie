@@ -153,7 +153,7 @@ class MediaInfo(object):
             #print "[pre] ", replacement[0], " --> ", replacement[1]
             self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
         
-        print ":-1: ", self.SearchString
+        print ":-1: ", self.SearchString.encode('latin-1')
         
         ###
         m = re.search(r'(?P<imdbid>tt\d{7})', name)
