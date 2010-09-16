@@ -226,9 +226,9 @@ class ProjectValerieSync(Screen):
 			<eLabel text="Log:" position="10,50" size="400,20" font="Regular;18" />
 			<widget name="console" position="10,70" size="400,360" font="Regular;15" />
 			<eLabel text="Progress:" position="10,426" size="400,20" font="Regular;18" />
-			<widget name="progress" position="10,446" size="400,20" borderWidth="1" borderColor="grey" transparent="1" />
+			<widget name="progress" position="10,446" size="400,20" borderWidth="1" borderColor="#bbbbbb" transparent="1" />
 			
-			<eLabel text="" position="420,50" size="1,416" backgroundColor="grey" />
+			<eLabel text="" position="420,50" size="1,416" backgroundColor="#bbbbbb" />
 			
 			<eLabel text="Last:" position="430,50" size="400,20" font="Regular;18" />
 			<widget name="poster" position="430,70" size="156,214" />
