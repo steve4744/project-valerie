@@ -95,12 +95,13 @@ public class Network {
                         socket.receive(Recieve);
 
                         String boxinfo = new String(Recieve.getData()).trim();
-                        boxinfo += "IPADDR=" + Recieve.getAddress().toString().substring(1) + ";\n";
+                        if(!boxinfo.startsWith("SERV_REQ")) { // This would be echo
+                            boxinfo += "IPADDR=" + Recieve.getAddress().getHostAddress() + ";|";
 
-                        DebugOutput.printl(boxinfo.trim());
+                            DebugOutput.printl(boxinfo.trim());
 
-                        rtv += boxinfo;
-
+                            rtv += boxinfo;
+                        }
                         //We only want the Boxinfo an the BoxIP for now.
                         //break;
                     } while(!socket.isClosed());
@@ -171,12 +172,27 @@ public class Network {
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
-            DebugOutput.printl("");
+            DebugOutput.printl("Could not send file ("+file+") to box ("+addr.getHostAddress()+")");
             DebugOutput.printl(ex.toString());
-            DebugOutput.printl("");
+            //DebugOutput.printl("");
         }
 
         DebugOutput.printl("<-");
+    }
+
+    public boolean getSmartFile(InetAddress addr, String fileOnBox, String directoryOnPC) {
+        DebugOutput.printl("->");
+
+        boolean rtv = false;
+        String[] result = sendCMD(addr, "ls " + fileOnBox);
+        if(result != null && result.length > 0 && result[0].equals(fileOnBox))
+            getFile(addr, fileOnBox, directoryOnPC);
+        else {
+            DebugOutput.printl("File not found ("+fileOnBox+")");
+            rtv = false;
+        }
+        DebugOutput.printl("<-");
+        return rtv;
     }
 
     public boolean getFile(InetAddress addr, String fileOnBox, String directoryOnPC) {
@@ -248,9 +264,9 @@ public class Network {
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
-            DebugOutput.printl("");
+            DebugOutput.printl("Could not get file ("+fileOnBox+") from box ("+addr.getHostAddress()+")");
             DebugOutput.printl(ex.toString());
-            DebugOutput.printl("");
+            //DebugOutput.printl("");
         }
 
         DebugOutput.printl("<-");
@@ -303,6 +319,7 @@ public class Network {
             dataOutput.close();
             clientSocket.close();
         } catch(Exception ex) {
+            DebugOutput.printl("Could not exec cmd ("+cmd+") from box ("+addr.getHostAddress()+")");
             DebugOutput.printl(ex.toString());
         }
 

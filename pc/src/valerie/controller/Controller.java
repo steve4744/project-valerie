@@ -69,6 +69,7 @@ public final class Controller extends Notifier {
 
         parser.parse(response);
         valerie.tools.BoxInfo[] bis = parser.get();
+        
         set("BoxInfos",  bis );
 
         _notify("BI_REFRESH");
@@ -98,11 +99,11 @@ public final class Controller extends Notifier {
         BoxInfo pBoxInfo = pBoxInfos[selectedBoxInfo];
 
         FileUtils.mkdir(new File("conf"));
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/paths.conf", "conf");
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/valerie.conf", "conf");
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/pre.conf", "conf");
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/post_movie.conf", "conf");
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/post_tv.conf", "conf");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/paths.conf", "conf");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/valerie.conf", "conf");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/pre.conf", "conf");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_movie.conf", "conf");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_tv.conf", "conf");
 
         _notify((float)0.1, "PROGRESS");
 
@@ -110,8 +111,8 @@ public final class Controller extends Notifier {
         FileUtils.rename(new File("db"), new File("db.1"));
         FileUtils.mkdir(new File("db"));
 
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/moviedb.txt", "db");
-        new valerie.tools.Network().getFile(pBoxInfo.IpAddress, "/hdd/valerie/seriesdb.txt", "db");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/moviedb.txt", "db");
+        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/seriesdb.txt", "db");
 
         _notify((float)0.2, "PROGRESS");
 
@@ -119,7 +120,7 @@ public final class Controller extends Notifier {
         FileUtils.mkdir(new File("db/episodes"));
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/episodes/*.txt -type f");
         for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getFile(pBoxInfo.IpAddress, entries[f], "db/episodes");
+            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "db/episodes");
         }
         }
 
@@ -129,7 +130,7 @@ public final class Controller extends Notifier {
         FileUtils.mkdir(new File("converted"));
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/media/*.png -type f");
         for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getFile(pBoxInfo.IpAddress, entries[f], "converted");
+            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
         }
         }
 
@@ -139,7 +140,7 @@ public final class Controller extends Notifier {
         FileUtils.mkdir(new File("converted"));
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/media/*.m1v -type f");
         for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getFile(pBoxInfo.IpAddress, entries[f], "converted");
+            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
         }
         }
 

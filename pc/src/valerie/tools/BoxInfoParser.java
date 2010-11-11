@@ -22,12 +22,11 @@ public final class BoxInfoParser {
 
     public void load() {
 
-        mList.clear();
+        //mList.clear();
 
         String vManu = new valerie.tools.Properties().getPropertyString("IPADDR");
          if(vManu != null && vManu.length() > 0)
-             for(String s : vManu.split("\\|"))
-                parse(s);
+             parse(vManu);
     }
 
     public BoxInfo[] get() {
@@ -35,8 +34,8 @@ public final class BoxInfoParser {
     }
 
     public void parse(String info) {
-      
-        String[] Boxinfos = info.split("\n");
+
+        String[] Boxinfos = info.split("\\|");
         for(String remaining : Boxinfos) {
             BoxInfo boxinfo = new BoxInfo();
 
