@@ -56,12 +56,14 @@ class pyvalerie(Thread):
 		else:
 			print(" - Created\n")
 		
+		DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/""
+		
 		if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 			self.output("Check defaultbackdrop.m1v - Missing -> Downloading")
-			WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pc/default/defaultbackdrop.m1v", "defaultbackdrop.m1v")
+			WebGrabber().grabFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
 		if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 			self.output("Check defaultposter.png - Missing -> Downloading")
-			WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pc/default/defaultposter.png", "defaultposter.png")
+			WebGrabber().grabFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
 		
 		try: 
 			print("Check "+"/hdd/valerie/episodes")
@@ -77,7 +79,7 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie/valerie.conf")
 			if os.path.isfile("/hdd/valerie/valerie.conf") is False:
 				self.output("Check valerie.conf - Missing -> Downloading")
-				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/valerie.conf", "../valerie.conf")
+				WebGrabber().grabFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")
@@ -98,7 +100,7 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie/pre.conf")
 			if os.path.isfile("/hdd/valerie/pre.conf") is False:
 				self.output("Check pre.conf - Missing -> Downloading")
-				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/pre.conf", "../pre.conf")
+				WebGrabber().grabFile(DEFAULTURL+"pre.conf", "../pre.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")
@@ -109,7 +111,7 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie/post_movie.conf")
 			if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
 				self.output("Check post_movie.conf - Missing -> Downloading")
-				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_movie.conf", "../post_movie.conf")
+				WebGrabber().grabFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")
@@ -120,7 +122,7 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie/post_tv.conf")
 			if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
 				self.output("Check post_tv.conf - Missing -> Downloading")
-				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_tv.conf", "../post_tv.conf")
+				WebGrabber().grabFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")
@@ -137,7 +139,7 @@ class pyvalerie(Thread):
 			print("Check "+"/hdd/valerie/paths.conf")
 			if os.path.isfile("/hdd/valerie/paths.conf") is False:
 				self.output("Check paths.conf - Missing -> Downloading")
-				WebGrabber().grabFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/paths.conf", "../paths.conf")
+				WebGrabber().grabFile(DEFAULTURL+"paths.conf", "../paths.conf")
 				print(" - Created\n")
 			else:
 				print(" - OK\n")

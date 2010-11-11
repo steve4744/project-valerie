@@ -86,6 +86,8 @@ public final class Controller extends Notifier {
         _notify("BI_REFRESH");
     }
 
+    final String DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/";
+
     public void networkTransferMO() {
         if(get("BoxInfos") == null || get("SelectedBoxInfo") == null)
             return;
@@ -101,15 +103,15 @@ public final class Controller extends Notifier {
 
         FileUtils.mkdir(new File("conf"));
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/paths.conf", "conf"))
-            new WebGrabber().getFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/paths.conf", "conf\\paths.conf");
+            new WebGrabber().getFile(DEFAULTURL+"paths.conf", "conf\\paths.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/valerie.conf", "conf"))
-            new WebGrabber().getFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/valerie.conf", "conf\\valerie.conf");
+            new WebGrabber().getFile(DEFAULTURL+"valerie.conf", "conf\\valerie.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/pre.conf", "conf"))
-            new WebGrabber().getFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/pre.conf", "conf\\pre.conf");
+            new WebGrabber().getFile(DEFAULTURL+"pre.conf", "conf\\pre.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_movie.conf", "conf"))
-            new WebGrabber().getFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_movie.conf", "conf\\post_movie.conf");
+            new WebGrabber().getFile(DEFAULTURL+"post_movie.conf", "conf\\post_movie.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_tv.conf", "conf"))
-            new WebGrabber().getFile("http://project-valerie.googlecode.com/svn/trunk/pyvalerie/src/post_tv.conf", "conf\\post_tv.conf");
+            new WebGrabber().getFile(DEFAULTURL+"post_tv.conf", "conf\\post_tv.conf");
 
         _notify((float)0.1, "PROGRESS");
 
