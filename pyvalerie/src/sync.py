@@ -56,7 +56,7 @@ class pyvalerie(Thread):
 		else:
 			print(" - Created\n")
 		
-		DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/""
+		DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
 		
 		if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 			self.output("Check defaultbackdrop.m1v - Missing -> Downloading")
