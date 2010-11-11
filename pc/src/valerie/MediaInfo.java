@@ -113,7 +113,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "cat \"" + name + ".meta\"");
         if(entries.length > 0 && !entries[0].startsWith("cat:"))
-            return entries[0];
+            return entries[1];
         return "";
     }
 
