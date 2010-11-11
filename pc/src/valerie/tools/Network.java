@@ -186,7 +186,7 @@ public class Network {
         boolean rtv = false;
         String[] result = sendCMD(addr, "ls " + fileOnBox);
         if(result != null && result.length > 0 && result[0].equals(fileOnBox))
-            getFile(addr, fileOnBox, directoryOnPC);
+            rtv = getFile(addr, fileOnBox, directoryOnPC);
         else {
             DebugOutput.printl("File not found ("+fileOnBox+")");
             rtv = false;
