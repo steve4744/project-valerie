@@ -1514,6 +1514,8 @@ public class ValerieView extends FrameView {
             jButtonSync.setEnabled(true);
         }
 
+        //this.actionNetworkTransferMO().execute();
+
         DebugOutput.printl("<-");
     }//GEN-LAST:event_jComboBoxBoxinfoItemStateChanged
 

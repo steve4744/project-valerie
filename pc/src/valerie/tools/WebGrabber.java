@@ -194,7 +194,7 @@ public class WebGrabber {
                 out.close();
                 in.close();
             } catch (Exception ex) {
-                System.out.printf("error %s\n", ex.getMessage());
+                DebugOutput.printl("error " + ex.getMessage());
                 outputfile.delete();
 
                 success = false;
