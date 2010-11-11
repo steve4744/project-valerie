@@ -41,55 +41,6 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JButton" name="jButtonConnect">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="actionNetworkConnect" methodName="actionNetworkConnect"/>
-                </Property>
-                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonConnect.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonConnect.toolTipText"/>
-                <Property name="focusable" type="boolean" value="false"/>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="name" type="java.lang.String" value="jButtonConnect" noResource="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JButton" name="jButtonDownloadFromBox">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="actionNetworkTransferMO" methodName="actionNetworkTransferMO"/>
-                </Property>
-                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="jButtonDownloadFromBox.text"/>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonDownloadFromBox.toolTipText"/>
-                <Property name="focusable" type="boolean" value="false"/>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="name" type="java.lang.String" value="jButtonDownloadFromBox" noResource="true"/>
-                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.pressedIcon"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JButton" name="jButtonUploadToBox">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="Gui.ValerieView" id="actionNetworkTransferMT" methodName="actionNetworkTransferMT"/>
-                </Property>
-                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.icon"/>
-                <Property name="text" type="java.lang.String" resourceKey="jButtonUploadToBox.text"/>
-                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonUploadToBox.toolTipText"/>
-                <Property name="focusable" type="boolean" value="false"/>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="name" type="java.lang.String" value="jButtonUploadToBox" noResource="true"/>
-                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.pressedIcon"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">
-              <Properties>
-                <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
-              </Properties>
-            </Component>
             <Component class="javax.swing.JButton" name="jButtonSync">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -135,6 +86,50 @@
             <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonDownloadFromBox">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMO" methodName="actionNetworkTransferMO"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.icon"/>
+                <Property name="text" type="java.lang.String" resourceKey="jButtonDownloadFromBox.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonDownloadFromBox.toolTipText"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="jButtonDownloadFromBox" noResource="true"/>
+                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonDownloadFromBox.pressedIcon"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonUploadToBox">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkTransferMT" methodName="actionNetworkTransferMT"/>
+                </Property>
+                <Property name="icon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.icon"/>
+                <Property name="text" type="java.lang.String" resourceKey="jButtonUploadToBox.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonUploadToBox.toolTipText"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="jButtonUploadToBox" noResource="true"/>
+                <Property name="pressedIcon" type="javax.swing.Icon" resourceKey="jButtonUploadToBox.pressedIcon"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonConnect">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="Gui.ValerieView" id="actionNetworkConnect" methodName="actionNetworkConnect"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
+                <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonConnect.toolTipText"/>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="name" type="java.lang.String" value="jButtonConnect" noResource="true"/>
+                <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
             </Component>
           </SubComponents>

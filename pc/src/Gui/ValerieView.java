@@ -234,6 +234,9 @@ public class ValerieView extends FrameView {
             }
         }
         jTableEpisodes.getModel().addTableModelListener(new TableChangedEpisodes());
+
+        actionNetworkConnect().run();
+        jComboBoxBoxinfoItemStateChanged(null);
     }
 
     boolean firstFocus = true;
@@ -293,14 +296,13 @@ public class ValerieView extends FrameView {
 
         mainPanel = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
-        jButtonConnect = new javax.swing.JButton();
-        jButtonDownloadFromBox = new javax.swing.JButton();
-        jButtonUploadToBox = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JToolBar.Separator();
         jButtonSync = new javax.swing.JButton();
         jButtonParse = new javax.swing.JButton();
         jButtonArt = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
+        jButtonDownloadFromBox = new javax.swing.JButton();
+        jButtonUploadToBox = new javax.swing.JButton();
+        jButtonConnect = new javax.swing.JButton();
         jComboBoxBoxinfo = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         jTabbedPane = new javax.swing.JTabbedPane();
@@ -441,49 +443,11 @@ public class ValerieView extends FrameView {
         jToolBar1.setName("jToolBar1"); // NOI18N
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getActionMap(ValerieView.class, this);
-        jButtonConnect.setAction(actionMap.get("actionNetworkConnect")); // NOI18N
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(ValerieView.class);
-        jButtonConnect.setIcon(resourceMap.getIcon("jButtonConnect.icon")); // NOI18N
-        jButtonConnect.setText(resourceMap.getString("jButtonConnect.text")); // NOI18N
-        jButtonConnect.setToolTipText(resourceMap.getString("jButtonConnect.toolTipText")); // NOI18N
-        jButtonConnect.setFocusable(false);
-        jButtonConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonConnect.setName("jButtonConnect"); // NOI18N
-        jButtonConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonConnect);
-
-        jButtonDownloadFromBox.setAction(actionMap.get("actionNetworkTransferMO")); // NOI18N
-        jButtonDownloadFromBox.setIcon(resourceMap.getIcon("jButtonDownloadFromBox.icon")); // NOI18N
-        jButtonDownloadFromBox.setText(resourceMap.getString("jButtonDownloadFromBox.text")); // NOI18N
-        jButtonDownloadFromBox.setToolTipText(resourceMap.getString("jButtonDownloadFromBox.toolTipText")); // NOI18N
-        jButtonDownloadFromBox.setEnabled(false);
-        jButtonDownloadFromBox.setFocusable(false);
-        jButtonDownloadFromBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonDownloadFromBox.setName("jButtonDownloadFromBox"); // NOI18N
-        jButtonDownloadFromBox.setPressedIcon(resourceMap.getIcon("jButtonDownloadFromBox.pressedIcon")); // NOI18N
-        jButtonDownloadFromBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonDownloadFromBox);
-
-        jButtonUploadToBox.setAction(actionMap.get("actionNetworkTransferMT")); // NOI18N
-        jButtonUploadToBox.setIcon(resourceMap.getIcon("jButtonUploadToBox.icon")); // NOI18N
-        jButtonUploadToBox.setText(resourceMap.getString("jButtonUploadToBox.text")); // NOI18N
-        jButtonUploadToBox.setToolTipText(resourceMap.getString("jButtonUploadToBox.toolTipText")); // NOI18N
-        jButtonUploadToBox.setEnabled(false);
-        jButtonUploadToBox.setFocusable(false);
-        jButtonUploadToBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonUploadToBox.setName("jButtonUploadToBox"); // NOI18N
-        jButtonUploadToBox.setPressedIcon(resourceMap.getIcon("jButtonUploadToBox.pressedIcon")); // NOI18N
-        jButtonUploadToBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonUploadToBox);
-
-        jSeparator1.setName("jSeparator1"); // NOI18N
-        jToolBar1.add(jSeparator1);
-
         jButtonSync.setAction(actionMap.get("actionNetworkFilesystem")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(ValerieView.class);
         jButtonSync.setIcon(resourceMap.getIcon("jButtonSync.icon")); // NOI18N
         jButtonSync.setText(resourceMap.getString("jButtonSync.text")); // NOI18N
         jButtonSync.setToolTipText(resourceMap.getString("jButtonSync.toolTipText")); // NOI18N
-        jButtonSync.setEnabled(false);
         jButtonSync.setFocusable(false);
         jButtonSync.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSync.setName("jButtonSync"); // NOI18N
@@ -512,6 +476,38 @@ public class ValerieView extends FrameView {
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         jToolBar1.add(jSeparator3);
+
+        jButtonDownloadFromBox.setAction(actionMap.get("actionNetworkTransferMO")); // NOI18N
+        jButtonDownloadFromBox.setIcon(resourceMap.getIcon("jButtonDownloadFromBox.icon")); // NOI18N
+        jButtonDownloadFromBox.setText(resourceMap.getString("jButtonDownloadFromBox.text")); // NOI18N
+        jButtonDownloadFromBox.setToolTipText(resourceMap.getString("jButtonDownloadFromBox.toolTipText")); // NOI18N
+        jButtonDownloadFromBox.setFocusable(false);
+        jButtonDownloadFromBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonDownloadFromBox.setName("jButtonDownloadFromBox"); // NOI18N
+        jButtonDownloadFromBox.setPressedIcon(resourceMap.getIcon("jButtonDownloadFromBox.pressedIcon")); // NOI18N
+        jButtonDownloadFromBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButtonDownloadFromBox);
+
+        jButtonUploadToBox.setAction(actionMap.get("actionNetworkTransferMT")); // NOI18N
+        jButtonUploadToBox.setIcon(resourceMap.getIcon("jButtonUploadToBox.icon")); // NOI18N
+        jButtonUploadToBox.setText(resourceMap.getString("jButtonUploadToBox.text")); // NOI18N
+        jButtonUploadToBox.setToolTipText(resourceMap.getString("jButtonUploadToBox.toolTipText")); // NOI18N
+        jButtonUploadToBox.setFocusable(false);
+        jButtonUploadToBox.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonUploadToBox.setName("jButtonUploadToBox"); // NOI18N
+        jButtonUploadToBox.setPressedIcon(resourceMap.getIcon("jButtonUploadToBox.pressedIcon")); // NOI18N
+        jButtonUploadToBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButtonUploadToBox);
+
+        jButtonConnect.setAction(actionMap.get("actionNetworkConnect")); // NOI18N
+        jButtonConnect.setText(resourceMap.getString("jButtonConnect.text")); // NOI18N
+        jButtonConnect.setToolTipText(resourceMap.getString("jButtonConnect.toolTipText")); // NOI18N
+        jButtonConnect.setEnabled(false);
+        jButtonConnect.setFocusable(false);
+        jButtonConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonConnect.setName("jButtonConnect"); // NOI18N
+        jButtonConnect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButtonConnect);
 
         jComboBoxBoxinfo.setBackground(resourceMap.getColor("jComboBoxBoxinfo.background")); // NOI18N
         jComboBoxBoxinfo.setName("jComboBoxBoxinfo"); // NOI18N
@@ -1507,7 +1503,7 @@ public class ValerieView extends FrameView {
 
         pController.set("SelectedBoxInfo", jComboBoxBoxinfo.getSelectedIndex());
 
-        if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")){
+        if (jComboBoxBoxinfo == null || jComboBoxBoxinfo.getSelectedItem() == null/* || jComboBoxBoxinfo.getSelectedItem().toString().contains("unknown")*/){
             jButtonUploadToBox.setEnabled(false);
             jButtonDownloadFromBox.setEnabled(false);
             jButtonSync.setEnabled(false);
@@ -1555,7 +1551,7 @@ public class ValerieView extends FrameView {
         BoxInfo[] boxInfos = (BoxInfo[])pController.get("BoxInfos");
         if (boxInfos != null) {
             for (int i = 0; i < boxInfos.length; i++) {
-                String vInfo = boxInfos[i].toShortString();
+                String vInfo = boxInfos[i].toString();
                 jComboBoxBoxinfo.addItem (vInfo);
             }
             pController.set("SelectedBoxInfo", (int)0);
@@ -1930,7 +1926,8 @@ public class ValerieView extends FrameView {
         }
     }
 
-        @Action(block = Task.BlockingScope.WINDOW)
+    
+    @Action(block = Task.BlockingScope.WINDOW)
     public Task actionNetworkConnect() {
         return new ActionNetworkConnectTask(getApplication());
     }
@@ -2258,7 +2255,6 @@ public class ValerieView extends FrameView {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPaneDetailsPlot;
-    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JPopupMenu.Separator jSeparator6;

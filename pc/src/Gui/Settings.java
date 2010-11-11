@@ -11,7 +11,11 @@
 
 package Gui;
 
-import java.io.File;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
@@ -20,8 +24,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Task;
 import valerie.controller.ConfPaths;
 import valerie.controller.Controller;
+import valerie.controller.Notification;
+import valerie.tools.BoxInfo;
 
 /**
  *
@@ -60,6 +68,7 @@ public class Settings extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel8 = new javax.swing.JLabel();
         jSplitPaneApplyCancel = new javax.swing.JSplitPane();
         jButtonApply = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
@@ -71,6 +80,17 @@ public class Settings extends javax.swing.JDialog {
         jPanelGeneral = new javax.swing.JPanel();
         jCheckBoxUpdate = new javax.swing.JCheckBox();
         jCheckBoxLoadArchiv = new javax.swing.JCheckBox();
+        jComboBoxBoxes = new javax.swing.JComboBox();
+        jLabel5 = new javax.swing.JLabel();
+        jButtonBoxesSearch = new javax.swing.JButton();
+        jButtonBoxesCreate = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jTextFieldBoxesManufactor = new javax.swing.JTextField();
+        jTextFieldBoxesModell = new javax.swing.JTextField();
+        jTextFieldBoxesIp = new javax.swing.JTextField();
+        jButtonBoxesSave = new javax.swing.JButton();
         jPanelFileManagment = new javax.swing.JPanel();
         jTextFieldFilter = new javax.swing.JTextField();
         jLabelFilter = new javax.swing.JLabel();
@@ -88,8 +108,11 @@ public class Settings extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
         jLabelHeading = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getResourceMap(Settings.class);
+        jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
+        jLabel8.setName("jLabel8"); // NOI18N
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
@@ -184,27 +207,137 @@ public class Settings extends javax.swing.JDialog {
         jCheckBoxUpdate.setOpaque(false);
 
         jCheckBoxLoadArchiv.setText(resourceMap.getString("jCheckBoxLoadArchiv.text")); // NOI18N
+        jCheckBoxLoadArchiv.setEnabled(false);
         jCheckBoxLoadArchiv.setName("jCheckBoxLoadArchiv"); // NOI18N
+
+        jComboBoxBoxes.setName("jComboBoxBoxes"); // NOI18N
+        jComboBoxBoxes.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxBoxesItemStateChanged(evt);
+            }
+        });
+
+        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
+        jLabel5.setName("jLabel5"); // NOI18N
+
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class).getContext().getActionMap(Settings.class, this);
+        jButtonBoxesSearch.setAction(actionMap.get("ActionSearchForBoxes")); // NOI18N
+        jButtonBoxesSearch.setIcon(resourceMap.getIcon("jButtonBoxesSearch.icon")); // NOI18N
+        jButtonBoxesSearch.setText(resourceMap.getString("jButtonBoxesSearch.text")); // NOI18N
+        jButtonBoxesSearch.setToolTipText(resourceMap.getString("jButtonBoxesSearch.toolTipText")); // NOI18N
+        jButtonBoxesSearch.setName("jButtonBoxesSearch"); // NOI18N
+        jButtonBoxesSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBoxesSearchActionPerformed(evt);
+            }
+        });
+
+        jButtonBoxesCreate.setText(resourceMap.getString("jButtonBoxesCreate.text")); // NOI18N
+        jButtonBoxesCreate.setName("jButtonBoxesCreate"); // NOI18N
+        jButtonBoxesCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBoxesCreateActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
+        jLabel6.setName("jLabel6"); // NOI18N
+
+        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
+        jLabel7.setName("jLabel7"); // NOI18N
+
+        jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
+        jLabel9.setName("jLabel9"); // NOI18N
+
+        jTextFieldBoxesManufactor.setText(resourceMap.getString("jTextFieldBoxesManufactor.text")); // NOI18N
+        jTextFieldBoxesManufactor.setEnabled(false);
+        jTextFieldBoxesManufactor.setName("jTextFieldBoxesManufactor"); // NOI18N
+
+        jTextFieldBoxesModell.setText(resourceMap.getString("jTextFieldBoxesModell.text")); // NOI18N
+        jTextFieldBoxesModell.setEnabled(false);
+        jTextFieldBoxesModell.setName("jTextFieldBoxesModell"); // NOI18N
+
+        jTextFieldBoxesIp.setText(resourceMap.getString("jTextFieldBoxesIp.text")); // NOI18N
+        jTextFieldBoxesIp.setEnabled(false);
+        jTextFieldBoxesIp.setName("jTextFieldBoxesIp"); // NOI18N
+
+        jButtonBoxesSave.setText(resourceMap.getString("jButtonBoxesSave.text")); // NOI18N
+        jButtonBoxesSave.setEnabled(false);
+        jButtonBoxesSave.setName("jButtonBoxesSave"); // NOI18N
+        jButtonBoxesSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBoxesSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
         jPanelGeneral.setLayout(jPanelGeneralLayout);
         jPanelGeneralLayout.setHorizontalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
-                .addContainerGap(352, Short.MAX_VALUE)
+            .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBoxUpdate)
                     .addComponent(jCheckBoxLoadArchiv)
-                    .addComponent(jCheckBoxUpdate))
-                .addGap(31, 31, 31))
+                    .addComponent(jLabel5)
+                    .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                                .addComponent(jComboBoxBoxes, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonBoxesSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonBoxesCreate))
+                            .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel7)
+                                            .addComponent(jLabel9))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jTextFieldBoxesManufactor, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                                            .addComponent(jTextFieldBoxesModell)
+                                            .addComponent(jTextFieldBoxesIp)))
+                                    .addComponent(jButtonBoxesSave))))))
+                .addContainerGap(174, Short.MAX_VALUE))
         );
         jPanelGeneralLayout.setVerticalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelGeneralLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jCheckBoxUpdate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBoxLoadArchiv)
-                .addContainerGap(224, Short.MAX_VALUE))
+                .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jCheckBoxUpdate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBoxLoadArchiv)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComboBoxBoxes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonBoxesSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jTextFieldBoxesManufactor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(jTextFieldBoxesModell, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(jTextFieldBoxesIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonBoxesSave))
+                    .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                        .addGap(83, 83, 83)
+                        .addComponent(jButtonBoxesCreate)))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         jPanelGeneral.setBounds(10, 70, 510, 280);
@@ -445,38 +578,20 @@ public class Settings extends javax.swing.JDialog {
         if(evt != null && (path.length == 1 /* TOP NODE SHOULD NEVER BE SELECTED */)) {
 
         } else if(evt == null || (path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("General"))) {
-            jPanelGeneral.setVisible(true);
-            jPanelFileManagment.setVisible(false);
-            jPanelConvert.setVisible(false);
-            jPanelImportManagment.setVisible(false);
+            showTabGeneral(eStatus.LOAD);
 
-            jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyBoolean("AUTO_UPDATE"));
-            jCheckBoxLoadArchiv.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV"));
+            showTabFileManagment(eStatus.HIDE);
+            showTabImportManagment(eStatus.HIDE);
+
+            showTabGeneral(eStatus.SHOW);
 
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("File Management")) {
-            jPanelFileManagment.setVisible(true);
-            jPanelGeneral.setVisible(false);
-            jPanelConvert.setVisible(false);
-            jPanelImportManagment.setVisible(false);
+            showTabFileManagment(eStatus.LOAD);
 
+            showTabGeneral(eStatus.HIDE);
+            showTabImportManagment(eStatus.HIDE);
 
-            jTextFieldFilter.setText(((ConfPaths)pController.get("ConfPaths")).getFilter());
-        } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Convert")) {
-            jPanelFileManagment.setVisible(false);
-            jPanelGeneral.setVisible(false);
-            jPanelConvert.setVisible(true);
-            jPanelImportManagment.setVisible(false);
-
-            if (jComboBoxResize.getItemCount()<4){
-                File checkIfConvertExists = new File("bin/convert.exe");
-                if (checkIfConvertExists.exists()){
-                    jComboBoxResize.addItem("convert.exe");
-                }                
-            }            
-
-            jComboBoxEncoder.setSelectedItem(new valerie.tools.Properties().getPropertyString("ENCODER_TYPE"));
-            jComboBoxResize.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESIZE_TYPE"));
-            jComboBoxResolution.setSelectedIndex(new valerie.tools.Properties().getPropertyInt("RESOLUTION_TYPE"));
+            showTabFileManagment(eStatus.SHOW);
 
         } else if(path.length == 2 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies")) {
             /* SELECT FIRST CHILD */
@@ -492,66 +607,27 @@ public class Settings extends javax.swing.JDialog {
             }
 
         } else if(path.length == 3 && ((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
-            jPanelImportManagment.setVisible(true);
-            jPanelGeneral.setVisible(false);
-            jPanelFileManagment.setVisible(false);
-            jPanelConvert.setVisible(false);
+            showTabImportManagment(eStatus.LOAD);
 
-            //String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
-            ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(WorkPathMovies.size());
+            showTabGeneral(eStatus.HIDE);
+            showTabFileManagment(eStatus.HIDE);
 
-            int iteratorMovies = 0;
-            for(String pathMovies : WorkPathMovies) {
-                jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
-            }
+            showTabImportManagment(eStatus.SHOW);
         }
     }//GEN-LAST:event_jTree1ValueChanged
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        //valerie.tools.Properties prop = new valerie.tools.Properties();
-
-        String pathToAdd = JOptionPane.showInputDialog("New Directory:");
-        if(pathToAdd != null && pathToAdd.length() > 0) {
-            Object path[] = jTree1.getSelectionPaths()[0].getPath();
-            if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
-                
-                if(!WorkPathMovies.contains(pathToAdd))
-                    WorkPathMovies.add(pathToAdd);
-            }
-        }
-
-        //prop.save();
-
-        jTree1ValueChanged(null);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        //valerie.tools.Properties prop = new valerie.tools.Properties();
-
-        Object path[] = jTree1.getSelectionPaths()[0].getPath();
-        if(((DefaultMutableTreeNode)path[1]).getUserObject().equals("Movies") && ((DefaultMutableTreeNode)path[2]).getUserObject().equals("Import Management")) {
-            String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
-
-             WorkPathMovies.remove(pathToDelete);
-        }
-
-        //prop.save();
-
-        jTree1ValueChanged(null);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButtonApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonApplyActionPerformed
-        valerie.tools.Properties prop = new valerie.tools.Properties();
-        prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected());
-        prop.setProperty("LOAD_ARCHIV", jCheckBoxLoadArchiv.isSelected());
-        prop.setProperty("FILTER_MOVIES", jTextFieldFilter.getText());
-        ((ConfPaths)pController.get("ConfPaths")).setFilter(jTextFieldFilter.getText());
-        prop.setProperty("RESIZE_TYPE", Integer.toString(jComboBoxResize.getSelectedIndex()));
-        prop.setProperty("ENCODER_TYPE",jComboBoxEncoder.getSelectedItem().toString());
-        prop.setProperty("RESOLUTION_TYPE",Integer.toString(jComboBoxResolution.getSelectedIndex()));
-        ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new String[1]));
-        prop.save();
-        ((ConfPaths)pController.get("ConfPaths")).save();
+        
+        showTabGeneral(eStatus.SAVE);
+        showTabFileManagment(eStatus.SAVE);
+        showTabImportManagment(eStatus.SAVE);
+
         setVisible(false);
     }//GEN-LAST:event_jButtonApplyActionPerformed
 
@@ -560,17 +636,327 @@ public class Settings extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void SettingShow(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_SettingShow
-        String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
-        WorkPathMovies.addAll(Arrays.asList(paths));
     }//GEN-LAST:event_SettingShow
+
+
+    enum eStatus {SHOW, HIDE, SAVE, LOAD, UPDATE};
+
+    private ArrayList<BoxInfo> mBoxInfos = null;
+    private void showTabGeneral(eStatus status) {
+
+
+
+        switch(status) {
+
+            case SHOW:
+                jPanelGeneral.setVisible(true);
+                break;
+
+            case HIDE:
+                jPanelGeneral.setVisible(false);
+                break;
+
+            case UPDATE:
+                if(mBoxInfos != null) {
+                    jComboBoxBoxes.removeAllItems();
+                    for (int i = 0; i < mBoxInfos.size(); i++) {
+                        jComboBoxBoxes.addItem(mBoxInfos.get(i));
+                    }
+
+                    jTextFieldBoxesManufactor.setText(mBoxInfos.get(0).Manufactor);
+                    jTextFieldBoxesModell.setText(mBoxInfos.get(0).Model);
+                    jTextFieldBoxesIp.setText(mBoxInfos.get(0).IpAddress.getHostAddress());
+                }
+                break;
+
+            case LOAD:
+                jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyBoolean("AUTO_UPDATE"));
+                jCheckBoxLoadArchiv.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV"));
+
+                jComboBoxBoxes.removeAllItems();
+                if(mBoxInfos == null) {
+                    BoxInfo[] boxInfos = (BoxInfo[])pController.get("BoxInfos");
+                    if(boxInfos != null && boxInfos.length > 0) {
+                        mBoxInfos = new ArrayList<BoxInfo>();
+                        for(BoxInfo b : boxInfos)
+                            mBoxInfos.add(b);
+                    }
+                }
+
+                showTabGeneral(eStatus.UPDATE);
+
+                //---
+
+                for(ActionListener a : jButtonBoxesCreate.getActionListeners())
+                    jButtonBoxesCreate.removeActionListener(a);
+
+                jButtonBoxesCreate.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        if(mBoxInfos == null)
+                            mBoxInfos = new ArrayList<BoxInfo>();
+                        mBoxInfos.add(new BoxInfo());
+
+                        jTextFieldBoxesManufactor.setEnabled(true);
+                        jTextFieldBoxesModell.setEnabled(true);
+                        jTextFieldBoxesIp.setEnabled(true);
+                        jButtonBoxesSave.setEnabled(true);
+
+                        showTabGeneral(eStatus.UPDATE);
+                    }
+                });
+
+                for(ActionListener a : jButtonBoxesSave.getActionListeners())
+                    jButtonBoxesSave.removeActionListener(a);
+
+                jButtonBoxesSave.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                        boolean allowSave = true;
+
+                        if(jTextFieldBoxesManufactor.getText().length() == 0)
+                            allowSave = false;
+
+                        if(jTextFieldBoxesModell.getText().length() == 0)
+                            allowSave = false;
+
+                        if(jTextFieldBoxesIp.getText().length() == 0)
+                            allowSave = false;
+
+                        InetAddress i = null;
+                        if(allowSave) {
+                            try {
+                                i = InetAddress.getByName(jTextFieldBoxesIp.getText());
+                                if(i == null)
+                                    allowSave = false;
+                            } catch(Exception ex) {
+                                allowSave = false;
+                            }
+                        }
+
+                        if(allowSave) {
+                            BoxInfo b = (BoxInfo)jComboBoxBoxes.getSelectedItem();
+                            b.Manufactor = jTextFieldBoxesManufactor.getText();
+                            b.Model = jTextFieldBoxesModell.getText();
+                            b.IpAddress = i;
+
+                            jTextFieldBoxesManufactor.setEnabled(false);
+                            jTextFieldBoxesModell.setEnabled(false);
+                            jTextFieldBoxesIp.setEnabled(false);
+                            jButtonBoxesSave.setEnabled(false);
+                        }
+
+                        showTabGeneral(eStatus.UPDATE);
+                    }
+                });
+
+                //---
+
+                for(ItemListener a : jComboBoxBoxes.getItemListeners())
+                    jComboBoxBoxes.removeItemListener(a);
+
+                jComboBoxBoxes.addItemListener(new ItemListener() {
+                    public void itemStateChanged(ItemEvent e) {
+                        BoxInfo b = (BoxInfo)e.getItem();
+                        /*jTextFieldBoxesManufactor.setEnabled(true);
+                        jTextFieldBoxesModell.setEnabled(true);
+                        jTextFieldBoxesIp.setEnabled(true);*/
+
+                        jTextFieldBoxesManufactor.setText(b.Manufactor);
+                        jTextFieldBoxesModell.setText(b.Model);
+                        jTextFieldBoxesIp.setText(b.IpAddress.getHostAddress());
+                    }
+                });
+
+                break;
+
+            case SAVE:
+                valerie.tools.Properties prop = new valerie.tools.Properties();
+                prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected());
+                prop.setProperty("LOAD_ARCHIV", jCheckBoxLoadArchiv.isSelected());
+
+                String save = "";
+                for(BoxInfo b : mBoxInfos)
+                    save += b.toInternalString() + "|";
+
+                prop.setProperty("IPADDR", save);
+
+                prop.save();
+
+                pController.networkConnect();
+
+                break;
+        }
+    }
+
+    private void showTabFileManagment(eStatus status) {
+
+        switch(status) {
+
+            case SHOW:
+                jPanelFileManagment.setVisible(true);
+                break;
+
+            case HIDE:
+                jPanelFileManagment.setVisible(false);
+                break;
+
+            case LOAD:
+                jTextFieldFilter.setText(((ConfPaths)pController.get("ConfPaths")).getFilter());
+                break;
+
+            case SAVE:
+                ((ConfPaths)pController.get("ConfPaths")).setFilter(jTextFieldFilter.getText());
+                ((ConfPaths)pController.get("ConfPaths")).save();
+                break;
+        }
+    }
+
+    private void showTabImportManagment(eStatus status) {
+
+        switch(status) {
+
+            case SHOW:
+                jPanelImportManagment.setVisible(true);
+                break;
+
+            case HIDE:
+                jPanelImportManagment.setVisible(false);
+                break;
+
+            case UPDATE:
+                ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(WorkPathMovies.size());
+                int iteratorMovies = 0;
+                for(String pathMovies : WorkPathMovies) {
+                    jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
+                }
+                break;
+
+            case LOAD:
+                String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
+                WorkPathMovies.clear();
+                for(String path : paths)
+                    if(path != null && path.length() > 0)
+                        WorkPathMovies.add(path);
+
+                showTabImportManagment(eStatus.UPDATE);
+
+                //---
+
+                for(ActionListener a : jButton3.getActionListeners())
+                    jButton3.removeActionListener(a);
+
+                jButton3.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        if(jTableImportManagment.getRowCount() > 0) {
+                            String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
+                            WorkPathMovies.remove(pathToDelete);
+                            
+                            showTabImportManagment(eStatus.UPDATE);
+                        }
+                        
+                    }
+                });
+
+                for(ActionListener a : jButton4.getActionListeners())
+                    jButton4.removeActionListener(a);
+
+                jButton4.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        String pathToAdd = JOptionPane.showInputDialog("New Directory:");
+                        if(pathToAdd != null && pathToAdd.length() > 0) {
+                            if(!WorkPathMovies.contains(pathToAdd))
+                            WorkPathMovies.add(pathToAdd);
+
+                            showTabImportManagment(eStatus.UPDATE);
+                        }
+                    }
+                });
+
+                break;
+
+            case SAVE:
+                ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new String[1]));
+                ((ConfPaths)pController.get("ConfPaths")).save();
+
+                break;
+        }
+    }
+
+    private void jButtonBoxesCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBoxesCreateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonBoxesCreateActionPerformed
+
+    private void jButtonBoxesSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBoxesSearchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonBoxesSearchActionPerformed
+
+    private void jButtonBoxesSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBoxesSaveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonBoxesSaveActionPerformed
+
+    private void jComboBoxBoxesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxBoxesItemStateChanged
+        // TODO add your handling code here:
+    }
+
+    @Action
+    public Task ActionSearchForBoxes() {
+        return new ActionSearchForBoxesTask(org.jdesktop.application.Application.getInstance(valerie.ValerieApp.class));
+    }//GEN-LAST:event_jComboBoxBoxesItemStateChanged
+
+    private class ActionSearchForBoxesTask extends org.jdesktop.application.Task<Object, Void> {
+        ActionSearchForBoxesTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to ActionSearchForBoxesTask fields, here.
+            super(app);
+
+            this.setUserCanCancel(false);
+
+            pController.add(new Notification() {
+                @Override
+                public void init() {
+                    Type = "PROGRESS";
+                }
+
+                @Override
+                public void callback(Object o) {
+                    if(o.getClass().equals(Float.class))
+                        setProgress((Float)o);
+                    else if(o.getClass().equals(String.class))
+                        setMessage((String)o);
+                }
+            });
+        }
+        
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+
+             pController.networkConnect();
+
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+
+            showTabGeneral(eStatus.LOAD);
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonApply;
+    private javax.swing.JButton jButtonBoxesCreate;
+    private javax.swing.JButton jButtonBoxesSave;
+    private javax.swing.JButton jButtonBoxesSearch;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JCheckBox jCheckBoxLoadArchiv;
     private javax.swing.JCheckBox jCheckBoxUpdate;
+    private javax.swing.JComboBox jComboBoxBoxes;
     private javax.swing.JComboBox jComboBoxEncoder;
     private javax.swing.JComboBox jComboBoxResize;
     private javax.swing.JComboBox jComboBoxResolution;
@@ -578,6 +964,11 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelFilter;
     private javax.swing.JLabel jLabelHeading;
     private javax.swing.JLayeredPane jLayeredPaneSettings;
@@ -590,6 +981,9 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JSplitPane jSplitPaneApplyCancel;
     private javax.swing.JSplitPane jSplitPaneTree;
     private javax.swing.JTable jTableImportManagment;
+    private javax.swing.JTextField jTextFieldBoxesIp;
+    private javax.swing.JTextField jTextFieldBoxesManufactor;
+    private javax.swing.JTextField jTextFieldBoxesModell;
     private javax.swing.JTextField jTextFieldFilter;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables

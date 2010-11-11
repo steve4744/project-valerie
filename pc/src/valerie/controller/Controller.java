@@ -14,6 +14,7 @@ import valerie.provider.ImdbProvider;
 import valerie.provider.TheMovieDbProvider;
 import valerie.provider.TheTvDbProvider;
 import valerie.tools.BoxInfo;
+import valerie.tools.BoxInfoParser;
 import valerie.tools.FileUtils;
 
 /**
@@ -28,6 +29,9 @@ public final class Controller extends Notifier {
         set("Database", new Database(this));
         set("ConfPaths", new ConfPaths());
 
+        set("BoxInfoParser", new valerie.tools.BoxInfoParser());
+        networkConnect();
+        
         Replace.reload();
     }
 
@@ -58,7 +62,23 @@ public final class Controller extends Notifier {
 
     public void networkConnect() {
         String response = new valerie.tools.Network().sendBroadcast();
-        valerie.tools.BoxInfo[] bis = new valerie.tools.BoxInfoParser().parse(response);
+
+        BoxInfoParser parser = (BoxInfoParser)get("BoxInfoParser");
+
+        parser.load();
+
+        parser.parse(response);
+        valerie.tools.BoxInfo[] bis = parser.get();
+        set("BoxInfos",  bis );
+
+        _notify("BI_REFRESH");
+    }
+
+    public void addBoxInfo(BoxInfo b) {
+        BoxInfoParser parser = (BoxInfoParser)get("BoxInfoParser");
+
+        parser.parse(b.toInternalString());
+        valerie.tools.BoxInfo[] bis = parser.get();
         set("BoxInfos",  bis );
 
         _notify("BI_REFRESH");

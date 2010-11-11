@@ -12,19 +12,32 @@ import java.util.ArrayList;
  *
  * @author Admin
  */
-public class BoxInfoParser {
-    public BoxInfo[] parse(String info) {
+public final class BoxInfoParser {
 
-        ArrayList<BoxInfo> list = new ArrayList<BoxInfo>();
+    private ArrayList<BoxInfo> mList = new ArrayList<BoxInfo>();
 
-        String vManu = new valerie.tools.Properties().getPropertyString("MANUAL_SETTOPBOX");
+    public BoxInfoParser() {
+        load();
+    }
+
+    public void load() {
+
+        mList.clear();
+
+        String vManu = new valerie.tools.Properties().getPropertyString("IPADDR");
          if(vManu != null && vManu.length() > 0)
-             info = info + "\n" + vManu;
+             for(String s : vManu.split("\\|"))
+                parse(s);
+    }
 
+    public BoxInfo[] get() {
+        return mList.toArray(new BoxInfo[1]);
+    }
+
+    public void parse(String info) {
+      
         String[] Boxinfos = info.split("\n");
         for(String remaining : Boxinfos) {
-        //String remaining = info;
-
             BoxInfo boxinfo = new BoxInfo();
 
             while( remaining.contains(";")) {
@@ -55,28 +68,21 @@ public class BoxInfoParser {
             }
             if(boxinfo.IpAddress != null) {
                 boolean alreadyIn = false;
-                for(int i = 0; i < list.size(); i++) { //A little bit hacky
-                    String a = boxinfo.IpAddress.getHostAddress();
-                    String b = ((BoxInfo)list.get(i)).IpAddress.getHostAddress();
+                String a = boxinfo.IpAddress.getHostAddress();
+                for(int i = 0; i < mList.size(); i++) { //A little bit hacky
+                    String b = ((BoxInfo)mList.get(i)).IpAddress.getHostAddress();
                     if (a.equals(b)) {
-                        alreadyIn = true;
+                        mList.remove(i);
+                        //alreadyIn = true;
                         break;
                     }
                 }
 
                 if(!alreadyIn)
-                    list.add(boxinfo);
+                    mList.add(boxinfo);
             }
         }
-        if(list.size()> 0) {
-            BoxInfo[] boxinfos = new BoxInfo[list.size()];
-            for(int i = 0; i < list.size(); i++)
-                boxinfos[i] = (BoxInfo)list.get(i);
 
-            return boxinfos;
-        }
-
-        BoxInfo[] bi = {};
-        return bi;
+        return;
     }
 }
