@@ -1,7 +1,10 @@
 from Components.config import config
-from _ctypes import *
-from os import environ, popen, makedirs
 
+from os import environ, popen, makedirs
+from sys import version_info
+import sys, traceback
+
+#------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------
 
 def getBoxtype():
@@ -48,6 +51,45 @@ def getBoxtype():
 		
 	return (manu, model, arch, version)
 	
+#------------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------------
+
+try:
+	from _ctypes import *
+except Exception, e: 
+	import urllib2
+	try:
+	
+		box = getBoxtype()
+		dir = ""
+		url = "http://duckbox.info/valerie/prebuilt/" + box[2]
+		url += "/_ctypes.so"
+		if url[3] == "oe15":
+			url += ".25"
+			dir += "/usr/lib/python2.5/lib-dynload/"
+		elif url[3] == "oe16":
+			url += ".26"
+			dir += "/usr/lib/python2.6/lib-dynload/"
+		else:
+			dir += "/usr/lib/python2.6/lib-dynload/"
+		
+		print "URL: " + url
+		page = urllib2.urlopen(url)
+		
+			
+		f = open(dir + "_ctypes.so", 'wb')
+		f.write(page.read())
+		f.close()
+	except Exception, ex:
+		print "File download failed: ", ex
+		print type(ex)
+		print '-'*60
+		traceback.print_exc(file=sys.stdout)
+		print '-'*60
+
+from _ctypes import *
+
 #------------------------------------------------------------------------------------------
 
 class Showiframe():
