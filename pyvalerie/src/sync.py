@@ -159,7 +159,7 @@ class pyvalerie(Thread):
 			p = path.split('|')
 			path = p[0]
 			if len(p) > 1:
-				type = p[1]]
+				type = p[1]
 			else
 				type = "MOVIE_AND_TV"
 			
