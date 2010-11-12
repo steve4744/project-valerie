@@ -8,6 +8,7 @@ package valerie.controller;
 import java.util.Arrays;
 import java.util.LinkedList;
 import valerie.Utf8;
+import valerie.tools.Path;
 
 /**
  *
@@ -15,8 +16,12 @@ import valerie.Utf8;
  */
 public final class ConfPaths {
 
+
+
+    
+
     private String Filter = null;
-    private LinkedList<String> Paths = new LinkedList<String>();
+    private LinkedList<Path> Paths = new LinkedList<Path>();
 
     public ConfPaths() {
         load();
@@ -31,7 +36,7 @@ public final class ConfPaths {
         Utf8 conf = new Utf8("conf\\paths.conf", "r");
         for(String line : conf.read().split("\n")) {
             if(Filter == null) Filter = line;
-            else Paths.add(line);
+            else Paths.add(new Path(line));
         }
         conf.close();
     }
@@ -44,7 +49,7 @@ public final class ConfPaths {
     public void save() {
         Utf8 conf = new Utf8("conf\\paths.conf", "w");
         conf.write(this.Filter + "\n");
-        for(String path : this.Paths) {
+        for(Path path : this.Paths) {
             conf.write(path + "\n");
         }
         conf.close();
@@ -58,11 +63,11 @@ public final class ConfPaths {
         this.Filter = filter;
     }
 
-    public String[] getPaths() {
-        return this.Paths.toArray(new String[1]);
+    public Path[] getPaths() {
+        return this.Paths.toArray(new Path[1]);
     }
 
-    public void setPaths(String[] paths) {
-        this.Paths = new LinkedList<String>(Arrays.asList(paths));
+    public void setPaths(Path[] paths) {
+        this.Paths = new LinkedList<Path>(Arrays.asList(paths));
     }
 }

@@ -156,6 +156,13 @@ class pyvalerie(Thread):
 		for path in fconf.readlines(): 
 			path = path.strip()
 			
+			p = path.split('|')
+			path = p[0]
+			if len(p) > 1:
+				type = p[1]]
+			else
+				type = "MOVIE_AND_TV"
+			
 			if os.path.isdir(path):
 				ds = DirectoryScanner.DirectoryScanner(path)
 				elementList = ds.listDirectory(filetypes, "(sample)")
@@ -197,6 +204,12 @@ class pyvalerie(Thread):
 					self.output("-> " + filename.encode('latin-1') + "." + extension.encode('latin-1'))
 					
 				elementInfo = MediaInfo.MediaInfo(path, filename, extension)
+				
+				if type == "MOVIE":
+					elementInfo.isMovie = True
+				else type == "TV":
+					elementInfo.isSerie = True
+				
 				elementInfo.parse()
 				#print elementInfo
 				

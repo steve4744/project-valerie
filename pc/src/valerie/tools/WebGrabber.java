@@ -54,7 +54,7 @@ public class WebGrabber {
     public Document getXML(URL url) {
     	int x;
     	if(cacheXML==null)cacheXML=new ArrayList<cachedRequestXML>();
-    	//DebugOutput.printl(url.toString());
+    	DebugOutput.printl(url.toString());
     	for(x=0;x<cacheXML.size();x++){
     		if(url.equals(cacheXML.get(x).Url))return cacheXML.get(x).doc;
     	}

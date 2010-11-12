@@ -16,6 +16,8 @@ import valerie.provider.TheTvDbProvider;
 import valerie.tools.BoxInfo;
 import valerie.tools.BoxInfoParser;
 import valerie.tools.FileUtils;
+import valerie.tools.Path;
+import valerie.tools.Path.eContains;
 import valerie.tools.WebGrabber;
 
 /**
@@ -233,11 +235,13 @@ public final class Controller extends Notifier {
 
         ((Database)get("Database")).setAllToNotFound();
 
-        for(String path : ((ConfPaths)get("ConfPaths")).getPaths()) {
-            for(String filter : ((ConfPaths)get("ConfPaths")).getFilter().split("\\|")) {
-                String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find \"" + path + "\"" + " -name \"*." + filter + "\"" + " -type f");
+        for(Path p : ((ConfPaths)get("ConfPaths")).getPaths()) {
 
-                _notify("Syncing...\n@" + path, "PROGRESS");
+
+            for(String filter : ((ConfPaths)get("ConfPaths")).getFilter().split("\\|")) {
+                String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find \"" + p.path + "\"" + " -name \"*." + filter + "\"" + " -type f");
+
+                _notify("Syncing...\n@" + p.path, "PROGRESS");
                 _notify((float)0, "PROGRESS");
                 count = entries.length;
                 countVar = 0;
@@ -265,11 +269,17 @@ public final class Controller extends Notifier {
                         m.NotFound = false;
                     else {
                         m = new MediaInfo(pathS, filenameS, extensionS);
-			m.parse(this); // Well i dont like to give this class the controll, but at the moment i got now different solution
-                        
-                        // This is different to the box version
-                        m.needsUpdate = true;
-                        ((Database)get("Database")).add(m);
+                        if(p.type == eContains.MOVIE)
+                            m.isMovie = true;
+                        else if(p.type == eContains.TV)
+                            m.isEpisode = true;
+
+			boolean result = m.parse(this); // Well i dont like to give this class the controll, but at the moment i got now different solution
+                        if(result) {
+                            // This is different to the box version
+                            m.needsUpdate = true;
+                            ((Database)get("Database")).add(m);
+                        }
                     }
                 }
             }
@@ -299,6 +309,10 @@ public final class Controller extends Notifier {
                 elementInfo.parse(this);
 
             new ImdbProvider().getMoviesByTitle(elementInfo);
+
+            // this is a breaker. change this to catch evil aliens
+            if(elementInfo.ImdbId.equals("tt1490944"))
+                _notify((float)(countVar/count), "PROGRESS");
 
             _notify((float)(countVar/count), "PROGRESS");
 
@@ -334,10 +348,12 @@ public final class Controller extends Notifier {
                 _notify((float)(countVar/count), "PROGRESS");
 
                 // Finish up Serie
-                if(elementInfoSerie.Title.length() > 0)
+                if(elementInfoSerie.Title.length() > 0) { // Only insert serie if it has a name!
                     elementInfoSerie.needsUpdate = false;
-                if(((Database)get("Database")).getSerieByTheTvDbId(elementInfoSerie.TheTvDbId) == null)
-                    ((Database)get("Database")).add(elementInfoSerie);
+
+                    if(((Database)get("Database")).getSerieByTheTvDbId(elementInfoSerie.TheTvDbId) == null)
+                        ((Database)get("Database")).add(elementInfoSerie);
+                }
                 _notify("DB_REFRESH");
 
                 //Arts().download(elementInfo)
@@ -345,7 +361,9 @@ public final class Controller extends Notifier {
 
             }
         }
-        
+
+        databaseSave();
+
         _notify("DB_REFRESH");
     }
 

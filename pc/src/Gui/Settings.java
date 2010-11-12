@@ -11,15 +11,22 @@
 
 package Gui;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -30,6 +37,8 @@ import valerie.controller.ConfPaths;
 import valerie.controller.Controller;
 import valerie.controller.Notification;
 import valerie.tools.BoxInfo;
+import valerie.tools.Path;
+import valerie.tools.Path.eContains;
 
 /**
  *
@@ -388,15 +397,22 @@ public class Settings extends javax.swing.JDialog {
         jTableImportManagment.setBackground(resourceMap.getColor("jTableImportManagment.background")); // NOI18N
         jTableImportManagment.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null}
+                {null, null}
             },
             new String [] {
-                "Path"
+                "Path", "Contains"
             }
         ) {
-            boolean[] canEdit = new boolean [] {
-                false
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Object.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
@@ -406,6 +422,7 @@ public class Settings extends javax.swing.JDialog {
         jTableImportManagment.setOpaque(false);
         jScrollPane2.setViewportView(jTableImportManagment);
         jTableImportManagment.getColumnModel().getColumn(0).setHeaderValue(resourceMap.getString("jTableImportManagment.columnModel.title0")); // NOI18N
+        jTableImportManagment.getColumnModel().getColumn(1).setHeaderValue(resourceMap.getString("jTableImportManagment.columnModel.title1")); // NOI18N
 
         jButton3.setFont(resourceMap.getFont("jButton3.font")); // NOI18N
         jButton3.setText(resourceMap.getString("jButton3.text")); // NOI18N
@@ -811,6 +828,7 @@ public class Settings extends javax.swing.JDialog {
         }
     }
 
+    private LinkedList<Path> WorkPathMovies = null;
     private void showTabImportManagment(eStatus status) {
 
         switch(status) {
@@ -826,17 +844,24 @@ public class Settings extends javax.swing.JDialog {
             case UPDATE:
                 ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(WorkPathMovies.size());
                 int iteratorMovies = 0;
-                for(String pathMovies : WorkPathMovies) {
-                    jTableImportManagment.setValueAt(pathMovies, iteratorMovies++, 0);
+                for(Path pathMovies : WorkPathMovies) {
+                    
+                    jTableImportManagment.setValueAt(pathMovies.path, iteratorMovies, 0);
+                    jTableImportManagment.setValueAt(pathMovies.type, iteratorMovies, 1);
+                    
+                    iteratorMovies++;
                 }
                 break;
 
             case LOAD:
-                String[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
-                WorkPathMovies.clear();
-                for(String path : paths)
-                    if(path != null && path.length() > 0)
-                        WorkPathMovies.add(path);
+                if(WorkPathMovies == null) {
+                    WorkPathMovies = new LinkedList<Path>();
+                    Path[] paths = ((ConfPaths)pController.get("ConfPaths")).getPaths();
+                    WorkPathMovies.clear();
+                    for(Path path : paths)
+                        if(path != null && path.path.length() > 0)
+                            WorkPathMovies.add(path);
+                }
 
                 showTabImportManagment(eStatus.UPDATE);
 
@@ -849,7 +874,11 @@ public class Settings extends javax.swing.JDialog {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         if(jTableImportManagment.getRowCount() > 0) {
                             String pathToDelete = jTableImportManagment.getValueAt(jTableImportManagment.getSelectedRow(), jTableImportManagment.getSelectedColumn()).toString();
-                            WorkPathMovies.remove(pathToDelete);
+                            for(Path p : WorkPathMovies) {
+                                if(pathToDelete.equals(p.path)) {
+                                    WorkPathMovies.remove(p);
+                                }
+                            }
                             
                             showTabImportManagment(eStatus.UPDATE);
                         }
@@ -864,21 +893,90 @@ public class Settings extends javax.swing.JDialog {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
                         String pathToAdd = JOptionPane.showInputDialog("New Directory:");
                         if(pathToAdd != null && pathToAdd.length() > 0) {
-                            if(!WorkPathMovies.contains(pathToAdd))
-                            WorkPathMovies.add(pathToAdd);
+                            boolean found = false;
+                            for(Path p : WorkPathMovies) {
+                                if(pathToAdd.startsWith(p.path)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if(!found)
+                                WorkPathMovies.add(new Path(pathToAdd));
 
                             showTabImportManagment(eStatus.UPDATE);
                         }
                     }
                 });
 
+                //---
+
+                jTableImportManagment.getSelectionModel().addListSelectionListener( new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e) {
+                        WorkPathMovies.clear();
+                        int rowc = jTableImportManagment.getRowCount();
+                        for(int i = 0; i < rowc; i++) {
+                            String path = "";
+                            path += jTableImportManagment.getModel().getValueAt(i, 0).toString();
+                            path += "|";
+                            path += jTableImportManagment.getModel().getValueAt(i, 1).toString();
+                            WorkPathMovies.add(new Path(path));
+                        }
+
+                        showTabImportManagment(eStatus.UPDATE);
+                    }
+                });
+
+
+                //---
+
+                // These are the combobox values
+                Object[] values = eContains.values();//new String[]{"item1", "item2", "item3"};
+
+                // Set the combobox editor on the 1st visible column
+                int vColIndex = 1;
+                TableColumn col = jTableImportManagment.getColumnModel().getColumn(vColIndex);
+                col.setCellEditor(new MyComboBoxEditor(values));
+
+                // If the cell should appear like a combobox in its
+                // non-editing state, also set the combobox renderer
+                col.setCellRenderer(new MyComboBoxRenderer(values));
+
+
                 break;
 
             case SAVE:
-                ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new String[1]));
-                ((ConfPaths)pController.get("ConfPaths")).save();
-
+                if(WorkPathMovies != null) {
+                    ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new Path[1]));
+                    ((ConfPaths)pController.get("ConfPaths")).save();
+                }
                 break;
+        }
+    }
+
+    public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer {
+        public MyComboBoxRenderer(Object[] items) {
+            super(items);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                super.setBackground(table.getSelectionBackground());
+            } else {
+                setForeground(table.getForeground());
+                setBackground(table.getBackground());
+            }
+
+            // Select the current value
+            setSelectedItem(value);
+            return this;
+        }
+    }
+
+    public class MyComboBoxEditor extends DefaultCellEditor {
+        public MyComboBoxEditor(Object[] items) {
+            super(new JComboBox(items));
         }
     }
 
@@ -987,5 +1085,5 @@ public class Settings extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldFilter;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
-    private LinkedList<String> WorkPathMovies = new LinkedList<String>();
+    
 }

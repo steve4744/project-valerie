@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import valerie.MediaInfo;
+import valerie.tools.DebugOutput;
 
 /**
  *
@@ -75,15 +76,33 @@ public class ImdbProvider {
             String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
             pageHtml = new valerie.tools.WebGrabber().getText(new URL(apiSearch + urlTitle));
-       } catch (Exception ex) {}
+       } catch (Exception ex) {
+           DebugOutput.printl("Download failed!");
+           DebugOutput.printl(ex.getMessage());
+       }
 
-       if (pageHtml == null)
-            return;
-       Pattern pDetails = Pattern.compile("<title>.+?\\(\\d{4}[\\/IVX]*\\).*?</title>.+</body>");
+       if (pageHtml == null) {
+           DebugOutput.printl("No page has been returned");
+           return;
+        }
+       //Pattern pDetails = Pattern.compile("<title>.+?\\(\\d{4}[\\/IVX]*\\).*?</title>.+</body>");
+       Pattern pDetails = Pattern.compile("content=\"http://www.imdb.com/title/tt\\d*/\" />");
        Matcher mDetails = pDetails.matcher(pageHtml);
        if(mDetails.find()) {
            //Details Screen!
-           parseDetailsScreen(mediaInfo, pageHtml/*mDetails.group()*/);
+           String details = mDetails.group();
+           Pattern pImdbId = Pattern.compile("/title/tt\\d*/");
+            Matcher mImdbId = pImdbId.matcher(details);
+            if(mImdbId.find()) {
+                String sImdbId = mImdbId.group();
+                sImdbId = sImdbId.replaceAll("/title/", "");
+                sImdbId = sImdbId.replaceAll("/", "");
+
+                mediaInfo.ImdbId = sImdbId;
+                getMoviesByImdbId(mediaInfo);
+            }
+           //parseDetailsScreen(mediaInfo, pageHtml/*mDetails.group()*/);
+
        } else {
            //Check if its the search result screen
            Pattern pSearchResult = Pattern.compile("<title>IMDb Title Search</title>");
@@ -330,12 +349,18 @@ public class ImdbProvider {
                 String title = group.replaceAll("title=\"", "");
                 title = title.substring(0, title.length()-1).trim();
 
+
+                title = title.replaceAll("[\\.]", "");
                 info.Title = title;
             }
         }
 
-        //alternatives
         info.AlternativesCount = 0;
+        info.AlternativImdbs[info.AlternativesCount]  = info.ImdbId;
+        info.AlternativTitles[info.AlternativesCount] = info.Title;
+        info.AlternativesCount++;
+
+        //alternatives
         while(mMovies.find() && info.AlternativesCount < MediaInfo.alternativesMax) {
             String sMovie = mMovies.group();
 
@@ -356,11 +381,17 @@ public class ImdbProvider {
                 sTitle = sTitle.replaceAll("title=\"", "");
                 sTitle = sTitle.substring(0, sTitle.length()-1).trim();
 
+                sTitle = sTitle.replaceAll("[\\.]", "");
                 info.AlternativTitles[info.AlternativesCount] = sTitle;
             }
 
             info.AlternativesCount++;
         }
+
+        // Workaround for imdb, it seems that for some shows there is an POINT at the end of the title
+        // e.g. http://www.imdb.com/title/tt1442464/
+
+
 
         if(!info.Title.toLowerCase().equals(info.SearchString.toLowerCase())) {
             for(int i = 0; i < info.AlternativesCount; i++) {

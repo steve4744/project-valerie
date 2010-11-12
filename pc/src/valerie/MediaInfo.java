@@ -25,7 +25,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public boolean isArchiv = false;
     public boolean needsUpdate = false;
 
-    public boolean isMovie = true;
+    public boolean isMovie = false;
     public boolean isSerie = false;
     public boolean isEpisode = false;
     
@@ -151,7 +151,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
     }
 
 
-    public void parse(Controller pController) {
+    public boolean parse(Controller pController) {
         String absFilename = this.Path + "/" + this.Filename + "." + this.Extension;
         String name = this.Filename.toLowerCase();
         this.SearchString = name;
@@ -171,11 +171,15 @@ public class MediaInfo implements Comparable<MediaInfo>{
             this.ImdbId = m.group();
 
         //###
-        m = Pattern.compile("\\s\\d{4}\\s").matcher(name);
+        m = Pattern.compile("\\s\\d{4}\\s").matcher(this.SearchString);
         if (m.find()) {
-            int year = Integer.valueOf(m.group().trim());
+            String strYear = m.group().trim();
+            int year = Integer.valueOf(strYear);
             if (year > 1940 && year < 2012) {
                 this.Year = year;
+
+                // removing year from searchstring
+                this.SearchString = this.SearchString.replaceAll(strYear, " ");
                 //this.SearchString = name.substring(0, m.start());
                 }
         }
@@ -217,138 +221,139 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //#####
         //#####  s03e05
         //#####
-
-        if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\Ws\\d+\\s?e\\d+(\\D|$)").matcher(this.SearchString);
-            if (m.find()) {
-                this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
-                this.isMovie = false;
-                String group = m.group();
-                m = Pattern.compile("s\\d+").matcher(group.trim());
+        if(!this.isMovie) {
+            if (this.Season == -1 || this.Episode == -1) {
+                m = Pattern.compile("\\Ws\\d+\\s?e\\d+(\\D|$)").matcher(this.SearchString);
                 if (m.find()) {
-                    this.Season = Integer.valueOf(m.group().substring(1).trim());
+                    this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
+                    this.isMovie = false;
+                    String group = m.group();
+                    m = Pattern.compile("s\\d+").matcher(group.trim());
+                    if (m.find()) {
+                        this.Season = Integer.valueOf(m.group().substring(1).trim());
+                    }
+                    m = Pattern.compile("e\\d+").matcher(group.trim());
+                    if (m.find()) {
+                        this.Episode = Integer.valueOf(m.group().substring(1).trim());
+                    }
+
+                    this.SearchString = this.SearchString.replaceAll("s\\d+\\s?e\\d+.*", " ");
                 }
-                m = Pattern.compile("e\\d+").matcher(group.trim());
-                if (m.find()) {
-                    this.Episode = Integer.valueOf(m.group().substring(1).trim());
-                }
-
-                this.SearchString = this.SearchString.replaceAll("s\\d+\\s?e\\d+.*", " ");
-            }
-        }
-
-        //#####
-        //#####  s03e05e06 s03e05-e06
-        //#####
-
-        if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\Ws(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+)(\\D|$)").matcher(this.SearchString);
-            if (m.find()) {
-                this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
-                this.isMovie = false;
-                String group = m.group();
-                m = Pattern.compile("s\\d+").matcher(group.trim());
-                if (m.find()) {
-                    this.Season = Integer.valueOf(m.group().substring(1).trim());
-                }
-                m = Pattern.compile("e\\d+").matcher(group.trim());
-                if (m.find()) {
-                    this.Episode = Integer.valueOf(m.group().substring(1).trim());
-                }
-
-                this.SearchString = this.SearchString.replaceAll("s(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+).*", " ");
-            }
-        }
-
-        //#####
-        //#####  3x05
-        //#####
-
-        if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\D\\d+x\\d+(\\D|$)").matcher(this.SearchString);
-            if (m.find()) {
-                this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
-                this.isMovie = false;
-
-                String group = m.group();
-                m = Pattern.compile("\\d+x").matcher(group);
-                if (m.find()) {
-                    this.Season = Integer.valueOf(m.group().substring(0, m.group().length()-1).trim());
-                }
-
-                m = Pattern.compile("x\\d+").matcher(group);
-                if (m.find()) {
-                    this.Episode = Integer.valueOf(m.group().substring(1).trim());
-                }
-
-                this.SearchString = this.SearchString.replaceAll("\\d+x\\d+.*", " ");
-            }
-        }
-
-        //#####
-        //#####  part 3
-        //#####
-
-        if (this.Season == -1 || this.Episode == -1) {
-            m = Pattern.compile("\\W(part|pt)\\s?\\d+(\\D|$)").matcher(this.SearchString);
-            if (m.find()) {
-                this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
-                this.isMovie = false;
-
-                this.Season = 0;
-                String group = m.group();
-                m = Pattern.compile("\\s?\\d+").matcher(group);
-                if (m.find()) {
-                    this.Episode = Integer.valueOf(m.group().trim());
-                }
-
-                this.SearchString = this.SearchString.replaceAll("(part|pt)\\s?\\d+.*", " ");
-            }
-        }
-
-        //#####
-        //#####  305
-        //#####
-
-        if (this.Season == -1 || this.Episode == -1) {
-
-            String nameConverted = "";
-            Character prevc = 'a';
-            for (Character c : this.SearchString.toCharArray()) {
-                if ((Character.isDigit(prevc) && Character.isDigit(c)) || (Character.isDigit(prevc) == false && Character.isDigit(c) == false))
-                    nameConverted += c;
-                else
-                    nameConverted += " " + c;
-                prevc = c;
             }
 
-            //print "[[[ ", nameConverted.encode('latin-1')
+            //#####
+            //#####  s03e05e06 s03e05-e06
+            //#####
 
-            nameConverted = nameConverted.trim();
-
-            m = Pattern.compile("\\D\\d{3,4}(\\W|$)").matcher(nameConverted);
-            if (m.find()) {
-                int se = -1;
-                int s = -1;
-                int e = -1;
-
-                String group = m.group();
-                m = Pattern.compile("\\D\\d{3,4}").matcher(group);
+            if (this.Season == -1 || this.Episode == -1) {
+                m = Pattern.compile("\\Ws(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+)(\\D|$)").matcher(this.SearchString);
                 if (m.find()) {
-                    se = Integer.valueOf(m.group().trim());
+                    this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
+                    this.isMovie = false;
+                    String group = m.group();
+                    m = Pattern.compile("s\\d+").matcher(group.trim());
+                    if (m.find()) {
+                        this.Season = Integer.valueOf(m.group().substring(1).trim());
+                    }
+                    m = Pattern.compile("e\\d+").matcher(group.trim());
+                    if (m.find()) {
+                        this.Episode = Integer.valueOf(m.group().substring(1).trim());
+                    }
+
+                    this.SearchString = this.SearchString.replaceAll("s(\\d+)\\s?e(\\d+)[-]?\\s?e?(\\d+).*", " ");
                 }
+            }
 
-                s = se / 100;
-                e = se % 100;
+            //#####
+            //#####  3x05
+            //#####
 
-                if ((s == 2 && e == 64 || s == 7 && e == 20 || s == 10 && e == 80 || s == 0 || s == 19 && e >= 40 || s == 20 && e <= 14) == false) {
+            if (this.Season == -1 || this.Episode == -1) {
+                m = Pattern.compile("\\D\\d+x\\d+(\\D|$)").matcher(this.SearchString);
+                if (m.find()) {
                     this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
                     this.isMovie = false;
 
-                    this.Season = s;
-                    this.Episode = e;
+                    String group = m.group();
+                    m = Pattern.compile("\\d+x").matcher(group);
+                    if (m.find()) {
+                        this.Season = Integer.valueOf(m.group().substring(0, m.group().length()-1).trim());
+                    }
 
-                    this.SearchString = nameConverted.replaceAll("\\d{3,4}.*", " ");
+                    m = Pattern.compile("x\\d+").matcher(group);
+                    if (m.find()) {
+                        this.Episode = Integer.valueOf(m.group().substring(1).trim());
+                    }
+
+                    this.SearchString = this.SearchString.replaceAll("\\d+x\\d+.*", " ");
+                }
+            }
+
+            //#####
+            //#####  part 3
+            //#####
+
+            if (this.Season == -1 || this.Episode == -1) {
+                m = Pattern.compile("\\W(part|pt)\\s?\\d+(\\D|$)").matcher(this.SearchString);
+                if (m.find()) {
+                    this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
+                    this.isMovie = false;
+
+                    this.Season = 0;
+                    String group = m.group();
+                    m = Pattern.compile("\\s?\\d+").matcher(group);
+                    if (m.find()) {
+                        this.Episode = Integer.valueOf(m.group().trim());
+                    }
+
+                    this.SearchString = this.SearchString.replaceAll("(part|pt)\\s?\\d+.*", " ");
+                }
+            }
+
+            //#####
+            //#####  305
+            //#####
+
+            if (this.Season == -1 || this.Episode == -1) {
+
+                String nameConverted = "";
+                Character prevc = 'a';
+                for (Character c : this.SearchString.toCharArray()) {
+                    if ((Character.isDigit(prevc) && Character.isDigit(c)) || (Character.isDigit(prevc) == false && Character.isDigit(c) == false))
+                        nameConverted += c;
+                    else
+                        nameConverted += " " + c;
+                    prevc = c;
+                }
+
+                //print "[[[ ", nameConverted.encode('latin-1')
+
+                nameConverted = nameConverted.trim();
+
+                m = Pattern.compile("\\D\\d{3,4}(\\W|$)").matcher(nameConverted);
+                if (m.find()) {
+                    int se = -1;
+                    int s = -1;
+                    int e = -1;
+
+                    String group = m.group();
+                    m = Pattern.compile("\\D\\d{3,4}").matcher(group);
+                    if (m.find()) {
+                        se = Integer.valueOf(m.group().trim());
+                    }
+
+                    s = se / 100;
+                    e = se % 100;
+
+                    if ((s == 2 && e == 64 || s == 7 && e == 20 || s == 10 && e == 80 || s == 0 || s == 19 && e >= 40 || s == 20 && e <= 14) == false) {
+                        this.isEpisode = true; //this.isSerie = true; OK FOR BOX BUT NOT HERE
+                        this.isMovie = false;
+
+                        this.Season = s;
+                        this.Episode = e;
+
+                        this.SearchString = nameConverted.replaceAll("\\d{3,4}.*", " ");
+                    }
                 }
             }
         }
@@ -356,14 +361,19 @@ public class MediaInfo implements Comparable<MediaInfo>{
         if (this.Extension.equals("ts") && this.isEnigma2Recording(pController, absFilename) == true) {
             this.SearchString = this.getEnigma2RecordingName(pController, absFilename).trim();
             //print ":: ", self.SearchString.encode('latin-1')
-            return;
+            return true;
         }
 
         if (this.isValerieInfoAvailable(pController, this.Path) == true) {
             this.SearchString = this.getValerieInfo(pController, this.Path).trim();
+            if(this.SearchString.equals("ignore"))
+                return false;
             //print ":: ", self.SearchString.encode('latin-1')
-            return;
+            return true;
         }
+
+        if(!this.isEpisode)
+            this.isMovie = true;
 
         //#print ":1: ", self.SearchString
         //### Replacements POST
@@ -384,6 +394,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
         this.SearchString = this.SearchString.trim();
         //print ":3: ", self.SearchString.encode('latin-1')
+
+        return true;
     }
 
 

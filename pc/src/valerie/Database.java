@@ -287,7 +287,7 @@ public class Database {
     public MediaInfo[] getEpisodeAsArray(String thetvdbId) {
         ArrayList<MediaInfo> vector = new ArrayList<MediaInfo>();
         for(Object element : DB.values()) {
-            if(((MediaInfo)element).isEpisode && ((MediaInfo) element).TheTvDbId.equals(((MediaInfo) element).TheTvDbIdNull))
+            if(((MediaInfo)element).isEpisode && ((MediaInfo) element).TheTvDbId.equals(thetvdbId))
                 vector.add((MediaInfo)element);
         }
 
