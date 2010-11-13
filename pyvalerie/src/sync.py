@@ -160,7 +160,7 @@ class pyvalerie(Thread):
 			path = p[0]
 			if len(p) > 1:
 				type = p[1]
-			else
+			else:
 				type = "MOVIE_AND_TV"
 			
 			if os.path.isdir(path):
