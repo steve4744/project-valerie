@@ -78,6 +78,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			
 			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_yellow" render="Label" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
 			<widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
 			
 			<widget name="pathsList" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
@@ -95,14 +96,18 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			path = path.strip()
 			p = path.split('|')
 			path = p[0]
-			type = p[1] 
+			if len(p) > 1:
+				type = p[1]
+			else:
+				type = "MOVIE_AND_TV"
+			
 			if len(path) > 0 and path[0] != '#':
-				self.pathsList.append(path)
+				self.pathsList.append((path + " [" + type + "]", path, type))
 		fconf.close()
 		
 		self["key_red"] = StaticText(_("Remove"))
 		self["key_green"] = StaticText(_("Add"))
-		#self["key_yellow"] = StaticText("")
+		self["key_yellow"] = StaticText("Toggle Type")
 		self["key_blue"] = StaticText(_("Save"))
 		self["pathsList"] = MenuList(self.pathsList)
 		
@@ -111,13 +116,14 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			"cancel": self.exit,
 			"red": self.remove,
 			"green": self.add,
+			"yellow": self.toggleType,
 			"blue": self.save,
 		}, -1)
 	
 	def remove(self):
 		print "remove"
 		entry = self["pathsList"].l.getCurrentSelection()
-		print "entry: " + entry
+		print "entry: ", entry
 		self.pathsList.remove(entry)
 		self["pathsList"].l.setList(self.pathsList)
 	
@@ -130,15 +136,32 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		if path is not None:
 			print path
 			if path not in self.pathsList:
-				self.pathsList.append(path)
+				type = "MOVIE_AND_TV"
+				self.pathsList.append((path + " [" + type + "]", path, type))
 				self["pathsList"].l.setList(self.pathsList)
 	
+	def toggleType(self):
+		entry = self["pathsList"].l.getCurrentSelection()
+		print "entrySrc: ", entry
+		index = self.pathsList.index(entry)
+		print "index: ", index
+		#self.pathsList.remove(entry)
+		if entry[2] == "MOVIE_AND_TV":
+			entry = (entry[1] + " [MOVIE]", entry[1], "MOVIE")
+		elif entry[2] == "MOVIE":
+			entry = (entry[1] + " [TV]", entry[1], "TV")
+		elif entry[2] == "TV":
+			entry = (entry[1] + " [MOVIE_AND_TV]", entry[1], "MOVIE_AND_TV")
+		print "entryDst: ", entry
+		self.pathsList[index] = entry
+		self["pathsList"].l.setList(self.pathsList)
+		
 	def save(self):
 		print "save"
 		fconf = open("/hdd/valerie/paths.conf", "w")
 		fconf.write(self.filetypes + "\n")
 		for entry in self.pathsList:
-			fconf.write(entry + "\n")
+			fconf.write(entry[1] + "|" + entry[2] + "\n")
 		fconf.close()
 		
 		self.exit()
