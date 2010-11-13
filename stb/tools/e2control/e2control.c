@@ -271,6 +271,7 @@ void * tcpRequests(void * none)
 					{
 						printThis("Sending %d Bytes\n", iSendBufferCounter);
 						write(fdd, p_bSendBuffer, iSendBufferCounter);
+						flush(fdd);
 						
 						iSendBufferCounter = 0;
 					}
