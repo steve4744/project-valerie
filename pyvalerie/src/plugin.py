@@ -93,6 +93,9 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		print self.filetypes
 		for path in fconf.readlines(): 
 			path = path.strip()
+			p = path.split('|')
+			path = p[0]
+			type = p[1] 
 			if len(path) > 0 and path[0] != '#':
 				self.pathsList.append(path)
 		fconf.close()
