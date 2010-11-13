@@ -211,7 +211,7 @@ class MediaInfo(object):
                   self.isMovie = False
                   
                   self.Season = int(m.group("season"))
-                    self.Episode = int(m.group("episode"))
+                  self.Episode = int(m.group("episode"))
                   
                   self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', " ", self.SearchString)
           
