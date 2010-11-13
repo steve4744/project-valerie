@@ -207,7 +207,7 @@ class pyvalerie(Thread):
 				
 				if type == "MOVIE":
 					elementInfo.isMovie = True
-				else type == "TV":
+				elif type == "TV":
 					elementInfo.isSerie = True
 				
 				elementInfo.parse()
