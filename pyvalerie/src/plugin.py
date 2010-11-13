@@ -185,7 +185,7 @@ class ProjectValerieSyncSettings(Screen):
 	
 	def remove(self, file):
 		try:
-			os.remove(temp)
+			os.remove(file)
 		except os.error:
 			pass
 	
