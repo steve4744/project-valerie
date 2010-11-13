@@ -198,7 +198,7 @@ class MediaInfo(object):
         
         #nameConverted = name
         
-        if isMovie is False:
+        if self.isMovie is False:
           
           #####
           #####  s03e05
