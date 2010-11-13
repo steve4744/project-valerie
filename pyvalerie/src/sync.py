@@ -16,6 +16,107 @@ from Database import Database
 from WebGrabber import WebGrabber
 import replace
 
+def checkDefaults():
+	try: 
+		print("Check "+"/hdd/valerie")
+		os.makedirs("/hdd/valerie") 
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	try: 
+		print("Check "+"/hdd/valerie/cache")
+		os.makedirs("/hdd/valerie/cache") 
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	try: 
+		print("Check "+"/hdd/valerie/media")
+		os.makedirs("/hdd/valerie/media")
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
+	
+	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
+		self.output("Check defaultbackdrop.m1v - Missing -> Downloading")
+		WebGrabber().grabFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
+	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
+		self.output("Check defaultposter.png - Missing -> Downloading")
+		WebGrabber().grabFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
+	
+	try: 
+		print("Check "+"/hdd/valerie/episodes")
+		os.makedirs("/hdd/valerie/episodes")
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	###
+	
+	try:
+		print("Check "+"/hdd/valerie/valerie.conf")
+		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
+			self.output("Check valerie.conf - Missing -> Downloading")
+			WebGrabber().grabFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
+			print(" - Created\n")
+		else:
+			print(" - OK\n")
+	except Exception:
+		print(" - ERROR\n")
+		
+		
+	try:
+		print("Check "+"/hdd/valerie/pre.conf")
+		if os.path.isfile("/hdd/valerie/pre.conf") is False:
+			self.output("Check pre.conf - Missing -> Downloading")
+			WebGrabber().grabFile(DEFAULTURL+"pre.conf", "../pre.conf")
+			print(" - Created\n")
+		else:
+			print(" - OK\n")
+	except Exception:
+		print(" - ERROR\n")
+	
+	try:
+		print("Check "+"/hdd/valerie/post_movie.conf")
+		if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
+			self.output("Check post_movie.conf - Missing -> Downloading")
+			WebGrabber().grabFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
+			print(" - Created\n")
+		else:
+			print(" - OK\n")
+	except Exception:
+		print(" - ERROR\n")
+	
+	try:
+		print("Check "+"/hdd/valerie/post_tv.conf")
+		if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
+			self.output("Check post_tv.conf - Missing -> Downloading")
+			WebGrabber().grabFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
+			print(" - Created\n")
+		else:
+			print(" - OK\n")
+	except Exception:
+		print(" - ERROR\n")
+	
+	try:
+		print("Check "+"/hdd/valerie/paths.conf")
+		if os.path.isfile("/hdd/valerie/paths.conf") is False:
+			self.output("Check paths.conf - Missing -> Downloading")
+			WebGrabber().grabFile(DEFAULTURL+"paths.conf", "../paths.conf")
+			print(" - Created\n")
+		else:
+			print(" - OK\n")
+	except Exception:
+		print(" - ERROR\n")
+	
+
 class pyvalerie(Thread):
 	def __init__ (self, output, progress, range, info):
 		Thread.__init__(self)
@@ -32,60 +133,6 @@ class pyvalerie(Thread):
 		
 		self.output("Loading Config")
 		
-		try: 
-			print("Check "+"/hdd/valerie")
-			os.makedirs("/hdd/valerie") 
-		except OSError, e:
-			print(" - OK\n")
-		else:
-			print(" - Created\n")
-		
-		try: 
-			print("Check "+"/hdd/valerie/cache")
-			os.makedirs("/hdd/valerie/cache") 
-		except OSError, e:
-			print(" - OK\n")
-		else:
-			print(" - Created\n")
-		
-		try: 
-			print("Check "+"/hdd/valerie/media")
-			os.makedirs("/hdd/valerie/media")
-		except OSError, e:
-			print(" - OK\n")
-		else:
-			print(" - Created\n")
-		
-		DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
-		
-		if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
-			self.output("Check defaultbackdrop.m1v - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
-		if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
-			self.output("Check defaultposter.png - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
-		
-		try: 
-			print("Check "+"/hdd/valerie/episodes")
-			os.makedirs("/hdd/valerie/episodes")
-		except OSError, e:
-			print(" - OK\n")
-		else:
-			print(" - Created\n")
-		
-		###
-		
-		try:
-			print("Check "+"/hdd/valerie/valerie.conf")
-			if os.path.isfile("/hdd/valerie/valerie.conf") is False:
-				self.output("Check valerie.conf - Missing -> Downloading")
-				WebGrabber().grabFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
-				print(" - Created\n")
-			else:
-				print(" - OK\n")
-		except Exception:
-			print(" - ERROR\n")
-		
 		Config.load()
 		
 		###
@@ -96,38 +143,7 @@ class pyvalerie(Thread):
 		
 		###
 		
-		try:
-			print("Check "+"/hdd/valerie/pre.conf")
-			if os.path.isfile("/hdd/valerie/pre.conf") is False:
-				self.output("Check pre.conf - Missing -> Downloading")
-				WebGrabber().grabFile(DEFAULTURL+"pre.conf", "../pre.conf")
-				print(" - Created\n")
-			else:
-				print(" - OK\n")
-		except Exception:
-			print(" - ERROR\n")
 		
-		try:
-			print("Check "+"/hdd/valerie/post_movie.conf")
-			if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
-				self.output("Check post_movie.conf - Missing -> Downloading")
-				WebGrabber().grabFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
-				print(" - Created\n")
-			else:
-				print(" - OK\n")
-		except Exception:
-			print(" - ERROR\n")
-		
-		try:
-			print("Check "+"/hdd/valerie/post_tv.conf")
-			if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
-				self.output("Check post_tv.conf - Missing -> Downloading")
-				WebGrabber().grabFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
-				print(" - Created\n")
-			else:
-				print(" - OK\n")
-		except Exception:
-			print(" - ERROR\n")
 		
 		self.output("Loading Replacements")
 		replace.load()
@@ -135,16 +151,7 @@ class pyvalerie(Thread):
 		###
 		
 		# Check default config
-		try:
-			print("Check "+"/hdd/valerie/paths.conf")
-			if os.path.isfile("/hdd/valerie/paths.conf") is False:
-				self.output("Check paths.conf - Missing -> Downloading")
-				WebGrabber().grabFile(DEFAULTURL+"paths.conf", "../paths.conf")
-				print(" - Created\n")
-			else:
-				print(" - OK\n")
-		except Exception:
-			print(" - ERROR\n")
+
 		
 		self.output("Searching for media files")
 		fconf = open("/hdd/valerie/paths.conf", "r")

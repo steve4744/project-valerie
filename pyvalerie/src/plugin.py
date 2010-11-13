@@ -180,6 +180,12 @@ class ProjectValerieSyncSettings(Screen):
 			"cancel": self.cancel
 		}, -1)
 	
+	def remove(self, file):
+		try:
+			os.remove(temp)
+		except os.error:
+			pass
+	
 	def ok(self):
 		print "ok"
 		returnValue = self["settingsMenu"].l.getCurrentSelection()[1]
@@ -192,13 +198,13 @@ class ProjectValerieSyncSettings(Screen):
 			elif returnValue == "delArts":
 				self.removeDir("/hdd/valerie/media")
 			elif returnValue == "delDb":
-				os.remove("/hdd/valerie/moviedb.txt")
-				os.remove("/hdd/valerie/seriesdb.txt")
+				self.remove("/hdd/valerie/moviedb.txt")
+				self.remove("/hdd/valerie/seriesdb.txt")
 				self.removeDir("/hdd/valerie/episodes")
 			elif returnValue == "resetFl":
-				os.remove("/hdd/valerie/pre.conf")
-				os.remove("/hdd/valerie/post_movie.conf")
-				os.remove("/hdd/valerie/post_tv.conf")
+				self.remove("/hdd/valerie/pre.conf")
+				self.remove("/hdd/valerie/post_movie.conf")
+				self.remove("/hdd/valerie/post_tv.conf")
 			elif returnValue == "exit":
 				self.cancel()
 	
@@ -209,9 +215,12 @@ class ProjectValerieSyncSettings(Screen):
 	def removeDir(self, dir):
 		for root, dirs, files in os.walk(dir, topdown=False):
 			for name in files:
-				os.remove(os.path.join(root, name))
+				self.remove(os.path.join(root, name))
 			for name in dirs:
-				os.rmdir(os.path.join(root, name))
+				try:
+					os.rmdir(os.path.join(root, name))
+				except os.error:
+					pass
 
 class ProjectValerieSync(Screen):
 	skin = """
@@ -259,6 +268,13 @@ class ProjectValerieSync(Screen):
 		}, -1)
 		
 		self.linecount = 40
+		
+		self.onFirstExecBegin.append(self.checkDefaults)
+	
+	def checkDefaults(self):
+		from sync import checkDefaults as SyncCheckDefaults
+		SyncCheckDefaults()
+		
 	
 	def menu(self):
 		self.session.open(ProjectValerieSyncSettings)
