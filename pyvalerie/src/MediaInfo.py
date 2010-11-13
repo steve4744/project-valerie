@@ -314,7 +314,7 @@ class MediaInfo(object):
             return True
         
         if self.isSerie == False:
-            this.isMovie = True
+            self.isMovie = True
         
         #print ":1: ", self.SearchString
         ### Replacements POST
