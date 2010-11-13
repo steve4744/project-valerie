@@ -166,6 +166,8 @@ class MediaInfo(object):
             year = int(m.group("year"))
             if year > 1940 and year < 2012:
                 self.Year = year
+                # removing year from searchstring
+                self.SearchString = re.sub(str(year), " ", self.SearchString)
                 #self.SearchString = name[:m.start()]
         
         #print ":0: ", self.SearchString
@@ -302,12 +304,17 @@ class MediaInfo(object):
         if self.Extension == "ts" and self.isEnigma2Recording(absFilename) is True:
             self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
             print ":: ", self.SearchString.encode('latin-1')
-            return
+            return True
         
         if self.isValerieInfoAvailable(self.Path) is True:
             self.SearchString = self.getValerieInfo(self.Path).strip()
             print ":: ", self.SearchString.encode('latin-1')
-            return
+            if self.SearchString == "ignore":
+                return False
+            return True
+        
+        if self.isSerie == False:
+            this.isMovie = True
         
         #print ":1: ", self.SearchString
         ### Replacements POST
@@ -328,6 +335,8 @@ class MediaInfo(object):
         self.SearchString = self.SearchString.strip()
         print ":3: ", self.SearchString.encode('latin-1')
         
+        return True
+    
     def __str__(self):
         ustr = unicode(self.Path) + " / " + unicode(self.Filename) + " . " + unicode(self.Extension)
         print type(ustr)
@@ -378,7 +387,10 @@ class MediaInfo(object):
                 self.Title = value
                 
             elif key == "Year":
-                self.Year = int(value)
+                if len(value) > 0:
+                    self.Year = int(value)
+                else:
+                    self.Year = 0
                 
             elif key == "Path":
                 self.Path, self.Filename = value.rsplit("/", 1)
@@ -388,15 +400,24 @@ class MediaInfo(object):
             elif key == "Plot":
                 self.Plot = value
             elif key == "Runtime":
-                self.Runtime = int(value)  
+                if len(value) > 0:
+                    self.Runtime = int(value)
+                else:
+                    self.Runtime = 0
             elif key == "Tag":
                 self.TagLine = value  
             elif key == "Popularity":
                 self.Popularity = value  
             elif key == "Season":
-                self.Season = int(value)  
+                if len(value) > 0:
+                    self.Season = int(value)
+                else:
+                    self.Season = 0
             elif key == "Episode":
-                self.Episode = int(value)
+                if len(value) > 0:
+                    self.Episode = int(value)
+                else:
+                    self.Episode = 0
             
             
 
