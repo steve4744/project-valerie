@@ -13,7 +13,7 @@ def getBoxtype():
 	file.close()
 	manu = "Unknown"
 	model = box #"UNKNOWN" # Fallback to internal string
-	arch = "sh4"
+	arch = "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
 	version = ""
 	if box == "ufs910":
 		manu = "Kathrein"
