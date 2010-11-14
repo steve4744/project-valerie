@@ -12,7 +12,7 @@ def getBoxtype():
 	box = file.readline().strip()
 	file.close()
 	manu = "Unknown"
-	model = "UNKNOWN"
+	model = box #"UNKNOWN" # Fallback to internal string
 	arch = "sh4"
 	version = ""
 	if box == "ufs910":
@@ -34,6 +34,10 @@ def getBoxtype():
 	elif box == "dm800":
 		manu = "Dreambox"
 		model = "800"
+		arch = "mipsel"
+	elif box == "dm800se":
+		manu = "Dreambox"
+		model = "800se"
 		arch = "mipsel"
 	elif box == "dm8000":
 		manu = "Dreambox"
