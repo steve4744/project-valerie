@@ -21,7 +21,7 @@ defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectVale
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultSkin             = "default"
 defaultURL              = "http://www.duckbox.info/valerie/"
-defaultUpdateXML        = "update.xml"
+defaultUpdateXML        = "update.php"
 
 printl("defaultPluginFolderPath=" + defaultPluginFolderPath)
 printl("defaultSkinFolderPath=" + defaultSkinFolderPath)

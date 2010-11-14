@@ -216,7 +216,11 @@ class PVMC_MainMenu(Screen):
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 		printl("Checking URL: " + self.url) 
 		try:
-			f = urllib2.urlopen(self.url)
+			opener = urllib2.build_opener()
+			box = getBoxtype()
+			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
+			f = opener.open(self.url)
+			#f = urllib2.urlopen(self.url)
 			html = f.read()
 			dom = parseString(html)
 			update = dom.getElementsByTagName("update")[0]
@@ -269,11 +273,18 @@ class PVMC_MainMenu(Screen):
 				elif selection[1] == "PVMC_Settings":
 					self.session.open(PVMC_Settings, self)
 				elif selection[1] == "PVMC_Sync":
+					isInstalled = False
 					try:
 						from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
-						self.session.open(ProjectValerieSync)
+						isInstalled = True
 					except Exception, ex:
+						isInstalled = False
+						print "Exception: ", ex
+					if isInstalled:
+						self.session.open(ProjectValerieSync)
+					else:
 						self.session.open(MessageBox, "Please install the plugin \nProjectValerieSync\n to use this feature.", type = MessageBox.TYPE_INFO)
+					
 					#self.session.open(Settings, self)
 #					from Menu import MainMenu, mdom
 #					menu = mdom.getroot()

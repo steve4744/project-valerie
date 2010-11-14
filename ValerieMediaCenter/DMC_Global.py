@@ -116,7 +116,8 @@ def printl(string):
 
 class E2Control():
 	def __init__(self):
-		# TODO: Change dinaicaly
+		printl("E2Control::__init__ ->")
+		
 		try:
 			makedirs("/hdd/valerie")
 		except OSError, e: 
@@ -140,12 +141,16 @@ class E2Control():
 			popen(s)
 		except OSError, e: 
 			printl("OSError: " + str(e))
+		
+		printl("E2Control::__init__ <-")
 
 	def close(self):
+		printl("E2Control::close ->")
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control stop"
 		printl(s)
 		try:
 			popen(s)
 		except OSError, e: 
 			printl("OSError: " + str(e))
+		printl("E2Control::close <-")
 
