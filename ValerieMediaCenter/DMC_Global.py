@@ -67,21 +67,21 @@ except Exception, e:
 	
 		box = getBoxtype()
 		dir = ""
-		url = "http://duckbox.info/valerie/prebuilt/" + box[2]
-		url += "/_ctypes.so"
-		if url[3] == "oe15":
-			url += ".25"
+		#url = "http://duckbox.info/valerie/prebuilt/" + box[2]
+		#url += "/_ctypes.so"
+		if box[3] == "oe15":
+			#url += ".25"
 			dir += "/usr/lib/python2.5/lib-dynload/"
-		elif url[3] == "oe16":
-			url += ".26"
+		elif box[3] == "oe16":
+			#url += ".26"
 			dir += "/usr/lib/python2.6/lib-dynload/"
 		else:
 			dir += "/usr/lib/python2.6/lib-dynload/"
 		
 		print "URL: " + url
-		page = urllib2.urlopen(url)
+		#page = urllib2.urlopen(url)
+		page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
 		
-			
 		f = open(dir + "_ctypes.so", 'wb')
 		f.write(page.read())
 		f.close()
