@@ -13,7 +13,7 @@ def getBoxtype():
 	file.close()
 	manu = "Unknown"
 	model = box #"UNKNOWN" # Fallback to internal string
-	arch = "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
+	arch = "sh" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
 	version = ""
 	if box == "ufs910":
 		manu = "Kathrein"
@@ -71,14 +71,14 @@ except Exception, e:
 		#url += "/_ctypes.so"
 		if box[3] == "oe15":
 			#url += ".25"
-			dir += "/usr/lib/python2.5/lib-dynload/"
+			dir = "/usr/lib/python2.5/lib-dynload/"
 		elif box[3] == "oe16":
 			#url += ".26"
-			dir += "/usr/lib/python2.6/lib-dynload/"
+			dir = "/usr/lib/python2.6/lib-dynload/"
 		else:
-			dir += "/usr/lib/python2.6/lib-dynload/"
+			dir = "/usr/lib/python2.6/lib-dynload/"
 		
-		print "URL: " + url
+		#print "URL: " + url
 		#page = urllib2.urlopen(url)
 		page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
 		
