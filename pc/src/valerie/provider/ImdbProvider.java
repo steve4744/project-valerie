@@ -6,6 +6,8 @@
 package valerie.provider;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import valerie.MediaInfo;
@@ -17,8 +19,9 @@ import valerie.tools.DebugOutput;
  */
 public class ImdbProvider {
 
-
     //////////////////////////////////////////////////
+
+
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
     String apiSearchTV = "http://www.imdb.com/search/title?title=<title>&title_type=tv_series,mini_series";
@@ -32,7 +35,7 @@ public class ImdbProvider {
            return;
 
        try {
-          xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId));
+          xml = valerie.tools.WebGrabber.getText(new URL(apiImdbLookup + info.ImdbId));
        } catch (Exception ex) {}
 
        if (xml == null)
@@ -54,7 +57,7 @@ public class ImdbProvider {
             String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
             try {
-                pageHtml = new valerie.tools.WebGrabber().getText(new URL(apiSearchTV.replaceAll("<title>", urlTitle)));
+                pageHtml = valerie.tools.WebGrabber.getText(new URL(apiSearchTV.replaceAll("<title>", urlTitle)));
             } catch (Exception ex) {}
 
             if (pageHtml == null)
@@ -75,7 +78,7 @@ public class ImdbProvider {
        try {
             String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
-            pageHtml = new valerie.tools.WebGrabber().getText(new URL(apiSearch + urlTitle));
+            pageHtml = valerie.tools.WebGrabber.getText(new URL(apiSearch + urlTitle));
        } catch (Exception ex) {
            DebugOutput.printl("Download failed!");
            DebugOutput.printl(ex.getMessage());
@@ -120,7 +123,7 @@ public class ImdbProvider {
      private void getMoviesPlot(MediaInfo info) {
        String xml = null;
        try {
-          xml = new valerie.tools.WebGrabber().getText(new URL(apiImdbLookup + info.ImdbId + "/plotsummary"));
+          xml = valerie.tools.WebGrabber.getText(new URL(apiImdbLookup + info.ImdbId + "/plotsummary"));
        } catch (Exception ex) {}
 
        if (xml == null)

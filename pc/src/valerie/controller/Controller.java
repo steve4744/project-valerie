@@ -11,13 +11,17 @@ import java.util.HashMap;
 import valerie.Database;
 import valerie.MediaInfo;
 import valerie.provider.ImdbProvider;
+import valerie.provider.LocalImdbProvider;
+import valerie.provider.MobileImdbComProvider;
 import valerie.provider.TheMovieDbProvider;
 import valerie.provider.TheTvDbProvider;
 import valerie.tools.BoxInfo;
 import valerie.tools.BoxInfoParser;
+import valerie.tools.DebugOutput;
 import valerie.tools.FileUtils;
 import valerie.tools.Path;
 import valerie.tools.Path.eContains;
+import valerie.tools.ValerieConfig;
 import valerie.tools.WebGrabber;
 
 /**
@@ -29,6 +33,9 @@ public final class Controller extends Notifier {
      HashMap<String, Object> pObjects = new HashMap<String, Object>();
 
     public Controller() {
+
+        WebGrabber.init();
+
         set("Database", new Database(this));
         set("ConfPaths", new ConfPaths());
 
@@ -105,15 +112,15 @@ public final class Controller extends Notifier {
 
         FileUtils.mkdir(new File("conf"));
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/paths.conf", "conf"))
-            new WebGrabber().getFile(DEFAULTURL+"paths.conf", "conf\\paths.conf");
+            WebGrabber.getFile(DEFAULTURL+"paths.conf", "conf\\paths.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/valerie.conf", "conf"))
-            new WebGrabber().getFile(DEFAULTURL+"valerie.conf", "conf\\valerie.conf");
+            WebGrabber.getFile(DEFAULTURL+"valerie.conf", "conf\\valerie.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/pre.conf", "conf"))
-            new WebGrabber().getFile(DEFAULTURL+"pre.conf", "conf\\pre.conf");
+            WebGrabber.getFile(DEFAULTURL+"pre.conf", "conf\\pre.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_movie.conf", "conf"))
-            new WebGrabber().getFile(DEFAULTURL+"post_movie.conf", "conf\\post_movie.conf");
+            WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "conf\\post_movie.conf");
         if (!new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/post_tv.conf", "conf"))
-            new WebGrabber().getFile(DEFAULTURL+"post_tv.conf", "conf\\post_tv.conf");
+            WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "conf\\post_tv.conf");
 
         _notify((float)0.1, "PROGRESS");
 
@@ -239,10 +246,11 @@ public final class Controller extends Notifier {
 
 
             for(String filter : ((ConfPaths)get("ConfPaths")).getFilter().split("\\|")) {
-                String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find \"" + p.path + "\"" + " -name \"*." + filter + "\"" + " -type f");
-
                 _notify("Syncing...\n@" + p.path, "PROGRESS");
                 _notify((float)0, "PROGRESS");
+                String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find \"" + p.path + "\"" + " -name \"*." + filter + "\"" + " -type f");
+
+
                 count = entries.length;
                 countVar = 0;
 
@@ -308,7 +316,9 @@ public final class Controller extends Notifier {
             if(elementInfo.SearchString.length() == 0)
                 elementInfo.parse(this);
 
-            new ImdbProvider().getMoviesByTitle(elementInfo);
+            DebugOutput.printl("ImdbProvider().getMoviesByTitle");
+            //new ImdbProvider().getMoviesByTitle(elementInfo);
+            MobileImdbComProvider.getMoviesByTitle(elementInfo);
 
             // this is a breaker. change this to catch evil aliens
             if(elementInfo.ImdbId.equals("tt1490944"))
@@ -318,10 +328,24 @@ public final class Controller extends Notifier {
 
             if(elementInfo.isMovie) {
                 //# Ask TheMovieDB for the local title and plot
-                new TheMovieDbProvider().getMoviesById(elementInfo);
-                //new TheMovieDbProvider().getArtById(elementInfo);
-                //Arts().download(elementInfo)
-                //db.add(elementInfo)
+                DebugOutput.printl("TheMovieDbProvider().getMovieByImdbID");
+                new TheMovieDbProvider().getMovieByImdbID(elementInfo);
+                DebugOutput.printl("TheMovieDbProvider().getMovie " + "en");
+                new TheMovieDbProvider().getMovie(elementInfo, "en");
+                String userLang = ValerieConfig.getString("local");
+                if(!userLang.equals("en")) {
+                    DebugOutput.printl("TheMovieDbProvider().getMovie " + userLang);
+                    if(new TheMovieDbProvider().getMovie(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                } else
+                    elementInfo.isLocalLang = true;
+
+                // If we still dont have a local language, lets try imdb
+                if(!elementInfo.isLocalLang) {
+                    if(LocalImdbProvider.getMoviesByImdbID(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                }
+
                 if(elementInfo.Title.length() > 0)
                     elementInfo.needsUpdate = false;
                 _notify("DB_REFRESH");
@@ -331,17 +355,44 @@ public final class Controller extends Notifier {
                 //elementInfo.isEpisode = false;
                 //elementInfo.isSerie = true;
 
+                DebugOutput.printl("TheTvDbProvider().getSerieByImdbID");
                 new TheTvDbProvider().getSerieByImdbID(elementInfo);
-		//new TheTvDbProvider().getSeriesArtById(elementInfo);
-                //#print elementInfo
-                //db.add(elementInfo)
+                DebugOutput.printl("TheTvDbProvider().getSerie " + "en");
+		new TheTvDbProvider().getSerie(elementInfo, "en");
+                String userLang = ValerieConfig.getString("local");
+                if(!userLang.equals("en")) {
+                    DebugOutput.printl("TheTvDbProvider().getSerie " + userLang);
+                    if(new TheTvDbProvider().getSerie(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                } else
+                    elementInfo.isLocalLang = true;
+
+                // If we still dont have a local language, lets try imdb
+                if(!elementInfo.isLocalLang) {
+                    if(LocalImdbProvider.getMoviesByImdbID(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                }
 
 		MediaInfo elementInfoSerie = elementInfo.clone();
                 elementInfoSerie.isSerie = true;
                 elementInfoSerie.isEpisode = false;
 
                 // Finish up Episode
-                new TheTvDbProvider().getEpisode(elementInfo);
+                DebugOutput.printl("TheTvDbProvider().getEpisode " + "en");
+                new TheTvDbProvider().getEpisode(elementInfo, "en");
+                if(!userLang.equals("en")) {
+                    DebugOutput.printl("TheTvDbProvider().getEpisode " + userLang);
+                    if(new TheTvDbProvider().getEpisode(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                } else
+                    elementInfo.isLocalLang = true;
+
+                // If we still dont have a local language, lets try imdb
+                if(!elementInfo.isLocalLang) {
+                    if(LocalImdbProvider.getEpisodeByImdbID(elementInfo, userLang))
+                        elementInfo.isLocalLang = true;
+                }
+
                 if(elementInfo.Title.length() > 0)
                     elementInfo.needsUpdate = false;
 

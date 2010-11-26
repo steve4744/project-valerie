@@ -60,7 +60,10 @@ public final class ConfPaths {
     }
 
     public void setFilter(String filter) {
-        this.Filter = filter;
+        if(filter != null)
+            this.Filter = filter;
+        else
+            return;
     }
 
     public Path[] getPaths() {

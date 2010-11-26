@@ -15,101 +15,86 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-
-import java.util.concurrent.Semaphore;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
+import valerie.Utf8;
 
 /**
  *
  * @author Admin
  */
 public class WebGrabber {
-	
-    class cachedRequestXML{
-        public URL Url;
-        public Document doc;
-        public cachedRequestXML(URL Url,Document doc){
-            this.doc=doc;
-            this.Url=Url;
-        }
-    }
-    class cachedRequestURL{
-        public URL Url;
-        public String doc;
-        public cachedRequestURL(URL Url,String doc){
-            this.doc=doc;
-            this.Url=Url;
-        }
-    }
-    private int maxCacheEntrys=128;//30mb  256=60mb
-    private static ArrayList<cachedRequestXML> cacheXML=null;
-    private static ArrayList<cachedRequestURL> cacheURL=null;
 
-    //private static Semaphore sem = new Semaphore(10, true);
+    private static final String CACHE_DIR = "cache/";
+    private static final int RETRIES = 3;
 
-    private int RETRIES = 40;
-        
-    public Document getXML(URL url) {
-    	int x;
-    	if(cacheXML==null)cacheXML=new ArrayList<cachedRequestXML>();
-    	DebugOutput.printl(url.toString());
-    	for(x=0;x<cacheXML.size();x++){
-    		if(url.equals(cacheXML.get(x).Url))return cacheXML.get(x).doc;
-    	}
-        
-        //Serve the file
-        Document doc = null;
-        for(int i = 0; i < RETRIES; i++) {
+    public static void init() {
+        new File(CACHE_DIR).mkdir();
+    }
+
+
+
+    private static String checkCache(URL url) {
+        //String filename = String.valueOf(url.toString().hashCode());//.replaceAll("(\"|/|\\|:|\\\\?|<|>|\\|)", "_");
+        String filename = url.toString().replaceAll("\\W", "");
+        if(new File(CACHE_DIR + filename).exists()) {
             try {
-                //sem.acquire();
-                HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-                //sem.release();
-                urlc.addRequestProperty("user-agent", "Firefox");
-                InputStream in = urlc.getInputStream();
+                Utf8 f;
+                f = new Utf8(CACHE_DIR + filename, "r");
+                String rtv = f.read();
+                f.close();
+                return rtv;
+            } catch(Exception ex) {
+                System.out.printf("Webgrabber: %s\n%s-----------------\n",
+                    url.toString(), ex.getMessage());
 
-                StringWriter out = new StringWriter();
-                byte[] buf = new byte[4 * 1024]; // 4K buffer
-                int bytesRead;
-                while ((bytesRead = in.read(buf)) != -1) {
-                    byte[] bufTrimmed = new byte[bytesRead];
-                    for(int j = 0; j < bytesRead; j++)
-                        bufTrimmed[j] = buf[j];
-                    String fragment = new String(bufTrimmed, "UTF8");
-                    out.append(fragment);
+            }
+        }
+        return null;
+    }
 
+    private static void addCache(URL url, String text) {
+
+        if(text != null && text.length() > 0) {
+            //String filename = String.valueOf(url.toString().hashCode());//.replaceAll("(\"|/|\\|:|\\\\?|<|>|\\|)", "_");
+            String filename = url.toString().replaceAll("\\W", "");
+            //DebugOutput.printl("->");
+            try {
+                 Utf8 f;
+
+                f = new Utf8(CACHE_DIR + filename, "w");
+                String[] lines = text.split("\n");
+                for( String line : lines) {
+                     f.write(line);
                 }
-                in.close();
-                urlc.disconnect();
-                String xmlString = out.toString();
-                out.close();
-                SAXBuilder builder = new SAXBuilder();
-                StringReader xmlout = new StringReader(xmlString);
-                doc = builder.build(xmlout);
+                f.close();
 
-                break;
-            } catch (Exception ex) {
-                System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
+            } catch(Exception ex) {
+                System.out.printf("Webgrabber: %s\n%s-----------------\n",
+                        url.toString(), ex.getMessage());
             }
-            try {
-                Thread.sleep(100);
-                if(i%10 == 0)
-                  Thread.sleep(5000);
-            } catch (Exception ex) {
-                System.out.printf("Webgrabber[%d]: %s\n", i, ex.getMessage());
-
-            }
-
+            //DebugOutput.printl("<-");
         }
+    }
 
-        //DebugOutput.printl("<-");
-        if(cacheXML.size()>maxCacheEntrys)cacheXML.remove(0);
-        cacheXML.add(new cachedRequestXML(url,doc));
+    public static Document getXML(URL url) {
+        Document doc = null;
+        String xmlString = getText(url);
+        if(xmlString != null && xmlString.length() > 0) {
+            SAXBuilder builder = new SAXBuilder();
+            StringReader xmlout = new StringReader(xmlString);
+            try {
+                doc = builder.build(xmlout);
+            } catch (Exception ex) {
+                System.out.printf("Webgrabber: %s\n%s-----------------\n",
+                        url.toString(), ex.getMessage());
+            }
+            xmlout.close();
+        }
         return doc;
     }
 
-    public String getText(String url) {
+    public static String getText(String url) {
         try {
             return getText(new URL(url));
         } catch (Exception ex) {
@@ -117,23 +102,16 @@ public class WebGrabber {
         }
     }
 
-    public String getText(URL url) {
-    	int x;
-    	if(cacheURL==null)cacheURL=new ArrayList<cachedRequestURL>();
-        DebugOutput.printl(url.toString());
-        for(x=0;x<cacheURL.size();x++){
-    		if(url.equals(cacheURL.get(x).Url))return cacheURL.get(x).doc;
-    	}
-        
-        //Serve the file
-        String doc = null;
+    public static String getText(URL url) {
+        String text = null;
+
+        text = checkCache(url);
+        if(text != null)
+            return text;
 
         for(int i = 0; i < RETRIES; i++) {
             try {
-                //sem.acquire();
                 HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-                //sem.release();
-                //urlc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4");
                 urlc.addRequestProperty("user-agent", "Firefox");
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
 
@@ -145,7 +123,7 @@ public class WebGrabber {
                 }
                 in.close();
                 urlc.disconnect();
-                doc = out.toString();
+                text = out.toString();
                 out.close();
                 break;
             } catch (Exception ex) {
@@ -153,18 +131,17 @@ public class WebGrabber {
             }
         }
 
-        //DebugOutput.printl("<-");
-        if(cacheURL.size()>maxCacheEntrys)cacheURL.remove(0);
-        cacheURL.add(new cachedRequestURL(url,doc));
-        return doc;
+        addCache(url, text);
+
+        return text;
     }
 
-    public void getFile(String surl, String SaveAs) {
+    public static void getFile(String surl, String SaveAs) {
 
         getFile(surl, SaveAs, 3);
     }
 
-    public void getFile(String surl, String SaveAs, int retry) {
+    public static void getFile(String surl, String SaveAs, int retry) {
 
         //DebugOutput.printl(surl);
 

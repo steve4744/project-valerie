@@ -392,6 +392,7 @@ public class ValerieView extends FrameView {
         jLabelDetailsStar9 = new javax.swing.JLabel();
         jLabelDetailsStar10 = new javax.swing.JLabel();
         jLabelDetailsYear = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -502,7 +503,6 @@ public class ValerieView extends FrameView {
         jButtonConnect.setAction(actionMap.get("actionNetworkConnect")); // NOI18N
         jButtonConnect.setText(resourceMap.getString("jButtonConnect.text")); // NOI18N
         jButtonConnect.setToolTipText(resourceMap.getString("jButtonConnect.toolTipText")); // NOI18N
-        jButtonConnect.setEnabled(false);
         jButtonConnect.setFocusable(false);
         jButtonConnect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonConnect.setName("jButtonConnect"); // NOI18N
@@ -731,6 +731,7 @@ public class ValerieView extends FrameView {
         jScrollPane3.setName("jScrollPane3"); // NOI18N
 
         jTextAreaDescription.setColumns(20);
+        jTextAreaDescription.setEditable(false);
         jTextAreaDescription.setRows(5);
         jTextAreaDescription.setName("jTextAreaDescription"); // NOI18N
         jScrollPane3.setViewportView(jTextAreaDescription);
@@ -818,13 +819,18 @@ public class ValerieView extends FrameView {
         jLabelDetailsYear.setText(resourceMap.getString("jLabelDetailsYear.text")); // NOI18N
         jLabelDetailsYear.setName("jLabelDetailsYear"); // NOI18N
 
+        jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+        jButton1.setName("jButton1"); // NOI18N
+
         javax.swing.GroupLayout jPanelDetailsLayout = new javax.swing.GroupLayout(jPanelDetails);
         jPanelDetails.setLayout(jPanelDetailsLayout);
         jPanelDetailsLayout.setHorizontalGroup(
             jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelDetailsTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+                .addComponent(jLabelDetailsTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
                 .addContainerGap())
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
@@ -873,7 +879,9 @@ public class ValerieView extends FrameView {
             jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelDetailsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabelDetailsTitle)
+                .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelDetailsTitle)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabelDetailsStar1)
@@ -2198,6 +2206,7 @@ public class ValerieView extends FrameView {
     private static Console jFrameConsole = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButtonArt;

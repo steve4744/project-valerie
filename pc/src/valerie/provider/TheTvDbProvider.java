@@ -22,306 +22,286 @@ public class TheTvDbProvider {
 
     private String APIKEY = "3A042860EF9F9160";
     private String apiSearch = "http://www.thetvdb.com/api/GetSeries.php?seriesname=";
-    private String apiSearchEpisode = "http://www.thetvdb.com/api/" + APIKEY + "/series/<seriesid>/default/<season>/<episode>/7.xml";
+    private String apiSearchEpisode = "http://www.thetvdb.com/api/" + APIKEY + "/series/<seriesid>/default/<season>/<episode>/<lang>.xml";
     private String apiSearchAllEpisodes = "http://www.thetvdb.com/api/" + APIKEY + "/series/<seriesid>/all/<lang>.xml";
     private String apiArt = "http://www.thetvdb.com/banners/";
-    private String apiSeriesByID = "http://www.thetvdb.com/data/series/<seriesid>/";
+
+    private String apiSeriesByID = "http://www.thetvdb.com/data/series/<seriesid>/<lang>.xml";;
     private String apiSeriesByImdbID = "http://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=";
 
-    public void getSerieByImdbID(MediaInfo info) {
+
+    private static final int PLOT_MIN_LEN = 10;
+    private static final int IMDBID_MIN_LEN = 3; // tt0
+
+    public boolean getImdbId(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eImdb = elem.getChild("IMDB_ID");
+        if(eImdb != null && eImdb.getText() != null && eImdb.getText().length() >= IMDBID_MIN_LEN) {
+            String strImdb = eImdb.getText();
+            while(strImdb.endsWith("/"))
+                strImdb = strImdb.substring(0, strImdb.length()-1);
+            info.ImdbId = strImdb;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getOverview(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element ePlot = elem.getChild("Overview");
+        if(ePlot != null && ePlot.getText() != null && ePlot.getText().length() > PLOT_MIN_LEN) {
+            info.Plot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
+            info.Plot += " [THETVDB.COM]";
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getTvdbId(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eID = elem.getChild("id");
+        if(eID != null && eID.getText() != null && eID.getText().length() > 0) {
+            info.TheTvDbId = eID.getText();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getFirstAired(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eYear = elem.getChild("FirstAired");
+        if(eYear != null && eYear.getText() != null && eYear.getText().length() > 0) {
+            String strYear = eYear.getText();
+            try {
+                info.Year = Integer.parseInt(strYear.substring(0, strYear.indexOf("-")));
+                return true;
+            }catch(Exception ex) {
+            }
+        }
+        return false;
+    }
+
+    public boolean getSeriesName(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eTitle = elem.getChild("SeriesName");
+        if(eTitle != null && eTitle.getText() != null && eTitle.getText().length() > 0) {
+            info.Title = eTitle.getText();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getEpisodeAndSeasonNumber(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eEpisodeNumber = elem.getChild("EpisodeNumber");
+        org.jdom.Element eSeasonNumber  = elem.getChild("SeasonNumber");
+
+        if(eEpisodeNumber != null && eSeasonNumber != null &&
+                eEpisodeNumber.getText() != null && eEpisodeNumber.getText().length() > 0 &&
+                eSeasonNumber.getText()  != null && eSeasonNumber.getText().length()  > 0) {
+            try {
+                info.Episode = Integer.parseInt(eEpisodeNumber.getText());
+                info.Season = Integer.parseInt(eSeasonNumber.getText());
+                return true;
+            }catch(Exception ex) {
+            }
+        }
+        return false;
+    }
+
+    public boolean getEpisodeName(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eTitle = elem.getChild("EpisodeName");
+        if(eTitle != null && eTitle.getText() != null && eTitle.getText().length() > 0) {
+            info.Title = eTitle.getText();
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean getDirector(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eDirector = elem.getChild("Director");
+        if(eDirector != null && eDirector.getText() != null && eDirector.getText().length() > 0) {
+            info.Directors = eDirector.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean getWriter(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eWriter = elem.getChild("Writer");
+        if(eWriter != null && eWriter.getText() != null && eWriter.getText().length() > 0) {
+            info.Writers = eWriter.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean getRuntime(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eRuntime = elem.getChild("Runtime");
+        if(eRuntime != null && eRuntime.getText() != null && eRuntime.getText().length() > 0) {
+            info.Runtime = eRuntime.getText().replaceAll("\r\n", " ").replaceAll("\n"," ") + " min";
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getRating(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eRating = elem.getChild("Rating");
+        if(eRating != null && eRating.getText() != null && eRating.getText().length() > 0) {
+            try {
+                Float fPopularity = Float.valueOf(eRating.getText());
+                info.Popularity = fPopularity.intValue();
+                return true;
+            }catch(Exception ex) {
+            }
+        }
+        return false;
+    }
+
+    public String getLanguage(org.jdom.Element elem) {
+        org.jdom.Element eLang = elem.getChild("Language");
+        if(eLang != null && eLang.getText() != null && eLang.getText().length() > 0) {
+            return eLang.getText();
+        }
+        return "en";
+    }
+
+    //////////////////////////////////////////////////
+
+    public boolean getSerieByImdbID(MediaInfo info) {
         if(info.ImdbId.equals(info.ImdbIdNull))
-            return;
+            return false;
 
         Document xml = null;
         try {
-           String url = apiSeriesByImdbID + info.ImdbId;
-               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
+            String url = apiSeriesByImdbID + info.ImdbId;
+            xml = valerie.tools.WebGrabber.getXML(new URL(url));
         } catch (Exception ex) {}
 
         if (xml == null)
-            return;
+            return false;
 
         List movieList = xml.getRootElement().getChildren("Series");
         for(int i = 0; i < movieList.size(); i++)
-       {
-           org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        {
+            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
 
-           int Year = 0;
-           org.jdom.Element eYear = eMovie.getChild("FirstAired");
-           if(eYear != null && !eYear.getText().equals(""))
-                Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
+            getTvdbId(info, eMovie);
+            //getImdbId(info, eMovie);
+            getSeriesName(info, eMovie);
+            getOverview(info, eMovie);
+            getFirstAired(info, eMovie);
+            getRuntime(info, eMovie);
+            getRating(info, eMovie);
 
-           info.Year = Year;
-
-           org.jdom.Element ePlot = eMovie.getChild("Overview");
-           if(ePlot != null)
-                info.Plot = ePlot.getText();
-
-           //org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
-           //if(eImdb != null)
-           //     info.ImdbId = eImdb.getText();
-
-           org.jdom.Element eID = eMovie.getChild("id");
-           if(eID != null)
-                 info.TheTvDbId = eID.getText();
-
-           org.jdom.Element eTitle = eMovie.getChild("SeriesName");
-           if(eTitle != null){
-                info.Title = eTitle.getText();
-                System.out.println("this is "+info.Title);
-           }
-
-           /*if (info.Year <= 1980)
-               continue;*/
-
-           break;
-       }
+            return true;
+        }
+        return false;
     }
 
-    private void getSeriesById(MediaInfo info) {
-
+    public boolean getSerie(MediaInfo info, String lang) {
         if(info.TheTvDbId.equals(info.TheTvDbIdNull))
-            return;
+            return false;
 
-       Document xml = null;
-       try {
-           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
-       } catch (Exception ex) {}
+        lang = lang.toLowerCase();
 
-       if (xml == null)
-            return;
+        if(lang.equals("en")) // en already parsed using getSerieByImdbID()
+            return true;
 
-       List movieList = xml.getRootElement().getChildren("Series");
-       if(movieList.size()<=0){
-    	   /*No englisch result lets try german */
-    	   try {
-               String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId))+"de.xml";
-                   xml = new valerie.tools.WebGrabber().getXML(new URL(url));
-           } catch (Exception ex) {}
+        Document xml = null;
+        try {
 
-           if (xml == null)
-                return;
-           movieList = xml.getRootElement().getChildren("Series");
-       }
-       for(int i = 0; i < movieList.size(); i++)
-       {
-           org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+            String url = apiSeriesByID;
+            url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+            url = url.replaceAll("<lang>", lang);
+            xml = valerie.tools.WebGrabber.getXML(new URL(url));
+        } catch (Exception ex) {}
 
-           int Year = 0;
-           org.jdom.Element eYear = eMovie.getChild("FirstAired");
-           if(eYear != null && !eYear.getText().equals(""))
-                Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
+        if (xml == null)
+            return false;
 
-           info.Year = Year;
+        List movieList = xml.getRootElement().getChildren("Series");
+        for(int i = 0; i < movieList.size(); i++)
+        {
+            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
 
-           org.jdom.Element ePlot = eMovie.getChild("Overview");
-           if(ePlot != null)
-                info.Plot = ePlot.getText();
+            String entryLang = getLanguage(eMovie).toLowerCase();
+            if(!entryLang.equals(lang))
+                continue;
 
-           org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
-           if(eImdb != null && eImdb.getText().length() > 3)
-                info.ImdbId = eImdb.getText();
+            //getTvdbId(info, eMovie);
+            //getImdbId(info, eMovie);
+            getSeriesName(info, eMovie);
+            getOverview(info, eMovie);
+            getFirstAired(info, eMovie);
+            getRuntime(info, eMovie);
+            getRating(info, eMovie);
 
-           org.jdom.Element eTitle = eMovie.getChild("SeriesName");
-           if(eTitle != null)
-                info.Title = eTitle.getText();
-
-           org.jdom.Element eRating = eMovie.getChild("Rating");
-           if(eRating != null && eRating.getText().length() > 0) {
-                String sPopularity = eRating.getText();
-                System.out.println(sPopularity);
-                Float fPopularity = Float.valueOf(sPopularity);
-                info.Popularity = fPopularity.intValue();
-                if(info.Popularity > 10) info.Popularity = 10;
-           }
-
-           org.jdom.Element eGenres = eMovie.getChild("Genre");
-           if(eGenres != null)
-                info.Genres = eGenres.getText().replaceAll("[|]", "; ");
-           		if(info.Genres.startsWith("; "))info.Genres=info.Genres.substring(2);
-
-           if (info.Year <= 1980)
-               continue;
-
-           break;
-       }
-        return;
+            return true;
+        }
+        return false;
     }
 
-    private void getSeriesByTitle(MediaInfo info) {
-       Document xml = null;
-       try {
-           String urlTitle = info.SearchString;
-           urlTitle = urlTitle.replaceAll(" ", "+");
-           xml = new valerie.tools.WebGrabber().getXML(new URL(apiSearch + urlTitle));
-       } catch (Exception ex) {}
-
-       if (xml == null)
-            return;
-
-       List movieList = xml.getRootElement().getChildren("Series");
-       if(movieList.size()<=0){
-    	   /*No englisch result lets try german */
-    	   try {
-    		   String urlTitle = info.SearchString;
-               urlTitle = urlTitle.replaceAll(" ", "+");
-               xml = new valerie.tools.WebGrabber().getXML(new URL(apiSearch + urlTitle+"&language=de"));
-           } catch (Exception ex) {}
-
-           if (xml == null)
-                return;
-           movieList = xml.getRootElement().getChildren("Series");
-       }
-       for(int i = 0; i < movieList.size(); i++)
-       {
-           org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
-
-           int Year = 0;
-           org.jdom.Element eYear = eMovie.getChild("FirstAired");
-           if(eYear != null && !eYear.getText().equals(""))
-                Year = Integer.parseInt(eYear.getText().substring(0, eYear.getText().indexOf("-")));
-
-           info.Year = Year;
-
-           org.jdom.Element ePlot = eMovie.getChild("Overview");
-           if(ePlot != null)
-                info.Plot = ePlot.getText();
-
-           org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
-           if(eImdb != null)
-                info.ImdbId = eImdb.getText();
-
-           org.jdom.Element eID = eMovie.getChild("id");
-           if(eID != null)
-                 info.TheTvDbId = eID.getText();
-
-           org.jdom.Element eTitle = eMovie.getChild("SeriesName");
-           if(eTitle != null){
-                info.Title = eTitle.getText();
-                System.out.println("this is "+info.Title);
-           }
-
-           /*if (info.Year <= 1980)
-               continue;*/
-
-           break;
-       }
-        return;
-    }
-
-    public void getEpisode(MediaInfo info) {
+    public boolean getEpisode(MediaInfo info, String lang) {
 
         if( info.TheTvDbId.equals(info.TheTvDbIdNull) || info.Episode == -1 || info.Season == -1)
-            return;
+            return false;
 
-           Document xml = null;
-           try {
-               //String url = apiSearchEpisode.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-               url = url.replaceAll("<season>", String.valueOf(info.Season));
-               url = url.replaceAll("<episode>", String.valueOf(info.Episode));
-               url = url.replaceAll("<lang>", "en");
-               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
-           } catch (Exception ex) {}
+        lang = lang.toLowerCase();
 
-           if (xml == null)
-                return;
+        Document xml = null;
+        try {
+           String url = apiSearchAllEpisodes; //apiSearchAllEpisodes;
+           url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+           url = url.replaceAll("<lang>", lang);
+           url = url.replaceAll("<season>", String.valueOf(info.Season));
+           url = url.replaceAll("<episode>", String.valueOf(info.Episode));
 
-           List movieList = xml.getRootElement().getChildren("Episode");
-           for(int i = 0; i < movieList.size(); i++)
-           {
-               org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
-               org.jdom.Element eEpisodeNumber = eMovie.getChild("EpisodeNumber");
-               org.jdom.Element eSeasonNumber = eMovie.getChild("SeasonNumber");
-               
-               if(eEpisodeNumber==null || eSeasonNumber==null ||
-            		   Integer.parseInt(eEpisodeNumber.getText())!=info.Episode ||
-            		   Integer.parseInt(eSeasonNumber.getText())!=info.Season) continue;
-               
-               org.jdom.Element ePlot = eMovie.getChild("Overview");
-               if(ePlot != null)
-                    info.Plot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
+           xml = valerie.tools.WebGrabber.getXML(new URL(url));
+        } catch (Exception ex) {}
 
-               org.jdom.Element eImdb = eMovie.getChild("IMDB_ID");
-               if(eImdb != null && eImdb.getText().length() > 2) {
-                   String vImdb = eImdb.getText();
-                   while(vImdb.endsWith("/"))
-                       vImdb = vImdb.substring(0, vImdb.length()-1);
-                    info.ImdbId = vImdb;
-               }
-               org.jdom.Element eYear = eMovie.getChild("FirstAired");
-               if(eYear != null) {
-            	   try{
-            		   info.Year = Integer.parseInt(eYear.getText().split("-")[0]);
-            		   info.Releasedate=eYear.getText();
-            	   }catch(Exception e){ }
-               }
-               /*org.jdom.Element eID = eMovie.getChild("id");
-               if(eID != null)
-                    episodesID = Integer.valueOf(eID.getText());*/
+        if (xml == null)
+            return false;
 
-               org.jdom.Element eTitle = eMovie.getChild("EpisodeName");
-               if(eTitle != null)
-                    info.Title = eTitle.getText();
+        List movieList = xml.getRootElement().getChildren("Episode");
+        for(int i = 0; i < movieList.size(); i++) {
+            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
 
-               org.jdom.Element eDirector = eMovie.getChild("Director");
-               if(eDirector != null)
-                    info.Directors = eDirector.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+            String entryLang = getLanguage(eMovie).toLowerCase();
+            if(!entryLang.equals(lang))
+                continue;
 
-               org.jdom.Element eWriter = eMovie.getChild("Writer");
-               if(eWriter != null)
-                    info.Writers = eWriter.getText().replaceAll("\r\n", " ").replaceAll("\n","; ");
+            int episode = info.Episode;
+            int season  = info.Season;
+            if(getEpisodeAndSeasonNumber(info, eMovie) == false) {
+                info.Episode = episode;
+                info.Season  = season;
+                continue;
+            }
+
+            if(info.Episode != episode || info.Season != season) {
+                info.Episode = episode;
+                info.Season  = season;
+                continue;
+            }
+
+            //getImdbId(info, eMovie);
+            //getTvdbId(info, eMovie);
+            getEpisodeName(info, eMovie);
+            getOverview(info, eMovie);
+            getFirstAired(info, eMovie);
 
 
-               org.jdom.Element eRuntime = eMovie.getChild("Runtime");
-               if(eRuntime != null)
-                    info.Runtime = eRuntime.getText().replaceAll("\r\n", " ").replaceAll("\n"," ") + " min";
-               break;
-           }
+            getDirector(info, eMovie);
+            getWriter(info, eMovie);
+            getRuntime(info, eMovie);
+            getRating(info, eMovie);
 
-           // LOCAL
-           try {
-               //String url = apiSearchEpisode.replaceAll("<seriesid>", String.valueOf( info.TheTvDb));
-               String url = apiSearchAllEpisodes.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-               url = url.replaceAll("<season>", String.valueOf(info.Season));
-               url = url.replaceAll("<episode>", String.valueOf(info.Episode));
-               url = url.replaceAll("<lang>", "de");
-               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
-           } catch (Exception ex) {}
-
-           if (xml == null)
-                return;
-           movieList = xml.getRootElement().getChildren("Episode");
-           for(int i = 0; i < movieList.size(); i++)
-           {
-               org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
-               org.jdom.Element eEpisodeNumber = eMovie.getChild("EpisodeNumber");
-               org.jdom.Element eSeasonNumber = eMovie.getChild("SeasonNumber");
-               
-               if(eEpisodeNumber==null || eSeasonNumber==null ||
-            		   Integer.parseInt(eEpisodeNumber.getText())!=info.Episode ||
-            		   Integer.parseInt(eSeasonNumber.getText())!=info.Season) continue;
-               
-               org.jdom.Element ePlot = eMovie.getChild("Overview");
-               if(ePlot != null)
-                    info.LocalPlot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
-
-               org.jdom.Element eTitle = eMovie.getChild("EpisodeName");
-               if(eTitle != null)
-                    if(info.Title.equals(""))info.Title = eTitle.getText();
-                    else info.LocalTitle = eTitle.getText();
-
-               break;
-           }
-            return;
+            return true;
         }
+
+        return false;
+    }
 
     public void getArtById(MediaInfo info) {
        Document xml = null;
        try {
            String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-               xml = new valerie.tools.WebGrabber().getXML(new URL(url));
+               xml = valerie.tools.WebGrabber.getXML(new URL(url));
        } catch (Exception ex) {}
 
        if (xml == null)

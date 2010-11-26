@@ -28,7 +28,9 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public boolean isMovie = false;
     public boolean isSerie = false;
     public boolean isEpisode = false;
-    
+
+    public boolean isLocalLang = false;
+
     public String Path = "";
     public String Filename = "";
     public String Extension = "";
@@ -36,6 +38,9 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public String Title = "";
     public int AlternativesCount = 0;
     public String AlternativTitles[] = new String[alternativesMax];
+    /**
+     * @deprecated
+     */
     public String LocalTitle = "";
     public int Year = 0;
     public String ImdbIdNull = "tt0000000";
@@ -48,6 +53,9 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public String Resolution = "";
     public String Sound = "";
     public String Plot = "";
+    /**
+     * @deprecated
+     */
     public String LocalPlot = "";
     public String Directors = "";
     public String Writers = "";
@@ -59,6 +67,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public int Episode = -1;
     public String TheTvDbIdNull = "0";
     public String TheTvDbId = TheTvDbIdNull;
+    public String TmDbIdNull = "0";
+    public String TmDbId = TmDbIdNull;
     //public int ref = -1;
     public boolean Ignoring = true;
 
@@ -420,6 +430,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
                         if(key.equals("TheTvDb"))
                             TheTvDbId = value;
+                        else if(key.equals("TmDb"))
+                            TmDbId = value;
                         else if(key.equals("ImdbId")) {
                             if(value.startsWith("tt"))
                                 ImdbId = value;
@@ -477,6 +489,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public String exportStr() {
         return  "---BEGIN---\n" +
                 (isEpisode||isSerie?("TheTvDb: " + TheTvDbId + "\n"):"") +
+                (isMovie?("TheTvDb: " + TmDbId + "\n"):"") +
                 "ImdbId: " + ImdbId + "\n" +
                 "Title: " + Title + "\n" +
                 "LocalTitle: " + LocalTitle + "\n" +
@@ -522,6 +535,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //if(Imdb > 0)
         return  "---BEGIN---\n" +
                 (isEpisode||isSerie?("TheTvDb: " + TheTvDbId + "\n"):"") +
+                (isMovie?("TheTvDb: " + TmDbId + "\n"):"") +
                 "ImdbId: " + ImdbId + "\n" +
                 "Title: " + Title + "\n" +
                 "LocalTitle: " + LocalTitle + "\n" +
@@ -572,6 +586,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         rtv.Season = Season;
         rtv.Episode = Episode;
         rtv.TheTvDbId = TheTvDbId;
+        rtv.TmDbId = TmDbId;
         rtv.Releasedate = Releasedate;
         
         rtv.Ignoring = Ignoring;

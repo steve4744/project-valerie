@@ -842,6 +842,7 @@ public class Settings extends javax.swing.JDialog {
                 break;
 
             case UPDATE:
+                //jTableImportManagment.removeAll();
                 ((DefaultTableModel) jTableImportManagment.getModel()).setRowCount(WorkPathMovies.size());
                 int iteratorMovies = 0;
                 for(Path pathMovies : WorkPathMovies) {
@@ -851,6 +852,8 @@ public class Settings extends javax.swing.JDialog {
                     
                     iteratorMovies++;
                 }
+jTableImportManagment.repaint();
+                jTableImportManagment.invalidate();
                 break;
 
             case LOAD:
@@ -877,6 +880,7 @@ public class Settings extends javax.swing.JDialog {
                             for(Path p : WorkPathMovies) {
                                 if(pathToDelete.equals(p.path)) {
                                     WorkPathMovies.remove(p);
+                                    break;
                                 }
                             }
                             
@@ -945,6 +949,10 @@ public class Settings extends javax.swing.JDialog {
                 break;
 
             case SAVE:
+
+                jTableImportManagment.getSelectionModel().addSelectionInterval(0,
+                        jTableImportManagment.getRowCount());
+
                 if(WorkPathMovies != null) {
                     ((ConfPaths)pController.get("ConfPaths")).setPaths(WorkPathMovies.toArray(new Path[1]));
                     ((ConfPaths)pController.get("ConfPaths")).save();

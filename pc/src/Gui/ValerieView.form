@@ -125,7 +125,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" resourceKey="jButtonConnect.text"/>
                 <Property name="toolTipText" type="java.lang.String" resourceKey="jButtonConnect.toolTipText"/>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="name" type="java.lang.String" value="jButtonConnect" noResource="true"/>
@@ -464,7 +463,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabelDetailsTitle" pref="524" max="32767" attributes="0"/>
+                          <Component id="jLabelDetailsTitle" pref="469" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
@@ -525,7 +526,10 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabelDetailsTitle" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jLabelDetailsTitle" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="jLabelDetailsStar1" min="-2" max="-2" attributes="0"/>
@@ -574,6 +578,7 @@
                     <Component class="javax.swing.JTextArea" name="jTextAreaDescription">
                       <Properties>
                         <Property name="columns" type="int" value="20"/>
+                        <Property name="editable" type="boolean" value="false"/>
                         <Property name="rows" type="int" value="5"/>
                         <Property name="name" type="java.lang.String" value="jTextAreaDescription" noResource="true"/>
                       </Properties>
@@ -725,6 +730,12 @@
                     <Property name="font" type="java.awt.Font" resourceKey="jLabelDetailsYear.font"/>
                     <Property name="text" type="java.lang.String" resourceKey="jLabelDetailsYear.text"/>
                     <Property name="name" type="java.lang.String" value="jLabelDetailsYear" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="jButton1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
+                    <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
