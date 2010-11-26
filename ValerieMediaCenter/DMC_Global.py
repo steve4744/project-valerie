@@ -13,7 +13,7 @@ def getBoxtype():
 	file.close()
 	manu = "Unknown"
 	model = box #"UNKNOWN" # Fallback to internal string
-	arch = "sh" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
+	arch = "sh4" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
 	version = ""
 	if box == "ufs910":
 		manu = "Kathrein"
@@ -47,6 +47,22 @@ def getBoxtype():
 		manu = "Dreambox"
 		model = "500hd"
 		arch = "mipsel"
+	elif box == "elite":
+		manu = "Azbox"
+		model = "Elite"
+		arch = "mipsel"
+	elif box == "premium":
+		manu = "Azbox"
+		model = "Premium"
+		arch = "mipsel"
+	elif box == "cuberevo-mini":
+		manu = "Cubarevo"
+		model = "Mini"
+		arch = "sh4"
+	elif box == "hdbox":
+		manu = "Fortis"
+		model = "HdBox"
+		arch = "sh4"
 	
 	if arch == "mipsel":
 		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
