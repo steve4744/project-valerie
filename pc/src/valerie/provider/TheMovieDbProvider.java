@@ -154,7 +154,7 @@ public class TheMovieDbProvider {
         try {
             String url = apiGetInfo;
             url = url.replaceAll("<tmdbid>", String.valueOf(info.TmDbId));
-            url = url.replaceAll("<lang>", "en");
+            url = url.replaceAll("<lang>", lang);
             xml = valerie.tools.WebGrabber.getXML(new URL(url));
         } catch (Exception ex) {}
 
@@ -188,7 +188,10 @@ public class TheMovieDbProvider {
     public void getArtById(MediaInfo info) {
            Document xml = null;
            try {
-               xml =  valerie.tools.WebGrabber.getXML(new URL(apiImdbLookup + info.ImdbId));
+               String url = apiImdbLookup;
+            url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
+            url = url.replaceAll("<lang>", "en");
+            xml = valerie.tools.WebGrabber.getXML(new URL(url));
            } catch (Exception ex) {}
 
            if (xml == null)

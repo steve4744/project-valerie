@@ -300,7 +300,9 @@ public class TheTvDbProvider {
     public void getArtById(MediaInfo info) {
        Document xml = null;
        try {
-           String url = apiSeriesByID.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+           String url = apiSeriesByID;
+           url = url.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+           url = url.replaceAll("<lang>", "en");
                xml = valerie.tools.WebGrabber.getXML(new URL(url));
        } catch (Exception ex) {}
 
