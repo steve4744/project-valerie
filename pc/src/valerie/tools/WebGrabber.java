@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import valerie.Utf8;
@@ -31,8 +32,6 @@ public class WebGrabber {
     public static void init() {
         new File(CACHE_DIR).mkdir();
     }
-
-
 
     private static String checkCache(URL url) {
         //String filename = String.valueOf(url.toString().hashCode());//.replaceAll("(\"|/|\\|:|\\\\?|<|>|\\|)", "_");
@@ -77,16 +76,19 @@ public class WebGrabber {
         }
     }
 
-    public static Document getXML(URL url) {
+    public static Document getXML(String url) {
         Document doc = null;
-        String xmlString = getText(url);
-        if(xmlString != null && xmlString.length() > 0) {
+        String rawXml = getText(url);
+
+        String decodedXml = /*StringEscapeUtils.unescapeXml(*/rawXml/*)*/;
+
+        if(decodedXml != null && decodedXml.length() > 0) {
             SAXBuilder builder = new SAXBuilder();
-            StringReader xmlout = new StringReader(xmlString);
+            StringReader xmlout = new StringReader(decodedXml);
             try {
                 doc = builder.build(xmlout);
             } catch (Exception ex) {
-                System.out.printf("Webgrabber: %s\n%s-----------------\n",
+                System.out.printf("Webgrabber: %s\n%s\n-----------------\n",
                         url.toString(), ex.getMessage());
             }
             xmlout.close();
@@ -94,7 +96,13 @@ public class WebGrabber {
         return doc;
     }
 
-    public static String getText(String url) {
+    public static String getHtml(String url) {
+        String rawHtml = getText(url);
+        String decodedHtml = StringEscapeUtils.unescapeHtml(rawHtml);
+        return decodedHtml;
+    }
+
+   public static String getText(String url) {
         try {
             return getText(new URL(url));
         } catch (Exception ex) {
@@ -102,7 +110,7 @@ public class WebGrabber {
         }
     }
 
-    public static String getText(URL url) {
+    private static String getText(URL url) {
         String text = null;
 
         text = checkCache(url);

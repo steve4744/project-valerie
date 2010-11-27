@@ -173,7 +173,7 @@ public class LocalImdbProvider {
         if(pos < 0)
             return true;
 
-        info.Title = title.substring(0, pos).replaceAll("&#x22;", "").trim();
+        info.Title = title.substring(0, pos).replaceAll("\"", "").trim();
 
         return true;
     }
@@ -194,7 +194,7 @@ public class LocalImdbProvider {
         if(pos < 0)
             return false;
 
-        info.Plot = plot.substring(0, pos).trim() + " [IMDB.LOCAL]";
+        info.Plot = plot.substring(0, pos).replaceAll("<br>", " ").trim() + " [IMDB.LOCAL]";
         return true;
     }
 
@@ -208,15 +208,14 @@ public class LocalImdbProvider {
         DebugOutput.printl("");
 
         String html = null;
-        try {
-            String url = apiPlot;
-            if(imdbid != null)
-                url = url.replaceAll("<imdbid>", imdbid);
-            else
-                url = url.replaceAll("<imdbid>", info.ImdbId);
-            url = url.replaceAll("<lang>", lang);
-            html = valerie.tools.WebGrabber.getText(new URL(url));
-        } catch (Exception ex) {}
+
+        String url = apiPlot;
+        if(imdbid != null)
+            url = url.replaceAll("<imdbid>", imdbid);
+        else
+            url = url.replaceAll("<imdbid>", info.ImdbId);
+        url = url.replaceAll("<lang>", lang);
+        html = valerie.tools.WebGrabber.getHtml(url);
 
         if (html == null)
             return false;
@@ -235,12 +234,11 @@ public class LocalImdbProvider {
             return false;
 
         String html = null;
-        try {
-            String url = apiEpisodeList;
-            url = url.replaceAll("<imdbid>", info.ImdbId);
-            url = url.replaceAll("<lang>", lang);
-            html = valerie.tools.WebGrabber.getText(new URL(url));
-        } catch (Exception ex) {}
+
+        String url = apiEpisodeList;
+        url = url.replaceAll("<imdbid>", info.ImdbId);
+        url = url.replaceAll("<lang>", lang);
+        html = valerie.tools.WebGrabber.getHtml(url);
 
         if (html == null)
             return false;

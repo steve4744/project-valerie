@@ -98,11 +98,10 @@ public class MobileImdbComProvider {
         DebugOutput.printl(info.SearchString);
 
         String html = null;
-        try {
-            String url = apiSearch;
-            url = url.replaceAll("<search>", String.valueOf(info.SearchString.replaceAll(" ", "+")));
-            html = valerie.tools.WebGrabber.getText(new URL(url));
-        } catch (Exception ex) {}
+
+        String url = apiSearch;
+        url = url.replaceAll("<search>", String.valueOf(info.SearchString.replaceAll(" ", "+")));
+        html = valerie.tools.WebGrabber.getHtml(url);
 
         if (html == null)
             return;

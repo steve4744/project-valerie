@@ -167,10 +167,9 @@ public class TheTvDbProvider {
             return false;
 
         Document xml = null;
-        try {
-            String url = apiSeriesByImdbID + info.ImdbId;
-            xml = valerie.tools.WebGrabber.getXML(new URL(url));
-        } catch (Exception ex) {}
+
+        String url = apiSeriesByImdbID + info.ImdbId;
+        xml = valerie.tools.WebGrabber.getXML(url);
 
         if (xml == null)
             return false;
@@ -203,13 +202,12 @@ public class TheTvDbProvider {
             return true;
 
         Document xml = null;
-        try {
 
-            String url = apiSeriesByID;
-            url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
-            url = url.replaceAll("<lang>", lang);
-            xml = valerie.tools.WebGrabber.getXML(new URL(url));
-        } catch (Exception ex) {}
+        String url = apiSeriesByID;
+        url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+        url = url.replaceAll("<lang>", lang);
+        xml = valerie.tools.WebGrabber.getXML(url);
+
 
         if (xml == null)
             return false;
@@ -244,16 +242,14 @@ public class TheTvDbProvider {
         lang = lang.toLowerCase();
 
         Document xml = null;
-        try {
-           String url = apiSearchAllEpisodes; //apiSearchAllEpisodes;
-           url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
-           url = url.replaceAll("<lang>", lang);
-           url = url.replaceAll("<season>", String.valueOf(info.Season));
-           url = url.replaceAll("<episode>", String.valueOf(info.Episode));
 
-           xml = valerie.tools.WebGrabber.getXML(new URL(url));
-        } catch (Exception ex) {}
-
+       String url = apiSearchAllEpisodes; //apiSearchAllEpisodes;
+       url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+       url = url.replaceAll("<lang>", lang);
+       url = url.replaceAll("<season>", String.valueOf(info.Season));
+       url = url.replaceAll("<episode>", String.valueOf(info.Episode));
+       xml = valerie.tools.WebGrabber.getXML(url);
+       
         if (xml == null)
             return false;
 
@@ -299,12 +295,11 @@ public class TheTvDbProvider {
 
     public void getArtById(MediaInfo info) {
        Document xml = null;
-       try {
-           String url = apiSeriesByID;
-           url = url.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-           url = url.replaceAll("<lang>", "en");
-               xml = valerie.tools.WebGrabber.getXML(new URL(url));
-       } catch (Exception ex) {}
+
+       String url = apiSeriesByID;
+       url = url.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+       url = url.replaceAll("<lang>", "en");
+       xml = valerie.tools.WebGrabber.getXML(url);
 
        if (xml == null)
             return;

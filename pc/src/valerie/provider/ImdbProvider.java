@@ -34,9 +34,7 @@ public class ImdbProvider {
        if(info.ImdbId.equals(info.ImdbIdNull))
            return;
 
-       try {
-          xml = valerie.tools.WebGrabber.getText(new URL(apiImdbLookup + info.ImdbId));
-       } catch (Exception ex) {}
+      xml = valerie.tools.WebGrabber.getHtml(apiImdbLookup + info.ImdbId);
 
        if (xml == null)
             return;
@@ -56,9 +54,7 @@ public class ImdbProvider {
        if(mediaInfo.isSerie ||mediaInfo.isEpisode) {
             String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
-            try {
-                pageHtml = valerie.tools.WebGrabber.getText(new URL(apiSearchTV.replaceAll("<title>", urlTitle)));
-            } catch (Exception ex) {}
+            pageHtml = valerie.tools.WebGrabber.getHtml(apiSearchTV.replaceAll("<title>", urlTitle));
 
             if (pageHtml == null)
                 return;
@@ -78,7 +74,7 @@ public class ImdbProvider {
        try {
             String urlTitle = mediaInfo.SearchString;
             urlTitle = urlTitle.replaceAll(" ", "+");
-            pageHtml = valerie.tools.WebGrabber.getText(new URL(apiSearch + urlTitle));
+            pageHtml = valerie.tools.WebGrabber.getText(apiSearch + urlTitle);
        } catch (Exception ex) {
            DebugOutput.printl("Download failed!");
            DebugOutput.printl(ex.getMessage());
@@ -123,7 +119,7 @@ public class ImdbProvider {
      private void getMoviesPlot(MediaInfo info) {
        String xml = null;
        try {
-          xml = valerie.tools.WebGrabber.getText(new URL(apiImdbLookup + info.ImdbId + "/plotsummary"));
+          xml = valerie.tools.WebGrabber.getHtml(apiImdbLookup + info.ImdbId + "/plotsummary");
        } catch (Exception ex) {}
 
        if (xml == null)

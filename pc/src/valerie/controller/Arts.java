@@ -6,6 +6,7 @@
 package valerie.controller;
 
 import java.io.File;
+import java.net.URL;
 import valerie.MediaInfo;
 import valerie.provider.TheMovieDbProvider;
 import valerie.provider.TheTvDbProvider;
@@ -24,9 +25,9 @@ public class Arts {
 
             if(eInfo.Poster.length() > 0) {
                 if(new File("converted/" + eInfo.ImdbId + "_poster.png").isFile() == false) {
-                    String url = new WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";poster;" + eInfo.Poster);
+                    String url = WebGrabber.getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";poster;" + eInfo.Poster);
                     if(url != null && !url.equals("NONE")) {
-                        new WebGrabber().getFile("http://val.duckbox.info" + url, "converted/" + eInfo.ImdbId + "_poster.png");
+                        WebGrabber.getFile("http://val.duckbox.info" + url, "converted/" + eInfo.ImdbId + "_poster.png");
                     }
                 }
             }
@@ -35,12 +36,12 @@ public class Arts {
                 if(     new File("converted/" + eInfo.ImdbId + "_backdrop.m1v").isFile() == false ||
                         new File("converted/" + eInfo.ImdbId + "_backdrop_low.m1v").isFile() == false ||
                         new File("converted/" + eInfo.ImdbId + "_backdrop.png").isFile() == false) {
-                    String url = new WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop);
+                    String url = WebGrabber.getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop);
                     if(url != null && !url.equals("NONE")) {
                         String[] urls = url.split("<br />");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[0], "converted/" + eInfo.ImdbId + "_backdrop.m1v");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[1], "converted/" + eInfo.ImdbId + "_backdrop_low.m1v");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[2], "converted/" + eInfo.ImdbId + "_backdrop.png");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[0], "converted/" + eInfo.ImdbId + "_backdrop.m1v");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[1], "converted/" + eInfo.ImdbId + "_backdrop_low.m1v");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[2], "converted/" + eInfo.ImdbId + "_backdrop.png");
                     }
                 }
             }
@@ -51,9 +52,9 @@ public class Arts {
 
             if(eInfo.Poster.length() > 0) {
                 if(new File("converted/" + eInfo.TheTvDbId + "_poster.png").isFile() == false) {
-                    String url = new WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";poster;" + eInfo.Poster);
+                    String url = WebGrabber.getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";poster;" + eInfo.Poster);
                     if(url != null && !url.equals("NONE")) {
-                        new WebGrabber().getFile("http://val.duckbox.info" + url, "converted/" + eInfo.TheTvDbId + "_poster.png");
+                        WebGrabber.getFile("http://val.duckbox.info" + url, "converted/" + eInfo.TheTvDbId + "_poster.png");
                     }
                 }
             }
@@ -62,12 +63,12 @@ public class Arts {
                 if(     new File("converted/" + eInfo.TheTvDbId + "_backdrop.m1v").isFile() == false ||
                         new File("converted/" + eInfo.TheTvDbId + "_backdrop_low.m1v").isFile() == false ||
                         new File("converted/" + eInfo.TheTvDbId + "_backdrop.png").isFile() == false) {
-                    String url = new WebGrabber().getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";backdrop;" + eInfo.Backdrop);
+                    String url = WebGrabber.getText("http://val.duckbox.info/cgi-bin/convert.py?" + eInfo.TheTvDbId + ";backdrop;" + eInfo.Backdrop);
                     if(url != null && !url.equals("NONE")) {
                         String[] urls = url.split("<br />");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[0], "converted/" + eInfo.TheTvDbId + "_backdrop.m1v");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[1], "converted/" + eInfo.TheTvDbId + "_backdrop_low.m1v");
-                        new WebGrabber().getFile("http://val.duckbox.info" + urls[2], "converted/" + eInfo.TheTvDbId + "_backdrop.png");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[0], "converted/" + eInfo.TheTvDbId + "_backdrop.m1v");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[1], "converted/" + eInfo.TheTvDbId + "_backdrop_low.m1v");
+                        WebGrabber.getFile("http://val.duckbox.info" + urls[2], "converted/" + eInfo.TheTvDbId + "_backdrop.png");
                     }
                 }
             }
