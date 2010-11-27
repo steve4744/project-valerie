@@ -55,6 +55,10 @@ def getBoxtype():
 		manu = "Azbox"
 		model = "Premium"
 		arch = "mipsel"
+	elif box == "premium+":
+		manu = "Azbox"
+		model = "Premium+"
+		arch = "mipsel"
 	elif box == "cuberevo-mini":
 		manu = "Cubarevo"
 		model = "Mini"
@@ -75,58 +79,59 @@ def getBoxtype():
 
 #------------------------------------------------------------------------------------------
 
-try:
-	from _ctypes import *
-except Exception, e: 
-	import urllib2
+def checkCtypes():
 	try:
-	
-		box = getBoxtype()
-		dir = ""
-		#url = "http://duckbox.info/valerie/prebuilt/" + box[2]
-		#url += "/_ctypes.so"
-		if box[3] == "oe15":
-			#url += ".25"
-			dir = "/usr/lib/python2.5/lib-dynload/"
-		elif box[3] == "oe16":
-			#url += ".26"
-			dir = "/usr/lib/python2.6/lib-dynload/"
-		else:
-			dir = "/usr/lib/python2.6/lib-dynload/"
+		import _ctypes
+	except Exception, e: 
+		import urllib2
+		try:
 		
-		#print "URL: " + url
-		#page = urllib2.urlopen(url)
-		page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
-		
-		f = open(dir + "_ctypes.so", 'wb')
-		f.write(page.read())
-		f.close()
-	except Exception, ex:
-		print "File download failed: ", ex
-		print type(ex)
-		print '-'*60
-		traceback.print_exc(file=sys.stdout)
-		print '-'*60
-
-from _ctypes import *
+			box = getBoxtype()
+			dir = ""
+			#url = "http://duckbox.info/valerie/prebuilt/" + box[2]
+			#url += "/_ctypes.so"
+			if box[3] == "oe15":
+				#url += ".25"
+				dir = "/usr/lib/python2.5/lib-dynload/"
+			elif box[3] == "oe16":
+				#url += ".26"
+				dir = "/usr/lib/python2.6/lib-dynload/"
+			else:
+				dir = "/usr/lib/python2.6/lib-dynload/"
+			
+			#print "URL: " + url
+			#page = urllib2.urlopen(url)
+			page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
+			
+			f = open(dir + "_ctypes.so", 'wb')
+			f.write(page.read())
+			f.close()
+		except Exception, ex:
+			print "File download failed: ", ex
+			print type(ex)
+			print '-'*60
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
 
 #------------------------------------------------------------------------------------------
 
 class Showiframe():
 	def __init__(self):
-		self.showiframe = dlopen(config.plugins.pvmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
+		self.ctypes = __import__("_ctypes") 
+		
+		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
 		try:
-			self.showSinglePic = dlsym(self.showiframe, "showSinglePic")
-			self.finishShowSinglePic = dlsym(self.showiframe, "finishShowSinglePic")
+			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
+			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
 		except OSError, e: 
-			self.showSinglePic = dlsym(self.showiframe, "_Z13showSinglePicPKc")
-			self.finishShowSinglePic = dlsym(self.showiframe, "_Z19finishShowSinglePicv")
+			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
+			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
 
 	def  showStillpicture(self, pic):
-		call_function(self.showSinglePic, (pic, ))
+		self.ctypes.call_function(self.showSinglePic, (pic, ))
 
 	def finishStillPicture(self):
-		call_function(self.finishShowSinglePic, ())
+		self.ctypes.call_function(self.finishShowSinglePic, ())
 		#dlclose(self.showiframe)
 
 def printl(string):

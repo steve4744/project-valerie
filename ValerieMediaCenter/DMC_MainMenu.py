@@ -31,7 +31,7 @@ from DMC_Series import PVMC_Series
 
 
 from Components.MenuList import MenuList
-from DMC_Global import printl, getBoxtype
+from DMC_Global import printl, getBoxtype, checkCtypes
 
 import urllib2
 # Unfortunaly not everyone has twisted installed ...
@@ -202,6 +202,8 @@ class PVMC_MainMenu(Screen):
 				"down": self.down,
 				"power": self.power,
 			}, -1)
+
+		checkCtypes()
 
 		if config.plugins.pvmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
