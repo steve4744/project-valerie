@@ -39,6 +39,7 @@ import valerie.controller.Notification;
 import valerie.tools.BoxInfo;
 import valerie.tools.Path;
 import valerie.tools.Path.eContains;
+import valerie.tools.ValerieConfig;
 
 /**
  *
@@ -88,7 +89,7 @@ public class Settings extends javax.swing.JDialog {
         jLayeredPaneSettings = new javax.swing.JLayeredPane();
         jPanelGeneral = new javax.swing.JPanel();
         jCheckBoxUpdate = new javax.swing.JCheckBox();
-        jCheckBoxLoadArchiv = new javax.swing.JCheckBox();
+        jCheckBoxLoadDbOnStart = new javax.swing.JCheckBox();
         jComboBoxBoxes = new javax.swing.JComboBox();
         jLabel5 = new javax.swing.JLabel();
         jButtonBoxesSearch = new javax.swing.JButton();
@@ -100,6 +101,8 @@ public class Settings extends javax.swing.JDialog {
         jTextFieldBoxesModell = new javax.swing.JTextField();
         jTextFieldBoxesIp = new javax.swing.JTextField();
         jButtonBoxesSave = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        jComboBoxLanguage = new javax.swing.JComboBox();
         jPanelFileManagment = new javax.swing.JPanel();
         jTextFieldFilter = new javax.swing.JTextField();
         jLabelFilter = new javax.swing.JLabel();
@@ -212,12 +215,13 @@ public class Settings extends javax.swing.JDialog {
         jPanelGeneral.setOpaque(false);
 
         jCheckBoxUpdate.setText(resourceMap.getString("jCheckBoxUpdate.text")); // NOI18N
+        jCheckBoxUpdate.setEnabled(false);
         jCheckBoxUpdate.setName("jCheckBoxUpdate"); // NOI18N
         jCheckBoxUpdate.setOpaque(false);
 
-        jCheckBoxLoadArchiv.setText(resourceMap.getString("jCheckBoxLoadArchiv.text")); // NOI18N
-        jCheckBoxLoadArchiv.setEnabled(false);
-        jCheckBoxLoadArchiv.setName("jCheckBoxLoadArchiv"); // NOI18N
+        jCheckBoxLoadDbOnStart.setText(resourceMap.getString("jCheckBoxLoadDbOnStart.text")); // NOI18N
+        jCheckBoxLoadDbOnStart.setEnabled(false);
+        jCheckBoxLoadDbOnStart.setName("jCheckBoxLoadDbOnStart"); // NOI18N
 
         jComboBoxBoxes.setName("jComboBoxBoxes"); // NOI18N
         jComboBoxBoxes.addItemListener(new java.awt.event.ItemListener() {
@@ -279,6 +283,11 @@ public class Settings extends javax.swing.JDialog {
             }
         });
 
+        jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
+        jLabel10.setName("jLabel10"); // NOI18N
+
+        jComboBoxLanguage.setName("jComboBoxLanguage"); // NOI18N
+
         javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
         jPanelGeneral.setLayout(jPanelGeneralLayout);
         jPanelGeneralLayout.setHorizontalGroup(
@@ -287,17 +296,10 @@ public class Settings extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jCheckBoxUpdate)
-                    .addComponent(jCheckBoxLoadArchiv)
                     .addComponent(jLabel5)
                     .addGroup(jPanelGeneralLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanelGeneralLayout.createSequentialGroup()
-                                .addComponent(jComboBoxBoxes, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonBoxesSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonBoxesCreate))
                             .addGroup(jPanelGeneralLayout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -310,20 +312,34 @@ public class Settings extends javax.swing.JDialog {
                                         .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(jTextFieldBoxesManufactor, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                                             .addComponent(jTextFieldBoxesModell)
-                                            .addComponent(jTextFieldBoxesIp)))
-                                    .addComponent(jButtonBoxesSave))))))
+                                            .addComponent(jTextFieldBoxesIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jButtonBoxesSave)))
+                            .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                                .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jComboBoxLanguage, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jComboBoxBoxes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonBoxesSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonBoxesCreate))))
+                    .addComponent(jLabel10)
+                    .addComponent(jCheckBoxLoadDbOnStart))
                 .addContainerGap(174, Short.MAX_VALUE))
         );
         jPanelGeneralLayout.setVerticalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jCheckBoxUpdate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBoxLoadDbOnStart)
+                .addGap(5, 5, 5)
+                .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(jComboBoxLanguage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelGeneralLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jCheckBoxUpdate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBoxLoadArchiv)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -344,9 +360,9 @@ public class Settings extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonBoxesSave))
                     .addGroup(jPanelGeneralLayout.createSequentialGroup()
-                        .addGap(83, 83, 83)
+                        .addGap(20, 20, 20)
                         .addComponent(jButtonBoxesCreate)))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addGap(27, 27, 27))
         );
 
         jPanelGeneral.setBounds(10, 70, 510, 280);
@@ -658,6 +674,30 @@ public class Settings extends javax.swing.JDialog {
 
     enum eStatus {SHOW, HIDE, SAVE, LOAD, UPDATE};
 
+    class Language {
+        public String Name;
+        public String Id;
+
+        public Language(String name, String id) {
+            Name = name;
+            Id = id;
+        }
+
+        @Override
+        public String toString() {
+            return Name;
+        }
+    }
+
+    Language[] langs = {
+        new Language("English",    "en"),
+        new Language("German",     "de"),
+        new Language("Italian",    "it"),
+        new Language("Spanish",    "es"),
+        new Language("French",     "fr"),
+        new Language("Portuguese", "pt"),
+    };
+
     private ArrayList<BoxInfo> mBoxInfos = null;
     private void showTabGeneral(eStatus status) {
 
@@ -688,7 +728,15 @@ public class Settings extends javax.swing.JDialog {
 
             case LOAD:
                 jCheckBoxUpdate.setSelected(new valerie.tools.Properties().getPropertyBoolean("AUTO_UPDATE"));
-                jCheckBoxLoadArchiv.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_ARCHIV"));
+                jCheckBoxLoadDbOnStart.setSelected(new valerie.tools.Properties().getPropertyBoolean("LOAD_DATABASE"));
+
+                String local = ValerieConfig.getString("local");
+                for(Language lang : langs) {
+                    jComboBoxLanguage.addItem(lang);
+                    if(lang.Id.equals(local))
+                        jComboBoxLanguage.setSelectedItem(lang);
+                }
+
 
                 jComboBoxBoxes.removeAllItems();
                 if(mBoxInfos == null) {
@@ -789,7 +837,10 @@ public class Settings extends javax.swing.JDialog {
             case SAVE:
                 valerie.tools.Properties prop = new valerie.tools.Properties();
                 prop.setProperty("AUTO_UPDATE", jCheckBoxUpdate.isSelected());
-                prop.setProperty("LOAD_ARCHIV", jCheckBoxLoadArchiv.isSelected());
+                prop.setProperty("LOAD_DATABASE", jCheckBoxLoadDbOnStart.isSelected());
+
+                Language lang = (Language)jComboBoxLanguage.getSelectedItem();
+                ValerieConfig.setString("local", lang.Id);
 
                 String save = "";
                 for(BoxInfo b : mBoxInfos)
@@ -1060,13 +1111,15 @@ jTableImportManagment.repaint();
     private javax.swing.JButton jButtonBoxesSave;
     private javax.swing.JButton jButtonBoxesSearch;
     private javax.swing.JButton jButtonCancel;
-    private javax.swing.JCheckBox jCheckBoxLoadArchiv;
+    private javax.swing.JCheckBox jCheckBoxLoadDbOnStart;
     private javax.swing.JCheckBox jCheckBoxUpdate;
     private javax.swing.JComboBox jComboBoxBoxes;
     private javax.swing.JComboBox jComboBoxEncoder;
+    private javax.swing.JComboBox jComboBoxLanguage;
     private javax.swing.JComboBox jComboBoxResize;
     private javax.swing.JComboBox jComboBoxResolution;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

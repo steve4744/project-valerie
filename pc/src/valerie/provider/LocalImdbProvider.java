@@ -107,7 +107,7 @@ public class LocalImdbProvider {
             } else if(lang.equals("pt")) {
                 season_start = "Temporada ";
                 season_end = ", ";
-                episode_start = "Epis&#xF3;dio ";
+                episode_start = "Epis&#xF3;dio "; //TODO: I dont belive that this will work as this should be already converted to UTF-8
                 episode_end = ": ";
             }
 
@@ -158,7 +158,7 @@ public class LocalImdbProvider {
         if(pos < 0)
             return false;
 
-        info.Title = title.substring(0, pos).replaceAll("&#x22;", "").trim();
+        info.Title = title.substring(0, pos).replaceAll("\"", "").trim();
 
         ////
 

@@ -37,8 +37,8 @@ public class TheTvDbProvider {
         org.jdom.Element eImdb = elem.getChild("IMDB_ID");
         if(eImdb != null && eImdb.getText() != null && eImdb.getText().length() >= IMDBID_MIN_LEN) {
             String strImdb = eImdb.getText();
-            while(strImdb.endsWith("/"))
-                strImdb = strImdb.substring(0, strImdb.length()-1);
+            //while(strImdb.endsWith("/"))
+            //    strImdb = strImdb.substring(0, strImdb.length()-1);
             info.ImdbId = strImdb;
             return true;
         }
@@ -95,7 +95,7 @@ public class TheTvDbProvider {
                 eSeasonNumber.getText()  != null && eSeasonNumber.getText().length()  > 0) {
             try {
                 info.Episode = Integer.parseInt(eEpisodeNumber.getText());
-                info.Season = Integer.parseInt(eSeasonNumber.getText());
+                info.Season  = Integer.parseInt(eSeasonNumber.getText());
                 return true;
             }catch(Exception ex) {
             }
@@ -133,7 +133,7 @@ public class TheTvDbProvider {
     public boolean getRuntime(MediaInfo info, org.jdom.Element elem) {
         org.jdom.Element eRuntime = elem.getChild("Runtime");
         if(eRuntime != null && eRuntime.getText() != null && eRuntime.getText().length() > 0) {
-            info.Runtime = eRuntime.getText().replaceAll("\r\n", " ").replaceAll("\n"," ") + " min";
+            info.Runtime = Integer.valueOf(eRuntime.getText().trim());
             return true;
         }
         return false;
@@ -169,21 +169,19 @@ public class TheTvDbProvider {
         Document xml = null;
 
         String url = apiSeriesByImdbID + info.ImdbId;
-        xml = valerie.tools.WebGrabber.getXML(url);
+        xml = valerie.tools.WebGrabber.getXml(url);
 
         if (xml == null)
             return false;
 
-        List movieList = xml.getRootElement().getChildren("Series");
-        for(int i = 0; i < movieList.size(); i++)
-        {
-            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
-
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("Series");
+        for(org.jdom.Element eMovie : movieList) {
             getTvdbId(info, eMovie);
             //getImdbId(info, eMovie);
             getSeriesName(info, eMovie);
             getOverview(info, eMovie);
             getFirstAired(info, eMovie);
+
             getRuntime(info, eMovie);
             getRating(info, eMovie);
 
@@ -204,18 +202,16 @@ public class TheTvDbProvider {
         Document xml = null;
 
         String url = apiSeriesByID;
-        url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+        url = url.replaceAll("<seriesid>", info.TheTvDbId);
         url = url.replaceAll("<lang>", lang);
-        xml = valerie.tools.WebGrabber.getXML(url);
+        xml = valerie.tools.WebGrabber.getXml(url);
 
 
         if (xml == null)
             return false;
 
-        List movieList = xml.getRootElement().getChildren("Series");
-        for(int i = 0; i < movieList.size(); i++)
-        {
-            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("Series");
+        for(org.jdom.Element eMovie : movieList) {
 
             String entryLang = getLanguage(eMovie).toLowerCase();
             if(!entryLang.equals(lang))
@@ -226,6 +222,7 @@ public class TheTvDbProvider {
             getSeriesName(info, eMovie);
             getOverview(info, eMovie);
             getFirstAired(info, eMovie);
+
             getRuntime(info, eMovie);
             getRating(info, eMovie);
 
@@ -244,18 +241,17 @@ public class TheTvDbProvider {
         Document xml = null;
 
        String url = apiSearchAllEpisodes; //apiSearchAllEpisodes;
-       url = url.replaceAll("<seriesid>", String.valueOf(info.TheTvDbId));
+       url = url.replaceAll("<seriesid>", info.TheTvDbId);
        url = url.replaceAll("<lang>", lang);
        url = url.replaceAll("<season>", String.valueOf(info.Season));
        url = url.replaceAll("<episode>", String.valueOf(info.Episode));
-       xml = valerie.tools.WebGrabber.getXML(url);
+       xml = valerie.tools.WebGrabber.getXml(url);
        
         if (xml == null)
             return false;
 
-        List movieList = xml.getRootElement().getChildren("Episode");
-        for(int i = 0; i < movieList.size(); i++) {
-            org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("Episode");
+        for(org.jdom.Element eMovie : movieList) {
 
             String entryLang = getLanguage(eMovie).toLowerCase();
             if(!entryLang.equals(lang))
@@ -293,36 +289,36 @@ public class TheTvDbProvider {
         return false;
     }
 
-    public void getArtById(MediaInfo info) {
-       Document xml = null;
+    public boolean getArtById(MediaInfo info) {
+        if(info.TheTvDbId.equals(info.TheTvDbIdNull))
+            return false;
+        Document xml = null;
 
-       String url = apiSeriesByID;
-       url = url.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
-       url = url.replaceAll("<lang>", "en");
-       xml = valerie.tools.WebGrabber.getXML(url);
+        String url = apiSeriesByID;
+        url = url.replaceAll("<seriesid>", String.valueOf( info.TheTvDbId));
+        url = url.replaceAll("<lang>", "en");
+        xml = valerie.tools.WebGrabber.getXml(url);
 
-       if (xml == null)
-            return;
+        if (xml == null)
+            return false;
 
-       List movieList = xml.getRootElement().getChildren("Series");
-       for(int i = 0; i < movieList.size(); i++)
-       {
-           org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("Series");
+        for(org.jdom.Element eMovie : movieList) {
 
-           org.jdom.Element eBanner = eMovie.getChild("banner");
-           if(eBanner != null && eBanner.getText().length() > 0)
+            org.jdom.Element eBanner = eMovie.getChild("banner");
+            if(eBanner != null && eBanner.getText().length() > 0)
                 info.Banner = apiArt + eBanner.getText();
 
-           org.jdom.Element ePoster = eMovie.getChild("poster");
-           if(ePoster != null && ePoster.getText().length() > 0)
+            org.jdom.Element ePoster = eMovie.getChild("poster");
+            if(ePoster != null && ePoster.getText().length() > 0)
                 info.Poster = apiArt + ePoster.getText();
 
-           org.jdom.Element eFanart = eMovie.getChild("fanart");
-           if(eFanart != null && eFanart.getText().length() > 0)
+            org.jdom.Element eFanart = eMovie.getChild("fanart");
+            if(eFanart != null && eFanart.getText().length() > 0)
                 info.Backdrop = apiArt + eFanart.getText();
 
-           break;
-       }
-        return;
+           return true;
+        }
+        return false;
     }
 }

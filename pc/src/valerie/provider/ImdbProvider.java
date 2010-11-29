@@ -5,9 +5,6 @@
 
 package valerie.provider;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import valerie.MediaInfo;
@@ -219,7 +216,7 @@ public class ImdbProvider {
             String sRuntime = mRuntime.group();
 
             sRuntime = sRuntime.replaceAll("<h5>Runtime:</h5>(<div class=\"info-content\">)?", "");
-            info.Runtime = sRuntime;
+            info.Runtime = Integer.valueOf(sRuntime);
         }
 
         Pattern pGenresBlock = Pattern.compile("<h5>Genre:</h5>.+?</div>");

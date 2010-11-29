@@ -5,7 +5,6 @@
 
 package valerie.provider;
 
-import java.net.URL;
 import java.util.List;
 import org.jdom.Document;
 import valerie.MediaInfo;
@@ -53,7 +52,7 @@ public class TheMovieDbProvider {
         org.jdom.Element ePlot = elem.getChild("overview");
         if(ePlot != null && ePlot.getText() != null && ePlot.getText().length() > PLOT_MIN_LEN) {
             info.Plot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
-            info.Plot += " [TMDB.COM]";
+            info.Plot += " [TMDB.ORG]";
             return true;
         }
         return false;
@@ -75,7 +74,7 @@ public class TheMovieDbProvider {
     public boolean getRuntime(MediaInfo info, org.jdom.Element elem) {
         org.jdom.Element eRuntime = elem.getChild("runtime");
         if(eRuntime != null && eRuntime.getText() != null && eRuntime.getText().length() > 0) {
-            info.Runtime = eRuntime.getText().replaceAll("\r\n", " ").replaceAll("\n"," ") + " min";
+            info.Runtime = Integer.valueOf(eRuntime.getText());
             return true;
         }
         return false;
@@ -114,29 +113,22 @@ public class TheMovieDbProvider {
         String url = apiImdbLookup;
         url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
         url = url.replaceAll("<lang>", "en");
-        xml = valerie.tools.WebGrabber.getXML(url);
+        xml = valerie.tools.WebGrabber.getXml(url);
 
         if (xml == null)
             return false;
 
-        List moviesList = xml.getRootElement().getChildren("movies");
-        if(moviesList != null && moviesList.size() > 0) {
-            List movieList = ((org.jdom.Element) moviesList.get(0)).getChildren("movie");
-            for(int i = 0; i < movieList.size(); i++)
-            {
-                org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
+        for(org.jdom.Element eMovie : movieList) {
+            getTmdbId(info, eMovie);
+            //getImdbId(info, eMovie);
+            getName(info, eMovie);
+            getOverview(info, eMovie);
+            getReleased(info, eMovie);
+            getRating(info, eMovie);
+            getRuntime(info, eMovie);
 
-                getTmdbId(info, eMovie);
-                //getImdbId(info, eMovie);
-                getName(info, eMovie);
-                getOverview(info, eMovie);
-                getReleased(info, eMovie);
-                getRating(info, eMovie);
-                getRuntime(info, eMovie);
-
-                return true;
-            }
-
+            return true;
         }
         return false;
     }
@@ -144,6 +136,8 @@ public class TheMovieDbProvider {
     public boolean getMovie(MediaInfo info, String lang) {
         if(info.TmDbId.equals(info.TmDbIdNull))
             return false;
+
+        lang = lang.toLowerCase();
 
         if(lang.equals("en")) // en already parsed using getMovieByImdbID()
             return true;
@@ -153,64 +147,59 @@ public class TheMovieDbProvider {
         String url = apiGetInfo;
         url = url.replaceAll("<tmdbid>", String.valueOf(info.TmDbId));
         url = url.replaceAll("<lang>", lang);
-        xml = valerie.tools.WebGrabber.getXML(url);
+        xml = valerie.tools.WebGrabber.getXml(url);
 
         if (xml == null)
             return false;
 
-        List moviesList = xml.getRootElement().getChildren("movies");
-        if(moviesList != null && moviesList.size() > 0) {
-            List movieList = ((org.jdom.Element) moviesList.get(0)).getChildren("movie");
-            for(int i = 0; i < movieList.size(); i++)
-            {
-                org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
+        for(org.jdom.Element eMovie : movieList) {
 
-                if(getTranslated(eMovie))
-                    return false;
+            if(getTranslated(eMovie))
+                return false;
 
-                //getTmdbId(info, eMovie);
-                //getImdbId(info, eMovie);
-                getName(info, eMovie);
-                getOverview(info, eMovie);
-                getReleased(info, eMovie);
-                getRating(info, eMovie);
-                getRuntime(info, eMovie);
+            //getTmdbId(info, eMovie);
+            //getImdbId(info, eMovie);
+            getName(info, eMovie);
+            getOverview(info, eMovie);
+            getReleased(info, eMovie);
+            getRating(info, eMovie);
+            getRuntime(info, eMovie);
 
-                return true;
-            }
+            return true;
         }
         return false;
     }
 
-    public void getArtById(MediaInfo info) {
-           Document xml = null;
-           String url = apiImdbLookup;
-           url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
-           url = url.replaceAll("<lang>", "en");
-           xml = valerie.tools.WebGrabber.getXML(url);
+    public boolean  getArtById(MediaInfo info) {
+        if(info.ImdbId.equals(info.ImdbIdNull))
+            return false;
 
-           if (xml == null)
-                return;
+            Document xml = null;
+            String url = apiImdbLookup;
+            url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
+            url = url.replaceAll("<lang>", "en");
+            xml = valerie.tools.WebGrabber.getXml(url);
 
-           List movieList = ((org.jdom.Element)(xml.getRootElement().getChildren("moviematches")).get(0)).getChildren("movie");
-           for(int i = 0; i < movieList.size(); i++)
-           {
-               org.jdom.Element eMovie = (org.jdom.Element) movieList.get(i);
+            if (xml == null)
+                return false;
 
-               List ePosters = eMovie.getChildren("poster");
-               for( Object ePoster : ePosters) {
-                   if(ePoster != null && ((org.jdom.Element)ePoster).getAttributeValue("size").equals("mid"))
-                        info.Poster = ((org.jdom.Element)ePoster).getText();
-               }
+            List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
+            for(org.jdom.Element eMovie : movieList) {
+                List ePosters = eMovie.getChildren("poster");
+                for( Object ePoster : ePosters) {
+                    if(ePoster != null && ((org.jdom.Element)ePoster).getAttributeValue("size").equals("mid"))
+                         info.Poster = ((org.jdom.Element)ePoster).getText();
+                }
 
-               List eBackdrops = eMovie.getChildren("backdrop");
-               for( Object eBackdrop : eBackdrops) {
-                   if(eBackdrop != null && ((org.jdom.Element)eBackdrop).getAttributeValue("size").equals("original"))
-                        info.Backdrop = ((org.jdom.Element)eBackdrop).getText();
-               }
-               break;
-           }
-            return;
+                List eBackdrops = eMovie.getChildren("backdrop");
+                for( Object eBackdrop : eBackdrops) {
+                    if(eBackdrop != null && ((org.jdom.Element)eBackdrop).getAttributeValue("size").equals("original"))
+                         info.Backdrop = ((org.jdom.Element)eBackdrop).getText();
+                }
+                return true;
+            }
+            return false;
         }
 
 }

@@ -59,7 +59,7 @@ public class WebGrabber {
             String filename = url.toString().replaceAll("\\W", "");
             //DebugOutput.printl("->");
             try {
-                 Utf8 f;
+                Utf8 f;
 
                 f = new Utf8(CACHE_DIR + filename, "w");
                 String[] lines = text.split("\n");
@@ -76,29 +76,32 @@ public class WebGrabber {
         }
     }
 
-    public static Document getXML(String url) {
+    public static Document getXml(String url) {
         Document doc = null;
         String rawXml = getText(url);
+        if(rawXml != null) {
+            String decodedXml = /*StringEscapeUtils.unescapeXml(*/rawXml/*)*/;
 
-        String decodedXml = /*StringEscapeUtils.unescapeXml(*/rawXml/*)*/;
-
-        if(decodedXml != null && decodedXml.length() > 0) {
-            SAXBuilder builder = new SAXBuilder();
-            StringReader xmlout = new StringReader(decodedXml);
-            try {
-                doc = builder.build(xmlout);
-            } catch (Exception ex) {
-                System.out.printf("Webgrabber: %s\n%s\n-----------------\n",
-                        url.toString(), ex.getMessage());
+            if(decodedXml != null && decodedXml.length() > 0) {
+                SAXBuilder builder = new SAXBuilder();
+                StringReader xmlout = new StringReader(decodedXml);
+                try {
+                    doc = builder.build(xmlout);
+                } catch (Exception ex) {
+                    System.out.printf("Webgrabber: %s\n%s\n-----------------\n",
+                            url.toString(), ex.getMessage());
+                }
+                xmlout.close();
             }
-            xmlout.close();
         }
         return doc;
     }
 
     public static String getHtml(String url) {
         String rawHtml = getText(url);
-        String decodedHtml = StringEscapeUtils.unescapeHtml(rawHtml);
+        String decodedHtml = null;
+        if(rawHtml != null)
+            decodedHtml = StringEscapeUtils.unescapeHtml(rawHtml);
         return decodedHtml;
     }
 

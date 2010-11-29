@@ -1723,7 +1723,7 @@ public class ValerieView extends FrameView {
 
         Document xml = null;
         try {
-            xml = new valerie.tools.WebGrabber().getXML(new URL(cServer));
+            xml = valerie.tools.WebGrabber.getXml(cServer);
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }

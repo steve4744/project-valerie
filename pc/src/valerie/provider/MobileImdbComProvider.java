@@ -100,7 +100,7 @@ public class MobileImdbComProvider {
         String html = null;
 
         String url = apiSearch;
-        url = url.replaceAll("<search>", String.valueOf(info.SearchString.replaceAll(" ", "+")));
+        url = url.replaceAll("<search>", info.SearchString);
         html = valerie.tools.WebGrabber.getHtml(url);
 
         if (html == null)

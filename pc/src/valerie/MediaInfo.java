@@ -22,19 +22,23 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
     public int ID = 0;
 
-    public boolean isArchiv = false;
+    public boolean isArchiv    = false;
     public boolean needsUpdate = false;
+    public boolean Ignoring    = true;
+    // This is only used in the sync process
+    public boolean NotFound    = false;
 
-    public boolean isMovie = false;
-    public boolean isSerie = false;
+    public boolean isMovie   = false;
+    public boolean isSerie   = false;
     public boolean isEpisode = false;
 
-    public boolean isLocalLang = false;
+    public String LanguageOfPlot = "en";
 
-    public String Path = "";
-    public String Filename = "";
-    public String Extension = "";
+    public String Path         = "";
+    public String Filename     = "";
+    public String Extension    = "";
     public String SearchString = "";
+
     public String Title = "";
     public int AlternativesCount = 0;
     public String AlternativTitles[] = new String[alternativesMax];
@@ -42,14 +46,16 @@ public class MediaInfo implements Comparable<MediaInfo>{
      * @deprecated
      */
     public String LocalTitle = "";
-    public int Year = 0;
+    public int    Year = 0;
     public String ImdbIdNull = "tt0000000";
-    public String ImdbId = ImdbIdNull;
+    public String ImdbId     = ImdbIdNull;
     public String AlternativImdbs[] = new String[alternativesMax];
-    public String Poster = "";
-    public String Backdrop = "";
-    public String Banner = "";
-    public String Runtime = "";
+    public String TheTvDbIdNull = "0";
+    public String TheTvDbId     = TheTvDbIdNull;
+    public String TmDbIdNull = "0";
+    public String TmDbId     = TmDbIdNull;
+
+    public int    Runtime = 0;
     public String Resolution = "";
     public String Sound = "";
     public String Plot = "";
@@ -61,19 +67,21 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public String Writers = "";
     public String Genres = "";
     public String Tag = "";
+    /**
+     * @deprecated
+     */
     public String Releasedate = "";
     public int Popularity = 0;
     public int Season = -1;
     public int Episode = -1;
-    public String TheTvDbIdNull = "0";
-    public String TheTvDbId = TheTvDbIdNull;
-    public String TmDbIdNull = "0";
-    public String TmDbId = TmDbIdNull;
-    //public int ref = -1;
-    public boolean Ignoring = true;
 
-    // This is only used in the sync process
-    public boolean NotFound = false;
+
+    public String Poster = "";
+    public String Backdrop = "";
+    public String Banner = "";
+
+    //public int ref = -1;
+    
 
     /**
      * @deprecated
@@ -464,7 +472,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
                         else if(key.equals("LocalPlot"))
                             LocalPlot = value;
                         else if(key.equals("Runtime"))
-                            Runtime = value;
+                            Runtime = Integer.valueOf(value);
                         else if(key.equals("Genres"))
                             Genres = value;
                         else if(key.equals("Tag"))
@@ -518,7 +526,6 @@ public class MediaInfo implements Comparable<MediaInfo>{
 
         Title = cleanString(Title);
         LocalTitle = cleanString(LocalTitle);
-        Runtime = cleanString(Runtime);
         Plot = cleanString(Plot);
         LocalPlot = cleanString(LocalPlot);
         Directors = cleanString(Directors);

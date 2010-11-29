@@ -336,14 +336,14 @@ public final class Controller extends Notifier {
                 if(!userLang.equals("en")) {
                     DebugOutput.printl("TheMovieDbProvider().getMovie " + userLang);
                     if(new TheMovieDbProvider().getMovie(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 } else
-                    elementInfo.isLocalLang = true;
+                    elementInfo.LanguageOfPlot = "en";
 
                 // If we still dont have a local language, lets try imdb
-                if(!elementInfo.isLocalLang) {
+                if(!userLang.equals(elementInfo.LanguageOfPlot)) {
                     if(LocalImdbProvider.getMoviesByImdbID(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 }
 
                 if(elementInfo.Title.length() > 0)
@@ -363,14 +363,14 @@ public final class Controller extends Notifier {
                 if(!userLang.equals("en")) {
                     DebugOutput.printl("TheTvDbProvider().getSerie " + userLang);
                     if(new TheTvDbProvider().getSerie(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 } else
-                    elementInfo.isLocalLang = true;
+                    elementInfo.LanguageOfPlot = "en";
 
                 // If we still dont have a local language, lets try imdb
-                if(!elementInfo.isLocalLang) {
+                if(!userLang.equals(elementInfo.LanguageOfPlot)) {
                     if(LocalImdbProvider.getMoviesByImdbID(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 }
 
 		MediaInfo elementInfoSerie = elementInfo.clone();
@@ -383,14 +383,14 @@ public final class Controller extends Notifier {
                 if(!userLang.equals("en")) {
                     DebugOutput.printl("TheTvDbProvider().getEpisode " + userLang);
                     if(new TheTvDbProvider().getEpisode(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 } else
-                    elementInfo.isLocalLang = true;
+                    elementInfo.LanguageOfPlot = "en";
 
                 // If we still dont have a local language, lets try imdb
-                if(!elementInfo.isLocalLang) {
+                if(!userLang.equals(elementInfo.LanguageOfPlot)) {
                     if(LocalImdbProvider.getEpisodeByImdbID(elementInfo, userLang))
-                        elementInfo.isLocalLang = true;
+                        elementInfo.LanguageOfPlot = userLang;
                 }
 
                 if(elementInfo.Title.length() > 0)
