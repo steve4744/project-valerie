@@ -5,85 +5,26 @@ Created on 21.05.2010
 '''
 
 import re
-import Config
-from WebGrabber import WebGrabber
+import WebGrabber
 from HtmlEncoding import decode_htmlentities
 
 class ImdbProvider(object):
-    '''
-    classdocs
-    '''
-
-    class ImdbProviderCOM():
-        language = "en"
-        url = "http://akas.imdb.com"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-        
-    class ImdbProviderDE():
-        language = "de"
-        url = "http://www.imdb.de"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-
-    class ImdbProviderIT():
-        language = "it"
-        url = "http://www.imdb.it"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-        
-    class ImdbProviderES():
-        language = "es"
-        url = "http://www.imdb.es"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-        
-    class ImdbProviderFR():
-        language = "fr"
-        url = "http://www.imdb.fr"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-        
-    class ImdbProviderES():
-        language = "pt"
-        url = "http://www.imdb.pt"
-        apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
-        apiImdbLookup = url + "/title/"
-        apiSearch = url + "/find?s=tt;q="
-        
-    def __init__(self):
-        localSites = [self.ImdbProviderDE, self.ImdbProviderIT, self.ImdbProviderES, self.ImdbProviderFR, self.ImdbProviderES]
-        
-        #language = Config.getKey("local")
-        #for entry in localSites:
-        #    if entry.language == language;
-        #        self.apiSearchTV = entry.apiSearchTV
-        #        self.apiImdbLookup = entry.apiImdbLookup
-        #        self.apiSearch = entry.apiSearch
-        #        return
-                
-        self.apiSearchTV = self.ImdbProviderCOM.apiSearchTV
-        self.apiImdbLookup = self.ImdbProviderCOM.apiImdbLookup
-        self.apiSearch = self.ImdbProviderCOM.apiSearch
-    
+    url = "http://akas.imdb.com"
+    apiSearchTV = url + "/search/title?title=<title>&title_type=tv_series"
+    apiImdbLookup = url + "/title/"
+    apiSearch = url + "/find?s=tt;q="
+       
    
     def getMoviesByImdbId(self, mediaInfo):
         
-        if mediaInfo.ImdbId == "tt0000000":
+        if mediaInfo.ImdbId == mediaInfo.ImdbIdNull:
             return mediaInfo
         
-        pageHtml = WebGrabber().grab(self.apiImdbLookup + mediaInfo.ImdbId)
+        pageHtml = WebGrabber.getHtml(self.apiImdbLookup + mediaInfo.ImdbId)
         
         if not pageHtml:
             return mediaInfo
        
-        pageHtml = decode_htmlentities(pageHtml)
-
         m = re.search(r'<title>.+?\(\d{4}[\/IVX]*\).*?</title>', pageHtml)
         if m and m.group():
             mediaInfo = self.parseDetailsScreen(mediaInfo, pageHtml)
@@ -97,12 +38,10 @@ class ImdbProvider(object):
             urlTitle = mediaInfo.SearchString
             urlTitle = re.sub(" ", "+", urlTitle)
             
-            pageHtml = WebGrabber().grab(re.sub("<title>", urlTitle, self.apiSearchTV), "utf-8")
+            pageHtml = WebGrabber.getHtml(re.sub("<title>", urlTitle, self.apiSearchTV))
        
             if not pageHtml:
                 return mediaInfo
-           
-            pageHtml = decode_htmlentities(pageHtml)
             
             m = re.search(r'Most Popular TV Series With Title Matching', pageHtml)
             if m and m.group():
@@ -133,15 +72,13 @@ class ImdbProvider(object):
         return mediaInfo
     
     def getPlot(self, mediaInfo):
-        if mediaInfo.ImdbId == "tt0000000":
+        if mediaInfo.ImdbId == mediaInfo.ImdbIdNull:
             return mediaInfo
         
-        pageHtml = WebGrabber().grab(self.apiImdbLookup + mediaInfo.ImdbId + "/plotsummary")
+        pageHtml = WebGrabber.getHtml(self.apiImdbLookup + mediaInfo.ImdbId + "/plotsummary")
    
         if not pageHtml:
             return mediaInfo
-        
-        pageHtml = decode_htmlentities(pageHtml)
 
         m = re.search(r'<p class=\"plotpar\">\s*(?P<plot>[^<]+?)<i>', pageHtml)
         if m and m.group("plot"):

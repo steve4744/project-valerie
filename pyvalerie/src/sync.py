@@ -9,12 +9,14 @@ import Config
 import DirectoryScanner
 import MediaInfo
 from Arts import Arts
-from ImdbProvider import ImdbProvider
+from MobileImdbComProvider import MobileImdbComProvider
+from LocalImdbProvider import LocalImdbProvider
 from TheMovieDbProvider import TheMovieDbProvider
 from TheTvDbProvider import TheTvDbProvider
 from Database import Database
-from WebGrabber import WebGrabber
+import WebGrabber
 import replace
+import Utf8
 
 def checkDefaults():
 	try: 
@@ -45,10 +47,10 @@ def checkDefaults():
 	
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 		print("Check defaultbackdrop.m1v - Missing -> Downloading")
-		WebGrabber().grabFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
+		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 		print("Check defaultposter.png - Missing -> Downloading")
-		WebGrabber().grabFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
 	
 	try: 
 		print("Check "+"/hdd/valerie/episodes")
@@ -64,7 +66,7 @@ def checkDefaults():
 		print("Check "+"/hdd/valerie/valerie.conf")
 		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
 			print("Check valerie.conf - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
+			WebGrabber.getFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
 			print(" - Created\n")
 		else:
 			print(" - OK\n")
@@ -76,7 +78,7 @@ def checkDefaults():
 		print("Check "+"/hdd/valerie/pre.conf")
 		if os.path.isfile("/hdd/valerie/pre.conf") is False:
 			print("Check pre.conf - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"pre.conf", "../pre.conf")
+			WebGrabber.getFile(DEFAULTURL+"pre.conf", "../pre.conf")
 			print(" - Created\n")
 		else:
 			print(" - OK\n")
@@ -87,7 +89,7 @@ def checkDefaults():
 		print("Check "+"/hdd/valerie/post_movie.conf")
 		if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
 			print("Check post_movie.conf - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
 			print(" - Created\n")
 		else:
 			print(" - OK\n")
@@ -98,7 +100,7 @@ def checkDefaults():
 		print("Check "+"/hdd/valerie/post_tv.conf")
 		if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
 			print("Check post_tv.conf - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
 			print(" - Created\n")
 		else:
 			print(" - OK\n")
@@ -109,7 +111,7 @@ def checkDefaults():
 		print("Check "+"/hdd/valerie/paths.conf")
 		if os.path.isfile("/hdd/valerie/paths.conf") is False:
 			print("Check paths.conf - Missing -> Downloading")
-			WebGrabber().grabFile(DEFAULTURL+"paths.conf", "../paths.conf")
+			WebGrabber.getFile(DEFAULTURL+"paths.conf", "../paths.conf")
 			print(" - Created\n")
 		else:
 			print(" - OK\n")
@@ -135,126 +137,219 @@ class pyvalerie(Thread):
 		
 		Config.load()
 		
-		###
-		
 		self.output("Loading Database")
 		db = Database()
 		db.reload()
-		
-		###
-		
-		
+		print "  ", db
 		
 		self.output("Loading Replacements")
 		replace.load()
 		
-		###
-		
-		# Check default config
-
-		
 		self.output("Searching for media files")
-		fconf = open("/hdd/valerie/paths.conf", "r")
-		filetypes = fconf.readline().strip().split('|')
-		self.output("Extensions: " + str(filetypes))
-		print filetypes
-		ds = None
-		elementList = None
-		for path in fconf.readlines(): 
-			path = path.strip()
-			
-			p = path.split('|')
-			path = p[0]
-			if len(p) > 1:
-				type = p[1]
-			else:
-				type = "MOVIE_AND_TV"
-			
-			if os.path.isdir(path):
-				ds = DirectoryScanner.DirectoryScanner(path)
-				elementList = ds.listDirectory(filetypes, "(sample)")
-				del ds
-		
-		if elementList is None:
-			self.output("Found " + str(0) + " media files")
-		else:
-			self.output("Found " + str(len(elementList)) + " media files")
-			
-			self.range(len(elementList))
-			
-			i = 0
-			for element in elementList:
-				self.output("(" + str(i) + "/" + str(len(elementList))  + ")")
-				self.progress(i)
-				i = i + 1
-				try:
-					path = unicode(element[0].replace("\\", "/"), "utf-8")
-					filename = unicode(element[1], "utf-8")
-					extension = unicode(element[2], "utf-8")
-				except UnicodeDecodeError, ex:
-					try:
-						print type(element[0]), type(element[1]), type(element[2])
-						path = unicode(element[0].replace("\\", "/"), "latin-1")
-						filename = unicode(element[1], "latin-1")
-						extension = unicode(element[2], "latin-1")
-					except UnicodeDecodeError, ex2:
-						print "Conversion to utf-8 failed!!!", ex2
-						#continue
-				
-				if "RECYCLE.BIN" in path:
-					continue
-					
-				if db.checkDuplicate(path, filename, extension):
-					#self.output("Already in db [ " + filename.encode('latin-1') + "." + extension.encode('latin-1') + " ]")
-					continue
-				else:
-					self.output("-> " + filename.encode('latin-1') + "." + extension.encode('latin-1'))
-					
-				elementInfo = MediaInfo.MediaInfo(path, filename, extension)
-				
-				if type == "MOVIE":
-					elementInfo.isMovie = True
-				elif type == "TV":
-					elementInfo.isSerie = True
-				
-				result = elementInfo.parse()
-				#print elementInfo
-				
-				if result == False:
-					continue
-				
-				elementInfo = ImdbProvider().getMovieByTitle(elementInfo)
-				
-				if elementInfo.isMovie:
-					# Ask TheMovieDB for the local title and plot
-					elementInfo = TheMovieDbProvider().getMovieByImdbID(elementInfo)
-					elementInfo = TheMovieDbProvider().getArtByImdbId(elementInfo)
-					Arts().download(elementInfo)
-					db.add(elementInfo)
-					self.info(str(elementInfo.ImdbId) + "_poster.png", elementInfo.Title, elementInfo.Year)
-				elif elementInfo.isSerie:
-					elementInfo = TheTvDbProvider().getSerieByImdbID(elementInfo)
-					
-					elementInfo = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
-					#print elementInfo
-					db.add(elementInfo)
-					
-					elementInfoe = elementInfo.copy()
-					
-					elementInfoe.isSerie = False
-					elementInfoe.isEpisode = True
-					
-					elementInfoe = TheTvDbProvider().getEpisodeByTheTvDbId(elementInfoe)
-					#print elementInfoe
-					db.add(elementInfoe)
-					Arts().download(elementInfo)
-					self.info(str(elementInfo.TheTvDbId) + "_poster.png", elementInfo.Title, elementInfo.Year)
-			
-			self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
-			self.progress(i)
-			
-			
+		fconf = Utf8.Utf8("/hdd/valerie/paths.conf", "r")
+		lines = fconf.read().split(u"\n")
 		fconf.close()
+		if len(lines) > 1:
+			filetypes = lines[0].strip().split('|')
+			self.output("    Extensions: " + str(filetypes))
+			print filetypes
+			
+			ds = None
+			elementList = None
+			for path in lines[1:]: 
+				path = path.strip()
+				
+				p = path.split(u'|')
+				path = p[0]
+				if len(p) > 1:
+					type = p[1]
+				else:
+					type = u"MOVIE_AND_TV"
+				
+				if os.path.isdir(path):
+					ds = DirectoryScanner.DirectoryScanner(Utf8.utf8ToLatin(path))
+					elementList = ds.listDirectory(filetypes, "(sample)")
+					del ds
+			
+			if elementList is None:
+				self.output("Found " + str(0) + " media files")
+			else:
+				self.output("Found " + str(len(elementList)) + " media files")
+				
+				self.range(len(elementList))
+				
+				i = 0
+				for element in elementList:
+					i = i + 1
+					self.progress(i)
+					
+					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
+					filename  = Utf8.stringToUtf8(element[1])
+					extension = Utf8.stringToUtf8(element[2])
+					if path is None or filename is None or extension is None:
+						continue
+					
+					if "RECYCLE.BIN" in path:
+						continue
+						
+					if db.checkDuplicate(path, filename, extension):
+						#self.output("Already in db [ " + filename.encode('latin-1') + "." + extension.encode('latin-1') + " ]")
+						continue
+					
+					self.output("(" + str(i) + "/" + str(len(elementList))  + ")")	
+					print "-"*60	
+					self.output("  -> " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
+						
+					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
+					
+					if type == u"MOVIE":
+						elementInfo.isMovie = True
+					elif type == u"TV":
+						elementInfo.isSerie = True
+					
+					result = elementInfo.parse()
+					#print elementInfo
+					
+					if result == False:
+						continue
+					
+					#elementInfo = ImdbProvider().getMovieByTitle(elementInfo)
+					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
+					if tmp is None:
+						print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
+						continue
+					elementInfo = tmp
+					
+					if elementInfo.isMovie:
+						# Ask TheMovieDB for the local title and plot
+						tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
+						if tmp is None:
+							print "TheMovieDbProvider().getMovieByImdbID(elementInfo) returned None"
+						else:
+							elementInfo = tmp
+
+						tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
+						if tmp is None:
+							print "TheMovieDbProvider().getMovie(elementInfo, u\"en\") returned None"
+						else:
+							elementInfo = tmp
+
+						userLang = Config.getString("local")
+						if userLang != u"en":
+							tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
+							if tmp is None:
+								print "TheMovieDbProvider().getMovie(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+
+						if userLang != elementInfo.LanguageOfPlot:
+							tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
+							if tmp is None:
+								print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+						
+						###
+
+						tmp = TheMovieDbProvider().getArtByImdbId(elementInfo)
+						if tmp is None:
+							print "TheMovieDbProvider().getArtByImdbId(elementInfo) returned None"
+						else:
+							elementInfo = tmp
+							Arts().download(elementInfo)
+							
+						if db.add(elementInfo):
+							self.info(str(elementInfo.ImdbId) + "_poster.png", 
+									Utf8.utf8ToLatin(elementInfo.Title), elementInfo.Year)
+						else:
+							print "Title already in db"
+					elif elementInfo.isSerie:
+						tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
+						if tmp is None:
+							print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"
+						else:
+							elementInfo = tmp
+						
+						tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
+						if tmp is None:
+							print "TheTvDbProvider().getSerie(elementInfo, u\"en\") returned None"
+						else:
+							elementInfo = tmp
+							
+						userLang = Config.getString("local")
+						if userLang != u"en":
+							tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
+							if tmp is None:
+								print "TheTvDbProvider().getSerie(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+								
+						if userLang != elementInfo.LanguageOfPlot:
+							tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
+							if tmp is None:
+								print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+						###
+														
+						tmp = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
+						if tmp is None:
+							print "TheTvDbProvider().getArtByTheTvDbId(elementInfo) returned None"
+						else:
+							elementInfo = tmp
+							Arts().download(elementInfo)
+						
+						#print elementInfo
+						db.add(elementInfo)
+						
+						elementInfoe = elementInfo.copy()
+						
+						elementInfoe.isSerie = False
+						elementInfoe.isEpisode = True
+						
+						###
+						
+						tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
+						if tmp is None:
+							print "TheTvDbProvider().getEpisode(elementInfo, u\"en\") returned None"
+						else:
+							elementInfo = tmp
+						
+						if userLang != u"en":
+							tmp = TheTvDbProvider().getEpisode(elementInfo, userLang)
+							if tmp is None:
+								print "TheTvDbProvider().getEpisode(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+						
+						if userLang != elementInfo.LanguageOfPlot:
+							tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfo, userLang)
+							if tmp is None:
+								print "LocalImdbProvider().getEpisodeByImdbID(elementInfo, userLang) returned None"
+							else:
+								elementInfo = tmp
+								elementInfo.LanguageOfPlot = userLang;
+								
+						###
+						
+						#print elementInfoe
+						
+						if db.add(elementInfoe):
+							self.info(str(elementInfo.TheTvDbId) + "_poster.png", 
+									Utf8.utf8ToLatin(elementInfo.Title), elementInfo.Year)
+						else:
+							print "Title already in db"
+				
+				self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
+				self.progress(i)
+			
+			
+		
 		
 		self.output("Saving database")
 		db.save()

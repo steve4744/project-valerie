@@ -30,5 +30,8 @@ def load():
         
 def getKey(key):
     return conf[key].strip()
+
+def getString(key):
+    return getKey(key)
             
         

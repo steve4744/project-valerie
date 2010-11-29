@@ -174,8 +174,12 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 	def exit(self):
 		print "exit"
 		self.close()
-		
-class ProjectValerieSyncSettings(Screen):
+
+from Components.ConfigList import ConfigListScreen
+from Components.config import ConfigSelection
+from Components.config import *
+
+class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 	skin = """
 		<screen position="100,100" size="560,400" title="Settings" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
@@ -183,6 +187,96 @@ class ProjectValerieSyncSettings(Screen):
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
 			
+			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<!-- widget source="key_yellow" render="Label" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" / -->
+			<!-- widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" / -->
+			
+			<widget name="config" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
+		</screen>"""
+		
+	def __init__(self, session, args = 0):
+		self.session = session
+		Screen.__init__(self, session)
+		self["key_red"] = StaticText(_("Cancel"))
+		self["key_green"] = StaticText(_("Save"))
+
+		ConfigListScreen.__init__(self, [])
+		self.initConfigList()
+		#config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
+
+
+		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
+		{
+		    "green": self.save,
+		    "red": self.cancel,
+		    "cancel": self.cancel,
+		    "ok": self.ok,
+		}, -2)
+
+	def initConfigList(self, element=None):
+		print "[initConfigList]", element
+		try:
+			default = "en"
+			fconf = open("/hdd/valerie/valerie.conf", "r")
+			for path in fconf.readlines(): 
+				path = path.strip()
+				p = path.split('=')
+				key = p[0]
+				if len(p) > 1:
+					value = p[1]
+				else:
+					value = "en"
+				if key == "local":
+					default = value
+					break
+			fconf.close()
+			
+			self.list = []
+			self.local = ConfigSelection(default=default, choices = ["en", "de", "it", "es", "fr", "pt"])
+			self.list.append(getConfigListEntry(_("local"), self.local))
+			self["config"].setList(self.list)
+		except KeyError:
+			print "keyError"
+
+	def changedConfigList(self):
+		self.initConfigList()
+
+	def ok(self):
+		print "ok"
+
+	def save(self):
+		print "save"
+		print self.local.value
+		
+		conf = []
+		fconf = open("/hdd/valerie/valerie.conf", "r")
+		for path in fconf.readlines(): 
+			path = path.strip()
+			p = path.split('=')
+			key = p[0]
+			if key is not None and key != "local":
+				conf.append(path)
+		fconf.close()
+		
+		fconf = open("/hdd/valerie/valerie.conf", "w")
+		for entry in conf:
+			fconf.write(entry + "\n")
+		fconf.write("local=" + self.local.value + "\n")
+		fconf.close()
+		self.close()
+
+	def cancel(self):
+		self.close()
+
+class ProjectValerieSyncSettings(Screen):
+	skin = """
+		<screen position="100,100" size="560,400" title="Settings" >
+			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
+					
 			<widget name="settingsMenu" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
 		</screen>"""
 		
@@ -219,6 +313,8 @@ class ProjectValerieSyncSettings(Screen):
 		if returnValue is not None:
 			if returnValue == "confPaths":
 				self.session.open(ProjectValerieSyncSettingsConfPaths)
+			elif returnValue == "confLang":
+				self.session.open(ProjectValerieSyncSettingsLanguage, self)
 			elif returnValue == "clearCache":
 				self.removeDir("/hdd/valerie/cache")
 			elif returnValue == "delArts":
@@ -334,7 +430,7 @@ class ProjectValerieSync(Screen):
 	def info(self, poster, name, year):
 		print name
 		self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
-		self["name"].setText(name.encode("utf-8"))
+		self["name"].setText(name)
 		self["year"].setText(str(year))
 	
 def main(session, **kwargs):

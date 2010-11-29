@@ -5,97 +5,115 @@ Created on 22.05.2010
 '''
 
 import os
-import re
 import urllib2
-import codecs
 import socket
 from sys import version_info
 import sys, traceback
 
 from HtmlEncoding import decode_htmlentities
+import twisted.web.microdom as microdom
+import Utf8
+import re
 
-class WebGrabber(object):
-    '''
-    classdocs
-    '''
+cacheDir = "/hdd/valerie/cache"
+downloadDir = "/hdd/valerie/media"
 
-    cacheDir = "/hdd/valerie/cache"
-    downloadDir = "/hdd/valerie/media"
+RETRIES = 3
 
-    def __init__(self):
-        '''
-        Constructor
-        '''
+import urllib
+import urlparse
+
+def url_fix(s):
+    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
+    path = urllib.quote(path, '/%')
+    qs = urllib.quote_plus(qs, ':&=')
+    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+
+def checkCache(url):
+    cacheFile = re.sub(r'\W', "", url).strip()
+    rtv = None
+    if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
+        f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
+        rtv = f.read()
+        f.close()
+    
+    return rtv
+
+def addCache(url, text):
+    cacheFile = re.sub(r'\W', "", url).strip()
+    if text is not None and len(text) > 0:
+        f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
+        f.write(text)
+        f.close
+     
+def getXml(url):
+    rawXml = getText(url) 
+    decodedXml = None
+    try:
+        if rawXml is not None:
+            decodedXml = microdom.parseString(rawXml)
+    except Exception, ex:
+        print "URL", Utf8.utf8ToLatin(url)
+        print "WebGrabber.getXml: ", ex
         
-    def grab(self, url, encoding="utf-8"): #encoding="latin-1"):
-        print "URL", url.encode('latin-1')
-        cacheFile = re.sub(r'(\"|/|\\|:|\?|<|>|\|)', "_", url)
-        pageHtml = None
-        if os.path.isfile((self.cacheDir + "/" + cacheFile + ".cache").encode('latin-1')):
-            if encoding == "utf-8":
-                f = codecs.open(self.cacheDir + "/" + cacheFile + ".cache", "r", "utf-8")
-                pageHtml = f.read()[:-1]
-                f.close()
-            else:
-                f = open(self.cacheDir + "/" + cacheFile + ".cache", 'r')
-                pageHtml = f.read()
-                f.close()
-        else:
+    return decodedXml
+     
+def getHtml(url):
+    rawHtml = getText(url) 
+    decodedHtml = None
+    try:
+        if rawHtml is not None:
+            decodedHtml = decode_htmlentities(rawHtml)
+    except Exception, ex:
+        print "URL", Utf8.utf8ToLatin(url)
+        print "WebGrabber.getHtml: ", ex
+        
+    return decodedHtml
+     
+def getText(url): 
+    #print "URL", url.encode('latin-1')
+    utfPage = checkCache(url)
+    if utfPage is None:
+        for i in range(RETRIES):
+            page = None
             kwargs = {}
             if version_info[1] >= 6:
                 kwargs['timeout'] = 10
             else:
                 socket.setdefaulttimeout(10)
             try:
-                page = urllib2.urlopen(url.encode('latin-1'), **kwargs)
+                page = urllib2.urlopen(Utf8.utf8ToLatin(url_fix(url)), **kwargs)
             except Exception, ex:
-                print "URL", url.encode('latin-1')
-                print "urllib2.urlopen: ", ex
-                return None
-            if encoding == "utf-8":
-                pageUnicode = page.read()
-                try:
-                    pageHtml =  unicode(pageUnicode, "utf-8")
-                except UnicodeDecodeError, ex:
-                    try:
-                        pageHtml =  unicode(pageUnicode, "latin-1")
-                    except UnicodeDecodeError, ex2:
-                        print "Conversion to utf-8 failed!!!", ex2
-            elif encoding == "latin-1":
-                pageHtml = page.read() # read as latin-1
-                #print type(pageHtml)
-                pageHtml = pageHtml.decode("latin-1")
-                #pageHtml = unicode(pageHtml, "utf-8")
+                print "URL", Utf8.utf8ToLatin(url)
+                print "urllib2::urlopen: ", ex
+                continue
             
-            try:
-                f = codecs.open(self.cacheDir + "/" + cacheFile + ".cache", 'w', "utf-8")
-                f.write(pageHtml)
-                f.close()
-            except Exception, ex:
-                print "create cache ", ex, type(pageHtml)
-        
-        print "pageHtml: ", type(pageHtml)
-        return pageHtml
+            if page is not None:
+                rawPage = page.read()
+                utfPage = Utf8.stringToUtf8(rawPage)
+                
+                addCache(url, utfPage)
+                break
     
-    def grabFile(self, url, name):
-        print "URL", url.encode('latin-1')
-        #cacheFile = url.split('/')
-        #cacheFile = cacheFile[len(cacheFile)-1]
-        #pageHtml = None
-        if os.path.isfile(self.downloadDir + "/" + name) is False:
-            for i in range(3):
-                try:
-                    page = urllib2.urlopen(url.encode('latin-1'))
-                    f = open(self.downloadDir + "/" + name.encode('latin-1'), 'wb')
-                    f.write(page.read())
-                    f.close()
-                    break
-                except Exception, ex:
-                    print "File download failed: ", ex
-                    print "Name: ", name
-                    print type(ex)
-                    print '-'*60
-                    traceback.print_exc(file=sys.stdout)
-                    print '-'*60
-            
-        return
+    print "utfPage: ", type(utfPage), "URL=", url
+    return utfPage
+    
+def getFile(url, name, retry=3):
+    localFilename = downloadDir + "/" + name
+    if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
+        for i in range(retry):
+            try:
+                page = urllib2.urlopen(Utf8.utf8ToLatin(url_fix(url)))
+                f = open(Utf8.utf8ToLatin(localFilename), 'wb')
+                f.write(page.read())
+                f.close()
+                break
+            except Exception, ex:
+                print "File download failed: ", ex
+                print "Name: ", Utf8.utf8ToLatin(name)
+                print type(ex)
+                print '-'*60
+                traceback.print_exc(file=sys.stdout)
+                print '-'*60
+        
+    return
