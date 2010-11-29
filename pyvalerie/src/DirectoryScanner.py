@@ -26,22 +26,22 @@ class DirectoryScanner():
     def getDirectory(self):
         return self.directory
         
-    def listDirectory(self, fileExtList, fileIgnoreRegex):
-        self._listDirectory(self.directory, fileExtList, fileIgnoreRegex)
+    def listDirectory(self, fileExtList, fileIgnoreRegex, type):
+        self._listDirectory(self.directory, fileExtList, fileIgnoreRegex, type)
         return self.fileList
         
-    def _listDirectory(self, directory, fileExtList, fileIgnoreRegex):                                        
+    def _listDirectory(self, directory, fileExtList, fileIgnoreRegex, type):                                        
         "get list of file info objects for files of particular extensions" 
         try:
             for f in os.listdir(directory):
                 file = os.path.join(directory, f)
                 if os.path.isdir(file):
-                    self._listDirectory(file, fileExtList, fileIgnoreRegex)
+                    self._listDirectory(file, fileExtList, fileIgnoreRegex, type)
                 elif os.path.isfile(file):
                     ext = os.path.splitext(f)[1].lstrip(".")
                     name = os.path.splitext(f)[0]
                     if ext in fileExtList and re.search(fileIgnoreRegex, name) is None:
-                        self.fileList.append([directory, name, ext])
+                        self.fileList.append([directory, name, ext, type])
         except Exception, ex:
             import sys, traceback
 

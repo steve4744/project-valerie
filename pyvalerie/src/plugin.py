@@ -429,9 +429,12 @@ class ProjectValerieSync(Screen):
 	
 	def info(self, poster, name, year):
 		print name
-		self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
-		self["name"].setText(name)
-		self["year"].setText(str(year))
+		try:
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
+			self["name"].setText(name)
+			self["year"].setText(str(year))
+		except Exception, ex:
+			print "ProjectValerieSync::info", ex
 	
 def main(session, **kwargs):
 	session.open(ProjectValerieSync)

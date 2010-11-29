@@ -168,7 +168,7 @@ class pyvalerie(Thread):
 				
 				if os.path.isdir(path):
 					ds = DirectoryScanner.DirectoryScanner(Utf8.utf8ToLatin(path))
-					elementList = ds.listDirectory(filetypes, "(sample)")
+					elementList = ds.listDirectory(filetypes, "(sample)", type)
 					del ds
 			
 			if elementList is None:
@@ -186,6 +186,7 @@ class pyvalerie(Thread):
 					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
 					filename  = Utf8.stringToUtf8(element[1])
 					extension = Utf8.stringToUtf8(element[2])
+					type      = element[3]
 					if path is None or filename is None or extension is None:
 						continue
 					
@@ -202,13 +203,16 @@ class pyvalerie(Thread):
 						
 					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
 					
+					print "TYPE:", type
+					
 					if type == u"MOVIE":
 						elementInfo.isMovie = True
+						elementInfo.isSerie = False
 					elif type == u"TV":
+						elementInfo.isMovie = False
 						elementInfo.isSerie = True
 					
 					result = elementInfo.parse()
-					#print elementInfo
 					
 					if result == False:
 						continue
