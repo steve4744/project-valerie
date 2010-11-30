@@ -95,7 +95,7 @@ def getText(url):
                 addCache(url, utfPage)
                 break
     
-    print "utfPage: ", type(utfPage), "URL=", url
+    print "utfPage: ", type(utfPage), "URL=", Utf8.utf8ToLatin(url)
     return utfPage
     
 def getFile(url, name, retry=3):
