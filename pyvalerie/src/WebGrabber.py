@@ -82,7 +82,7 @@ def getText(url):
             else:
                 socket.setdefaulttimeout(10)
             try:
-                page = urllib2.urlopen(Utf8.utf8ToLatin(url_fix(url)), **kwargs)
+                page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)), **kwargs)
             except Exception, ex:
                 print "URL", Utf8.utf8ToLatin(url)
                 print "urllib2::urlopen: ", ex
@@ -103,7 +103,7 @@ def getFile(url, name, retry=3):
     if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
         for i in range(retry):
             try:
-                page = urllib2.urlopen(Utf8.utf8ToLatin(url_fix(url)))
+                page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
                 f = open(Utf8.utf8ToLatin(localFilename), 'wb')
                 f.write(page.read())
                 f.close()
