@@ -217,7 +217,7 @@ class LocalImdbProvider():
         if html is None:
             return None
 
-        results = self.getResults(html)
+        results = self.getResults(html, lang)
         for result in results:
             if result.Season == info.Season and result.Episode == info.Episode:
                 return self.getMoviesByImdbID(info, lang, result.ImdbId)

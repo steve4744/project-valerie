@@ -91,12 +91,27 @@ class Database(object):
         return Utf8.utf8ToLatin(rtv)
 
     def save(self):
+        #import sqlite3
+        #doesMoviedbExist = True
+        #if os.path.isfile('/hdd/valerie/valerie.db') is False:
+        #    doesMoviedbExist = False
+        
+        #valeriedb = sqlite3.connect('/hdd/valerie/valerie.db')
+        #valeriedbCursor = valeriedb.Cursor()
+
+        #if doesMoviedbExist is False:
+        #    valeriedbCursor.execute('''create table movies
+        #        (ImdbId text, Title text, Year integer)''')
+            
         f = Utf8.Utf8(u"/hdd/valerie/moviedb.txt", 'w')
         f.write(unicode(date.today()))
         for key in self.dbMovies:
             f.write(self.dbMovies[key].export())
             self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
+        #    valeriedbCursor.execute('''insert into movies values (?)''', [(self.dbMovies[key].ImdbId,), (self.dbMovies[key].Title,), (self.dbMovies[key].Year,)] )
         f.close()
+        
+        #valeriedbCursor.close()
         
         f = Utf8.Utf8(u"/hdd/valerie/seriesdb.txt", 'w')
         f.write(unicode(date.today()))

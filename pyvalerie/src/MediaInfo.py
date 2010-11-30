@@ -342,6 +342,8 @@ class MediaInfo(object):
         self.SearchString = re.sub(r' +', u" ", self.SearchString)
         print ":2: ", Utf8.utf8ToLatin(self.SearchString)
         
+        self.SearchString = self.SearchString.strip()
+        
         post = u"post"
         if self.isSerie:
             post = u"post_tv"

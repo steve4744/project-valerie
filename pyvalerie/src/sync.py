@@ -159,6 +159,8 @@ class pyvalerie(Thread):
 			for path in lines[1:]: 
 				path = path.strip()
 				
+				print "PATH: ", path
+				
 				p = path.split(u'|')
 				path = p[0]
 				if len(p) > 1:
@@ -168,6 +170,8 @@ class pyvalerie(Thread):
 				
 				if os.path.isdir(path):
 					ds = DirectoryScanner.DirectoryScanner(Utf8.utf8ToLatin(path))
+					if elementList is not None:
+						print "LEN: ", len(elementList)
 					elementList = ds.listDirectory(filetypes, "(sample)", type)
 					del ds
 			
@@ -319,33 +323,33 @@ class pyvalerie(Thread):
 						
 						tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
 						if tmp is None:
-							print "TheTvDbProvider().getEpisode(elementInfo, u\"en\") returned None"
+							print "TheTvDbProvider().getEpisode(elementInfoe, u\"en\") returned None"
 						else:
-							elementInfo = tmp
+							elementInfoe = tmp
 						
 						if userLang != u"en":
-							tmp = TheTvDbProvider().getEpisode(elementInfo, userLang)
+							tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
 							if tmp is None:
-								print "TheTvDbProvider().getEpisode(elementInfo, userLang) returned None"
+								print "TheTvDbProvider().getEpisode(elementInfoe, userLang) returned None"
 							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
+								elementInfoe = tmp
+								elementInfoe.LanguageOfPlot = userLang;
 						
-						if userLang != elementInfo.LanguageOfPlot:
-							tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfo, userLang)
+						if userLang != elementInfoe.LanguageOfPlot:
+							tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang)
 							if tmp is None:
-								print "LocalImdbProvider().getEpisodeByImdbID(elementInfo, userLang) returned None"
+								print "LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang) returned None"
 							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
+								elementInfoe = tmp
+								elementInfoe.LanguageOfPlot = userLang;
 								
 						###
 						
 						#print elementInfoe
 						
 						if db.add(elementInfoe):
-							self.info(str(elementInfo.TheTvDbId) + "_poster.png", 
-									Utf8.utf8ToLatin(elementInfo.Title), elementInfo.Year)
+							self.info(str(elementInfoe.TheTvDbId) + "_poster.png", 
+									Utf8.utf8ToLatin(elementInfoe.Title), elementInfoe.Year)
 						else:
 							print "Title already in db"
 				
