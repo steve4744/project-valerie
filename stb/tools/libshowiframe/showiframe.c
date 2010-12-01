@@ -11,6 +11,12 @@
 
 #define VIDEO_STREAMTYPE_MPEG2 0
 
+#ifdef AZBOX
+#define VIDEO_SET_STC      _IO('o', 83)
+#define VIDEO_STOP_STC     _IO('o', 84)
+#define VIDEO_PLAY_STC     _IO('o', 85)
+#endif
+
 static int m_video_clip_fd = -1;
 
 int showSinglePic(const char *filename)
@@ -33,12 +39,26 @@ int showSinglePic(const char *filename)
             if (m_video_clip_fd >= 0) {
                 if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
                         printf("VIDEO_STOP failed (%m)\n");
+
+#ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_SET_STC) < 0)
+                        printf("VIDEO_SET_STC failed (%m)\n");
+#endif
+
                 if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
                         printf("VIDEO_PLAY failed (%m)\n");
+
+#ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_PLAY_STC) < 0)
+                        printf("VIDEO_PLAY_STC failed (%m)\n");
+#endif
+
                 if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
                         printf("video: VIDEO_CONTINUE: %m\n");
+#ifndef AZBOX
                 if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
                         printf("video: VIDEO_CLEAR_BUFFER: %m\n");
+#endif
 
                 int seq_end_avail = 0;
                 size_t pos = 0;
@@ -74,6 +94,10 @@ int showSinglePic(const char *filename)
 void finishShowSinglePic()
 {
     if (m_video_clip_fd >= 0) {
+#ifdef AZBOX
+        if (ioctl(m_video_clip_fd, VIDEO_STOP_STC, 0) < 0)
+            printf("VIDEO_STOP_STC failed (%m)\n");
+#endif
         if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
             printf("VIDEO_STOP failed (%m)\n");
 
