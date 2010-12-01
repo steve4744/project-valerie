@@ -32,6 +32,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
     public boolean isSerie   = false;
     public boolean isEpisode = false;
 
+    public boolean isEnigma2MetaRecording = false;
+
     public String LanguageOfPlot = "en";
 
     public String Path         = "";
@@ -119,20 +121,40 @@ public class MediaInfo implements Comparable<MediaInfo>{
         return false;
     }
 
-    public String getEnigma2RecordingName(Controller pController, String name) {
+    public class Enimga2MetaInfo {
+        public String MovieName = "";
+        public String EpisodeName = "";
+        public boolean IsMovie = false;
+        public boolean IsEpisode = false;
+
+        public Enimga2MetaInfo(String movieName, String episodeName) {
+            MovieName = movieName.trim();
+            EpisodeName = episodeName.trim();
+
+            if(MovieName.equals(EpisodeName))
+                IsMovie = true;
+            else
+                IsEpisode = true;
+        }
+    }
+
+    public Enimga2MetaInfo getEnigma2RecordingName(Controller pController, String name) {
         if(pController.get("BoxInfos") == null || pController.get("SelectedBoxInfo") == null)
-            return "";
+            return null;
         BoxInfo[] pBoxInfos = (BoxInfo[])pController.get("BoxInfos");
         int selectedBoxInfo = (Integer)pController.get("SelectedBoxInfo");
         if (selectedBoxInfo < 0)
-            return "";
+            return null;
 
         BoxInfo pBoxInfo = pBoxInfos[selectedBoxInfo];
 
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "cat \"" + name + ".meta\"");
-        if(entries.length > 0 && !entries[0].startsWith("cat:"))
-            return entries[1];
-        return "";
+        if(entries.length >= 2 && !entries[0].startsWith("cat:")) {
+            Enimga2MetaInfo e2info = new Enimga2MetaInfo(entries[1], entries[2]);
+            return e2info;
+        }
+            
+        return null;
     }
 
     public boolean isValerieInfoAvailable(Controller pController, String path) {
@@ -377,9 +399,21 @@ public class MediaInfo implements Comparable<MediaInfo>{
         }
 
         if (this.Extension.equals("ts") && this.isEnigma2Recording(pController, absFilename) == true) {
-            this.SearchString = this.getEnigma2RecordingName(pController, absFilename).trim();
-            //print ":: ", self.SearchString.encode('latin-1')
-            return true;
+            Enimga2MetaInfo e2info = this.getEnigma2RecordingName(pController, absFilename);
+            if(e2info != null) {
+                if(e2info.IsMovie) {
+                    this.SearchString = e2info.MovieName;
+                    this.isMovie = true;
+                    this.isEpisode = false;
+                } else if (e2info.IsEpisode) {
+                    this.SearchString = e2info.MovieName + ":: " + e2info.EpisodeName;
+                    this.isMovie = false;
+                    this.isEpisode = true;
+                }
+                //print ":: ", self.SearchString.encode('latin-1')
+                this.isEnigma2MetaRecording = true;
+                return true;
+            }
         }
 
         if (this.isValerieInfoAvailable(pController, this.Path) == true) {
@@ -398,6 +432,8 @@ public class MediaInfo implements Comparable<MediaInfo>{
         //this.SearchString = this.SearchString.replaceAll("[-]", " ");
         //this.SearchString = this.SearchString.replaceAll(" +", " ");
         //print ":2: ", self.SearchString.encode('latin-1')
+
+        this.SearchString = this.SearchString.trim();
 
         String post = "post";
         if (this.isEpisode)

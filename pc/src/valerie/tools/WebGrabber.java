@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
@@ -107,8 +108,17 @@ public class WebGrabber {
 
    public static String getText(String url) {
         try {
-            return getText(new URL(url));
+            URL urlParsed = new URL(url);
+            String encodedURL = urlParsed.getProtocol() + "://" + urlParsed.getHost() + urlParsed.getPath();
+            if(urlParsed.getQuery() != null)
+                encodedURL += "?" + URLEncode.encodePath(urlParsed.getQuery());
+
+            System.out.println("URL " + encodedURL);
+            return getText(new URL(encodedURL));
         } catch (Exception ex) {
+            System.out.println("URL " + url);
+            System.out.println(ex.toString());
+            System.out.println(ex.getMessage());
             return "";
         }
     }
@@ -123,7 +133,9 @@ public class WebGrabber {
         for(int i = 0; i < RETRIES; i++) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection)url.openConnection();
-                urlc.addRequestProperty("user-agent", "Firefox");
+                //urlc.addRequestProperty("user-agent", "Firefox");
+                urlc.setRequestProperty("User-Agent",
+                                        "Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)");
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
 
                 StringWriter out = new StringWriter();

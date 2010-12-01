@@ -10,6 +10,7 @@ import java.io.FilenameFilter;
 import java.util.HashMap;
 import valerie.Database;
 import valerie.MediaInfo;
+import valerie.provider.GoogleProvider;
 import valerie.provider.ImdbProvider;
 import valerie.provider.LocalImdbProvider;
 import valerie.provider.MobileImdbComProvider;
@@ -316,6 +317,14 @@ public final class Controller extends Notifier {
             if(elementInfo.SearchString.length() == 0)
                 elementInfo.parse(this);
 
+            if(elementInfo.isEpisode && elementInfo.isEnigma2MetaRecording) {
+                if(new GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)) {
+                    String[] searchStringSplitted = elementInfo.SearchString.split("::");
+                    if(searchStringSplitted.length >= 2)
+                        elementInfo.SearchString = searchStringSplitted[0];
+                }
+            }
+
             DebugOutput.printl("ImdbProvider().getMoviesByTitle");
             //new ImdbProvider().getMoviesByTitle(elementInfo);
             MobileImdbComProvider.getMoviesByTitle(elementInfo);
@@ -376,6 +385,8 @@ public final class Controller extends Notifier {
 		MediaInfo elementInfoSerie = elementInfo.clone();
                 elementInfoSerie.isSerie = true;
                 elementInfoSerie.isEpisode = false;
+
+                
 
                 // Finish up Episode
                 DebugOutput.printl("TheTvDbProvider().getEpisode " + "en");

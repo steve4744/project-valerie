@@ -118,7 +118,11 @@ public class TheMovieDbProvider {
         if (xml == null)
             return false;
 
-        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
+
+        List<org.jdom.Element> moviesList = xml.getRootElement().getChildren("movies");
+        if(moviesList.size() <= 0)
+            return false;
+        List<org.jdom.Element> movieList = moviesList.get(0).getChildren("movie");
         for(org.jdom.Element eMovie : movieList) {
             getTmdbId(info, eMovie);
             //getImdbId(info, eMovie);
@@ -152,11 +156,14 @@ public class TheMovieDbProvider {
         if (xml == null)
             return false;
 
-        List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
+        List<org.jdom.Element> moviesList = xml.getRootElement().getChildren("movies");
+        if(moviesList.size() <= 0)
+            return false;
+        List<org.jdom.Element> movieList = moviesList.get(0).getChildren("movie");
         for(org.jdom.Element eMovie : movieList) {
 
-            if(getTranslated(eMovie))
-                return false;
+            if(!getTranslated(eMovie))
+                continue;
 
             //getTmdbId(info, eMovie);
             //getImdbId(info, eMovie);
@@ -171,35 +178,45 @@ public class TheMovieDbProvider {
         return false;
     }
 
-    public boolean  getArtById(MediaInfo info) {
+    public boolean getArtById(MediaInfo info) {
         if(info.ImdbId.equals(info.ImdbIdNull))
             return false;
 
-            Document xml = null;
-            String url = apiImdbLookup;
-            url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
-            url = url.replaceAll("<lang>", "en");
-            xml = valerie.tools.WebGrabber.getXml(url);
+        Document xml = null;
+        String url = apiImdbLookup;
+        url = url.replaceAll("<imdbid>", String.valueOf(info.ImdbId));
+        url = url.replaceAll("<lang>", "en");
+        xml = valerie.tools.WebGrabber.getXml(url);
 
-            if (xml == null)
-                return false;
-
-            List<org.jdom.Element> movieList = xml.getRootElement().getChildren("movie");
-            for(org.jdom.Element eMovie : movieList) {
-                List ePosters = eMovie.getChildren("poster");
-                for( Object ePoster : ePosters) {
-                    if(ePoster != null && ((org.jdom.Element)ePoster).getAttributeValue("size").equals("mid"))
-                         info.Poster = ((org.jdom.Element)ePoster).getText();
-                }
-
-                List eBackdrops = eMovie.getChildren("backdrop");
-                for( Object eBackdrop : eBackdrops) {
-                    if(eBackdrop != null && ((org.jdom.Element)eBackdrop).getAttributeValue("size").equals("original"))
-                         info.Backdrop = ((org.jdom.Element)eBackdrop).getText();
-                }
-                return true;
-            }
+        if (xml == null)
             return false;
+
+        List<org.jdom.Element> moviesList = xml.getRootElement().getChildren("movies");
+        if(moviesList.size() <= 0)
+            return false;
+        List<org.jdom.Element> movieList = moviesList.get(0).getChildren("movie");
+        for(org.jdom.Element eMovie : movieList) {
+            List<org.jdom.Element> imagesList = eMovie.getChildren("images");
+            if(imagesList.size() <= 0)
+                continue;
+            List<org.jdom.Element> imageList = imagesList.get(0).getChildren("image");
+            for(org.jdom.Element eImage : imageList) {
+                if (eImage.getAttributeValue("type") != null && eImage.getAttributeValue("type").equals("poster")) {
+                    if(info.Poster.length() == 0 && eImage.getAttributeValue("url") != null)
+                        info.Poster = eImage.getAttributeValue("url");
+                }
+                if (eImage.getAttributeValue("type") != null && eImage.getAttributeValue("type").equals("backdrop")) {
+                    if(info.Backdrop.length() == 0 && eImage.getAttributeValue("url") != null)
+                        info.Backdrop = eImage.getAttributeValue("url");
+                }
+                
+                if(info.Poster.length() > 0 && info.Backdrop.length() > 0)
+                    return true;
+
+                continue;
+            }
         }
+        return false;
+    }
 
 }

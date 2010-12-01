@@ -57,7 +57,7 @@ public class Database {
         f.write(String.valueOf(Calendar.getInstance().getTime()) + "\n");
         f.write(String.valueOf(getSeriesCount() + getEpisodesCount()) + "\n");
         for( MediaInfo i : getSerieAsArray()) {
-            if( getEpisodeAsArray(i.TheTvDbId).length > 0)
+            if( getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
                 f.write(i.exportStr());
         }
         f.close();
