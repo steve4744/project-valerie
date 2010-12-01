@@ -17,6 +17,8 @@ class MediaInfo(object):
     isSerie   = False
     isEpisode = False
     
+    isEnigma2MetaRecording = False
+    
     LanguageOfPlot = u"en"
     
     Path         = u""
@@ -102,16 +104,35 @@ class MediaInfo(object):
             return True
         return False
 
+    class Enimga2MetaInfo:
+        MovieName = u""
+        EpisodeName  = u""
+        IsMovie = False
+        IsEpisode = False
+        
+        def __init__(self, movieName, episodeName):
+            self.MovieName = movieName.strip()
+            self.EpisodeName = episodeName.strip()
+            
+            if self.MovieName == self.EpisodeName:
+                print "IS Movie"
+                self.IsMovie = True
+                self.IsEpisode = False
+            else:
+                print "IS Episode"
+                self.IsMovie = False
+                self.IsEpisode = True
+
     def getEnigma2RecordingName(self, name):
+        e2info = None
         f = Utf8.Utf8(name + u".meta", "r")
         lines = f.read()
         if lines is not None:
             lines = lines.split(u"\n")
-            name = None
-            if len(lines) >= 2:
-                name = lines[1]
+            if len(lines) > 2:
+                e2info = self.Enimga2MetaInfo(lines[1], lines[2])
         f.close()
-        return name
+        return e2info
 
     def isValerieInfoAvailable(self, path):
         if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
@@ -322,9 +343,21 @@ class MediaInfo(object):
                         self.SearchString = re.sub(r'(?P<seasonepisode>\d{3,4}).*', u" ", nameConverted)
         
         if self.Extension == u"ts" and self.isEnigma2Recording(absFilename) is True:
-            self.SearchString = self.getEnigma2RecordingName(absFilename).strip()
-            print ":: ", Utf8.utf8ToLatin(self.SearchString)
-            return True
+            e2info = self.getEnigma2RecordingName(absFilename)
+            if e2info is not None:
+                print "::", Utf8.utf8ToLatin(e2info.MovieName), "-", Utf8.utf8ToLatin(e2info.EpisodeName) + "," + str(e2info.IsMovie) + "," + str(e2info.IsEpisode)
+                if e2info.IsMovie:
+                    self.SearchString = e2info.MovieName
+                    self.isMovie = True
+                    self.isSerie = False
+                elif e2info.IsEpisode:
+                    self.SearchString = e2info.MovieName + ":: " + e2info.EpisodeName
+                    self.isMovie = False
+                    self.isSerie = True
+                    
+                self.isEnigma2MetaRecording = True
+                print ":::", Utf8.utf8ToLatin(self.SearchString)
+                return True
         
         if self.isValerieInfoAvailable(self.Path) is True:
             self.SearchString = self.getValerieInfo(self.Path).strip()

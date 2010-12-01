@@ -82,7 +82,12 @@ def getText(url):
             else:
                 socket.setdefaulttimeout(10)
             try:
-                page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)), **kwargs)
+                opener = urllib2.build_opener()
+                opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
+                page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
+                
+                
+                #page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)), **kwargs)
             except Exception, ex:
                 print "URL", Utf8.utf8ToLatin(url)
                 print "urllib2::urlopen: ", ex

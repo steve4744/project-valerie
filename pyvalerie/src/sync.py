@@ -13,6 +13,7 @@ from MobileImdbComProvider import MobileImdbComProvider
 from LocalImdbProvider import LocalImdbProvider
 from TheMovieDbProvider import TheMovieDbProvider
 from TheTvDbProvider import TheTvDbProvider
+from GoogleProvider import GoogleProvider
 from Database import Database
 import WebGrabber
 import replace
@@ -221,6 +222,16 @@ class pyvalerie(Thread):
 					if result == False:
 						continue
 					
+					if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
+						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
+						if tmp is None:
+							print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
+						else:
+							elementInfo = tmp
+							searchStringSplitted = elementInfo.SearchString.split("::")
+							if len(searchStringSplitted) >= 2:
+								elementInfo.SearchString = searchStringSplitted[0];
+								
 					#elementInfo = ImdbProvider().getMovieByTitle(elementInfo)
 					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 					if tmp is None:

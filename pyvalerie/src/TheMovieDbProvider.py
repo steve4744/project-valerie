@@ -27,6 +27,8 @@ class TheMovieDbProvider(object):
         return None
 
     ###
+    
+    PLOT_MIN_LEN = 10
 
     def getTmdbId(self, info, elem):
         try:
@@ -99,10 +101,10 @@ class TheMovieDbProvider(object):
         try:
             eLang = self.getElem(elem, "translated")
             if eLang is not None and eLang.data is not None and len(eLang.data) > 0:
-                if eLang.date == "true":
+                if eLang.data == "true":
                     return True
         except Exception, ex:
-            print "TheMovieDbProvider::getLanguage: ", ex
+            print "TheMovieDbProvider::getTranslated: ", ex
         return False
     
     ###############################################
@@ -167,6 +169,10 @@ class TheMovieDbProvider(object):
         
         movieList = xml.getElementsByTagName("movie")
         for eMovie in movieList:
+            
+            if self.getTranslated(eMovie) is False:
+                continue
+            
             #tmp = self.getTmdbId(info, eMovie)
             #if tmp is not None:
             #    info = tmp
@@ -215,6 +221,9 @@ class TheMovieDbProvider(object):
                 elif p.getAttribute("type") == "backdrop":
                     if p.getAttribute("size") == "original":
                         info.Backdrop = p.getAttribute("url")
+                        
+                if len(info.Poster) > 0 and len(info.Backdrop) > 0:
+                    return info
             return info
         return None
         
