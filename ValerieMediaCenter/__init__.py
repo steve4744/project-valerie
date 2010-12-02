@@ -8,6 +8,7 @@ from Components.config import ConfigSubDict
 from Components.config import ConfigText
 from Components.config import configfile
 from Components.config import ConfigYesNo
+from Components.config import ConfigPassword
 from skin import loadSkin
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from DMC_Global import printl
@@ -49,7 +50,9 @@ config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
 config.plugins.pvmc.url               = ConfigText(default = defaultURL)
 config.plugins.pvmc.updatexml         = ConfigText(default = defaultUpdateXML)
 
-
+config.plugins.pvmc.trakt              = ConfigYesNo(default = False)
+config.plugins.pvmc.traktuser          = ConfigText(default = "No Username")
+config.plugins.pvmc.traktpass          = ConfigPassword(default = "No Password")
 
 # We updated to a newer version, so redisplay wizard
 if config.plugins.pvmc.version.value != currentVersion:

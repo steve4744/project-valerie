@@ -75,11 +75,15 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		print "[initConfigList]", element
 		try:
 			self.list = []
-			self.list.append(getConfigListEntry(_("showwizard"), config.plugins.pvmc.showwizard))
-			self.list.append(getConfigListEntry(_("autostart"), config.plugins.pvmc.autostart))
-			self.list.append(getConfigListEntry(_("checkforupdate"), config.plugins.pvmc.checkforupdate))
-			self.list.append(getConfigListEntry(_("backdropquality"), config.plugins.pvmc.backdropquality))
-			#self.list.append(getConfigListEntry(_("uselocal"), config.plugins.pvmc.uselocal))
+			self.list.append(getConfigListEntry(_("Show wizard on next start"), config.plugins.pvmc.showwizard))
+			self.list.append(getConfigListEntry(_("Start Valerie on e2 start"),       config.plugins.pvmc.autostart))
+			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"),  config.plugins.pvmc.checkforupdate))
+			self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
+			
+			self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
+			self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
+			self.list.append(getConfigListEntry(_("Trakt.tv - Password"), config.plugins.pvmc.traktpass))
+
 			self["config"].setList(self.list)
 		except KeyError:
 			print "keyError"
