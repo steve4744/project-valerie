@@ -84,6 +84,6 @@ if skinLoaded == False:
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin
 
-
+config.plugins.pvmc.save()
 config.save()
 

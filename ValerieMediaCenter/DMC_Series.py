@@ -100,10 +100,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 		self.loadSeriesDB()
 		
-		print "TRAKT:", config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value
-		self.trakt = TraktAPI()
-		self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
-		self.trakt.setType(TraktAPI.TYPE_TVSHOW)
+		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt = TraktAPI()
+			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
+			self.trakt.setType(TraktAPI.TYPE_TVSHOW)
 
 		self.onFirstExecBegin.append(self.refresh)
 
@@ -308,11 +309,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 								break
 							
 						print "PLAYBACK: ", playbackList
-						self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
-						self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
-						self.trakt.setSeasonAndEpisode(currentSeasonNumber, currentEpisodeNumber)
-						self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
-						self.trakt.send()
+						if config.plugins.pvmc.trakt.value is True:
+							self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
+							self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
+							self.trakt.setSeasonAndEpisode(currentSeasonNumber, currentEpisodeNumber)
+							self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
+							self.trakt.send()
 						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
 						#self.visibility(False)
 					else:
@@ -322,8 +324,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 
 	def leaveMoviePlayer(self): 
-		self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
-		self.trakt.send()
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
+			self.trakt.send()
 		self.session.nav.playService(None) 
 		#self.visibility(True)
 		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
