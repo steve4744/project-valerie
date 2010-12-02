@@ -157,11 +157,14 @@ class MediaInfo(object):
             lines = f.read()
             if lines is not None:
                 lines = lines.split(u"\n")
+                
                 if len(lines) >= 1:
                     try:
+                        lines = lines[0].split(".")
                         time = int(lines[0])
                     except Exception, ex:
                         print ex
+                        print Utf8.utf8ToLatin(path + u"/.access")
             f.close()
         return time
 
@@ -169,14 +172,15 @@ class MediaInfo(object):
         time = 0
         if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
             try:
-                time = os.path.getmtime(Utf8.utf8ToLatin(path + u"/valerie.info"))
+                time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
             except Exception, ex:
                 print ex
+                print Utf8.utf8ToLatin(path + u"/valerie.info")
         return time
 
     def setValerieInfoLastAccessTime(self, path):
         if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
-            time = os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info"))
+            time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
             f = Utf8.Utf8(path + u"/.access", "w")
             time = f.write(str(time) + u"\n")
             f.close()

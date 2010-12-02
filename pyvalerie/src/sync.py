@@ -46,12 +46,13 @@ def checkDefaults():
 	
 	DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
 	
+	print("Check "+"/hdd/valerie/media")
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 		print("Check defaultbackdrop.m1v - Missing -> Downloading")
-		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
+		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "/hdd/valerie/media/defaultbackdrop.m1v")
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 		print("Check defaultposter.png - Missing -> Downloading")
-		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "/hdd/valerie/media/defaultposter.png")
 	
 	try: 
 		print("Check "+"/hdd/valerie/episodes")
@@ -204,7 +205,7 @@ class pyvalerie(Thread):
 					
 					self.output("(" + str(i) + "/" + str(len(elementList))  + ")")	
 					print "-"*60	
-					self.output("  -> " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
+					self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
 						
 					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
 					

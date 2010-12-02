@@ -177,9 +177,10 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 
 from Components.ConfigList import ConfigListScreen
 from Components.config import ConfigSelection
+from Components.config import ConfigYesNo
 from Components.config import *
 
-class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
+class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 	skin = """
 		<screen position="100,100" size="560,400" title="Settings" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
@@ -216,8 +217,10 @@ class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 
 	def initConfigList(self, element=None):
 		print "[initConfigList]", element
+		self.list = []
 		try:
-			default = "en"
+			defaultLang = "en"
+			defaultDelete = False
 			fconf = open("/hdd/valerie/valerie.conf", "r")
 			for path in fconf.readlines(): 
 				path = path.strip()
@@ -225,19 +228,26 @@ class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 				key = p[0]
 				if len(p) > 1:
 					value = p[1]
-				else:
-					value = "en"
 				if key == "local":
-					default = value
-					break
+					defaultLang = value
+				elif key == "delete":
+					if value == "true":
+						defaultDelete = True
 			fconf.close()
 			
-			self.list = []
-			self.local = ConfigSelection(default=default, choices = ["en", "de", "it", "es", "fr", "pt"])
-			self.list.append(getConfigListEntry(_("local"), self.local))
-			self["config"].setList(self.list)
+			
+			self.local = ConfigSelection(default=defaultLang, choices = ["en", "de", "it", "es", "fr", "pt"])
+			self.list.append(getConfigListEntry(_("Language"), self.local))
+			
+			self.deleteIfNotFound = ConfigYesNo(default = defaultDelete)
+			self.list.append(getConfigListEntry(_("Delete movies if file can not be found"), self.deleteIfNotFound))
+			
 		except KeyError:
 			print "keyError"
+
+		
+
+		self["config"].setList(self.list)	
 
 	def changedConfigList(self):
 		self.initConfigList()
@@ -248,6 +258,7 @@ class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 	def save(self):
 		print "save"
 		print self.local.value
+		print self.deleteIfNotFound.value
 		
 		conf = []
 		fconf = open("/hdd/valerie/valerie.conf", "r")
@@ -255,7 +266,7 @@ class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 			path = path.strip()
 			p = path.split('=')
 			key = p[0]
-			if key is not None and key != "local":
+			if key is not None and key != "local" and key != "delete":
 				conf.append(path)
 		fconf.close()
 		
@@ -263,6 +274,7 @@ class ProjectValerieSyncSettingsLanguage(Screen, ConfigListScreen):
 		for entry in conf:
 			fconf.write(entry + "\n")
 		fconf.write("local=" + self.local.value + "\n")
+		fconf.write("delete=" + str(self.deleteIfNotFound.value).lower() + "\n")
 		fconf.close()
 		self.close()
 
@@ -284,7 +296,7 @@ class ProjectValerieSyncSettings(Screen):
 		self.session = session
 		list = []
 		list.append((_("Change searchpaths"), "confPaths"))
-		list.append((_("Change language"), "confLang"))
+		list.append((_("Change settings"), "confSettings"))
 		list.append((_("Delete cache"), "clearCache"))
 		list.append((_("Delete all posters/backdrops"), "delArts"))
 		list.append((_("Delete database"), "delDb"))
@@ -313,8 +325,8 @@ class ProjectValerieSyncSettings(Screen):
 		if returnValue is not None:
 			if returnValue == "confPaths":
 				self.session.open(ProjectValerieSyncSettingsConfPaths)
-			elif returnValue == "confLang":
-				self.session.open(ProjectValerieSyncSettingsLanguage, self)
+			elif returnValue == "confSettings":
+				self.session.open(ProjectValerieSyncSettingsConfSettings, self)
 			elif returnValue == "clearCache":
 				self.removeDir("/hdd/valerie/cache")
 			elif returnValue == "delArts":
@@ -353,6 +365,8 @@ class ProjectValerieSync(Screen):
 			<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
 			
 			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
 			
 			<eLabel text="Log:" position="10,50" size="400,20" font="Regular;18" />
 			<widget name="console" position="10,70" size="400,360" font="Regular;15" />
@@ -363,19 +377,24 @@ class ProjectValerieSync(Screen):
 			
 			<eLabel text="Last:" position="430,50" size="400,20" font="Regular;18" />
 			<widget name="poster" position="430,70" size="156,214" />
-			<eLabel text="Name:" position="430,390" size="180,20" font="Regular;18" />
-			<widget name="name" position="440,410" size="170,20" font="Regular;16"/>
+			
 			<eLabel text="Year:" position="430,350" size="180,20" font="Regular;18" />
 			<widget name="year" position="440,370" size="170,20" font="Regular;16"/>
+			
+			<eLabel text="Name:" position="430,390" size="180,20" font="Regular;18" />
+			<widget name="name" position="440,410" size="170,60" font="Regular;16"/>
+
 		</screen>"""
 
 	def __init__(self, session, args = None):
 		self.skin = ProjectValerieSync.skin
 		Screen.__init__(self, session)
 		
-		self["key_red"] = StaticText(_("Settings"))
+		self["key_red"] = StaticText(_("Exit"))
+		self["key_green"] = StaticText(_("Sync"))
+		self["key_blue"] = StaticText(_("Settings"))
 		
-		self["console"] = ScrollLabel(_("Please press OK to sync!"))
+		self["console"] = ScrollLabel(_("Please press \"Sync\" to start syncing!"))
 		self["progress"] = ProgressBar()
 		self["poster"] = Pixmap()
 		self["name"] = Label()
@@ -383,8 +402,9 @@ class ProjectValerieSync(Screen):
 		
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
 		{
-			"ok": self.go,
-			"red": self.menu,
+			"green": self.go,
+			"red": self.close,
+			"blue": self.menu,
 			"menu": self.menu,
 			"cancel": self.close,
 		}, -1)

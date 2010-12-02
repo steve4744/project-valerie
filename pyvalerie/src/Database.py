@@ -8,6 +8,7 @@ import os
 from datetime import date
 from MediaInfo import MediaInfo
 import Utf8
+import Config
 
 class Database(object):
     '''
@@ -140,7 +141,7 @@ class Database(object):
                         m = MediaInfo("","","")
                         m.importStr(movie[1], True, False, False)
                         path = m.Path + u"/" + m.Filename + u"." + m.Extension
-                        if os.path.isfile(Utf8.utf8ToLatin(path)):
+                        if Config.getBoolean("delete") is False or os.path.isfile(Utf8.utf8ToLatin(path)):
                             if m.isValerieInfoAvailable(m.Path):
                                 if m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
                                     self.add(m)
@@ -186,7 +187,7 @@ class Database(object):
                             m = MediaInfo("","","")
                             m.importStr(movie[1], False, False, True)
                             path = m.Path + u"/" + m.Filename + u"." + m.Extension
-                            if os.path.isfile(Utf8.utf8ToLatin(path)):
+                            if Config.getBoolean("delete") is False or os.path.isfile(Utf8.utf8ToLatin(path)):
                                 if m.isValerieInfoAvailable(m.Path):
                                     if m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
                                         self.add(m)

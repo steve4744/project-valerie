@@ -15,6 +15,7 @@ def load():
         if os.path.isfile("/hdd/valerie/valerie.conf") is False:
             f = open("/hdd/valerie/valerie.conf", "w")
             f.write("local=en\n")
+            f.write("delete=true\n")
             f.close()
             print(" - Created\n")
         else:
@@ -29,9 +30,16 @@ def load():
     f.close()
         
 def getKey(key):
-    return conf[key].strip()
+    if key in conf:
+        return conf[key].strip()
+    else:
+        return "false"
 
 def getString(key):
     return getKey(key)
             
-        
+def getBoolean(key):
+    if getKey(key) == "true":
+        return True
+    else:
+        return False
