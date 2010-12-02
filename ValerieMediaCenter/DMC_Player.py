@@ -35,9 +35,12 @@ from DMC_Global import Showiframe
 
 
 class PVMC_Player(MoviePlayer):
-	def __init__(self, session, playlist):
+	def __init__(self, session, playlist, notifyNextEntry=None):
 		self.session = session
 		self.playlist = playlist
+		
+		self.notifyNextEntry = notifyNextEntry
+		
 		if isinstance(playlist, list):
 			self.isPlaylist = True
 			self.current = 0
@@ -73,6 +76,8 @@ class PVMC_Player(MoviePlayer):
 			self.close()
 		elif answer[1] == "next":
 			self.nextPlaylistEntry()
+			if self.notifyNextEntry is not None:
+				self.notifyNextEntry()
 		elif answer[1] == "continue":
 			return None
 

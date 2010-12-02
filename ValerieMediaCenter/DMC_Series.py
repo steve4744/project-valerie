@@ -297,11 +297,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.showiframe.finishStillPicture()
 
 						playbackList = []
-						currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
-						currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
+						self.currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
+						self.currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
 						i = 0
 						while True:
-							key = currentSeasonNumber + "x"+ ("%02d" % (int(currentEpisodeNumber) + i))
+							key = self.currentSeasonNumber + "x"+ ("%02d" % (int(self.currentEpisodeNumber) + i))
 							if key in self.episodesdb:
 								playbackList.append( (self.episodesdb[key]["Path"], key + ": " + self.episodesdb[key]["Title"]), )
 								i = i + 1
@@ -312,15 +312,25 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						if config.plugins.pvmc.trakt.value is True:
 							self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
 							self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
-							self.trakt.setSeasonAndEpisode(currentSeasonNumber, currentEpisodeNumber)
+							self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
 							self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
 							self.trakt.send()
-						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
+						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
 						#self.visibility(False)
 					else:
 						self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 
-					
+
+	def notifyNextEntry(self):
+		print "PVMC_Series::notifyNextEntry"
+		self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
+		self.trakt.send()
+		
+		self.currentEpisodeNumber = str(int(self.currentEpisodeNumber) + 1)
+		
+		self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
+		self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
+		self.trakt.send()
 
 
 	def leaveMoviePlayer(self): 
