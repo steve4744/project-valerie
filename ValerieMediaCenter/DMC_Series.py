@@ -32,7 +32,7 @@ import os
 from os import path as os_path
 
 from DMC_Global import Showiframe
-
+from DMC_Player import PVMC_Player 
 #------------------------------------------------------------------------------------------
 
 class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
@@ -239,7 +239,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self["listview"].pageDown()
 		self.refresh()
 
-
+	#def visibility(self, show):
+	#	if self.isVisible is True and show is False:
+	#		self.isVisible = False
+	#		self.hide()
+	#	elif self.isVisible is False and show is True:
+	#		self.isVisible = True
+	#		self.show()
 
 	def KeyOk(self):
 
@@ -277,9 +283,25 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 				selection = self["listview"].getCurrent()
 				if selection is not None:
-					if os.path.isfile(self.episodesdb[selection[1]]["Path"]):
+					playbackPath = self.episodesdb[selection[1]]["Path"]
+					if os.path.isfile(playbackPath):
 						self.showiframe.finishStillPicture()
-						self.session.openWithCallback(self.leaveMoviePlayer, MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.episodesdb[selection[1]]["Path"] + ":" + selection[0]))
+
+						playbackList = []
+						currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
+						currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
+						i = 0
+						while True:
+							key = currentSeasonNumber + "x"+ ("%02d" % (int(currentEpisodeNumber) + i))
+							if key in self.episodesdb:
+								playbackList.append( (self.episodesdb[key]["Path"], key + ": " + self.episodesdb[key]["Title"]), )
+								i = i + 1
+							else:
+								break
+							
+						print "PLAYBACK: ", playbackList
+						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
+						#self.visibility(False)
 					else:
 						self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 
@@ -288,6 +310,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def leaveMoviePlayer(self): 
 		self.session.nav.playService(None) 
+		#self.visibility(True)
 		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
 			self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v")
 		else:

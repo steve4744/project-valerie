@@ -36,6 +36,7 @@ def getAspect():
 	return val/2
 
 from DMC_Global import Showiframe
+from DMC_Player import PVMC_Player 
 
 #------------------------------------------------------------------------------------------
 
@@ -95,6 +96,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"down": (self.down, "List down"),
 				"blue": (self.KeyGenres, "Genres"),
 				"red": (self.KeySort, "Sort"),
+				"stop": (self.leaveMoviePlayer, "Stop Playback"),
 			}, -2)
 		self["listview"] = MenuList(list)
 		self.loadMoviesDB()
@@ -259,9 +261,15 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			if os.path.isfile(self.moviedb[selection[1]]["Path"]):
+			playbackPath = self.moviedb[selection[1]]["Path"]
+			if os.path.isfile(playbackPath):
 				self.showiframe.finishStillPicture()
-				self.session.openWithCallback(self.leaveMoviePlayer, MoviePlayer, eServiceReference("4097:0:1:0:0:0:0:0:0:0:" + self.moviedb[selection[1]]["Path"]))
+				
+				playbackList = []
+				playbackList.append( (self.moviedb[selection[1]]["Path"], self.moviedb[selection[1]]["Title"]), )
+				
+				print "PLAYBACK: ", playbackList
+				self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
 			else:
 				self.session.open(MessageBox, "Not found!\n" + self.moviedb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 		
