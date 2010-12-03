@@ -88,6 +88,12 @@ class PVMC_Player(MoviePlayer):
 	def startTeletext(self):
 		return None
 
+	def showExtensionSelection(self):
+		return None
+
+	def mainMenu(self):
+		return None
+
 ##
 # Is notified if movie has ended
 	def doEofInternal(self, playing):
