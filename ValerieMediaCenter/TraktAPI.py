@@ -80,7 +80,12 @@ class TraktAPI():
 				"User-Agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)",
 		})
 		
-		f = urllib2.urlopen(req)
-		answer = f.read()
-		print "ANSWER=", answer
-		
+		for i in range(3):
+			try:
+				f = urllib2.urlopen(req)
+				answer = f.read()
+				print "ANSWER=", answer
+				break
+			except Exception, ex:
+				print "TraktAPI Exception:", ex
+
