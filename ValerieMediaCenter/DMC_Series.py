@@ -196,14 +196,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self.episodesdb[d["Season"] * 100 + d["Episode"]] = d
 					if not d["Season"] in entrys:
 						entrys.append(d["Season"])
-						list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))			
+						list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
 			else:
 				for episode in self.episodesdb:
 					d = self.episodesdb[episode]
 					if d["Season"] == self.selectedSeason:
 						if not d["Episode"] in entrys:
 							entrys.append(d["Episode"])
-							#self.episodesdb[str(d["Season"])+"x"+ ("%02d" % d["Episode"])] = d
 							list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
 							
 		except OSError, e: 
@@ -256,7 +255,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					
 			movies = db.split("\n----END----\n")
 			
-
 			for movie in movies:
 				movie = movie.split("---BEGIN---\n")
 				if len(movie) == 2: 
@@ -268,13 +266,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							key, text = (s.strip() for s in line.split(":", 1)) 
 						if key in filter: 
 							d[key] = text
-
+					
 					if "Season" in d:
 						d["Season"] = int(d["Season"])
-
+					
 					if "Episode" in d:
 						d["Episode"] = int(d["Episode"])
-
+					
 					#print d
 					if self.inSeries:
 						self.moviedb[d["TheTvDb"]] = d
@@ -282,17 +280,18 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							entrys.append(d["Title"])
 							self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
 					elif self.inSeasons:
+						self.episodesdb[d["Season"] * 100 + d["Episode"]] = d
 						if not d["Season"] in entrys:
 							entrys.append(d["Season"])
-							list.append(("  " + "Season " + d["Season"], d["Season"], "menu_globalsettings", "50"))			
+							list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
 					else:
-						if d["Season"] == self.selectedSeason:
-							if not d["Episode"] in entrys:
-								entrys.append(d["Episode"])
-								self.episodesdb[d["Season"]+"x"+ ("%02d" % int(d["Episode"]))] = d
-								list.append(("  " + d["Season"]+"x"+("%02d" % int(d["Episode"])) + ": " + d["Title"], d["Season"]+"x"+("%02d" % int(d["Episode"])), "menu_globalsettings", "50"))
-								
-						
+						for episode in self.episodesdb:
+							d = self.episodesdb[episode]
+							if d["Season"] == self.selectedSeason:
+								if not d["Episode"] in entrys:
+									entrys.append(d["Episode"])
+									list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
+		
 		except OSError, e: 
 			print "OSError: ", e
 		except IOError, e: 
