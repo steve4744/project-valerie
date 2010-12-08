@@ -83,7 +83,7 @@ class TraktAPI():
 		if dict is not None:
 			
 			if self.mProgress > 0 and self.mProgress <= 100:
-				dict["progress"] = self.mProgress, 
+				dict["progress"] = self.mProgress
 			
 			dict["status"]   = self.mStatus
 			dict["username"] = self.mUsername 
