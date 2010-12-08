@@ -266,9 +266,14 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						#print "Line: ", line
 						if ":" in line: 
 							key, text = (s.strip() for s in line.split(":", 1)) 
-
 						if key in filter: 
 							d[key] = text
+
+					if "Season" in d:
+						d["Season"] = int(d["Season"])
+
+					if "Episode" in d:
+						d["Episode"] = int(d["Episode"])
 
 					#print d
 					if self.inSeries:
