@@ -86,6 +86,9 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		if config.plugins.pvmc.backdropquality.value == "Low":
 			self.backdropquality = "_low"
 		
+		if os.path.exists(u"/hdd/valerie/movies.txd"):
+				self.USE_DB_VERSION = self.DB_TXD
+		
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
@@ -99,9 +102,19 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"stop": (self.leaveMoviePlayer, "Stop Playback"),
 			}, -2)
 		self["listview"] = MenuList(list)
-		self.loadMoviesDB()
-
+		
+		if self.USE_DB_VERSION == self.DB_TXT:
+			self.loadMoviesDB()
+		elif self.USE_DB_VERSION == self.DB_TXD:
+			self.loadMoviesTxd()
+		
 		self.onFirstExecBegin.append(self.refresh)
+
+	DB_TXT = 1
+	DB_TXD = 2
+	DB_PICKLE = 3
+	DB_SQLITE= 4
+	USE_DB_VERSION = DB_TXT
 
 	def sortList(self,x, y):
 		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
@@ -111,6 +124,57 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		else: # x<y
 			return -1
 
+	def loadMoviesTxd(self):
+		list =[]
+		try:
+			self.serieslist=[]
+			db = open("/hdd/valerie/movies.txd").read()[:-1]
+			
+			lines = db.split("\n")
+			version = lines[0]
+			i = 1
+			linesLen = len(lines)
+			print "Lines:", linesLen
+			for i in range(1, linesLen, 9):
+				d = {} 
+				d["ImdbId"]    = lines[i+0]
+				d["Title"]     = lines[i+1]
+				d["Tag"]       = ""
+				d["Year"]      = lines[i+2]
+				
+				d["Path"] = lines[i+3] + "/" + lines[i+4] + "." + lines[i+5]
+				
+				d["Plot"]       = lines[i+6]
+				d["Runtime"]    = lines[i+7]
+				d["Popularity"] = lines[i+8]
+				
+				d["Genres"] = lines[i+9]
+				
+				# deprecated
+				d["Directors"] = ""
+				d["Writers"]   = ""
+				d["OTitle"]    = ""
+				
+				if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
+					print "skipping ", d["Title"]
+					continue
+				self.moviedb[d["ImdbId"]] = d
+	
+				print "adding ", d["Title"]
+				list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
+		
+		except OSError, e: 
+			print "OSError: ", e
+		except IOError, e: 
+			print "OSError: ", e
+		
+		if self.Sort == "":
+			list.sort()
+		else:
+			list.sort(self.sortList,reverse=True)
+		self["listview"].setList(list)
+		self["listview"].moveToIndex(1)
+		self.refresh()
 
 	def loadMoviesDB(self):
 		filter = []
@@ -154,7 +218,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 					print "adding ", d["Title"]
 					list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
-			
+		
 		except OSError, e: 
 			print "OSError: ", e
 		except IOError, e: 
