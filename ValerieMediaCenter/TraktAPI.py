@@ -12,7 +12,11 @@ class TraktAPI():
 	TYPE_TVSHOW = "TVShow"
 	TYPE_MOVIE  = "Movie"
 
-	APIVERSION = "0.7" #ACtually this is not the version of the plugin, but the API version to use
+	APIVERSION = "0.0.7" #ACtually this is not the version of the plugin, but the API version to use
+
+	mMediaCenterShortName = "pytrakt"
+	mMediaCenterVersion   = "1.0"
+	mMediaCenterBuildDate = "'1970-01-01"
 
 	mStatus     = STATUS_IDLE
 	mMovieName  = ""
@@ -28,6 +32,14 @@ class TraktAPI():
 	
 	mProgress   = -1
 	
+	def __init__(self, mcshortname=None, mcversion=None, mcbuidldate=None):
+		if mcshortname is not None:
+			self.mMediaCenterShortName = mcshortname
+		if mcversion is not None:
+			self.mMediaCenterVersion = mcversion
+		if mcbuidldate is not None:
+			self.mMediaCenterBuildDate = mcbuidldate
+
 	def setStatus(self, status):
 		self.mStatus = status
 
@@ -88,9 +100,9 @@ class TraktAPI():
 			dict["status"]   = self.mStatus
 			dict["username"] = self.mUsername 
 			dict["password"] = self.mPassword
-			dict["media_center"] = 'pvmc'
-			dict["media_center_version"] = '1.0'
-			dict["media_center_date"] = '1970-01-01'
+			dict["media_center"]         = self.mMediaCenterShortName
+			dict["media_center_version"] = self.mMediaCenterVersion
+			dict["media_center_date"]    = self.mMediaCenterBuildDate
 			dict["plugin_version"] = self.APIVERSION
 			
 			print "TOSEND", dict

@@ -88,6 +88,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		if config.plugins.pvmc.backdropquality.value == "Low":
 			self.backdropquality = "_low"
 		
+		if os.path.exists(u"/hdd/valerie/tvshows.txd"):
+				self.USE_DB_VERSION = self.DB_TXD
+		
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
@@ -98,15 +101,129 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				"down": (self.down, "List down"),
 			}, -2)
 		
-		self.loadSeriesDB()
+		if self.USE_DB_VERSION == self.DB_TXT:
+			self.loadSeriesDB()
+		elif self.USE_DB_VERSION == self.DB_TXD:
+			self.loadSeriesTxd()
 		
 		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value
 		if config.plugins.pvmc.trakt.value is True:
-			self.trakt = TraktAPI()
+			self.trakt = TraktAPI("pvmc")
 			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
 			self.trakt.setType(TraktAPI.TYPE_TVSHOW)
 
 		self.onFirstExecBegin.append(self.refresh)
+
+	DB_TXT = 1
+	DB_TXD = 2
+	DB_PICKLE = 3
+	DB_SQLITE= 4
+	USE_DB_VERSION = DB_TXT
+
+	
+
+	def loadSeriesTxd(self):
+		list =[]
+		entrys =[]
+		try:
+			if self.inSeries:
+				self.serieslist=[]
+				db = open("/hdd/valerie/tvshows.txd").read()[:-1]
+			elif self.inSeasons:
+				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txd").read()[:-1]
+			
+			if not self.inEpisode:
+				lines = db.split("\n")
+				version = lines[0]
+				i = 1
+				linesLen = len(lines)
+			
+			if self.inSeries:
+				#self.moviedb.clear()
+				for i in range(1, linesLen, 9):
+					d = {} 
+					d["ImdbId"]    = lines[i+0]
+					d["TheTvDb"]   = lines[i+1]
+					d["Title"]     = lines[i+2]
+					d["Tag"]       = lines[i+3]
+					d["Year"]      = lines[i+4]
+					
+					d["Plot"]       = lines[i+5]
+					d["Runtime"]    = lines[i+6]
+					d["Popularity"] = lines[i+7]
+					
+					d["Genres"] = lines[i+8]
+					
+					# deprecated
+					d["Directors"] = ""
+					d["Writers"]   = ""
+					d["OTitle"]    = ""
+					
+					self.moviedb[d["TheTvDb"]] = d
+					if not d["Title"] in entrys:
+						entrys.append(d["Title"])
+						self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
+					
+			elif self.inSeasons:
+				self.episodesdb.clear()
+				for i in range(1, linesLen, 12):
+					d = {} 
+					d["TheTvDb"]    = lines[i+0]
+					d["Title"]     = lines[i+1]
+					d["Tag"]       = ""
+					d["Year"]      = lines[i+2]
+					
+					d["Path"] = lines[i+3] + "/" + lines[i+4] + "." + lines[i+5]
+					
+					d["Season"]       = int(lines[i+6])
+					d["Episode"]      = int(lines[i+7])
+					
+					d["Plot"]       = lines[i+8]
+					d["Runtime"]    = lines[i+9]
+					d["Popularity"] = lines[i+10]
+					
+					d["Genres"] = lines[i+11]
+					
+					# deprecated
+					d["Directors"] = ""
+					d["Writers"]   = ""
+					d["OTitle"]    = ""
+					
+					if d["Season"] == -1:
+						continue
+					
+					#self.moviedb[d["Season"] * 100 + d["Episode"]] = d
+					self.episodesdb[d["Season"] * 100 + d["Episode"]] = d
+					if not d["Season"] in entrys:
+						entrys.append(d["Season"])
+						list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))			
+			else:
+				for episode in self.episodesdb:
+					d = self.episodesdb[episode]
+					if d["Season"] == self.selectedSeason:
+						if not d["Episode"] in entrys:
+							entrys.append(d["Episode"])
+							#self.episodesdb[str(d["Season"])+"x"+ ("%02d" % d["Episode"])] = d
+							list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
+							
+		except OSError, e: 
+			print "OSError: ", e
+		except IOError, e: 
+			print "OSError: ", e
+		
+		if self.inSeries:
+			self.serieslist.sort()
+			self["listview"].setList(self.serieslist)	
+		elif self.inSeasons:
+			list.sort()
+			self["listview"].setList(list)
+		elif self.inEpisode:
+			list.sort()
+			self["listview"].setList(list)
+			
+		self["listview"].moveToIndex(0)
+		self.refresh()
+
 
 	def loadSeriesDB(self):
 		list =[]
@@ -148,7 +265,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					for line in lines: 
 						#print "Line: ", line
 						if ":" in line: 
-						    key, text = (s.strip() for s in line.split(":", 1)) 
+							key, text = (s.strip() for s in line.split(":", 1)) 
 
 						if key in filter: 
 							d[key] = text
@@ -271,7 +388,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				seasonslist = []
 				self.seasonsdb = {}
 				
-				self.loadSeriesDB()
+				
+				if self.USE_DB_VERSION == self.DB_TXT:
+					self.loadSeriesDB()
+				elif self.USE_DB_VERSION == self.DB_TXD:
+					self.loadSeriesTxd()
+		
 				self.refresh()
 				
 			elif self.inSeasons is True:
@@ -279,10 +401,14 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.inSeasons = False
 				self.inEpisode = True
 
-				self.selectedSeason = selection[1]
+				self.selectedSeason = int(selection[1])
 				self.rememeberSeasonsIndex = self["listview"].getSelectionIndex()
 
-				self.loadSeriesDB()
+				if self.USE_DB_VERSION == self.DB_TXT:
+					self.loadSeriesDB()
+				elif self.USE_DB_VERSION == self.DB_TXD:
+					self.loadSeriesTxd()
+		
 				self.refresh()
 
 			elif self.inEpisode is True:
@@ -301,9 +427,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
 						i = 0
 						while True:
-							key = self.currentSeasonNumber + "x"+ ("%02d" % (int(self.currentEpisodeNumber) + i))
+							key = self.currentSeasonNumber *100 + self.currentEpisodeNumber + i
 							if key in self.episodesdb:
-								playbackList.append( (self.episodesdb[key]["Path"], key + ": " + self.episodesdb[key]["Title"]), )
+								d = self.episodesdb[key]
+								playbackList.append( (self.episodesdb[key]["Path"], str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + self.episodesdb[key]["Title"]), )
 								i = i + 1
 							else:
 								break
@@ -314,6 +441,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
 							self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
 							self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
+							self.trakt.setTheTvDbId(self.episodesdb[selection[1]]["TheTvDb"])
 							self.trakt.send()
 						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
 						#self.visibility(False)
