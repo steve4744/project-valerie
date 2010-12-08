@@ -14,6 +14,7 @@ class MobileImdbComProvider():
     '''
     URL = u"http://m.imdb.com/"
     apiSearch = URL + u"find?q=<search>"
+    apiDetails = URL + u"title/<imdbid>("
 
     testNoResults = "<div class=\"noResults\">No Results</div>"
         
@@ -71,12 +72,95 @@ class MobileImdbComProvider():
             if mYear and mYear.group():
                 sYear = mYear.group()[1:].strip();
                 entry.Year = int(sYear);
-            results.append(entry)
+                
+            if entry.Year > 0: 
+                results.append(entry)
         return results
+    
+    
+    DIV_INFO_START = u"<div class=\"mainInfo\">"
+    DIV_INFO_END = u"</div>"
+    DIV_TAG_START = u"<p>"
+    DIV_TAG_END = u"</p>"
+    DIV_VOTES_START = u"<div class=\"votes\">"
+    DIV_VOTES_END = u"</strong>"
+    
+    def getInfo(self, html):
+        info = html
+
+        pos = info.find(self.DIV_INFO_START)
+        if pos < 0:
+            return None
+
+        tag = info[pos + len(self.DIV_INFO_START):]
+
+        pos = info.find(self.DIV_INFO_END)
+        if pos < 0:
+            return None
+
+        return info[0:pos].strip()
+        
+    def getTag(self, info, html):
+        tag = self.getInfo(html)
+        if tag is None:
+            return None
+        pos = tag.find(self.DIV_TAG_START)
+        if pos < 0:
+            return None
+        
+        tag = tag[pos + len(self.DIV_TAG_START):]
+
+        pos = tag.find(self.DIV_TAG_END)
+        if pos < 0:
+            return None
+
+        tag = tag[0:pos]
+        tag = tag.strip()
+        
+        info.Tag = tag
+        return info
+    
+    def getVotes(self, info, html):
+        votes = html
+        
+        pos = votes.find(self.DIV_VOTES_START)
+        if pos < 0:
+            return None
+        
+        votes = votes[pos + len(self.DIV_VOTES_START):]
+
+        pos = votes.find(self.DIV_VOTES_END)
+        if pos < 0:
+            return None
+
+        votes = votes[0:pos]
+        
+        votes = re.sub("<strong>", "", votes)
+        votes = votes.strip()
+        
+        if len(votes) > 2:
+            try:
+                votes = votes[0].split(".")
+                votes = votes[0]
+            except Exception, ex:
+                print ex
+        
+        try:
+            info.Popularity = int(votes)
+        except Exception, ex:
+            print ex
+                
+        
+        return info
     
     ###############################################
 
     def getMoviesByTitle(self, info):
+        
+        if info.ImdbId != info.ImdbIdNull:
+            info2 = self.getMoviesByImdbID(info)
+            if info2 is not None:
+                return info2
         
         url = self.apiSearch
         url = re.sub("<search>", info.SearchString, url)
@@ -101,6 +185,12 @@ class MobileImdbComProvider():
             
             info.ImdbId = result.ImdbId
             info.Title = result.Title
+            
+            
+            tmp = self.getMoviesByImdbID(info)
+            if tmp is not None:
+                info = tmp
+
             return info
         
         print "Results:\n"
@@ -112,5 +202,22 @@ class MobileImdbComProvider():
         return None
         
         
-        
+    def getMoviesByImdbID(self, info):
+
+        url = self.apiDetails
+        url = re.sub("<imdbid>", info.ImdbId, url)
+        html = WebGrabber.getHtml(url)
+
+        if html is None:
+            return None;
+
+        tmp = self.getTag(info, html)
+        if tmp is not None:
+            info = tmp  
+
+        tmp = self.getVotes(info, html)
+        if tmp is not None:
+            info = tmp  
+
+        return info;
     

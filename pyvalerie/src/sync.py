@@ -120,14 +120,19 @@ def checkDefaults():
 	except Exception:
 		print(" - ERROR\n")
 	
-
+import time
 class pyvalerie(Thread):
-	def __init__ (self, output, progress, range, info):
+	
+	NORMAL = 0
+	FAST = 1
+	
+	def __init__ (self, output, progress, range, info, mode):
 		Thread.__init__(self)
 		self.output = output
 		self.progress = progress
 		self.range = range
 		self.info = info
+		self.mode = mode
 		self.output("Thread running")
 		
 	def run(self):
@@ -140,12 +145,24 @@ class pyvalerie(Thread):
 		Config.load()
 		
 		self.output("Loading Database")
+		start_time = time.time()
 		db = Database()
 		db.reload()
 		print "  ", db
+		elapsed_time = time.time() - start_time
+		print "Took: ", elapsed_time
+		
+		#db.searchDeleted()
+		#exit(0)
 		
 		self.output("Loading Replacements")
 		replace.load()
+		
+		self.output("Loading Filesystem")
+		ds = DirectoryScanner.DirectoryScanner()
+		ds.clear()
+		if self.mode == self.FAST:
+			ds.load()
 		
 		self.output("Searching for media files")
 		fconf = Utf8.Utf8("/hdd/valerie/paths.conf", "r")
@@ -156,7 +173,8 @@ class pyvalerie(Thread):
 			self.output("    Extensions: " + str(filetypes))
 			print filetypes
 			
-			ds = None
+			start_time = time.time()
+			
 			elementList = None
 			for path in lines[1:]: 
 				path = path.strip()
@@ -171,11 +189,12 @@ class pyvalerie(Thread):
 					type = u"MOVIE_AND_TV"
 				
 				if os.path.isdir(path):
-					ds = DirectoryScanner.DirectoryScanner(Utf8.utf8ToLatin(path))
-					if elementList is not None:
-						print "LEN: ", len(elementList)
-					elementList = ds.listDirectory(filetypes, "(sample)", type)
-					del ds
+					ds.setDirectory(Utf8.utf8ToLatin(path))
+					ds.listDirectory(filetypes, "(sample)", type)
+			elementList = ds.getFileList()
+			
+			elapsed_time = time.time() - start_time
+			print "Took: ", elapsed_time
 			
 			if elementList is None:
 				self.output("Found " + str(0) + " media files")
@@ -200,7 +219,7 @@ class pyvalerie(Thread):
 						continue
 						
 					if db.checkDuplicate(path, filename, extension):
-						#self.output("Already in db [ " + filename.encode('latin-1') + "." + extension.encode('latin-1') + " ]")
+						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
 						continue
 					
 					self.output("(" + str(i) + "/" + str(len(elementList))  + ")")	
@@ -374,6 +393,10 @@ class pyvalerie(Thread):
 		self.output("Saving database")
 		db.save()
 		
+		self.output("Saving Filesystem")
+		ds.save()
+		del ds
+			
 		del elementList[:]
 		del db
 		

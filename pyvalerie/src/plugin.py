@@ -366,6 +366,7 @@ class ProjectValerieSync(Screen):
 			
 			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
 			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_yellow" render="Label" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
 			<widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
 			
 			<eLabel text="Log:" position="10,50" size="400,20" font="Regular;18" />
@@ -392,6 +393,7 @@ class ProjectValerieSync(Screen):
 		
 		self["key_red"] = StaticText(_("Exit"))
 		self["key_green"] = StaticText(_("Sync"))
+		self["key_yellow"] = StaticText(_("Fast Sync"))
 		self["key_blue"] = StaticText(_("Settings"))
 		
 		self["console"] = ScrollLabel(_("Please press \"Sync\" to start syncing!"))
@@ -403,6 +405,7 @@ class ProjectValerieSync(Screen):
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
 		{
 			"green": self.go,
+			"yellow": self.gofast,
 			"red": self.close,
 			"blue": self.menu,
 			"menu": self.menu,
@@ -410,6 +413,10 @@ class ProjectValerieSync(Screen):
 		}, -1)
 		
 		self.linecount = 40
+		
+		print "PYTHONPATH=", sys.path
+		from Tools.Directories import resolveFilename, SCOPE_PLUGINS 
+		sys.path.append(resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerieSync") )
 		
 		self.onFirstExecBegin.append(self.checkDefaults)
 	
@@ -427,7 +434,16 @@ class ProjectValerieSync(Screen):
 		self.p = []
 		for i in range(0, self.linecount):
 			self.p.append("")
-		self.thread = pyvalerie(self.output, self.progress, self.range, self.info)
+		self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.NORMAL)
+		self.thread.start()
+	
+	def gofast(self):
+		self["console"].lastPage()
+		self.i = 0
+		self.p = []
+		for i in range(0, self.linecount):
+			self.p.append("")
+		self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.FAST)
 		self.thread.start()
 		
 	def output(self, text):

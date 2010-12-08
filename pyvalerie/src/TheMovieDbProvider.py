@@ -97,6 +97,23 @@ class TheMovieDbProvider(object):
             print "TheMovieDbProvider::getRating: ", ex
         return None  
     
+    def getGenre(self, info, elem):
+        genre = u""
+        try:
+            eGenres = self.getElem(elem, "categories")
+            eGenres = eGenres.getElementsByTagName("category")
+            for eGenre in eGenres:
+                if eGenre is not None and eGenre.data is not None and len(eGenre.data) > 0:
+                    if eGenre.getAttribute("type") == "genre":
+                        genre += eGenre.getAttribute("name") + u"|"
+            
+            if len(genre) > 0:
+                info.Genre = genre[:len(genre) - 1] # Remove the last pipe
+                return info
+        except Exception, ex:
+            print "TheMovieDbProvider::getOverview: ", ex
+        return None
+    
     def getTranslated(self, elem):
         try:
             eLang = self.getElem(elem, "translated")
@@ -194,6 +211,9 @@ class TheMovieDbProvider(object):
             tmp = self.getRuntime(info, eMovie)
             if tmp is not None:
                 info = tmp
+            tmp = self.getGenre(info, eMovie)
+            if tmp is not None:
+                info = tmp
                 
             return info
         return None
@@ -216,7 +236,7 @@ class TheMovieDbProvider(object):
         for eMovie in movieList:
             for p in eMovie.getElementsByTagName("image"):
                 if p.getAttribute("type") == "poster":
-                    if p.getAttribute("size") == "cover":
+                    if p.getAttribute("size") == "original" or p.getAttribute("size") == "cover":
                         info.Poster = p.getAttribute("url")
                 elif p.getAttribute("type") == "backdrop":
                     if p.getAttribute("size") == "original":

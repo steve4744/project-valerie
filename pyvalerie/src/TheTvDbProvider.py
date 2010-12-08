@@ -163,6 +163,26 @@ class TheTvDbProvider(object):
             print "TheTvDbProvider::getRating: ", ex
         return None  
     
+    def getGenre(self, info, elem):
+        try:
+            eGenre = self.getElem(elem, "Genre")
+            if eGenre is not None and eGenre.data is not None and len(eGenre.data) > 0:
+                
+                info.Genre = u""
+                
+                strGenre = re.sub(u"\r\n", u" ", eGenre.data)
+                strGenre = re.sub(u"\n", u" ", strGenre)
+                strGenres = strGenre.split(u"|")
+                for genre in strGenres:
+                    genre = genre.strip()
+                    if len(genre) > 1:
+                        info.Genre += genre + u"|"
+                info.Genre = info.Genre[:len(info.Genre) - 1] # Remove the last pipe
+                return info
+        except Exception, ex:
+            print "TheTvDbProvider::getWriter: ", ex
+        return None
+    
     def getLanguage(self, elem):
         try:
             eLang = self.getElem(elem, "Language")
@@ -206,6 +226,9 @@ class TheTvDbProvider(object):
             #if tmp is not None:
             #    info = tmp
             tmp = self.getRating(info, eMovie)
+            if tmp is not None:
+                info = tmp
+            tmp = self.getGenre(info, eMovie)
             if tmp is not None:
                 info = tmp
             
@@ -258,6 +281,9 @@ class TheTvDbProvider(object):
             if tmp is not None:
                 info = tmp
             tmp = self.getRating(info, eMovie)
+            if tmp is not None:
+                info = tmp
+            tmp = self.getGenre(info, eMovie)
             if tmp is not None:
                 info = tmp
             
@@ -331,6 +357,9 @@ class TheTvDbProvider(object):
             if tmp is not None:
                 info = tmp
             tmp = self.getRating(info, eMovie)
+            if tmp is not None:
+                info = tmp
+            tmp = self.getGenre(info, eMovie)
             if tmp is not None:
                 info = tmp
             

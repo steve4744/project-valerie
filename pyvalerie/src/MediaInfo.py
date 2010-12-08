@@ -55,18 +55,19 @@ class MediaInfo(object):
     Backdrop = u""
     Banner = u""
 
-    def __init__(self, path, filename, extension):
+    def __init__(self, path = None, filename = None, extension = None):
         '''
         Constructor
         '''
-        self.Path      = path
-        self.Filename  = filename
-        self.Extension = extension
-        
-        
-        self.Alternatives = {}
-        self.Directors    = []
-        self.Writers      = []
+        if path is not None and filename is not None and extension is not None:
+            self.Path      = path
+            self.Filename  = filename
+            self.Extension = extension
+            
+            
+            self.Alternatives = {}
+            self.Directors    = []
+            self.Writers      = []
            
            
     def copy(self):
@@ -187,7 +188,22 @@ class MediaInfo(object):
         elif os.path.isfile(Utf8.utf8ToLatin(path + u"/.access")):
             os.remove(Utf8.utf8ToLatin(path + u"/.access"))
 
+    def isNFOAvailable(self, name):
+        if os.path.isfile(Utf8.utf8ToLatin(name + u".nfo")):
+            return True
+        return False
 
+    def getImdbIdFromNFO(self, name):
+        f = Utf8.Utf8(name + u".nfo", "r")
+        lines = f.read()
+        if lines is not None:
+            lines = lines.split(u"\n")
+            for line in lines:
+                m = re.search(r'(?P<imdbid>tt\d{7})', line)
+                if m and m.group("imdbid"):
+                    return m.group("imdbid")
+        f.close()
+        return None
 
     def parse(self):
         absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
@@ -206,17 +222,24 @@ class MediaInfo(object):
         if m and m.group("imdbid"):
             self.ImdbId = m.group("imdbid")
         
+        if self.isNFOAvailable(self.Path + u"/" + self.Filename):
+            imdbid = self.getImdbIdFromNFO(self.Path + u"/" + self.Filename)
+            if imdbid is not None:
+                self.ImdbId = imdbid
+            
+        
         ###  
-        m = re.search(r'\s(?P<year>\d{4})\s', name)
+        m = re.search(r'\s(?P<year>\d{4})\s', self.SearchString)
         if m and m.group("year"):
             year = int(m.group("year"))
+            print "year", year
             if year > 1940 and year < 2012:
                 self.Year = year
                 # removing year from searchstring
                 self.SearchString = re.sub(str(year), u" ", self.SearchString)
                 #self.SearchString = name[:m.start()]
         
-        #print ":0: ", self.SearchString
+        print ":0: ", Utf8.utf8ToLatin(self.SearchString)
         
         ###    
         m = re.search(r'720p', name)
@@ -515,6 +538,62 @@ class MediaInfo(object):
                 else:
                     self.Episode = 0
 
+    def importDefined(self, lines, isMovie=False, isSerie=False, isEpisode=False):
+        #print "*"*40
+        #print lines
+        #print "*"*40
+        
+        self.isMovie = isMovie
+        self.isSerie = isSerie
+        self.isEpisode = isEpisode
+        
+        if self.isMovie:
+            self.ImdbId = lines[0]
+            self.Title  = lines[1]
+            self.Tag    = lines[2]
+            self.Year   = int(lines[3])
+            
+            self.Path      = lines[4]
+            self.Filename  = lines[5]
+            self.Extension = lines[6]
+            
+            self.Plot       = lines[7]
+            self.Runtime    = int(lines[8])
+            self.Popularity = int(lines[9])
+            
+            self.Genres = lines[10]
+            
+        elif self.isSerie:
+            self.ImdbId    = lines[0]
+            self.TheTvDbId = lines[1]
+            self.Title     = lines[2]
+            self.Tag       = lines[3]
+            self.Year      = int(lines[4])
+            
+            self.Plot       = lines[5]
+            self.Runtime    = int(lines[6])
+            self.Popularity = int(lines[7])
+            
+            self.Genres = lines[8]
+            
+        elif self.isEpisode:
+            self.TheTvDbId = lines[0]
+            self.Title     = lines[1]
+            self.Year      = int(lines[2])
+            
+            self.Path      = lines[3]
+            self.Filename  = lines[4]
+            self.Extension = lines[5]
+            
+            self.Season    = int(lines[6])
+            self.Episode   = int(lines[7])
+            
+            self.Plot       = lines[8]
+            self.Runtime    = int(lines[9])
+            self.Popularity = int(lines[10])
+            
+            self.Genres = lines[11]
+
     def export(self):
         stri = u'\n---BEGIN---'
         if self.isMovie:
@@ -525,11 +604,11 @@ class MediaInfo(object):
             stri += u'\nPlot: ' +       self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     self.Genres
-            stri += u'\nReleasedate: ' + u'2000-01-01'
             stri += u'\nTag: ' +        self.Tag
             stri += u'\nPopularity: ' + unicode(self.Popularity)
             stri += u'\nDirectors: ' +  u"---"
             stri += u'\nWriters: ' +    u"---"
+            
         elif self.isSerie:
             stri += u'\nImdbId: ' +     self.ImdbId
             stri += u'\nTheTvDb: ' +    self.TheTvDbId
@@ -538,23 +617,20 @@ class MediaInfo(object):
             stri += u'\nPlot: ' +       self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     self.Genres
-            stri += u'\nReleasedate: ' + u'2000-01-01'
             stri += u'\nTag: ' +        self.Tag
             stri += u'\nPopularity: ' + unicode(self.Popularity)
             stri += u'\nDirectors: ' +  u"---"
             stri += u'\nWriters: ' +    u"---"
+            
         elif self.isEpisode:
             stri += u'\nImdbId: ' +     self.ImdbId
             stri += u'\nTheTvDb: ' +    self.TheTvDbId
             stri += u'\nTitle: ' +      self.Title
             stri += u'\nYear: ' +       unicode(self.Year)
             stri += u'\nPath: ' +       self.Path + u"/" + self.Filename + u"." + self.Extension
-            #print "stri: ", type(stri)
-            #print "self.Plot: ", type(self.Plot)
             stri += u'\nPlot: ' +       self.Plot
             stri += u'\nRuntime: ' +    unicode(self.Runtime)
             stri += u'\nGenres: ' +     self.Genres
-            stri += u'\nReleasedate: ' + u'2000-01-01'
             stri += u'\nTag: ' +        self.Tag
             stri += u'\nPopularity: ' + unicode(self.Popularity)
             stri += u'\nSeason: ' +     unicode(self.Season)
@@ -564,4 +640,55 @@ class MediaInfo(object):
             
         stri += u'\n----END----\n\n'
         return stri
+    
+    def exportDefined(self):
+        stri = u''
+        if self.isMovie:
+            stri += self.ImdbId + u'\n'
+            stri += self.Title + u'\n'
+            stri += self.Tag + u'\n'
+            stri += unicode(self.Year) + u'\n'
             
+            stri += self.Path + u'\n'
+            stri += self.Filename + u'\n'
+            stri += self.Extension + u'\n'
+            
+            stri += self.Plot + u'\n'
+            stri += unicode(self.Runtime) + u'\n'
+            stri += unicode(self.Popularity) + u'\n'
+            
+            stri += self.Genres + u'\n'
+            
+        elif self.isSerie:
+            stri += self.ImdbId + u'\n'
+            stri += self.TheTvDbId + u'\n'
+            stri += self.Title + u'\n'
+            stri += self.Tag + u'\n'
+            stri += unicode(self.Year) + u'\n'
+            
+            stri += self.Plot + u'\n'
+            stri += unicode(self.Runtime) + u'\n'
+            stri += unicode(self.Popularity) + u'\n'
+            
+            stri += self.Genres + u'\n'
+            
+        elif self.isEpisode:
+            stri += self.TheTvDbId + u'\n'
+            stri += self.Title + u'\n'
+            stri += unicode(self.Year) + u'\n'
+            
+            stri += self.Path + u'\n'
+            stri += self.Filename + u'\n'
+            stri += self.Extension + u'\n'
+
+            stri += unicode(self.Season) + u'\n'
+            stri += unicode(self.Episode) + u'\n'
+
+            stri += self.Plot + u'\n'
+            stri += unicode(self.Runtime) + u'\n'
+            stri += unicode(self.Popularity) + u'\n'
+            
+            stri += self.Genres + u'\n'
+            
+        stri += u''
+        return stri    

@@ -12,7 +12,9 @@ from sync import pyvalerie
 
 class App():
   def __init__(self):
-    self.thread = pyvalerie(self.output, self.progress, self.range, self.info)
+    sys.path.append(os.getcwd() + "/../../../")
+    print "PYTHONPATH", sys.path
+    self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.FAST)
     self.thread.start()
 
   def output(self, s):
