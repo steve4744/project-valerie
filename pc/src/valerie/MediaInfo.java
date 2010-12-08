@@ -149,7 +149,7 @@ public class MediaInfo implements Comparable<MediaInfo>{
         BoxInfo pBoxInfo = pBoxInfos[selectedBoxInfo];
 
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "cat \"" + name + ".meta\"");
-        if(entries.length >= 2 && !entries[0].startsWith("cat:")) {
+        if(entries.length > 2 && !entries[0].startsWith("cat:")) {
             Enimga2MetaInfo e2info = new Enimga2MetaInfo(entries[1], entries[2]);
             return e2info;
         }
@@ -530,6 +530,60 @@ public class MediaInfo implements Comparable<MediaInfo>{
         }
     }
 
+    public void importDefined(String[] lines, boolean isMovie, boolean isSerie, boolean isEpisode) {
+        this.isMovie = isMovie;
+        this.isSerie = isSerie;
+        this.isEpisode = isEpisode;
+
+        if(this.isMovie) {
+            this.ImdbId = lines[0];
+            this.Title = lines[1];
+            this.Tag = lines[2];
+            this.Year = Integer.valueOf(lines[3]);
+
+            this.Path = lines[4];
+            this.Filename = lines[5];
+            this.Extension = lines[6];
+
+            this.Plot = lines[7];
+            this.Runtime = Integer.valueOf(lines[8]);
+            this.Popularity = Integer.valueOf(lines[9]);
+
+            this.Genres = lines[10];
+        }
+        else if(this.isSerie) {
+            this.ImdbId = lines[0];
+            this.TheTvDbId = lines[1];
+            this.Title = lines[2];
+            this.Tag = lines[3];
+            this.Year = Integer.valueOf(lines[4]);
+
+            this.Plot = lines[5];
+            this.Runtime = Integer.valueOf(lines[6]);
+            this.Popularity = Integer.valueOf(lines[7]);
+
+            this.Genres = lines[8];
+        }
+        else if(this.isEpisode) {
+            this.TheTvDbId = lines[0];
+            this.Title = lines[1];
+            this.Year = Integer.valueOf(lines[2]);
+
+            this.Path = lines[3];
+            this.Filename = lines[4];
+            this.Extension = lines[5];
+
+            this.Season = Integer.valueOf(lines[6]);
+            this.Episode = Integer.valueOf(lines[7]);
+
+            this.Plot = lines[8];
+            this.Runtime = Integer.valueOf(lines[9]);
+            this.Popularity = Integer.valueOf(lines[10]);
+        
+            this.Genres = lines[11];
+        }
+    }
+
     public String exportStr() {
         return  "---BEGIN---\n" +
                 (isEpisode||isSerie?("TheTvDb: " + TheTvDbId + "\n"):"") +
@@ -551,6 +605,58 @@ public class MediaInfo implements Comparable<MediaInfo>{
                 (isEpisode?("Season: " + Season + "\n"):"") +
                 (isEpisode?("Episode: " + Episode + "\n"):"") +
                 "----END----\n\n";
+    }
+
+    public String exportDefined() {
+        String stri = "";
+        if(this.isMovie) {
+            stri += this.ImdbId + "\n";
+            stri += this.Title + "\n";
+            stri += this.Tag + "\n";
+            stri += this.Year + "\n";
+
+            stri += this.Path + "\n";
+            stri += this.Filename + "\n";
+            stri += this.Extension + "\n";
+
+            stri += this.Plot + "\n";
+            stri += this.Runtime + "\n";
+            stri += this.Popularity + "\n";
+
+            stri += this.Genres + "\n";
+        }
+        else if(this.isSerie) {
+            stri += this.ImdbId + "\n";
+            stri += this.TheTvDbId + "\n";
+            stri += this.Title + "\n";
+            stri += this.Tag + "\n";
+            stri += this.Year + "\n";
+
+            stri += this.Plot + "\n";
+            stri += this.Runtime + "\n";
+            stri += this.Popularity + "\n";
+
+            stri += this.Genres + "\n";
+        }
+        else if(this.isEpisode) {
+            stri += this.TheTvDbId + "\n";
+            stri += this.Title + "\n";
+            stri += this.Year + "\n";
+
+            stri += this.Path + "\n";
+            stri += this.Filename + "\n";
+            stri += this.Extension + "\n";
+
+            stri += this.Season + "\n";
+            stri += this.Episode + "\n";
+
+            stri += this.Plot + "\n";
+            stri += this.Runtime + "\n";
+            stri += this.Popularity + "\n";
+
+            stri += this.Genres + "\n";
+        }
+        return stri;
     }
 
     public String cleanString(String str){ /// "Lange Beine, kurze L&#xFC;gen (und ein F&#xFC;nkchen Wahrheit...)"

@@ -129,17 +129,27 @@ public final class Controller extends Notifier {
         FileUtils.rename(new File("db"), new File("db.1"));
         FileUtils.mkdir(new File("db"));
 
-        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/moviedb.txt", "db");
-        new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/seriesdb.txt", "db");
 
-        _notify((float)0.2, "PROGRESS");
 
-        {
-        FileUtils.mkdir(new File("db/episodes"));
-        String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/episodes/*.txt -type f");
-        for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "db/episodes");
+        boolean sendTxd = false;
+        sendTxd = new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/movies.txd", "db");
+        if(new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/tvshows.txd", "db")) {
+            _notify((float)0.2, "PROGRESS");
+            FileUtils.mkdir(new File("db/episodes"));
+            String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/episodes/*.txd -type f");
+            for (int f = 0; f < entries.length; f++)
+                new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "db/episodes");
         }
+
+        if (sendTxd == false) {
+            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/moviedb.txt", "db");
+            if(new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, "/hdd/valerie/seriesdb.txt", "db")) {
+                _notify((float)0.2, "PROGRESS");
+                FileUtils.mkdir(new File("db/episodes"));
+                String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/episodes/*.txt -type f");
+                for (int f = 0; f < entries.length; f++)
+                    new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "db/episodes");
+            }
         }
 
         _notify((float)0.4, "PROGRESS");
@@ -148,7 +158,8 @@ public final class Controller extends Notifier {
         FileUtils.mkdir(new File("converted"));
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/media/*.png -type f");
         for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
+            if(new File(entries[f].replace("/hdd/valerie/media/", "converted/")).isFile() == false)
+                new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
         }
         }
 
@@ -158,7 +169,8 @@ public final class Controller extends Notifier {
         FileUtils.mkdir(new File("converted"));
         String[] entries = new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "find /hdd/valerie/media/*.m1v -type f");
         for (int f = 0; f < entries.length; f++) {
-            new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
+            if(new File(entries[f].replace("/hdd/valerie/media/", "converted/")).isFile() == false)
+                new valerie.tools.Network().getSmartFile(pBoxInfo.IpAddress, entries[f], "converted");
         }
         }
 
@@ -188,33 +200,44 @@ public final class Controller extends Notifier {
         BoxInfo pBoxInfo = pBoxInfos[selectedBoxInfo];
 
         new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "mkdir -p /hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "conf\\paths.conf", "/hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "conf\\valerie.conf", "/hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "conf\\pre.conf", "/hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "conf\\post_movie.conf", "/hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "conf\\post_tv.conf", "/hdd/valerie");
+        new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "mkdir -p /hdd/valerie/episodes");
+        new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "mkdir -p /hdd/valerie/media");
+
+        new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "conf\\paths.conf", "/hdd/valerie");
+        new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "conf\\valerie.conf", "/hdd/valerie");
+        new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "conf\\pre.conf", "/hdd/valerie");
+        new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "conf\\post_movie.conf", "/hdd/valerie");
+        new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "conf\\post_tv.conf", "/hdd/valerie");
 
         _notify((float)0.1, "PROGRESS");
-
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db\\moviedb.txt", "/hdd/valerie");
-        new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db\\seriesdb.txt", "/hdd/valerie");
-
-        _notify((float)0.2, "PROGRESS");
-
-        new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "mkdir -p /hdd/valerie/episodes");
-        File episodes = new File("db/episodes");
-        for(String entry : episodes.list(new FilenameFilter()
-        { public boolean accept(File dir, String name) { return (name.endsWith(".txt")); }})) {
-            new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "db\\episodes\\" + entry, "/hdd/valerie/episodes");
+        boolean sendTxd = false;
+        sendTxd = new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\movies.txd", "/hdd/valerie");
+        if (new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\tvshows.txd", "/hdd/valerie")) {
+            _notify((float)0.2, "PROGRESS");
+            File episodesTxd = new File("db/episodes");
+            for(String entry : episodesTxd.list(new FilenameFilter()
+            { public boolean accept(File dir, String name) { return (name.endsWith(".txd")); }})) {
+                new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\episodes\\" + entry, "/hdd/valerie/episodes");
+            }
         }
 
+        if (sendTxd == false) {
+            new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\moviedb.txt", "/hdd/valerie");
+            if (new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\seriesdb.txt", "/hdd/valerie")) {
+                _notify((float)0.2, "PROGRESS");
+                File episodes = new File("db/episodes");
+                for(String entry : episodes.list(new FilenameFilter()
+                { public boolean accept(File dir, String name) { return (name.endsWith(".txt")); }})) {
+                    new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "db\\episodes\\" + entry, "/hdd/valerie/episodes");
+                }
+            }
+        }
         _notify((float)0.4, "PROGRESS");
-
-        new valerie.tools.Network().sendCMD(pBoxInfo.IpAddress, "mkdir -p /hdd/valerie/media");
+        
         File media = new File("converted");
         for(String entry : media.list(new FilenameFilter()
         { public boolean accept(File dir, String name) { return (name.endsWith(".png") || name.endsWith(".m1v")); }})) {
-            new valerie.tools.Network().sendFile(pBoxInfo.IpAddress, "converted\\" + entry, "/hdd/valerie/media");
+            new valerie.tools.Network().sendSmartFile(pBoxInfo.IpAddress, "converted\\" + entry, "/hdd/valerie/media");
         }
 
         _notify((float)1.0, "PROGRESS");
@@ -314,8 +337,12 @@ public final class Controller extends Notifier {
             if(!elementInfo.needsUpdate)
                 continue;
 
-            if(elementInfo.SearchString.length() == 0)
+            if(elementInfo.SearchString.length() == 0) {
+                elementInfo.Episode = -1;
+                elementInfo.Season = -1;
+                elementInfo.Year = -1;
                 elementInfo.parse(this);
+            }
 
             if(elementInfo.isEpisode && elementInfo.isEnigma2MetaRecording) {
                 if(new GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)) {

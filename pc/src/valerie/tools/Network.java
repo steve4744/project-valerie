@@ -117,7 +117,23 @@ public class Network {
         return rtv;
     }
 
-    public void sendFile(InetAddress addr, String file, String  directory) {
+     public boolean sendSmartFile(InetAddress addr, String fileOnPc, String  directoryOnBox) {
+        //DebugOutput.printl("->");
+
+        boolean rtv = false;
+        boolean result = new File(fileOnPc).isFile();
+        if(result)
+            rtv = sendFile(addr, fileOnPc, directoryOnBox);
+        else {
+            DebugOutput.printl("File not found ("+fileOnPc+")");
+            rtv = false;
+        }
+        //DebugOutput.printl("<-");
+        return rtv;
+    }
+
+    public boolean sendFile(InetAddress addr, String file, String  directory) {
+        boolean rtv = false;
         DebugOutput.printl("->");
         try {
             Socket clientSocket = new Socket(addr, 5451);
@@ -171,13 +187,16 @@ public class Network {
             in.close();
             dataOutput.close();
             clientSocket.close();
+            rtv = true;
         } catch(Exception ex) {
             DebugOutput.printl("Could not send file ("+file+") to box ("+addr.getHostAddress()+")");
             DebugOutput.printl(ex.toString());
             //DebugOutput.printl("");
+            rtv = false;
         }
 
         DebugOutput.printl("<-");
+        return rtv;
     }
 
     public boolean getSmartFile(InetAddress addr, String fileOnBox, String directoryOnPC) {

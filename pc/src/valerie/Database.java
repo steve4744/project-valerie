@@ -1,6 +1,7 @@
 
 package valerie;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -41,7 +42,18 @@ public class Database {
         IDCounter = 0;
     }
 
+    int DB_TXT = 1;
+    int DB_TXD = 2;
+    int USE_DB_VERSION = DB_TXD;
+
     public void save() {
+        if(this.USE_DB_VERSION == this.DB_TXT)
+            saveTxt();
+        else if(this.USE_DB_VERSION == this.DB_TXD)
+            saveTxd();
+    }
+
+    public void saveTxt() {
         Utf8 f;
 
         f = new Utf8("db\\moviedb.txt", "w");
@@ -74,13 +86,51 @@ public class Database {
         }
     }
 
+     public void saveTxd() {
+        Utf8 f;
+
+        f = new Utf8("db\\movies.txd", "w");
+        f.write(String.valueOf(this.DB_TXD) + "\n");
+        for( MediaInfo i : getMovieAsArray()) {
+             f.write(i.exportDefined());
+             //i.setValerieInfoLastAccessTime(i.Path);
+        }
+        f.close();
+
+        f = new Utf8("db\\tvshows.txd", "w");
+        f.write(String.valueOf(this.DB_TXD) + "\n");
+        for( MediaInfo i : getSerieAsArray()) {
+            if( getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
+                f.write(i.exportDefined());
+        }
+        f.close();
+
+        for( MediaInfo serie : getSerieAsArray()) {
+            String key = serie.TheTvDbId;
+            f = new Utf8("db\\episodes\\" + key + ".txd", "w");
+            f.write(String.valueOf(this.DB_TXD) + "\n");
+            for( MediaInfo i : getEpisodeAsArray(key)) {
+                f.write(i.exportDefined());
+                //i.setValerieInfoLastAccessTime(i.Path);
+            }
+            f.close();
+        }
+    }
+
     public void reload() {
         clear();
         load();
     }
 
-    // Compatibility OK
+
     public void load() {
+        if (new File("db\\movies.txd").isFile() && new File("db\\tvshows.txd").isFile())
+            loadTxd();
+        else
+            loadTxt();
+    }
+
+    public void loadTxt() {
         Utf8 f;
 
         float count = 0;
@@ -166,6 +216,85 @@ public class Database {
                             this.add(m);
 
                         pNotifier._notify((float)(countVar++/count), "PROGRESS");
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+    }
+
+    public void loadTxd() {
+        Utf8 f;
+
+        float count = 0;
+        float countVar = 0;
+
+        pNotifier._notify("Loading movies...", "PROGRESS");
+        pNotifier._notify((float)0, "PROGRESS");
+
+        try {
+            f = new Utf8("db\\movies.txd", "r");
+            String db = f.read();
+            f.close();
+            String[] lines = db.split("\n");
+            if(lines.length > 0) {
+                count = (lines.length-1) / 11;
+                String version = lines[0];
+                for(int i = 1; (i+11) < lines.length; i+=11) {
+                    String[] subsetLines = new String[11];
+                    System.arraycopy(lines, i, subsetLines, 0, 11);
+                    MediaInfo m = new MediaInfo("", "", "");
+                    m.importDefined(subsetLines, true, false, false);
+                    if(m.Title.length() > 0)
+                        this.add(m);
+                    pNotifier._notify((float)(countVar++/count), "PROGRESS");
+                }
+            }
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+
+        try {
+            f = new Utf8("db\\tvshows.txd", "r");
+            String db = f.read();
+            f.close();
+            String[] lines = db.split("\n");
+            if(lines.length > 0) {
+                count = (lines.length-1) / 9;
+                String version = lines[0];
+                for(int i = 1; (i+9) < lines.length; i+=9) {
+                    String[] subsetLines = new String[9];
+                    System.arraycopy(lines, i, subsetLines, 0, 9);
+                    MediaInfo m = new MediaInfo("", "", "");
+                    m.importDefined(subsetLines, false, true, false);
+                    if(m.Title.length() > 0)
+                        this.add(m);
+                }
+            }
+        } catch (Exception ex) {
+            System.out.print(ex);
+        }
+
+        try {
+            MediaInfo[] tvshows = getSerieAsArray();
+            for( MediaInfo info : tvshows) {
+                String key = info.TheTvDbId;
+                f = new Utf8("db\\episodes\\" + key + ".txd", "r");
+                String db = f.read();
+                f.close();
+                String[] lines = db.split("\n");
+                if(lines.length > 0) {
+                    count = (lines.length-1) / 12;
+                    String version = lines[0];
+                    for(int i = 1; (i+12) < lines.length; i+=12) {
+                        String[] subsetLines = new String[12];
+                        System.arraycopy(lines, i, subsetLines, 0, 12);
+                        MediaInfo m = new MediaInfo("", "", "");
+                        m.importDefined(subsetLines, false, false, true);
+                        m.ImdbId = info.ImdbId;
+                        if(m.Title.length() > 0)
+                            this.add(m);
                     }
                 }
             }
