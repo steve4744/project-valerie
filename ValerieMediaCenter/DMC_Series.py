@@ -99,6 +99,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				"right": (self.rightDown, "List Bottom"),
 				"up": (self.up, "List up"),
 				"down": (self.down, "List down"),
+				"up_quick": (self.up_quick, "List up"),
+				"down_quick": (self.down_quick, "List down"),
 			}, -2)
 		
 		if self.USE_DB_VERSION == self.DB_TXT:
@@ -311,16 +313,17 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.refresh()
 			
 
-	def refresh(self):
+	def refresh(self, changeBackdrop=True):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
-				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
-				elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
-					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
-				else:
-					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
+				if changeBackdrop is True:
+					if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+						self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+					elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+						self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
+					else:
+						self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 				if self["poster"].instance is not None:
 					if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
 						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
@@ -351,16 +354,27 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			elif self.inEpisode is True:
 				self["title"].setText(selection[0])
 				self["shortDescription"].setText(self.episodesdb[selection[1]]["Plot"])
-			
+
 	def up(self):
-		self["listview"].up()
+		print "PVMC_Series::up"
+		#self["listview"].up()
 		self.refresh()
 
+	def up_quick(self):
+		print "PVMC_Series::up_quick"
+		self["listview"].up()
+		self.refresh(False)
 
 	def down(self):
-		self["listview"].down()
+		print "PVMC_Series::down"
+		#self["listview"].down()
 		self.refresh()
-		
+
+	def down_quick(self):
+		print "PVMC_Series::down_quick"
+		self["listview"].down()
+		self.refresh(False)
+
 	def leftUp(self):
 		self["listview"].pageUp()
 		self.refresh()

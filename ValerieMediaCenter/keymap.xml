@@ -3,8 +3,10 @@
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
-		<key id="KEY_UP" mapto="up" flags="m" />
-		<key id="KEY_DOWN" mapto="down" flags="m" />
+		<key id="KEY_UP" mapto="up_quick" flags="mr" />
+		<key id="KEY_UP" mapto="up" flags="b" />
+		<key id="KEY_DOWN" mapto="down_quick" flags="mr" />
+		<key id="KEY_DOWN" mapto="down" flags="b" />
 		<key id="KEY_LEFT" mapto="left" flags="m" />
 		<key id="KEY_RIGHT" mapto="right" flags="m" />
 		<key id="KEY_MENU" mapto="menu" flags="m" />

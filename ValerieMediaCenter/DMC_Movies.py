@@ -97,6 +97,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"right": (self.rightDown, "List Bottom"),
 				"up": (self.up, "List up"),
 				"down": (self.down, "List down"),
+				"up_quick": (self.up_quick, "List up"),
+				"down_quick": (self.down_quick, "List down"),
 				"blue": (self.KeyGenres, "Genres"),
 				"red": (self.KeySort, "Sort"),
 				"stop": (self.leaveMoviePlayer, "Stop Playback"),
@@ -301,13 +303,24 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self["star" + str(9 - i)].instance.hide()
 
 	def up(self):
-		self["listview"].up()
+		print "PVMC_Movies::up"
+		#self["listview"].up()
 		self.refresh()
-		
+
+	def up_quick(self):
+		print "PVMC_Movies::up_quick"
+		self["listview"].up()
+		self.refresh(False)
 
 	def down(self):
-		self["listview"].down()
+		print "PVMC_Movies::down"
+		#self["listview"].down()
 		self.refresh()
+
+	def down_quick(self):
+		print "PVMC_Movies::down_quick"
+		self["listview"].down()
+		self.refresh(False)
 		
 	def leftUp(self):
 		self["listview"].pageUp()
