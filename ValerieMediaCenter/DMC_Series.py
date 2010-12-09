@@ -142,6 +142,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if self.inSeries:
 				#self.moviedb.clear()
 				for i in range(1, linesLen, 9):
+					print lines[i+0]
+					if lines[i+0] == "EOF":
+						break
 					d = {} 
 					d["ImdbId"]    = lines[i+0]
 					d["TheTvDb"]   = lines[i+1]
@@ -168,6 +171,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			elif self.inSeasons:
 				self.episodesdb.clear()
 				for i in range(1, linesLen, 12):
+					if lines[i+0] == "EOF":
+						break
 					d = {} 
 					d["TheTvDb"]    = lines[i+0]
 					d["Title"]     = lines[i+1]

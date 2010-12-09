@@ -140,6 +140,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			linesLen = len(lines)
 			print "Lines:", linesLen
 			for i in range(1, linesLen, 11):
+				if lines[i+0] == "EOF":
+					break
 				d = {} 
 				d["ImdbId"]    = lines[i+0]
 				d["Title"]     = lines[i+1]
