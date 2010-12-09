@@ -95,7 +95,7 @@ public class Database {
              f.write(i.exportDefined());
              //i.setValerieInfoLastAccessTime(i.Path);
         }
-        f.write("EOF");
+        f.write("EOF\n");
         f.close();
 
         f = new Utf8("db\\tvshows.txd", "w");
@@ -104,7 +104,7 @@ public class Database {
             if( i != null && getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
                 f.write(i.exportDefined());
         }
-        f.write("EOF");
+        f.write("EOF\n");
         f.close();
 
         for( MediaInfo serie : getSerieAsArray()) {
@@ -116,7 +116,7 @@ public class Database {
                     f.write(i.exportDefined());
                     //i.setValerieInfoLastAccessTime(i.Path);
                 }
-                f.write("EOF");
+                f.write("EOF\n");
                 f.close();
             }
         }
