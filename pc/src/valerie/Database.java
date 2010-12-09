@@ -95,6 +95,7 @@ public class Database {
              f.write(i.exportDefined());
              //i.setValerieInfoLastAccessTime(i.Path);
         }
+        f.write("EOF");
         f.close();
 
         f = new Utf8("db\\tvshows.txd", "w");
@@ -103,6 +104,7 @@ public class Database {
             if( i != null && getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
                 f.write(i.exportDefined());
         }
+        f.write("EOF");
         f.close();
 
         for( MediaInfo serie : getSerieAsArray()) {
@@ -114,6 +116,7 @@ public class Database {
                     f.write(i.exportDefined());
                     //i.setValerieInfoLastAccessTime(i.Path);
                 }
+                f.write("EOF");
                 f.close();
             }
         }
@@ -243,7 +246,7 @@ public class Database {
             if(lines.length > 0) {
                 count = (lines.length-1) / 11;
                 String version = lines[0];
-                for(int i = 1; (i+11) < lines.length; i+=11) {
+                for(int i = 1; (i+11) <= lines.length; i+=11) {
                     String[] subsetLines = new String[11];
                     System.arraycopy(lines, i, subsetLines, 0, 11);
                     MediaInfo m = new MediaInfo("", "", "");
@@ -265,7 +268,7 @@ public class Database {
             if(lines.length > 0) {
                 count = (lines.length-1) / 9;
                 String version = lines[0];
-                for(int i = 1; (i+9) < lines.length; i+=9) {
+                for(int i = 1; (i+9) <= lines.length; i+=9) {
                     String[] subsetLines = new String[9];
                     System.arraycopy(lines, i, subsetLines, 0, 9);
                     MediaInfo m = new MediaInfo("", "", "");
@@ -281,22 +284,24 @@ public class Database {
         try {
             MediaInfo[] tvshows = getSerieAsArray();
             for( MediaInfo info : tvshows) {
-                String key = info.TheTvDbId;
-                f = new Utf8("db\\episodes\\" + key + ".txd", "r");
-                String db = f.read();
-                f.close();
-                String[] lines = db.split("\n");
-                if(lines.length > 0) {
-                    count = (lines.length-1) / 12;
-                    String version = lines[0];
-                    for(int i = 1; (i+12) < lines.length; i+=12) {
-                        String[] subsetLines = new String[12];
-                        System.arraycopy(lines, i, subsetLines, 0, 12);
-                        MediaInfo m = new MediaInfo("", "", "");
-                        m.importDefined(subsetLines, false, false, true);
-                        m.ImdbId = info.ImdbId;
-                        if(m.Title.length() > 0)
-                            this.add(m);
+                if(info != null) {
+                    String key = info.TheTvDbId;
+                    f = new Utf8("db\\episodes\\" + key + ".txd", "r");
+                    String db = f.read();
+                    f.close();
+                    String[] lines = db.split("\n");
+                    if(lines.length > 0) {
+                        count = (lines.length-1) / 12;
+                        String version = lines[0];
+                        for(int i = 1; (i+12) <= lines.length; i+=12) {
+                            String[] subsetLines = new String[12];
+                            System.arraycopy(lines, i, subsetLines, 0, 12);
+                            MediaInfo m = new MediaInfo("", "", "");
+                            m.importDefined(subsetLines, false, false, true);
+                            m.ImdbId = info.ImdbId;
+                            if(m.Title.length() > 0)
+                                this.add(m);
+                        }
                     }
                 }
             }
