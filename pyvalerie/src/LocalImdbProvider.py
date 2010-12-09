@@ -155,44 +155,7 @@ class LocalImdbProvider():
         info.Title = re.sub("\"", "", info.Title)
 
         return info
-    
-    def getTag(self, info, html):
-        #<a class="main" href="/title/tt0416449/">300</a>
-        title = html;
-        #if self.NO_PLOT_RESULT in title:
-        #    return false;
 
-        pos = title.find(self.DIV_TITLE_START)
-        if pos < 0:
-            return None
-
-        title = title[pos + len(self.DIV_TITLE_START_EXAMPLE):]
-
-        pos = title.find(self.DIV_TITLE_END)
-        if pos < 0:
-            return None
-
-        info.Title = title[0:pos].strip()
-        info.Title = re.sub("\"", "", info.Title)
-
-        ####
-
-        title = html;
-        pos = title.find(self.DIV_TITLE_START, pos)
-        if pos < 0:
-            return info
-
-        title = title[pos + len(self.DIV_TITLE_START_EXAMPLE):]
-
-        pos = title.find(self.DIV_TITLE_END)
-        if pos < 0:
-            return info
-
-        info.Title = title[0:pos].strip()
-        info.Title = re.sub("\"", "", info.Title)
-
-        return info
-    
     def getPlot(self, info, html):
         plot = html
         if self.NO_PLOT_RESULT in plot:

@@ -15,7 +15,7 @@ class TheTvDbProvider(object):
     '''
 
     APIKEY = u"3A042860EF9F9160";
-    apiSearch = "uhttp://www.thetvdb.com/api/GetSeries.php?seriesname=";
+    apiSearch = u"http://www.thetvdb.com/api/GetSeries.php?seriesname=";
     apiSearchEpisode = u"http://www.thetvdb.com/api/" + APIKEY + u"/series/<seriesid>/default/<season>/<episode>/<lang>.xml";
     apiSearchAllEpisodes = u"http://www.thetvdb.com/api/" + APIKEY + u"/series/<seriesid>/all/<lang>.xml";
     apiArt = u"http://www.thetvdb.com/banners/";
@@ -168,7 +168,7 @@ class TheTvDbProvider(object):
             eGenre = self.getElem(elem, "Genre")
             if eGenre is not None and eGenre.data is not None and len(eGenre.data) > 0:
                 
-                info.Genre = u""
+                genres = u""
                 
                 strGenre = re.sub(u"\r\n", u" ", eGenre.data)
                 strGenre = re.sub(u"\n", u" ", strGenre)
@@ -176,9 +176,10 @@ class TheTvDbProvider(object):
                 for genre in strGenres:
                     genre = genre.strip()
                     if len(genre) > 1:
-                        info.Genre += genre + u"|"
-                info.Genre = info.Genre[:len(info.Genre) - 1] # Remove the last pipe
-                return info
+                        genres += genre + u"|"
+                if len(genres) > 1:
+                    info.Genres = genres[:len(genres) - 1] # Remove the last pipe
+                    return info
         except Exception, ex:
             print "TheTvDbProvider::getWriter: ", ex
         return None
@@ -243,8 +244,8 @@ class TheTvDbProvider(object):
         
         lang = lang.lower()
         
-        if lang == u"en":
-            return info #en already parsed using getSerieByImdbID()
+        #if lang == u"en":
+        #    return info #en already parsed using getSerieByImdbID()
         
         url = self.apiSeriesByID
         url = re.sub("<seriesid>", info.TheTvDbId, url)

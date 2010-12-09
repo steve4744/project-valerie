@@ -230,6 +230,7 @@ class Database(object):
         f.write(unicode(self.DB_TXD) + u"\n")
         for movie in self.dbMovies.values():
             f.write(movie.exportDefined())
+        f.write("EOF\n")
         f.close()
         elapsed_time = time.time() - start_time
         print "Took (episodes/*.txd):", elapsed_time
@@ -240,6 +241,7 @@ class Database(object):
         for key in self.dbSeries:
             if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
                 f.write(self.dbSeries[key].exportDefined())
+        f.write("EOF\n")
         f.close()
         elapsed_time = time.time() - start_time
         print "Took (seriesdb.txd): ", elapsed_time
@@ -251,6 +253,7 @@ class Database(object):
             for season in self.dbEpisodes[serie]:
                 for episode in self.dbEpisodes[serie][season].values():
                     f.write(episode.exportDefined())
+            f.write("EOF\n")
             f.close()
         elapsed_time = time.time() - start_time
         print "Took (episodes/*.txd): ", elapsed_time
@@ -388,6 +391,8 @@ class Database(object):
                 version = lines[0]
                 linesLen = len(lines)
                 for i in range(1, linesLen, 11):
+                    if lines[i] == "EOF":
+                        break
                     m = MediaInfo()
                     m.importDefined(lines[i:i+11], True, False, False)
                     self.add(m)
@@ -409,6 +414,8 @@ class Database(object):
                 version = lines[0]
                 linesLen = len(lines)
                 for i in range(1, linesLen, 9):
+                    if lines[i] == "EOF":
+                        break
                     m = MediaInfo()
                     m.importDefined(lines[i:i+9], False, True, False)
                     self.add(m)
@@ -431,6 +438,8 @@ class Database(object):
                     version = lines[0]
                     linesLen = len(lines)
                     for i in range(1, linesLen, 12):
+                        if lines[i] == "EOF":
+                            break
                         m = MediaInfo()
                         m.importDefined(lines[i:i+12], False, False, True)
                         self.add(m)

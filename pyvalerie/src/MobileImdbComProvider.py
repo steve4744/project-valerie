@@ -140,8 +140,7 @@ class MobileImdbComProvider():
         
         if len(votes) > 2:
             try:
-                votes = votes[0].split(".")
-                votes = votes[0]
+                votes = votes.split(".")[0]
             except Exception, ex:
                 print ex
         

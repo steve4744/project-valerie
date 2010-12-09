@@ -333,7 +333,9 @@ class ProjectValerieSyncSettings(Screen):
 				self.removeDir("/hdd/valerie/media")
 			elif returnValue == "delDb":
 				self.remove("/hdd/valerie/moviedb.txt")
+				self.remove("/hdd/valerie/movies.txd")
 				self.remove("/hdd/valerie/seriesdb.txt")
+				self.remove("/hdd/valerie/tvshows.txd")
 				self.removeDir("/hdd/valerie/episodes")
 			elif returnValue == "resetFl":
 				self.remove("/hdd/valerie/pre.conf")

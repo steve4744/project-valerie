@@ -88,11 +88,12 @@ class TheMovieDbProvider(object):
             eRating = self.getElem(elem, "rating")
             if eRating is not None and eRating.data is not None and len(eRating.data) > 0:
                 strRating = eRating.data
-                pos = strRating.find(u".")
-                if pos > 0:
-                    strRating = strRating[0:pos]
-                info.Popularity = int(strRating)
-                return info
+                if strRating != u"0.0":
+                    pos = strRating.find(u".")
+                    if pos > 0:
+                        strRating = strRating[0:pos]
+                    info.Popularity = int(strRating)
+                    return info
         except Exception, ex:
             print "TheMovieDbProvider::getRating: ", ex
         return None  
@@ -103,12 +104,11 @@ class TheMovieDbProvider(object):
             eGenres = self.getElem(elem, "categories")
             eGenres = eGenres.getElementsByTagName("category")
             for eGenre in eGenres:
-                if eGenre is not None and eGenre.data is not None and len(eGenre.data) > 0:
-                    if eGenre.getAttribute("type") == "genre":
-                        genre += eGenre.getAttribute("name") + u"|"
+                if eGenre is not None and eGenre.getAttribute("type") == "genre":
+                    genre += eGenre.getAttribute("name") + u"|"
             
             if len(genre) > 0:
-                info.Genre = genre[:len(genre) - 1] # Remove the last pipe
+                info.Genres = genre[:len(genre) - 1] # Remove the last pipe
                 return info
         except Exception, ex:
             print "TheMovieDbProvider::getOverview: ", ex
@@ -161,6 +161,9 @@ class TheMovieDbProvider(object):
             if tmp is not None:
                 info = tmp
             tmp = self.getRuntime(info, eMovie)
+            if tmp is not None:
+                info = tmp
+            tmp = self.getGenre(info, eMovie)
             if tmp is not None:
                 info = tmp
                 
