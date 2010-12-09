@@ -137,7 +137,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if not self.inEpisode:
 				lines = db.split("\n")
 				version = lines[0]
-				i = 1
 				linesLen = len(lines)
 			
 			if self.inSeries:

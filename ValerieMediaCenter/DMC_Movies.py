@@ -105,10 +105,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			}, -2)
 		self["listview"] = MenuList(list)
 		
-		if self.USE_DB_VERSION == self.DB_TXT:
-			self.loadMoviesDB()
-		elif self.USE_DB_VERSION == self.DB_TXD:
-			self.loadMoviesTxd()
+		self.loadMovies()
 		
 		self.onFirstExecBegin.append(self.refresh)
 
@@ -126,6 +123,12 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		else: # x<y
 			return -1
 
+	def loadMovies(self):
+		if self.USE_DB_VERSION == self.DB_TXT:
+			self.loadMoviesDB()
+		elif self.USE_DB_VERSION == self.DB_TXD:
+			self.loadMoviesTxd()
+
 	def loadMoviesTxd(self):
 		list =[]
 		try:
@@ -134,28 +137,29 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			
 			lines = db.split("\n")
 			version = lines[0]
-			i = 1
 			linesLen = len(lines)
 			print "Lines:", linesLen
-			for i in range(1, linesLen, 9):
+			for i in range(1, linesLen, 11):
 				d = {} 
 				d["ImdbId"]    = lines[i+0]
 				d["Title"]     = lines[i+1]
-				d["Tag"]       = ""
-				d["Year"]      = lines[i+2]
+				d["Tag"]       = lines[i+2]
+				d["Year"]      = int(lines[i+3])
 				
-				d["Path"] = lines[i+3] + "/" + lines[i+4] + "." + lines[i+5]
+				d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
 				
-				d["Plot"]       = lines[i+6]
-				d["Runtime"]    = lines[i+7]
-				d["Popularity"] = lines[i+8]
+				d["Plot"]       = lines[i+7]
+				d["Runtime"]    = lines[i+8]
+				d["Popularity"] = lines[i+9]
 				
-				d["Genres"] = lines[i+9]
+				d["Genres"] = lines[i+10]
 				
 				# deprecated
 				d["Directors"] = ""
 				d["Writers"]   = ""
 				d["OTitle"]    = ""
+				
+				print d
 				
 				if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
 					print "skipping ", d["Title"]
@@ -175,7 +179,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		else:
 			list.sort(self.sortList,reverse=True)
 		self["listview"].setList(list)
-		self["listview"].moveToIndex(1)
+		self["listview"].moveToIndex(0)
 		self.refresh()
 
 	def loadMoviesDB(self):
@@ -229,54 +233,33 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		if self.Sort == "":
 			list.sort()
 		else:
-			list.sort(self.sortList,reverse=True)
+			list.sort(self.sortList, reverse=True)
 		self["listview"].setList(list)
-		self["listview"].moveToIndex(1)
+		self["listview"].moveToIndex(0)
 		self.refresh()
 
 	def getAvailGenres(self):
 		list = []
-		glist = []
-		try:
-			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
-			movies = db.split("\n----END----\n")
-			
-
-			for movie in movies:
-				movie = movie.split("---BEGIN---\n")
-				if len(movie) == 2: 
-					d = {} 
-					lines = movie[1].split('\n')
-					for line in lines: 
-					#print "Line: ", line
-						if ":" in line: 
-						    key, text = (s.strip() for s in line.split(":", 1)) 
-
-						if "Genres" in key : 
-							gens = text.split(';')
-							for gen in gens:
-								gen=gen.lstrip().rstrip()
-								if not gen in glist:
-									glist.append(gen)
-									list.append((_(gen), gen))
-						
-			
-		except OSError, e: 
-			print "OSError: ", e
+		for movie in self.moviedb.values():
+			genres = movie["Genres"]
+			for genre in genres.split("|"):
+				if len(genre) > 0 and (_(genre), genre) not in list:
+					list.append((_(genre), genre))
 
 		list.sort()
 		list.insert(0,(_("All"), "all"))
 		return list
 		
-	def refresh(self):
+	def refresh(self, changeBackdrop=True):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
-			elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
-			else:
-				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
+			if changeBackdrop is True:
+				if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+				elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+					self.showiframe.showStillpicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
+				else:
+					self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 			self["title"].setText(selection[0])
 			self["otitle"].setText("---") #self.moviedb[selection[1]]["OTitle"])
 			self["tag"].setText(self.moviedb[selection[1]]["Tag"])
@@ -286,7 +269,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			if self.moviedb[selection[1]].has_key("Writers"):
 				self["writer"].setText(self.moviedb[selection[1]]["Writers"])
 			self["genre"].setText(self.moviedb[selection[1]]["Genres"])
-			self["year"].setText(self.moviedb[selection[1]]["Year"])
+			self["year"].setText(str(self.moviedb[selection[1]]["Year"]))
 			self["runtime"].setText(self.moviedb[selection[1]]["Runtime"])
 			if self["poster"].instance is not None:
 				if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
@@ -361,8 +344,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyGenres(self):
-		menu=self.getAvailGenres()
-		self.session.openWithCallback(self.genresCallback, ChoiceBox, title="Select Genre", list=menu)
+		menu = self.getAvailGenres()
+		self.session.openWithCallback(self.genresCallback, ChoiceBox, title="Select Genre", list = menu)
 
 	def genresCallback(self, choice):
 		if choice is None:
@@ -372,7 +355,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.genreFilter = ""
 		else:
 			self.genreFilter = choice[1]
-		self.loadMoviesDB()
+		self.loadMovies()
 		
 	def KeySort(self):
 		menu = []
@@ -389,7 +372,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.Sort = ""
 		else:
 			self.Sort = choice[1]
-		self.loadMoviesDB()
+		self.loadMovies()
 
 	def Exit(self):
 		if self.isVisible == False:
