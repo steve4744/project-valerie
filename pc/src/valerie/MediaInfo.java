@@ -416,13 +416,13 @@ public class MediaInfo implements Comparable<MediaInfo>{
             }
         }
 
-        if (this.isValerieInfoAvailable(pController, this.Path) == true) {
+        /*if (this.isValerieInfoAvailable(pController, this.Path) == true) {
             this.SearchString = this.getValerieInfo(pController, this.Path).trim();
             if(this.SearchString.equals("ignore"))
                 return false;
             //print ":: ", self.SearchString.encode('latin-1')
             return true;
-        }
+        }*/
 
         if(!this.isEpisode)
             this.isMovie = true;
@@ -682,27 +682,25 @@ public class MediaInfo implements Comparable<MediaInfo>{
     @Override
     public String toString() {
         //if(Imdb > 0)
-        return  "---BEGIN---\n" +
-                (isEpisode||isSerie?("TheTvDb: " + TheTvDbId + "\n"):"") +
+        return  (isEpisode||isSerie?("TheTvDb: " + TheTvDbId + "\n"):"") +
                 (isMovie?("TheTvDb: " + TmDbId + "\n"):"") +
                 "ImdbId: " + ImdbId + "\n" +
-                "Title: " + Title + "\n" +
-                "LocalTitle: " + LocalTitle + "\n" +
+                //"Title: " + Title + "\n" +
+                //"LocalTitle: " + LocalTitle + "\n" +
                 "Year: " + Year + "\n" +
                 //"Filename: " + Filename + "\n" +
                 (!isSerie?("Path: " + Path + "/" + Filename + "." + Extension + "\n"):"") +
-                "Directors: " + Directors + "\n" +
-                "Writers: " + Writers + "\n" +
-                "Plot: " + Plot + "\n" +
-                "LocalPlot: " + LocalPlot + "\n" +
+                //"Directors: " + Directors + "\n" +
+                //"Writers: " + Writers + "\n" +
+                //"Plot: " + Plot + "\n" +
+                //"LocalPlot: " + LocalPlot + "\n" +
                 "Runtime: " + Runtime + "\n" +
                 "Genres: " + Genres + "\n" +
-                "Releasedate: " + Releasedate + "\n" +
-                "Tag: " + Tag + "\n" +
+                //"Releasedate: " + Releasedate + "\n" +
+                //"Tag: " + Tag + "\n" +
                 "Popularity: " + Popularity + "\n" +
                 (isEpisode?("Season: " + Season + "\n"):"") +
-                (isEpisode?("Episode: " + Episode + "\n"):"") +
-                "----END----\n\n";
+                (isEpisode?("Episode: " + Episode + "\n"):"");
         //else
         //    return "";
     }

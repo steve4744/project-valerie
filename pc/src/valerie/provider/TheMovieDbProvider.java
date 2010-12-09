@@ -51,9 +51,11 @@ public class TheMovieDbProvider {
     public boolean getOverview(MediaInfo info, org.jdom.Element elem) {
         org.jdom.Element ePlot = elem.getChild("overview");
         if(ePlot != null && ePlot.getText() != null && ePlot.getText().length() > PLOT_MIN_LEN) {
-            info.Plot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
-            info.Plot += " [TMDB.ORG]";
-            return true;
+                if(!ePlot.getText().equals("No overview found.")) {
+                info.Plot = ePlot.getText().replaceAll("\r\n", " ").replaceAll("\n"," ");
+                info.Plot += " [TMDB.ORG]";
+                return true;
+            }
         }
         return false;
     }
@@ -83,12 +85,30 @@ public class TheMovieDbProvider {
     public boolean getRating(MediaInfo info, org.jdom.Element elem) {
         org.jdom.Element eRating = elem.getChild("rating");
         if(eRating != null && eRating.getText() != null && eRating.getText().length() > 0) {
-            try {
-                Float fPopularity = Float.valueOf(eRating.getText());
-                info.Popularity = fPopularity.intValue();
-                return true;
-            }catch(Exception ex) {
+            if(!eRating.getText().equals("0.0")) {
+                try {
+                    Float fPopularity = Float.valueOf(eRating.getText());
+                    info.Popularity = fPopularity.intValue();
+                    return true;
+                }catch(Exception ex) {
+                }
             }
+        }
+        return false;
+    }
+
+    public boolean getGenre(MediaInfo info, org.jdom.Element elem) {
+        String genre = "";
+        org.jdom.Element eGenres = elem.getChild("categories");
+        List<org.jdom.Element> children = eGenres.getChildren("category");
+        for(org.jdom.Element eGenre : children) {
+            if(eGenre != null && eGenre.getAttributeValue("type").equals("genre"))
+                genre += eGenre.getAttributeValue("name") + "|";
+        }
+
+        if(genre.length() > 0) {
+            info.Genres = genre.substring(0, genre.length() - 1);
+            return true;
         }
         return false;
     }
@@ -131,6 +151,7 @@ public class TheMovieDbProvider {
             getReleased(info, eMovie);
             getRating(info, eMovie);
             getRuntime(info, eMovie);
+            getGenre(info, eMovie);
 
             return true;
         }
@@ -172,6 +193,7 @@ public class TheMovieDbProvider {
             getReleased(info, eMovie);
             getRating(info, eMovie);
             getRuntime(info, eMovie);
+            getGenre(info, eMovie);
 
             return true;
         }

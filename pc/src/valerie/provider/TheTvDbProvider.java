@@ -152,6 +152,27 @@ public class TheTvDbProvider {
         return false;
     }
 
+    public boolean getGenre(MediaInfo info, org.jdom.Element elem) {
+        org.jdom.Element eGenre = elem.getChild("Genre");
+        if(eGenre != null && eGenre.getText() != null && eGenre.getText().length() > 0) {
+
+            info.Genres = "";
+
+            String strGenre = eGenre.getText().replaceAll("\\r\\n", " ");
+            strGenre = strGenre.replaceAll("\\n", " ");
+
+            String[] strGenres = strGenre.split("\\|");
+            for(String genre : strGenres) {
+                genre = genre.trim();
+                if(genre.length() > 1)
+                    info.Genres += genre + "|";
+            }
+            info.Genres = info.Genres.substring(0, info.Genres.length() - 1);
+            return true;
+        }
+        return false;
+    }
+
     public String getLanguage(org.jdom.Element elem) {
         org.jdom.Element eLang = elem.getChild("Language");
         if(eLang != null && eLang.getText() != null && eLang.getText().length() > 0) {
@@ -184,6 +205,7 @@ public class TheTvDbProvider {
 
             getRuntime(info, eMovie);
             getRating(info, eMovie);
+            getGenre(info, eMovie);
 
             return true;
         }
@@ -196,8 +218,8 @@ public class TheTvDbProvider {
 
         lang = lang.toLowerCase();
 
-        if(lang.equals("en")) // en already parsed using getSerieByImdbID()
-            return true;
+        //if(lang.equals("en")) // en already parsed using getSerieByImdbID()
+        //    return true;
 
         Document xml = null;
 
@@ -225,6 +247,7 @@ public class TheTvDbProvider {
 
             getRuntime(info, eMovie);
             getRating(info, eMovie);
+            getGenre(info, eMovie);
 
             return true;
         }
@@ -240,7 +263,7 @@ public class TheTvDbProvider {
 
         Document xml = null;
 
-       String url = apiSearchAllEpisodes; //apiSearchAllEpisodes;
+       String url = apiSearchEpisode; //apiSearchAllEpisodes;
        url = url.replaceAll("<seriesid>", info.TheTvDbId);
        url = url.replaceAll("<lang>", lang);
        url = url.replaceAll("<season>", String.valueOf(info.Season));
@@ -282,6 +305,7 @@ public class TheTvDbProvider {
             getWriter(info, eMovie);
             getRuntime(info, eMovie);
             getRating(info, eMovie);
+            getGenre(info, eMovie);
 
             return true;
         }

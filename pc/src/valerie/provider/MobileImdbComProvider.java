@@ -5,7 +5,6 @@
 
 package valerie.provider;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +18,7 @@ import valerie.tools.DebugOutput;
 public class MobileImdbComProvider {
     private static final String URL = "http://m.imdb.com/";
     private static final String apiSearch = URL + "find?q=<search>";
+    private static final String apiDetails = URL + "title/<imdbid>/";
 
     private static final String testNoResults = "<div class=\"noResults\">No Results</div>";
 
@@ -92,10 +92,93 @@ public class MobileImdbComProvider {
         return results;
     }
 
+    private static final String DIV_INFO_START = "<div class=\"mainInfo\">";
+    private static final String DIV_INFO_END = "</div>";
+    private static final String DIV_TAG_START = "<p>";
+    private static final String DIV_TAG_END = "</p>";
+    private static final String DIV_VOTES_START = "<div class=\"votes\">";
+    private static final String DIV_VOTES_END = "</strong>";
+
+    private static String getInfo(String html) {
+        String info = html;
+        //if(title.contains(NO_PLOT_RESULT)) {
+        //    return false;
+        //}
+
+        int pos = info.indexOf(DIV_INFO_START);
+        if(pos < 0)
+            return null;
+
+        info = info.substring(pos + DIV_INFO_START.length());
+
+        pos = info.indexOf(DIV_INFO_END);
+        if(pos < 0)
+            return null;
+
+        return info.substring(0, pos).trim();
+    }
+
+    private static boolean getTag(MediaInfo info, String html) {
+        String tag = getInfo(html);
+        if(tag == null) {
+            return false;
+        }
+
+        int pos = tag.indexOf(DIV_TAG_START);
+        if(pos < 0)
+            return false;
+
+        tag = tag.substring(pos + DIV_TAG_START.length());
+
+        pos = tag.indexOf(DIV_TAG_END);
+        if(pos < 0)
+            return false;
+
+        info.Tag = tag.substring(0, pos).trim();
+        return true;
+    }
+
+    private static boolean getVotes(MediaInfo info, String html) {
+        String votes = html;
+        if(votes == null) {
+            return false;
+        }
+
+        int pos = votes.indexOf(DIV_VOTES_START);
+        if(pos < 0)
+            return false;
+
+        votes = votes.substring(pos + DIV_VOTES_START.length());
+
+        pos = votes.indexOf(DIV_VOTES_END);
+        if(pos < 0)
+            return false;
+
+        votes = votes.substring(0, pos).trim();
+
+        votes = votes.replaceAll("<strong>", "");
+        votes = votes.trim();
+
+        
+        String vote = votes;
+        if(votes.length() > 2) {
+            vote = votes.split("[.]")[0];
+        }
+        info.Popularity = Integer.valueOf(vote);
+
+        return true;
+    }
+
+    //////////////////////////////////
 
     public static void getMoviesByTitle(MediaInfo info) {
 
         DebugOutput.printl(info.SearchString);
+
+        if(!info.ImdbId.equals(info.ImdbIdNull)) {
+            if(getMoviesByImdbID(info))
+                return;
+        }
 
         String html = null;
 
@@ -122,7 +205,28 @@ public class MobileImdbComProvider {
 
             info.ImdbId = result.ImdbId;
             info.Title = result.Title;
+
+            if(getMoviesByImdbID(info))
+                return;
+
             break;
         }
+    }
+
+    public static boolean getMoviesByImdbID(MediaInfo info) {
+
+         String html = null;
+
+        String url = apiDetails;
+        url = url.replaceAll("<imdbid>", info.ImdbId);
+        html = valerie.tools.WebGrabber.getHtml(url);
+
+        if (html == null)
+            return false;
+
+        getTag(info, html);
+        getVotes(info, html);
+
+        return true;
     }
 }

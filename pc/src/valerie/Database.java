@@ -100,20 +100,22 @@ public class Database {
         f = new Utf8("db\\tvshows.txd", "w");
         f.write(String.valueOf(this.DB_TXD) + "\n");
         for( MediaInfo i : getSerieAsArray()) {
-            if( getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
+            if( i != null && getEpisodeAsArray(i.TheTvDbId) != null && getEpisodeAsArray(i.TheTvDbId).length > 0)
                 f.write(i.exportDefined());
         }
         f.close();
 
         for( MediaInfo serie : getSerieAsArray()) {
-            String key = serie.TheTvDbId;
-            f = new Utf8("db\\episodes\\" + key + ".txd", "w");
-            f.write(String.valueOf(this.DB_TXD) + "\n");
-            for( MediaInfo i : getEpisodeAsArray(key)) {
-                f.write(i.exportDefined());
-                //i.setValerieInfoLastAccessTime(i.Path);
+                if(serie != null) {
+                String key = serie.TheTvDbId;
+                f = new Utf8("db\\episodes\\" + key + ".txd", "w");
+                f.write(String.valueOf(this.DB_TXD) + "\n");
+                for( MediaInfo i : getEpisodeAsArray(key)) {
+                    f.write(i.exportDefined());
+                    //i.setValerieInfoLastAccessTime(i.Path);
+                }
+                f.close();
             }
-            f.close();
         }
     }
 
