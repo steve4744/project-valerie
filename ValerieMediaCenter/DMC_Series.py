@@ -101,6 +101,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				"down": (self.down, "List down"),
 				"up_quick": (self.up_quick, "List up"),
 				"down_quick": (self.down_quick, "List down"),
+				"up_first": (self.up_quick, "List up"),
+				"down_first": (self.down_quick, "List down"),
 			}, -2)
 		
 		if self.USE_DB_VERSION == self.DB_TXT:
@@ -122,7 +124,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 	DB_SQLITE= 4
 	USE_DB_VERSION = DB_TXT
 
-	
+	FAST_STILLPIC = False
 
 	def loadSeriesTxd(self):
 		list =[]
@@ -362,22 +364,42 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 	def up(self):
 		print "PVMC_Series::up"
 		#self["listview"].up()
-		self.refresh()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
+
+	def up_first(self):
+		print "PVMC_Series::up_first"
+		#self["listview"].up()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
 
 	def up_quick(self):
 		print "PVMC_Series::up_quick"
 		self["listview"].up()
-		self.refresh(False)
+		if self.FAST_STILLPIC is False:
+			self.refresh(False)
+		else:
+			self.refresh()
 
 	def down(self):
 		print "PVMC_Series::down"
 		#self["listview"].down()
-		self.refresh()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
+
+	def down_first(self):
+		print "PVMC_Series::down_first"
+		#self["listview"].down()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
 
 	def down_quick(self):
 		print "PVMC_Series::down_quick"
 		self["listview"].down()
-		self.refresh(False)
+		if self.FAST_STILLPIC is False:
+			self.refresh(False)
+		else:
+			self.refresh()
 
 	def leftUp(self):
 		self["listview"].pageUp()

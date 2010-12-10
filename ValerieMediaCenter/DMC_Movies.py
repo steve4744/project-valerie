@@ -115,6 +115,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	DB_SQLITE= 4
 	USE_DB_VERSION = DB_TXT
 
+	FAST_STILLPIC = False
+
 	def sortList(self,x, y):
 		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
 			return 1
@@ -290,23 +292,43 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def up(self):
 		print "PVMC_Movies::up"
 		#self["listview"].up()
-		self.refresh()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
+
+	def up_first(self):
+		print "PVMC_Movies::up_first"
+		#self["listview"].up()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
 
 	def up_quick(self):
 		print "PVMC_Movies::up_quick"
 		self["listview"].up()
-		self.refresh(False)
+		if self.FAST_STILLPIC is False:
+			self.refresh(False)
+		else:
+			self.refresh()
 
 	def down(self):
 		print "PVMC_Movies::down"
 		#self["listview"].down()
-		self.refresh()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
+
+	def down_first(self):
+		print "PVMC_Movies::down_first"
+		#self["listview"].down()
+		if self.FAST_STILLPIC is False:
+			self.refresh()
 
 	def down_quick(self):
 		print "PVMC_Movies::down_quick"
 		self["listview"].down()
-		self.refresh(False)
-		
+		if self.FAST_STILLPIC is False:
+			self.refresh(False)
+		else:
+			self.refresh()
+
 	def leftUp(self):
 		self["listview"].pageUp()
 		self.refresh()
