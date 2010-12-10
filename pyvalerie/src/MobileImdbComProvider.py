@@ -14,7 +14,7 @@ class MobileImdbComProvider():
     '''
     URL = u"http://m.imdb.com/"
     apiSearch = URL + u"find?q=<search>"
-    apiDetails = URL + u"title/<imdbid>("
+    apiDetails = URL + u"title/<imdbid>/"
 
     testNoResults = "<div class=\"noResults\">No Results</div>"
         
