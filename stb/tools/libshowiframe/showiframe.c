@@ -17,6 +17,10 @@
 #define VIDEO_PLAY_STC     _IO('o', 85)
 #endif
 
+#ifdef VIDEO_STILLPICTURE
+#define USE_STILLPICTURE
+#endif
+
 static int m_video_clip_fd = -1;
 
 int showSinglePic(const char *filename)
@@ -35,34 +39,37 @@ int showSinglePic(const char *filename)
                         printf("VIDEO_SELECT_SOURCE MEMORY failed (%m)\n");
                 if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, VIDEO_STREAMTYPE_MPEG2) < 0)
                         printf("VIDEO_SET_STREAMTYPE failed(%m)\n");
-            }
-            if (m_video_clip_fd >= 0) {
-                if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
-                        printf("VIDEO_STOP failed (%m)\n");
-
-#ifdef AZBOX
-                if (ioctl(m_video_clip_fd, VIDEO_SET_STC) < 0)
-                        printf("VIDEO_SET_STC failed (%m)\n");
-#endif
 
                 if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
                         printf("VIDEO_PLAY failed (%m)\n");
+            }
+            if (m_video_clip_fd >= 0) {
+            
+#ifdef USE_STILLPICTURE
+                struct video_still_picture stillpic;
+                unsigned char iframe[s.st_size];
 
-#ifdef AZBOX
-                if (ioctl(m_video_clip_fd, VIDEO_PLAY_STC) < 0)
-                        printf("VIDEO_PLAY_STC failed (%m)\n");
-#endif
+                read(f, iframe, s.st_size);
 
-                if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
-                        printf("video: VIDEO_CONTINUE: %m\n");
+                stillpic.iFrame = iframe;
+                stillpic.size = s.st_size;
+                
+                if (ioctl(m_video_clip_fd, VIDEO_STILLPICTURE, &stillpic) < 0)
+                        printf("VIDEO_STILLPICTURE failed (%m)\n");
+#else /*NO USE_STILLPICTURE*/
 #ifndef AZBOX
-                if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
-                        printf("video: VIDEO_CLEAR_BUFFER: %m\n");
+                if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
+                        printf("VIDEO_STOP failed (%m)\n");
+                if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
+                        printf("VIDEO_PLAY failed (%m)\n");
 #endif
 
                 int seq_end_avail = 0;
                 size_t pos = 0;
-                unsigned char pes_header[] = { 0x00, 0x00, 0x01, 0xE0, 0x00, 0x00, 0x80, 0x00, 0x00 };
+                unsigned char pes_header[] = { 0x00, 0x00, 0x01 /*Start code*/, 
+                                0xE0 /*Stream type (MPEG-1 or MPEG-2 video stream number)*/, 
+                                0x00, 0x00, /*PES packet length*/
+                                0x80, 0x00, 0x00 /*The extension*/};
                 unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
                 unsigned char iframe[s.st_size];
                 unsigned char stuffing[8192];
@@ -80,6 +87,7 @@ int showSinglePic(const char *filename)
                 if (!seq_end_avail)
                     write(m_video_clip_fd, seq_end, sizeof(seq_end));
                 write(m_video_clip_fd, stuffing, 8192);
+#endif
             }
             close(f);
         } else {
