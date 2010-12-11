@@ -11,7 +11,8 @@ from sys import version_info
 import sys, traceback
 
 from HtmlEncoding import decode_htmlentities
-import twisted.web.microdom as microdom
+#import twisted.web.microdom as microdom
+import xml.dom.minidom as minidom
 import Utf8
 import re
 
@@ -51,7 +52,8 @@ def getXml(url):
     decodedXml = None
     try:
         if rawXml is not None:
-            decodedXml = microdom.parseString(rawXml)
+            #decodedXml = microdom.parseString(rawXml)
+            decodedXml = minidom.parseString(rawXml)
     except Exception, ex:
         print "URL", Utf8.utf8ToLatin(url)
         print "WebGrabber.getXml: ", ex
@@ -71,7 +73,6 @@ def getHtml(url):
     return decodedHtml
      
 def getText(url): 
-    #print "URL", url.encode('latin-1')
     utfPage = checkCache(url)
     if utfPage is None:
         for i in range(RETRIES):

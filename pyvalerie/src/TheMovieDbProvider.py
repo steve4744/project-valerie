@@ -52,6 +52,7 @@ class TheMovieDbProvider(object):
 
     def getOverview(self, info, elem):
         try:
+            print elem
             ePlot = self.getElem(elem, "overview")
             if ePlot is not None and ePlot.data is not None and len(ePlot.data) > self.PLOT_MIN_LEN:
                 info.Plot = re.sub(u"\r\n", u" ", ePlot.data)
@@ -101,17 +102,17 @@ class TheMovieDbProvider(object):
     def getGenre(self, info, elem):
         genre = u""
         try:
-            eGenres = self.getElem(elem, "categories")
-            eGenres = eGenres.getElementsByTagName("category")
-            for eGenre in eGenres:
-                if eGenre is not None and eGenre.getAttribute("type") == "genre":
-                    genre += eGenre.getAttribute("name") + u"|"
+            genreList = elem.getElementsByTagName("categories")
+            for genreListItem in genreList:
+                for eGenre in genreListItem.getElementsByTagName("category"):
+                    if eGenre.getAttribute("type") == "genre":
+                        genre += eGenre.getAttribute("name") + u"|"
             
             if len(genre) > 0:
                 info.Genres = genre[:len(genre) - 1] # Remove the last pipe
                 return info
         except Exception, ex:
-            print "TheMovieDbProvider::getOverview: ", ex
+            print "TheMovieDbProvider::getGenre: ", ex
         return None
     
     def getTranslated(self, elem):
