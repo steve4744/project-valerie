@@ -49,10 +49,10 @@ def checkDefaults():
 	print("Check "+"/hdd/valerie/media")
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 		print("Check defaultbackdrop.m1v - Missing -> Downloading")
-		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "/hdd/valerie/media/defaultbackdrop.m1v")
+		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "../media/defaultbackdrop.m1v")
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 		print("Check defaultposter.png - Missing -> Downloading")
-		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "/hdd/valerie/media/defaultposter.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "../media/defaultposter.png")
 	
 	try: 
 		print("Check "+"/hdd/valerie/episodes")

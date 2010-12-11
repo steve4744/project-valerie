@@ -106,6 +106,7 @@ def getText(url):
     
 def getFile(url, name, retry=3):
     localFilename = downloadDir + "/" + name
+    url = url.strip() # Just to be on the save side
     if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
         for i in range(retry):
             try:
@@ -117,6 +118,7 @@ def getFile(url, name, retry=3):
             except Exception, ex:
                 print "File download failed: ", ex
                 print "Name: ", Utf8.utf8ToLatin(name)
+                print "Url: ", Utf8.utf8ToLatin(url)
                 print type(ex)
                 print '-'*60
                 traceback.print_exc(file=sys.stdout)

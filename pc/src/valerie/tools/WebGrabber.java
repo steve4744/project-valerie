@@ -169,7 +169,7 @@ public class WebGrabber {
         //DebugOutput.printl(surl);
 
         boolean success = false;
-
+        surl = surl.trim(); // just ot be on the safe side
         for(int i = 0; i < retry && !success; i++) {
 
             success = true;
