@@ -249,7 +249,7 @@
                                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                                   <Component id="jTextFieldBoxesManufactor" alignment="0" pref="132" max="32767" attributes="1"/>
                                                   <Component id="jTextFieldBoxesModell" alignment="0" max="32767" attributes="1"/>
-                                                  <Component id="jTextFieldBoxesIp" alignment="0" min="-2" max="-2" attributes="1"/>
+                                                  <Component id="jTextFieldBoxesIp" alignment="0" max="32767" attributes="1"/>
                                               </Group>
                                           </Group>
                                           <Component id="jButtonBoxesSave" alignment="0" min="-2" max="-2" attributes="0"/>

@@ -15,11 +15,6 @@ import valerie.tools.Path;
  * @author i7
  */
 public final class ConfPaths {
-
-
-
-    
-
     private String Filter = null;
     private LinkedList<Path> Paths = new LinkedList<Path>();
 
@@ -60,7 +55,7 @@ public final class ConfPaths {
     }
 
     public void setFilter(String filter) {
-        if(filter != null)
+        if(filter != null && filter.length() > 0)
             this.Filter = filter;
         else
             return;

@@ -221,10 +221,19 @@ public class ValerieView extends FrameView {
                             Database database = (Database)pController.get("Database");
                             MediaInfo toUpdate = database.getMediaInfoById(id);
 
-                            toUpdate.SearchString = searchstring;
                             toUpdate.Season = season;
                             toUpdate.Episode = episode;
 
+                            toUpdate.TheTvDbId = toUpdate.TheTvDbIdNull;
+
+                            Matcher mImdb = Pattern.compile("tt\\d{4,7}").matcher(searchstring);
+                            if (mImdb.find()/*.matches()*/) {
+                                toUpdate.ImdbId = searchstring;
+                                toUpdate.SearchString = searchstring;
+                            } else {
+                                toUpdate.ImdbId = toUpdate.ImdbIdNull;
+                                toUpdate.SearchString = searchstring;
+                            }
                             toUpdate.needsUpdate = true;
 
                             model.setValueAt(toUpdate.needsUpdate, row, 5);

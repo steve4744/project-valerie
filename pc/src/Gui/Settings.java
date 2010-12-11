@@ -312,7 +312,7 @@ public class Settings extends javax.swing.JDialog {
                                         .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(jTextFieldBoxesManufactor, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                                             .addComponent(jTextFieldBoxesModell)
-                                            .addComponent(jTextFieldBoxesIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addComponent(jTextFieldBoxesIp)))
                                     .addComponent(jButtonBoxesSave)))
                             .addGroup(jPanelGeneralLayout.createSequentialGroup()
                                 .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
