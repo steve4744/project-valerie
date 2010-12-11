@@ -195,6 +195,7 @@ public class LocalImdbProvider {
             return false;
 
         info.Plot = plot.substring(0, pos).replaceAll("<br>", " ").trim() + " [IMDB.LOCAL]";
+        info.Plot = info.Plot.replaceAll("\n", " ").trim();
         return true;
     }
 

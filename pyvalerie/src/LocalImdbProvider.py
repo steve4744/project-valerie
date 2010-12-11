@@ -173,6 +173,7 @@ class LocalImdbProvider():
 
         info.Plot = plot[0:pos]
         info.Plot = re.sub("<br>", " ", info.Plot).strip() + " [IMDB.LOCAL]"
+        info.Plot = re.sub("\n", " ", info.Plot).strip()
         return info
     
     ###############################################

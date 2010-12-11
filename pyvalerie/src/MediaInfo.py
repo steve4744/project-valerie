@@ -642,6 +642,10 @@ class MediaInfo(object):
         return stri
     
     def exportDefined(self):
+        
+        # Workaround, can be removed in the future
+        self.Plot = re.sub("\n", " ", self.Plot).strip()
+        
         stri = u''
         if self.isMovie:
             stri += self.ImdbId + u'\n'
