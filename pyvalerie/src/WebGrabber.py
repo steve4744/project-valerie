@@ -30,6 +30,14 @@ def url_fix(s):
     qs = urllib.quote_plus(qs, ':&=')
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
+def folderSize(folder):
+    folder_size = 0
+    for (path, dirs, files) in os.walk(folder):
+        for file in files:
+            filename = os.path.join(path, file)
+            folder_size += os.path.getsize(filename)
+    return folder_size/(1024*1024.0)
+
 def checkCache(url):
     cacheFile = re.sub(r'\W', "", url).strip()
     rtv = None
@@ -41,21 +49,28 @@ def checkCache(url):
     return rtv
 
 def addCache(url, text):
+    if folderSize(cacheDir) > 4.0: #10mb
+        for f in os.listdir(cacheDir):
+            file = os.path.join(cacheDir, f)
+            print "RM: ", file
+            os.remove(file)
+    
     cacheFile = re.sub(r'\W', "", url).strip()
     if text is not None and len(text) > 0:
         f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
         f.write(text)
         f.close
+    
      
 def getXml(url):
     rawXml = getText(url) 
     decodedXml = None
     try:
         if rawXml is not None:
-            #decodedXml = microdom.parseString(rawXml)
-            print type(rawXml.encode( "utf-8" ))
-            print type(Utf8.utf8ToLatin(rawXml))
-            decodedXml = minidom.parseString(Utf8.utf8ToLatin(rawXml))
+            try:
+                decodedXml = minidom.parseString(rawXml)
+            except Exception, ex:
+                decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))    
     except Exception, ex:
         print "URL", Utf8.utf8ToLatin(url)
         print "WebGrabber.getXml: ", ex
