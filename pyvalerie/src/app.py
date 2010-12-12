@@ -14,8 +14,11 @@ class App():
   def __init__(self):
     sys.path.append(os.getcwd() + "/../../../")
     print "PYTHONPATH", sys.path
-    self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.FAST)
+    self.thread = pyvalerie(self.output, self.progress, self.range, self.info, self.finished, pyvalerie.FAST)
     self.thread.start()
+
+  def finished(self, successfully):
+    return None
 
   def output(self, s):
     print s

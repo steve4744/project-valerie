@@ -42,8 +42,13 @@ def utf8ToLatin(utfString):
         try:
             latinString = utfString.encode('latin-1')
         except Exception, ex:
-            print "Conversion to latin failed!!!", ex
-            latinString = None
+            print "Conversion to latin failed, trying different approach!", ex
+            try:
+                print type(utfString)
+                latinString = utfString.encode('utf-8')
+            except UnicodeDecodeError, ex2:
+                print "Conversion to latin failed!!!", ex
+                latinString = None
         
     if latinString is None:
         latinString = " "

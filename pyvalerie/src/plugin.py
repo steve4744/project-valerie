@@ -55,13 +55,21 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 	def selectionChanged(self):
 		print "selectionChanged"
 	
+	selection = ""
+	
 	def add(self):
 		print "add"
-		self.close(self.folderList.getFilename())
+		print "prev", self.selection
+		print "now", self.folderList.getFilename()
+		if self.selection in self.folderList.getFilename():
+			self.close(self.folderList.getFilename())
+		else:
+			self.close(self.selection)
 	
 	def descent(self):
 		print "descent"
 		if self.folderList.canDescent():
+			self.selection = self.folderList.getFilename()
 			self.folderList.descent()
 	
 	def exit(self):
@@ -358,6 +366,55 @@ class ProjectValerieSyncSettings(Screen):
 				except os.error:
 					pass
 
+class ProjectValerieSyncInfo():
+	outputInstance = None
+	syncInfo = None
+	i = 0
+	linecount = 40
+	progress = 0
+	range = 0
+	lines = []
+	
+	poster = None
+	name = ""
+	year = 0
+	
+	inForeground = False
+	inProgress = False
+	
+	session = None
+	
+	def reset(self):
+		self.i = 0
+		self.linecount = 40
+		self.progress = 0
+		self.range = 0
+		self.lines = []
+		
+		self.poster = None
+		self.name = ""
+		self.year = 0
+
+gSyncInfo = None
+
+class ProjectValerieSyncFinished(Screen):
+	skin = """
+		<screen position="center,0" size="300,100" title="Sync finished" >
+			<widget name="info" position="20,50" size="200,40" font="Regular;30" />
+		</screen>"""
+		
+	def __init__(self, session, args = 0):
+		self.session = session
+		Screen.__init__(self, session)
+		
+		self["info"] = Label(_("Sync finished"))
+		
+		self["ProjectValerieSyncFinishedActionMap"] = ActionMap(["OkCancelActions", "DirectionActions"],
+		{
+			"ok": self.close,
+			"cancel": self.close
+		}, -1)
+
 class ProjectValerieSync(Screen):
 	skin = """
 		<screen position="50,50" size="620,476" title="ProjectValerieSync" >
@@ -389,6 +446,8 @@ class ProjectValerieSync(Screen):
 
 		</screen>"""
 
+	
+
 	def __init__(self, session, args = None):
 		self.skin = ProjectValerieSync.skin
 		Screen.__init__(self, session)
@@ -398,7 +457,7 @@ class ProjectValerieSync(Screen):
 		self["key_yellow"] = StaticText(_("Fast Sync"))
 		self["key_blue"] = StaticText(_("Settings"))
 		
-		self["console"] = ScrollLabel(_("Please press \"Sync\" to start syncing!"))
+		self["console"] = ScrollLabel(_("Please press \"Sync\" to start syncing!\n"))
 		self["progress"] = ProgressBar()
 		self["poster"] = Pixmap()
 		self["name"] = Label()
@@ -414,65 +473,126 @@ class ProjectValerieSync(Screen):
 			"cancel": self.close,
 		}, -1)
 		
-		self.linecount = 40
+		
 		
 		print "PYTHONPATH=", sys.path
 		from Tools.Directories import resolveFilename, SCOPE_PLUGINS 
 		sys.path.append(resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerieSync") )
-		
-		self.onFirstExecBegin.append(self.checkDefaults)
+
+		self.onFirstExecBegin.append(self.startup)
+	
+	def startup(self):
+		global gSyncInfo
+		print "startup", type(gSyncInfo)
+		if gSyncInfo is None:
+			gSyncInfo = ProjectValerieSyncInfo()
+		gSyncInfo.outputInstance = self
+		gSyncInfo.session = self.session
+		print "gSyncInfo.inProgress", gSyncInfo.inProgress
+		if gSyncInfo.inProgress is True:
+			gSyncInfo.inForeground = True
+			
+			self.range(gSyncInfo.range)
+			self.progress(gSyncInfo.progress)
+			self.info(gSyncInfo.poster, gSyncInfo.name, gSyncInfo.year)
+			
+			self["console"].setText("")
+			
+			if len(gSyncInfo.lines) > 0:
+				for line in gSyncInfo.lines:
+					self["console"].appendText(line + "\n")
+				self["console"].lastPage()
+		else:	
+			self.checkDefaults()
 	
 	def checkDefaults(self):
 		from sync import checkDefaults as SyncCheckDefaults
 		SyncCheckDefaults()
-		
+
+	def close(self):
+		global gSyncInfo
+		gSyncInfo.inForeground = False
+		Screen.close(self)
 	
 	def menu(self):
-		self.session.open(ProjectValerieSyncSettings)
+		if gSyncInfo.inProgress is False:
+			self.session.open(ProjectValerieSyncSettings)
 	
 	def go(self):
-		self["console"].lastPage()
-		self.i = 0
-		self.p = []
-		for i in range(0, self.linecount):
-			self.p.append("")
-		self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.NORMAL)
-		self.thread.start()
+		if gSyncInfo.inProgress is False:
+			self["console"].lastPage()
+			global gSyncInfo
+			gSyncInfo.reset()
+			gSyncInfo.inForeground = True
+			gSyncInfo.inProgress = True
+			gSyncInfo.outputInstance["console"].setText("")
+			self.thread = pyvalerie(self.output, self.progress, self.range, self.info, self.finished, pyvalerie.NORMAL)
+			self.thread.start()
 	
 	def gofast(self):
-		self["console"].lastPage()
-		self.i = 0
-		self.p = []
-		for i in range(0, self.linecount):
-			self.p.append("")
-		self.thread = pyvalerie(self.output, self.progress, self.range, self.info, pyvalerie.FAST)
-		self.thread.start()
+		if gSyncInfo.inProgress is False:
+			self["console"].lastPage()
+			global gSyncInfo
+			gSyncInfo.reset()
+			gSyncInfo.inForeground = True
+			gSyncInfo.inProgress = True
+			gSyncInfo.outputInstance["console"].setText("")
+			self.thread = pyvalerie(self.output, self.progress, self.range, self.info, self.finished, pyvalerie.FAST)
+			self.thread.start()
+	
+	def finished(self, successfully):
+		gSyncInfo.inProgress = False
+		if gSyncInfo.inForeground is False:
+			gSyncInfo.session.open(ProjectValerieSyncFinished)
 		
 	def output(self, text):
+		global gSyncInfo
 		print text
-		if self.i == 0:
-			self["console"].setText(text + "\n")
+		print "gSyncInfo.inProgress", gSyncInfo.inProgress
+		print "gSyncInfo.inForeground", gSyncInfo.inForeground
+		if gSyncInfo.inForeground is True:
+			if len(gSyncInfo.lines) >= gSyncInfo.linecount:
+				gSyncInfo.i = 0
+				gSyncInfo.outputInstance["console"].setText("")
+			gSyncInfo.outputInstance["console"].appendText(text + "\n")
+
+			gSyncInfo.i += 1
+			
+			gSyncInfo.outputInstance["console"].lastPage()
 		else:
-			self["console"].appendText(text + "\n")
-		
-		self.i += 1
-		self.i %= self.linecount
-		self["console"].lastPage()
+			gSyncInfo.i = 0
+			
+		if len(gSyncInfo.lines) >= gSyncInfo.linecount:
+			del gSyncInfo.lines[:]
+		gSyncInfo.lines.append(text)
+			
 		
 	def progress(self, value):
-		self["progress"].setValue(value)
+		gSyncInfo.progress = value
+		if gSyncInfo.inForeground is True:
+			gSyncInfo.outputInstance["progress"].setValue(value)
 	
 	def range(self, value):
-		self["progress"].range = (0, value)
+		gSyncInfo.range = value
+		if gSyncInfo.inForeground is True:
+			gSyncInfo.outputInstance["progress"].range = (0, value)
 	
 	def info(self, poster, name, year):
 		print name
-		try:
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
-			self["name"].setText(name)
-			self["year"].setText(str(year))
-		except Exception, ex:
-			print "ProjectValerieSync::info", ex
+		gSyncInfo.poster = poster
+		gSyncInfo.str = str
+		gSyncInfo.year = year
+		
+		if gSyncInfo.inForeground is True:
+			try:
+				if poster is not None and len(poster) > 0:
+					gSyncInfo.outputInstance["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
+				if name is not None and len(name) > 0:
+					gSyncInfo.outputInstance["name"].setText(name)
+				if year is not None and year > 0:
+					gSyncInfo.outputInstance["year"].setText(str(year))
+			except Exception, ex:
+				print "ProjectValerieSync::info", ex
 	
 def main(session, **kwargs):
 	session.open(ProjectValerieSync)

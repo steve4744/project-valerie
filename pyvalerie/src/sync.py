@@ -125,13 +125,15 @@ class pyvalerie(Thread):
 	
 	NORMAL = 0
 	FAST = 1
+	UPDATE = 2
 	
-	def __init__ (self, output, progress, range, info, mode):
+	def __init__ (self, output, progress, range, info, finished, mode):
 		Thread.__init__(self)
 		self.output = output
 		self.progress = progress
 		self.range = range
 		self.info = info
+		self.finished = finished
 		self.mode = mode
 		self.output("Thread running")
 		
@@ -403,3 +405,5 @@ class pyvalerie(Thread):
 		self.output("Done")
 		self.output("---------------------")
 		self.output("Press Exit / Back")
+		
+		self.finished(True)

@@ -236,7 +236,7 @@ class MediaInfo(object):
             if year > 1940 and year < 2012:
                 self.Year = year
                 # removing year from searchstring
-                self.SearchString = re.sub(str(year), u" ", self.SearchString)
+                #self.SearchString = re.sub(str(year), u" ", self.SearchString)
                 #self.SearchString = name[:m.start()]
         
         print ":0: ", Utf8.utf8ToLatin(self.SearchString)
@@ -395,6 +395,14 @@ class MediaInfo(object):
         
         if self.isSerie == False:
             self.isMovie = True
+        
+        # So we got year and season and episode 
+        # now we can delete everything after the year
+        # but only if the year is not the first word in the string
+        if self.Year != -1:
+            pos = self.SearchString.find(str(self.Year))
+            if pos > 0:
+                self.SearchString = self.SearchString[:pos]
         
         #print ":1: ", self.SearchString
         ### Replacements POST

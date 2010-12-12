@@ -53,7 +53,9 @@ def getXml(url):
     try:
         if rawXml is not None:
             #decodedXml = microdom.parseString(rawXml)
-            decodedXml = minidom.parseString(rawXml)
+            print type(rawXml.encode( "utf-8" ))
+            print type(Utf8.utf8ToLatin(rawXml))
+            decodedXml = minidom.parseString(Utf8.utf8ToLatin(rawXml))
     except Exception, ex:
         print "URL", Utf8.utf8ToLatin(url)
         print "WebGrabber.getXml: ", ex
