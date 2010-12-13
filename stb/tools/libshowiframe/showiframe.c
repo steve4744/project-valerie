@@ -17,7 +17,7 @@
 #define VIDEO_PLAY_STC     _IO('o', 85)
 #endif
 
-#ifdef VIDEO_STILLPICTURE
+#ifdef __sh__
 #define USE_STILLPICTURE
 #endif
 
@@ -102,9 +102,13 @@ int showSinglePic(const char *filename)
 void finishShowSinglePic()
 {
     if (m_video_clip_fd >= 0) {
+#ifdef USE_STILLPICTURE
+
+#else /*NO USE_STILLPICTURE*/
 #ifdef AZBOX
         if (ioctl(m_video_clip_fd, VIDEO_STOP_STC, 0) < 0)
             printf("VIDEO_STOP_STC failed (%m)\n");
+#endif
 #endif
         if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
             printf("VIDEO_STOP failed (%m)\n");
