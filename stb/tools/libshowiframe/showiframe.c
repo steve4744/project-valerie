@@ -39,9 +39,10 @@ int showSinglePic(const char *filename)
                         printf("VIDEO_SELECT_SOURCE MEMORY failed (%m)\n");
                 if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, VIDEO_STREAMTYPE_MPEG2) < 0)
                         printf("VIDEO_SET_STREAMTYPE failed(%m)\n");
-
+#ifdef USE_STILLPICTURE
                 if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
                         printf("VIDEO_PLAY failed (%m)\n");
+#endif
             }
             if (m_video_clip_fd >= 0) {
             
@@ -57,12 +58,28 @@ int showSinglePic(const char *filename)
                 if (ioctl(m_video_clip_fd, VIDEO_STILLPICTURE, &stillpic) < 0)
                         printf("VIDEO_STILLPICTURE failed (%m)\n");
 #else /*NO USE_STILLPICTURE*/
-#ifndef AZBOX
                 if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
                         printf("VIDEO_STOP failed (%m)\n");
+
+#ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_SET_STC) < 0)
+                        printf("VIDEO_SET_STC failed (%m)\n");
+#endif /*AZBOX*/
+
                 if (ioctl(m_video_clip_fd, VIDEO_PLAY) < 0)
                         printf("VIDEO_PLAY failed (%m)\n");
-#endif
+
+#ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_PLAY_STC) < 0)
+                        printf("VIDEO_PLAY_STC failed (%m)\n");
+#endif /*AZBOX*/
+
+                if (ioctl(m_video_clip_fd, VIDEO_CONTINUE) < 0)
+                        printf("video: VIDEO_CONTINUE: %m\n");
+#ifndef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
+                        printf("video: VIDEO_CLEAR_BUFFER: %m\n");
+#endif /*NO AZBOX*/						
 
                 int seq_end_avail = 0;
                 size_t pos = 0;
@@ -87,7 +104,7 @@ int showSinglePic(const char *filename)
                 if (!seq_end_avail)
                     write(m_video_clip_fd, seq_end, sizeof(seq_end));
                 write(m_video_clip_fd, stuffing, 8192);
-#endif
+#endif /*NO USE_STILLPICTURE*/
             }
             close(f);
         } else {
