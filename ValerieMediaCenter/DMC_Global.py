@@ -117,6 +117,15 @@ def checkCtypes():
 
 class Showiframe():
 	def __init__(self):
+		try:
+			self.load()
+		except Exception, ctypeEx: 
+			print "ARRRGH!! WHY IS CTYPE MISSING?", ctypeEx
+			checkCtypes()
+			self.load() #THIS WILL CRAHS IF CTYPE NOT AVAILABLE; AND THAT IS A GOOD THING !!!
+			
+
+	def load(self):
 		self.ctypes = __import__("_ctypes") 
 		
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
