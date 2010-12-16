@@ -3,8 +3,8 @@
 		<text value="Welcome to the Project Valerie experiment" />
 		<code>
 self["textTop"].setText(" ")
-self["textCenter"].setText("This Wizard allows you to setup Project Valerie\nPress OK to continue")
-self["textBottom"].setText(" ")
+self["textCenter"].setText("This Wizard allows you to setup Project Valerie")
+self["textBottom"].setText("Press OK to continue")
 		</code>
 	</step>
 	<step id="autostart" nextstep="checkforupdate">
@@ -26,7 +26,7 @@ self["textBottom"].setText("Press OK to continue")
 			<listentry caption="No" step="no" />
 		</list>
 		<code>
-self["textTop"].setText("Should Project Valerie automatically check for updates?")
+self["textTop"].setText("Should Project Valerie check for updates on start?")
 self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>

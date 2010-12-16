@@ -158,41 +158,67 @@ class PVMC_Update(Screen):
 		time.sleep(4)
 		quitMainloop(3)
 
-
-
-
 class PVMC_MainMenu(Screen):
+
+	ShowStillPicture = False
+
 	def __init__(self, session):
 		printl("PVMC_MainMenu:__init__")
+		from enigma import addFont
+		addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+		
+		
 		Screen.__init__(self, session)
 
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.session.nav.stopService()
+		
+		try:
+			from StillPicture import StillPicture
+			self["showiframe"] = StillPicture()
+			self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
+			self.session.nav.stopService()
+			self.ShowStillPicture = True
+		except Exception, ex:
+			print ex
 
+		self.OldSkin = False
+		try:
+			if self["menuWatch"] == None:
+				self.OldSkin = False
+			else:
+				self.OldSkin = True
+		except Exception, ex:
+			self.OldSkin = False
+
+		if self.OldSkin is True:
+			list = []
+			list.append(("Movies", "PVMC_Watch", "menu_watch", "50"))
+			list.append(("TV", "InfoBar", "menu_tv", "50"))
+			list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
+			list.append(("Sync", "PVMC_Sync", "menu_sync", "50"))
+			list.append(("Music", "PVMC_AudioPlayer", "menu_music", "50"))
+			self["menu"] = List(list, True)
 	
-		list = []
-		list.append(("Movies", "PVMC_Watch", "menu_watch", "50"))
-		list.append(("TV", "InfoBar", "menu_tv", "50"))
-		#list.append(("TV", "Exit", "menu_exit", "50"))
-		list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
-		list.append(("Sync", "PVMC_Sync", "menu_sync", "50"))
-		list.append(("Music", "PVMC_AudioPlayer", "menu_music", "50"))
-		#list.append(("Exit", "Exit", "menu_exit", "50"))
-		self["menu"] = List(list, True)
-
-		listWatch = []
-		listWatch.append((" ", "dummy", "menu_dummy", "50"))
-		listWatch.append(("Movies", "PVMC_Movies", "menu_movies", "50"))
-		listWatch.append(("Series", "PVMC_Series", "menu_series", "50"))
-		#listWatch.append(("Series", "MC_VideoPlayer", "menu_watch_all", "50"))
-		self["menuWatch"] = List(listWatch, True)
-		self.Watch = False
+			listWatch = []
+			listWatch.append((" ", "dummy", "menu_dummy", "50"))
+			listWatch.append(("Movies", "PVMC_Movies", "menu_movies", "50"))
+			listWatch.append(("Series", "PVMC_Series", "menu_series", "50"))
+			self["menuWatch"] = List(listWatch, True)
+			self.Watch = False
+		else:
+			list = []
+			list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
+			list.append(("Sync",     "PVMC_Sync",     "menu_sync", "50"))
+			list.append(("Live TV",  "InfoBar",       "menu_tv", "50"))
+			list.append(("Movies",   "PVMC_Movies",   "menu_movies", "50"))
+			list.append(("TV Shows", "PVMC_Series",   "menu_series", "50"))
+			self["menu"] = List(list, True)
+			
+			self["version"] = Label(config.plugins.pvmc.version.value)
 
 		self["title"] = StaticText("")
 		self["welcomemessage"] = StaticText("")
-
-		#self["moveWatchMovies"] = MovingPixmap()
-		#self["moveWatchSeries"] = MovingPixmap()
 
 		self.inter = 0
 
@@ -209,8 +235,13 @@ class PVMC_MainMenu(Screen):
 
 		checkCtypes()
 
+		self.onFirstExecBegin.append(self.onExec)
+		
 		if config.plugins.pvmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
+
+	def onExec(self):
+		self["menu"].setIndex(2)
 
 	def power(self):
 		import Screens.Standby
@@ -257,27 +288,35 @@ class PVMC_MainMenu(Screen):
 	def Error(self, error):
 		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
 
+	def showStillPicture(self):
+		return
+
 	def okbuttonClick(self):
 		print "okbuttonClick"
 
-		if self.Watch == True:
+		if self.OldSkin is True and self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
 				if selection[1] == "PVMC_Movies":
-					self.session.open(PVMC_Movies)
+					self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
 				elif selection[1] == "PVMC_Series":
-					self.session.open(PVMC_Series)
+					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
 		else:
 			selection = self["menu"].getCurrent()
+			print "SELECTION", selection
 			if selection is not None:
 				if selection[1] == "PVMC_Watch":
 					self["menuWatch"].setIndex(2)
 					self.Watch = True;
+				elif selection[1] == "PVMC_Movies":
+					self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
+				elif selection[1] == "PVMC_Series":
+					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
 				elif selection[1] == "PVMC_AudioPlayer":
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)
 				elif selection[1] == "PVMC_Settings":
-					self.session.open(PVMC_Settings, self)
+					self.session.openWithCallback(self.showStillPicture, PVMC_Settings, self)
 				elif selection[1] == "PVMC_Sync":
 					isInstalled = False
 					try:
@@ -287,54 +326,54 @@ class PVMC_MainMenu(Screen):
 						isInstalled = False
 						print "Exception: ", ex
 					if isInstalled:
-						self.session.open(ProjectValerieSync)
+						self.session.openWithCallback(self.showStillPicture, ProjectValerieSync)
 					else:
 						self.session.open(MessageBox, "Please install the plugin \nProjectValerieSync\n to use this feature.", type = MessageBox.TYPE_INFO)
-					
-					#self.session.open(Settings, self)
-#					from Menu import MainMenu, mdom
-#					menu = mdom.getroot()
-#					assert menu.tag == "menu", "root element in menu must be 'menu'!"
-
-
-#					self.session.open(MainMenu, menu)
 				elif selection[1] == "InfoBar":
+					if self.ShowStillPicture is True:
+						self["showiframe"].finishStillPicture()
 					self.session.nav.playService(self.oldService)
 					self.Exit()
-					#eDVBDB.getInstance().reloadBouquets()
-					#from Screens.InfoBar import InfoBar
-					#self.session.open(InfoBar)
 				elif selection[1] == "Exit":
 					self.Exit()
 
 	def up(self):
-		self.cancel()
+		if self.OldSkin is True:
+			self.cancel()
+		else:
+			self["menu"].selectPrevious()
 		return
 
 	def down(self):
-		self.okbuttonClick()
+		if self.OldSkin is True:
+			self.okbuttonClick()
+		else:
+			self["menu"].selectNext()
 		return
 
 	def right(self):
-		if self.Watch == True:
-			self["menuWatch"].selectNext()
-			if self["menuWatch"].getIndex() == 0:
+		if self.OldSkin is True:
+			if self.Watch == True:
 				self["menuWatch"].selectNext()
-		else:
-			self["menu"].selectNext()
+				if self["menuWatch"].getIndex() == 0:
+					self["menuWatch"].selectNext()
+			else:
+				self["menu"].selectNext()
 
 	def left(self):
-		if self.Watch == True:
-			self["menuWatch"].selectPrevious()
-			if self["menuWatch"].getIndex() == 0:
+		if self.OldSkin is True:
+			if self.Watch == True:
 				self["menuWatch"].selectPrevious()
-		else:
-			self["menu"].selectPrevious()
+				if self["menuWatch"].getIndex() == 0:
+					self["menuWatch"].selectPrevious()
+			else:
+				self["menu"].selectPrevious()
 
 	def cancel(self):
-		if self.Watch == True:
-			self["menuWatch"].setIndex(0)
-			self.Watch = False;
+		if self.OldSkin is True:
+			if self.Watch == True:
+				self["menuWatch"].setIndex(0)
+				self.Watch = False;
 
 		return
 

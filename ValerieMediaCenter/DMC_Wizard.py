@@ -15,6 +15,8 @@ class PVMC_Wizard(WizardLanguage):
 		self["textTop"] = Label()
 		self["textCenter"] = Label()
 		self["textBottom"] = Label()
+		from StillPicture import StillPicture
+		self["showiframe"] = StillPicture()
 
 	def autostart(self, selection = None):
 		if selection is None:
