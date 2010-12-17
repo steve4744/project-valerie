@@ -170,7 +170,8 @@
 			<convert type="TemplatedMultiContent">
 				{"template": [ MultiContentEntryText(pos = (0, 0), size = (378, 30), flags = RT_HALIGN_LEFT, text = 0) ],
 				"fonts": [gFont("Modern", 25)],
-				"itemHeight": 39
+				"itemHeight": 39,
+				"scrollbarMode": "showNever"
 				}
 			</convert>
 			</widget>
@@ -253,7 +254,8 @@
 			<convert type="TemplatedMultiContent">
 				{"template": [ MultiContentEntryText(pos = (0, 0), size = (378, 30), flags = RT_HALIGN_LEFT, text = 0) ],
 				"fonts": [gFont("Modern", 25)],
-				"itemHeight": 39
+				"itemHeight": 39,
+				"scrollbarMode": "showNever"
 				}
 			</convert>
 			</widget>
