@@ -61,6 +61,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.moviedb = {}
 		self.episodesdb = {}
 		
+		list = []
 		self["listview"] = List(list, True)
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
@@ -235,6 +236,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 		if self.inSeries:
 			self.serieslist.sort()
+			
 			self["listview"].setList(self.serieslist)	
 		elif self.inSeasons:
 			list.sort()
@@ -245,7 +247,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			
 		self["listview"].setIndex(0)
 		self.refresh()
-
 
 	def loadSeriesDB(self):
 		list =[]

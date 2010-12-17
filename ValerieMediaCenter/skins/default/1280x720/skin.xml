@@ -157,7 +157,7 @@
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png" />
 			<ePixmap name="mb_bg_list" position="333,50" zPosition="2" size="540,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_bg-fs8.png" />
 
-			<widget name="listview_itemsperpage" id="12" position="0,0" zPosition="0" size="1,1"/>
+			<widget name="listview_itemsperpage" id="11" position="0,0" zPosition="0" size="1,1"/>
 			<widget source="listview"
 				render="Listbox" 
 				zPosition="3" 
@@ -241,7 +241,7 @@
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png" />
 			<ePixmap name="mb_bg_list" position="333,50" zPosition="2" size="540,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_bg-fs8.png" />
 
-			<widget name="listview_itemsperpage" id="12" position="0,0" zPosition="0" size="1,1"/>
+			<widget name="listview_itemsperpage" id="11" position="0,0" zPosition="0" size="1,1"/>
 			<widget source="listview"
 				render="Listbox" 
 				zPosition="3" 

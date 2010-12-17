@@ -2,6 +2,14 @@
 import urllib
 import urllib2
 
+# disgracefully stolen from xbmc subtitles
+try:
+  # Python 2.6 +
+  from hashlib import sha as sha
+except ImportError:
+  # Python 2.5 and earlier
+  import sha
+
 class TraktAPI():
 	URL = "http://api.trakt.tv"
 
@@ -59,7 +67,8 @@ class TraktAPI():
 
 	def setUsernameAndPassword(self, user, passwd):
 		self.mUsername = user
-		self.mPassword = passwd
+		self.mPassword = sha.new(passwd).hexdigest()
+		#self.mPassword = passwd
 
 	def setImdbId(self, imdbid):
 		self.mImdbId = imdbid
