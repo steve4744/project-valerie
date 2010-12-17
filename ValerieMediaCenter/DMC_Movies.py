@@ -274,6 +274,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self[name].setText(value)
 				elif ignore is False:
 					self[name].setText("Not available")
+				else:
+					self[name].setText(" ")
 		except Exception, ex:
 			print "setText::", ex
 

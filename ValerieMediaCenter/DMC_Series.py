@@ -342,6 +342,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self[name].setText(value)
 				elif ignore is False:
 					self[name].setText("Not available")
+				else:
+					self[name].setText(" ")
 		except Exception, ex:
 			print "setText::", ex
 
@@ -404,7 +406,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			#print "itemsPerPage", itemsPerPage
 			pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
 			pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
-			self.setText("total", "Total movies: " + str(itemsTotal))
+			if self.inSeries:
+				self.setText("total", "Total tv shows: " + str(itemsTotal))
+			elif self.inSeasons:
+				self.setText("total", "Total seasons: " + str(itemsTotal))
+			elif self.inEpisode:
+				self.setText("total", "Total episodes: " + str(itemsTotal))
 			self.setText("current", str(pageCurrent) + "/" + str(pageTotal))
 
 	def up(self):

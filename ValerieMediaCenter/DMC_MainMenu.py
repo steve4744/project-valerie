@@ -169,15 +169,15 @@ class PVMC_MainMenu(Screen):
 		
 		
 		Screen.__init__(self, session)
-
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
+		print "OLDSERVICE", self.oldService
 		self.session.nav.stopService()
+		#self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
+		#print "OLDSERVICE", self.oldService
 		
 		try:
 			from StillPicture import StillPicture
 			self["showiframe"] = StillPicture()
-			self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
-			self.session.nav.stopService()
 			self.ShowStillPicture = True
 		except Exception, ex:
 			print ex
@@ -332,6 +332,7 @@ class PVMC_MainMenu(Screen):
 				elif selection[1] == "InfoBar":
 					if self.ShowStillPicture is True:
 						self["showiframe"].finishStillPicture()
+					print "OLDSERVICE", self.oldService
 					self.session.nav.playService(self.oldService)
 					self.Exit()
 				elif selection[1] == "Exit":
