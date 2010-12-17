@@ -335,13 +335,16 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.refresh()
 			
 
-	def setText(self, name, value, ignore=False):
+	def setText(self, name, value, ignore=False, what=None):
 		try:
 			if self[name]:
 				if len(value) > 0:
 					self[name].setText(value)
 				elif ignore is False:
-					self[name].setText("Not available")
+					if what is None:
+						self[name].setText("Not available")
+					else:
+						self[name].setText(what + " not available")
 				else:
 					self[name].setText(" ")
 		except Exception, ex:
@@ -370,14 +373,14 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
 				self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
 				
-				self.setText("shortDescription", self.moviedb[selection[1]]["Plot"])
+				self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what="Overview")
 				
 				if self.moviedb[selection[1]].has_key("Directors"):
 					self.setText("director", self.moviedb[selection[1]]["Directors"])
 				if self.moviedb[selection[1]].has_key("Writers"):
 					self.setText("writer", self.moviedb[selection[1]]["Writers"])
 					
-				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "))
+				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what="Genre")
 				self.setText("year", str(self.moviedb[selection[1]]["Year"]))
 				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + " min")
 				
@@ -399,7 +402,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 			elif self.inEpisode is True:
 				self.setText("title", selection[0])
-				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"])
+				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what="Overview")
 			
 			itemsPerPage = int(self["listview_itemsperpage"].getData())
 			itemsTotal = self["listview"].count()
