@@ -180,8 +180,8 @@
 			<widget name="total" transparent="1" zPosition="5" halign="right" position="290,515" size="140,24" font="Modern;18" foregroundColor="#8BCAF6"/>
 			
 			<eLabel name="movies" text="tv shows" transparent="1" zPosition="5" halign="right" position="100,30" size="340,50" font="Modern;45" foregroundColor="#006CA4C5"/>
-			<widget name="title" transparent="1" zPosition="5" halign="right" position="40,90" size="400,40" font="Modern;32" foregroundColor="#00FFFFFF" />
-			<widget name="tag" transparent="1" zPosition="5" halign="left" position="450,106" size="106,20" font="Modern;16" foregroundColor="#00FFFFFF" />
+			<widget name="title" transparent="1" zPosition="5" halign="right" position="40,90" size="404,40" font="Modern;32" foregroundColor="#00FFFFFF" />
+			<widget name="tag" transparent="1" zPosition="5" halign="left" position="450,106" size="250,20" font="Modern;16" foregroundColor="#00FFFFFF" />
 
 
 			<widget name="star0" transparent="1" zPosition="6" position="460,480" size="17,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/Star.png" alphatest="on" />
@@ -266,8 +266,8 @@
 			<widget name="total" transparent="1" zPosition="5" halign="right" position="290,515" size="140,24" font="Modern;18" foregroundColor="#8BCAF6"/>
 			
 			<eLabel name="movies" text="movies" transparent="1" zPosition="5" halign="right" position="100,30" size="340,50" font="Modern;45" foregroundColor="#006CA4C5"/>
-			<widget name="title" transparent="1" zPosition="5" halign="right" position="40,90" size="400,40" font="Modern;32" foregroundColor="#00FFFFFF" />
-			<widget name="tag" transparent="1" zPosition="5" halign="left" position="450,106" size="106,20" font="Modern;16" foregroundColor="#00FFFFFF" />
+			<widget name="title" transparent="1" zPosition="5" halign="right" position="40,90" size="404,40" font="Modern;32" foregroundColor="#00FFFFFF" />
+			<widget name="tag" transparent="1" zPosition="5" halign="left" position="450,106" size="250,20" font="Modern;16" foregroundColor="#00FFFFFF" />
 
 
 			<widget name="star0" transparent="1" zPosition="6" position="460,480" size="17,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/Star.png" alphatest="on" />
