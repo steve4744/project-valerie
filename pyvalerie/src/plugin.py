@@ -342,9 +342,13 @@ class ProjectValerieSyncSettings(Screen):
 			elif returnValue == "delDb":
 				self.remove("/hdd/valerie/moviedb.txt")
 				self.remove("/hdd/valerie/movies.txd")
+				self.remove("/hdd/valerie/movies.db")
 				self.remove("/hdd/valerie/seriesdb.txt")
 				self.remove("/hdd/valerie/tvshows.txd")
+				self.remove("/hdd/valerie/tvshows.db")
 				self.removeDir("/hdd/valerie/episodes")
+				self.remove("/hdd/valerie/episodes.db")
+				self.remove("/hdd/valerie/fastcrawl.bin")
 			elif returnValue == "resetFl":
 				self.remove("/hdd/valerie/pre.conf")
 				self.remove("/hdd/valerie/post_movie.conf")

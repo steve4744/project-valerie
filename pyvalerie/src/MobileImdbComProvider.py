@@ -92,7 +92,7 @@ class MobileImdbComProvider():
         if pos < 0:
             return None
 
-        tag = info[pos + len(self.DIV_INFO_START):]
+        info = info[pos + len(self.DIV_INFO_START):]
 
         pos = info.find(self.DIV_INFO_END)
         if pos < 0:
@@ -101,22 +101,26 @@ class MobileImdbComProvider():
         return info[0:pos].strip()
         
     def getTag(self, info, html):
+        print "getTag"
         tag = self.getInfo(html)
         if tag is None:
             return None
+        print "tag", tag
         pos = tag.find(self.DIV_TAG_START)
         if pos < 0:
+            print "getTag", "if pos < 0: 1"
             return None
         
         tag = tag[pos + len(self.DIV_TAG_START):]
 
         pos = tag.find(self.DIV_TAG_END)
         if pos < 0:
+            print "getTag", "if pos < 0: 2"
             return None
-
+        print "getTag", tag
         tag = tag[0:pos]
         tag = tag.strip()
-        
+        print "getTag", tag
         info.Tag = tag
         return info
     
@@ -202,12 +206,13 @@ class MobileImdbComProvider():
         
         
     def getMoviesByImdbID(self, info):
-
+        print "getMoviesByImdbID", info.ImdbId
         url = self.apiDetails
         url = re.sub("<imdbid>", info.ImdbId, url)
         html = WebGrabber.getHtml(url)
 
         if html is None:
+            print "if html is None"
             return None;
 
         tmp = self.getTag(info, html)
