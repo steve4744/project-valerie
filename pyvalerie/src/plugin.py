@@ -24,7 +24,7 @@ from sync import pyvalerie
 
 class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 	skin = """
-		<screen position="100,100" size="560,400" title="Add Path" >
+		<screen position="center,center" size="560,400" title="Add Path" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
@@ -78,7 +78,7 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 
 class ProjectValerieSyncSettingsConfPaths(Screen):
 	skin = """
-		<screen position="100,100" size="560,400" title="Settings - Paths" >
+		<screen position="center,center" size="560,400" title="Settings - Paths" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
@@ -190,7 +190,7 @@ from Components.config import *
 
 class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 	skin = """
-		<screen position="100,100" size="560,400" title="Settings" >
+		<screen position="center,center" size="560,400" title="Settings" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
@@ -291,7 +291,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 
 class ProjectValerieSyncSettings(Screen):
 	skin = """
-		<screen position="100,100" size="560,400" title="Settings" >
+		<screen position="center,center" size="560,400" title="Settings" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
@@ -418,10 +418,258 @@ class ProjectValerieSyncFinished(Screen):
 			"ok": self.close,
 			"cancel": self.close
 		}, -1)
+		
+from MediaInfo import MediaInfo
+from Screens.ChoiceBox import ChoiceBox
+from Screens.InputBox import InputBox
+from Screens.MessageBox import MessageBox
+from Components.Sources.List import List
+from Manager import Manager
+from Components.Input import Input
+import Utf8
 
+class ProjectValerieSyncManagerInfo(Screen):
+	skin = """
+		<screen position="center,center" size="620,476" title="ProjectValerieSyncManager" >
+			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
+			
+			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_yellow" render="Label" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
+		
+			<eLabel text="Path:"  position="10,50" size="90,40" font="Regular;20" />
+			<eLabel text="Filename:"  position="10,80" size="90,40" font="Regular;20" />
+			<eLabel text="Title:"  position="10,130" size="90,40" font="Regular;20" />
+			<eLabel text="Year:"  position="10,160" size="90,40" font="Regular;20" />
+			<eLabel text="Season:"  position="10,190" size="90,40" font="Regular;20" />
+			<eLabel text="Episode:"  position="10,210" size="90,40" font="Regular;20" />
+			
+			<widget name="path" position="100,50" size="500,30" font="Regular;20" />
+			<widget name="filename" position="100,80" size="500,30" font="Regular;20" />
+			<widget name="title" position="100,130" size="500,30" font="Regular;20" />
+			<widget name="year"  position="100,160"  size="500,30" font="Regular;20"  />
+			<widget name="season"  position="100,190"  size="500,30" font="Regular;20"  />
+			v<widget name="episode"  position="100,210"  size="500,30" font="Regular;20"  />
+		</screen>"""
+		
+	def __init__(self, session, manager, element):
+		Screen.__init__(self, session)
+		
+		self.manager = manager
+		self.element = element
+		self.elementParent = None
+		
+		self["key_red"] = StaticText(_("Alternatives"))
+		self["key_green"] = StaticText(_("ImdbId"))
+		self["key_yellow"] = StaticText(_(" "))
+		self["key_blue"] = StaticText(_("Save"))
+		
+		self["path"] = Label()
+		self["filename"] = Label()
+		
+		self["title"] =  Label()
+		self["year"] =  Label()
+		self["season"] =  Label()
+		self["episode"] =  Label()
+		
+		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
+		{
+			"red": self.showAlternatives,
+			"green": self.showEnterImdbId,
+			"blue": self.save,
+			"cancel": self.close,
+			"ok": self.close,
+		}, -1)
+		
+		self.onFirstExecBegin.append(self.onLoad)
+	
+	def onLoad(self):
+		
+		self["path"].setText(Utf8.utf8ToLatin(self.element.Path))
+		self["filename"].setText(Utf8.utf8ToLatin(self.element.Filename) + "." + Utf8.utf8ToLatin(self.element.Extension))
+		if type(self.element) is MediaInfo:	
+			self["title"].setText(Utf8.utf8ToLatin(self.element.Title))
+			self["year"].setText(str(self.element.Year))
+			if self.element.isMovie:
+				self["season"].setText(" ")
+				self["episode"].setText(" ")
+			else:
+				self["season"].setText(str(self.element.Season))
+				self["episode"].setText(str(self.element.Episode))
+		else:
+			self["title"].setText(" ")
+			self["year"].setText(" ")
+			self["season"].setText(" ")
+			self["episode"].setText(" ")
+			
+		
+	def close(self):
+		Screen.close(self, None)
+		
+	def showEnterImdbId(self):
+		self.session.openWithCallback(self.showEnterImdbIdCallback, InputBox, title="ImdbId without tt", type=Input.NUMBER)#useableChars="0123456789")
+	
+	def showEnterImdbIdCallback(self, what):
+		print "showEnterImdbIdCallback", what
+		if what is not None:
+			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, "tt" + what, False)
+			if element is not None:
+				if len(element) == 2:
+					self.elementParent = element[0]
+					self.element = element[1]
+				else:
+					self.element = element[0]
+				self.onLoad()
+	
+	def showAlternatives(self):
+		results = self.manager.searchAlternatives(self.element)
+		
+		if results is None:
+			 self.session.open(MessageBox, "No alternatives found", type = MessageBox.TYPE_INFO)
+		else:
+			menu = []
+			for result in results:
+				#if result.ImdbId != self.element.ImdbId:
+				tvFlag = ""
+				if result.IsTVSeries is True:
+					tvFlag = "(TV) "
+				menu.append(("[" + str(result.Year) + "] " + tvFlag + Utf8.utf8ToLatin(result.Title), result.ImdbId, result.IsTVSeries))
+
+			self.session.openWithCallback(self.showAlternativesCallback, ChoiceBox, title="Alternatives", list=menu)
+
+	def showAlternativesCallback(self, what):
+		print "showAlternativesCallback", what
+		if what is not None and len(what) == 3:
+			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, what[1], what[2])
+			if element is not None:
+				if len(element) == 2:
+					self.elementParent = element[0]
+					self.element = element[1]
+				else:
+					self.element = element[0]
+				self.onLoad()
+		
+	def save(self):
+		if self.elementParent is not None:
+			Screen.close(self, (self.elementParent, self.element, ))
+		else:
+			Screen.close(self, (self.element), )
+		
+
+class ProjectValerieSyncManager(Screen):
+	skin = """
+		<screen position="center,center" size="620,476" title="ProjectValerieSyncManager" >
+			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/blue.png" position="420,0" size="140,40" alphatest="on" />
+			
+			<widget source="key_red" render="Label" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget source="key_green" render="Label" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_yellow" render="Label" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget source="key_blue" render="Label" position="420,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#18188b" transparent="1" />
+		
+			<widget source="listview" 
+				render="Listbox" 
+				zPosition="2" 
+				position="10,50" 
+				size="600,390" 
+				scrollbarMode="showOnDemand" >
+				<convert type="TemplatedMultiContent">
+				{"template": [  MultiContentEntryText(pos = (0, 0),  size = (570, 30), font=0, flags = RT_HALIGN_LEFT,  text = 0),
+								MultiContentEntryText(pos = (0, 30), size = (570, 25), font=1, flags = RT_HALIGN_RIGHT, text = 1) ],
+				"fonts": [gFont("Modern", 25), gFont("Modern", 20)],
+				"itemHeight": 65
+				}
+			</convert>
+			</widget>
+		</screen>"""
+		
+	def __init__(self, session, args = None):
+		Screen.__init__(self, session)
+		
+		list = []
+		self["listview"] = List(list, True)
+		self["key_red"] = StaticText(_("Failed"))
+		self["key_green"] = StaticText(_("Movies"))
+		self["key_yellow"] = StaticText(_("TV Shows"))
+		self["key_blue"] = StaticText(_(" "))
+		
+		self.manager = Manager()
+		
+		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
+		{
+			"red": self.loadFailed,
+			"green": self.loadMovies,
+			"yellow": self.loadTVShows,
+			"cancel": self.onFinish,
+			"ok": self.showInfo,
+		}, -1)
+		
+		self.onFirstExecBegin.append(self.onLoad)
+	
+	def onLoad(self):
+		self.manager.start()
+		self.loadFailed()
+	
+	def onFinish(self):
+		self.manager.finish()
+		Screen.close(self)
+	
+	def loadFailed(self):
+		self.load(Manager.FAILED)
+		
+	def loadMovies(self):
+		self.load(Manager.MOVIES)
+	
+	def loadTVShows(self):
+		self.load(Manager.TVSHOWS)
+	
+	def load(self, type):
+		self.currentCategory = type
+		list = []
+		entries = self.manager.getAll(type)
+		if type == Manager.FAILED:
+			for entry in entries:
+				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+							Utf8.utf8ToLatin(entry.CauseStr), entry), )
+		else:
+			for entry in entries:
+				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+							Utf8.utf8ToLatin(entry.Title), entry), )
+
+		self["listview"].setList(list)
+	
+	def showInfo(self):
+		selection = self["listview"].getCurrent()
+		if selection is not None:
+			self.oldElement = selection[2]
+			self.session.openWithCallback(self.elementChanged, ProjectValerieSyncManagerInfo, self.manager, self.oldElement)
+			
+	def elementChanged(self, newElement):
+		print "elementChanged", newElement
+		if newElement is not None:
+			if len(newElement) == 2:
+				testElement = newElement[1]
+			else:
+				testElement = newElement[0]
+			if testElement is not self.oldElement:
+				print "elementChanged - Changed"
+				self.manager.replace(self.oldElement, newElement)
+				index = self["listview"].getIndex()
+				self.load(self.currentCategory)
+				if index >= self["listview"].count():
+					index = self["listview"].count() - 1
+				self["listview"].setIndex(index)
+					
+	
 class ProjectValerieSync(Screen):
 	skin = """
-		<screen position="50,50" size="620,476" title="ProjectValerieSync" >
+		<screen position="center,center" size="620,476" title="ProjectValerieSync" >
 			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
 			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
@@ -453,10 +701,9 @@ class ProjectValerieSync(Screen):
 	
 
 	def __init__(self, session, args = None):
-		self.skin = ProjectValerieSync.skin
 		Screen.__init__(self, session)
 		
-		self["key_red"] = StaticText(_("Exit"))
+		self["key_red"] = StaticText(_("Manage"))
 		self["key_green"] = StaticText(_("Sync"))
 		self["key_yellow"] = StaticText(_("Fast Sync"))
 		self["key_blue"] = StaticText(_("Settings"))
@@ -471,7 +718,7 @@ class ProjectValerieSync(Screen):
 		{
 			"green": self.go,
 			"yellow": self.gofast,
-			"red": self.close,
+			"red": self.manage,
 			"blue": self.menu,
 			"menu": self.menu,
 			"cancel": self.close,
@@ -521,6 +768,10 @@ class ProjectValerieSync(Screen):
 	def menu(self):
 		if gSyncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncSettings)
+	
+	def manage(self):
+		if gSyncInfo.inProgress is False:
+			self.session.open(ProjectValerieSyncManager)
 	
 	def go(self):
 		if gSyncInfo.inProgress is False:

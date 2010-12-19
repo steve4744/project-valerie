@@ -18,6 +18,7 @@ from Database import Database
 import WebGrabber
 import replace
 import Utf8
+from FailedEntry import FailedEntry
 
 def checkDefaults():
 	try: 
@@ -150,6 +151,8 @@ class pyvalerie(Thread):
 		start_time = time.time()
 		db = Database()
 		db.reload()
+		db.clearFailed()
+		
 		print "  ", db
 		elapsed_time = time.time() - start_time
 		print "Took: ", elapsed_time
@@ -222,6 +225,7 @@ class pyvalerie(Thread):
 						
 					if db.checkDuplicate(path, filename, extension):
 						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
+						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
 						continue
 					
 					self.output("(" + str(i) + "/" + str(len(elementList))  + ")")	
@@ -261,131 +265,20 @@ class pyvalerie(Thread):
 						continue
 					elementInfo = tmp
 					
-					if elementInfo.isMovie:
-						# Ask TheMovieDB for the local title and plot
-						tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
-						if tmp is None:
-							print "TheMovieDbProvider().getMovieByImdbID(elementInfo) returned None"
-						else:
-							elementInfo = tmp
+					results = Sync().syncWithId(elementInfo)
+					if results is not None:
+						for result in results:
+							if db.add(result):
+								if result.isMovie:
+									self.info(str(result.ImdbId) + "_poster.png", 
+									Utf8.utf8ToLatin(result.Title), result.Year)
+								else:
+									self.info(str(result.TheTvDbId) + "_poster.png", 
+											Utf8.utf8ToLatin(result.Title), result.Year)
+							else:
+								db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB))
+								print "Title already in db"
 
-						tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
-						if tmp is None:
-							print "TheMovieDbProvider().getMovie(elementInfo, u\"en\") returned None"
-						else:
-							elementInfo = tmp
-
-						userLang = Config.getString("local")
-						if userLang != u"en":
-							tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
-							if tmp is None:
-								print "TheMovieDbProvider().getMovie(elementInfo, userLang) returned None"
-							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
-
-						if userLang != elementInfo.LanguageOfPlot:
-							tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
-							if tmp is None:
-								print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
-							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
-						
-						###
-
-						tmp = TheMovieDbProvider().getArtByImdbId(elementInfo)
-						if tmp is None:
-							print "TheMovieDbProvider().getArtByImdbId(elementInfo) returned None"
-						else:
-							elementInfo = tmp
-							Arts().download(elementInfo)
-							
-						if db.add(elementInfo):
-							self.info(str(elementInfo.ImdbId) + "_poster.png", 
-									Utf8.utf8ToLatin(elementInfo.Title), elementInfo.Year)
-						else:
-							print "Title already in db"
-					elif elementInfo.isSerie:
-						tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
-						if tmp is None:
-							print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"
-						else:
-							elementInfo = tmp
-						
-						tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
-						if tmp is None:
-							print "TheTvDbProvider().getSerie(elementInfo, u\"en\") returned None"
-						else:
-							elementInfo = tmp
-							
-						userLang = Config.getString("local")
-						if userLang != u"en":
-							tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
-							if tmp is None:
-								print "TheTvDbProvider().getSerie(elementInfo, userLang) returned None"
-							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
-								
-						if userLang != elementInfo.LanguageOfPlot:
-							tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
-							if tmp is None:
-								print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
-							else:
-								elementInfo = tmp
-								elementInfo.LanguageOfPlot = userLang;
-						###
-														
-						tmp = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
-						if tmp is None:
-							print "TheTvDbProvider().getArtByTheTvDbId(elementInfo) returned None"
-						else:
-							elementInfo = tmp
-							Arts().download(elementInfo)
-						
-						#print elementInfo
-						db.add(elementInfo)
-						
-						elementInfoe = elementInfo.copy()
-						
-						elementInfoe.isSerie = False
-						elementInfoe.isEpisode = True
-						
-						###
-						
-						tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
-						if tmp is None:
-							print "TheTvDbProvider().getEpisode(elementInfoe, u\"en\") returned None"
-						else:
-							elementInfoe = tmp
-						
-						if userLang != u"en":
-							tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
-							if tmp is None:
-								print "TheTvDbProvider().getEpisode(elementInfoe, userLang) returned None"
-							else:
-								elementInfoe = tmp
-								elementInfoe.LanguageOfPlot = userLang;
-						
-						if userLang != elementInfoe.LanguageOfPlot:
-							tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang)
-							if tmp is None:
-								print "LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang) returned None"
-							else:
-								elementInfoe = tmp
-								elementInfoe.LanguageOfPlot = userLang;
-								
-						###
-						
-						#print elementInfoe
-						
-						if db.add(elementInfoe):
-							self.info(str(elementInfoe.TheTvDbId) + "_poster.png", 
-									Utf8.utf8ToLatin(elementInfoe.Title), elementInfoe.Year)
-						else:
-							print "Title already in db"
-				
 				self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
 				self.progress(i)
 			
@@ -407,3 +300,118 @@ class pyvalerie(Thread):
 		self.output("Press Exit / Back")
 		
 		self.finished(True)
+		
+class Sync():
+	def syncWithId(self, elementInfo):
+		if elementInfo.isMovie:
+			# Ask TheMovieDB for the local title and plot
+			tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
+			if tmp is None:
+				print "TheMovieDbProvider().getMovieByImdbID(elementInfo) returned None"
+			else:
+				elementInfo = tmp
+
+			tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
+			if tmp is None:
+				print "TheMovieDbProvider().getMovie(elementInfo, u\"en\") returned None"
+			else:
+				elementInfo = tmp
+
+			userLang = Config.getString("local")
+			if userLang != u"en":
+				tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
+				if tmp is None:
+					print "TheMovieDbProvider().getMovie(elementInfo, userLang) returned None"
+				else:
+					elementInfo = tmp
+					elementInfo.LanguageOfPlot = userLang;
+
+			if userLang != elementInfo.LanguageOfPlot:
+				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
+				if tmp is None:
+					print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
+				else:
+					elementInfo = tmp
+					elementInfo.LanguageOfPlot = userLang;
+			
+			###
+
+			tmp = TheMovieDbProvider().getArtByImdbId(elementInfo)
+			if tmp is None:
+				print "TheMovieDbProvider().getArtByImdbId(elementInfo) returned None"
+			else:
+				elementInfo = tmp
+				Arts().download(elementInfo)
+				
+			return (elementInfo, )
+		
+		elif elementInfo.isSerie:
+			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
+			if tmp is None:
+				print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"
+			else:
+				elementInfo = tmp
+			
+			tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
+			if tmp is None:
+				print "TheTvDbProvider().getSerie(elementInfo, u\"en\") returned None"
+			else:
+				elementInfo = tmp
+				
+			userLang = Config.getString("local")
+			if userLang != u"en":
+				tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
+				if tmp is None:
+					print "TheTvDbProvider().getSerie(elementInfo, userLang) returned None"
+				else:
+					elementInfo = tmp
+					elementInfo.LanguageOfPlot = userLang;
+					
+			if userLang != elementInfo.LanguageOfPlot:
+				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
+				if tmp is None:
+					print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
+				else:
+					elementInfo = tmp
+					elementInfo.LanguageOfPlot = userLang;
+			###
+											
+			tmp = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
+			if tmp is None:
+				print "TheTvDbProvider().getArtByTheTvDbId(elementInfo) returned None"
+			else:
+				elementInfo = tmp
+				Arts().download(elementInfo)
+					
+			elementInfoe = elementInfo.copy()
+			
+			elementInfoe.isSerie = False
+			elementInfoe.isEpisode = True
+			
+			###
+			
+			tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
+			if tmp is None:
+				print "TheTvDbProvider().getEpisode(elementInfoe, u\"en\") returned None"
+			else:
+				elementInfoe = tmp
+			
+			if userLang != u"en":
+				tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
+				if tmp is None:
+					print "TheTvDbProvider().getEpisode(elementInfoe, userLang) returned None"
+				else:
+					elementInfoe = tmp
+					elementInfoe.LanguageOfPlot = userLang;
+			
+			if userLang != elementInfoe.LanguageOfPlot:
+				tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang)
+				if tmp is None:
+					print "LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang) returned None"
+				else:
+					elementInfoe = tmp
+					elementInfoe.LanguageOfPlot = userLang;
+					
+			return (elementInfo, elementInfoe)
+		else:
+			return None

@@ -225,3 +225,19 @@ class MobileImdbComProvider():
 
         return info;
     
+    def getAlternatives(self, info):        
+        url = self.apiSearch
+        url = re.sub("<search>", info.SearchString, url)
+        html = WebGrabber.getHtml(url)
+
+        if html is None:
+            print "MobileImdbComProvider::getAlternatives() <- html is None" 
+            return None
+
+        if self.testNoResults in html:
+            print "MobileImdbComProvider::getAlternatives() <- self.testNoResults in html" 
+            return None
+        
+        results = self.getResults(html)
+        return results
+    

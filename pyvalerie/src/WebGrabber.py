@@ -38,6 +38,10 @@ def folderSize(folder):
             folder_size += os.path.getsize(filename)
     return folder_size/(1024*1024.0)
 
+def freeSpace(folder):
+    s = os.statvfs(folder)
+    return (s.f_bavail * s.f_frsize)/(1024*1024.0)
+
 def checkCache(url):
     cacheFile = re.sub(r'\W', "", url).strip()
     rtv = None
@@ -49,7 +53,7 @@ def checkCache(url):
     return rtv
 
 def addCache(url, text):
-    if folderSize(cacheDir) > 4.0: #10mb
+    if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
         for f in os.listdir(cacheDir):
             file = os.path.join(cacheDir, f)
             print "RM: ", file

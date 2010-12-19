@@ -15,12 +15,14 @@ import cPickle as pickle
 #import pickle
 
 import DirectoryScanner
+from FailedEntry import FailedEntry
 
 class Database(object):
     '''
     classdocs
     '''
 
+    
 
     def __init__(self):
         '''
@@ -30,6 +32,8 @@ class Database(object):
         self.dbSeries = {}
         self.dbEpisodes = {}
         
+        self.dbFailed = []
+        
         self.duplicateDetector = []
         
     def reload(self):
@@ -37,10 +41,22 @@ class Database(object):
         self.dbSeries = {}
         self.dbEpisodes = {}
         
+        self.dbFailed = []
+        
         self.duplicateDetector = []
         
         self.load()
-       
+    
+    def clearFailed(self):
+        del self.dbFailed[:]
+    
+    def addFailed(self, entry):
+        self.dbFailed.append(entry)
+    
+    def removeFailed(self, entry):
+        if entry in self.dbFailed:
+            self.dbFailed.remove(entry)
+     
     def searchDeleted(self):
         for key in self.dbMovies:
             m = self.dbMovies[key]
@@ -85,6 +101,25 @@ class Database(object):
         #    return True
         #else:
         #    return False
+    
+    def remove(self, media):
+        if media.isMovie:
+            if self.dbMovies.has_key(media.ImdbId) is True:
+                del(self.dbMovies[media.ImdbId])
+        elif media.isSerie:
+            if self.dbSeries.has_key(media.TheTvDbId) is True:
+                del(self.dbSeries[media.TheTvDbId])
+        elif media.isEpisode:
+            if self.dbEpisodes.has_key(media.TheTvDbId) is True:
+                if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is True:
+                    if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is True:
+                        del(self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode])
+                        if len(self.dbEpisodes[media.TheTvDbId][media.Season]) == 0:
+                            del(self.dbEpisodes[media.TheTvDbId][media.Season])
+                        if len(self.dbEpisodes[media.TheTvDbId]) == 0:
+                            del(self.dbEpisodes[media.TheTvDbId])
+                            if self.dbSeries.has_key(media.TheTvDbId) is True:
+                                del(self.dbSeries[media.TheTvDbId])
                 
     ##
     # Adds media files to the db
@@ -140,6 +175,8 @@ class Database(object):
                 unicode(epcount)
         return Utf8.utf8ToLatin(rtv)
 
+    FAILEDDB = "/hdd/valerie/failed.db"
+
     MOVIESDB = "/hdd/valerie/movies.db"
     TVSHOWSDB = "/hdd/valerie/tvshows.db"
     EPISODESDB = "/hdd/valerie/episodes.db"
@@ -189,6 +226,8 @@ class Database(object):
         # Always safe pickel as this increses fastsync a lot
         #elif self.USE_DB_VERSION == self.DB_PICKLE:
         self.savePickel()
+
+
         
     def saveTxt(self):
         start_time = time.time()    
@@ -260,6 +299,13 @@ class Database(object):
             
     def savePickel(self):
         start_time = time.time()  
+        fd = open(self.FAILEDDB, "wb")
+        pickle.dump(self.dbFailed, fd, pickle.HIGHEST_PROTOCOL)
+        fd.close()
+        elapsed_time = time.time() - start_time
+        print "Took: ", elapsed_time
+        
+        start_time = time.time()  
         fd = open(self.MOVIESDB, "wb")
         pickle.dump(self.dbMovies, fd, pickle.HIGHEST_PROTOCOL)
         fd.close()
@@ -289,6 +335,11 @@ class Database(object):
         print "Took (episodes.db): ", elapsed_time
         
     def load(self):
+        if os.path.isfile(self.FAILEDDB):
+            fd = open(self.FAILEDDB, "rb")
+            self.dbFailed = pickle.load(fd)
+            fd.close()
+        
         if os.path.isfile(self.MOVIESDB) and os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
             self.loadPickle() 
         elif os.path.isfile(self.MOVIESTXD) and os.path.isfile(self.TVSHOWSTXD):
