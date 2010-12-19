@@ -128,7 +128,11 @@ class Showiframe():
 	def load(self):
 		self.ctypes = __import__("_ctypes") 
 		
-		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + "libshowiframe.so.0.0.0")
+		libname = "libshowiframe.so.0.0.0"
+		if getBoxtype()[0] == "Azbox":
+			libname = "libshowiframe.az.so.0.0.0"
+		
+		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")

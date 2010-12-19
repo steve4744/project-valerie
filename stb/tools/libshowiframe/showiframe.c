@@ -58,6 +58,11 @@ int showSinglePic(const char *filename)
                 if (ioctl(m_video_clip_fd, VIDEO_STILLPICTURE, &stillpic) < 0)
                         printf("VIDEO_STILLPICTURE failed (%m)\n");
 #else /*NO USE_STILLPICTURE*/
+#ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_STOP_STC) < 0)
+                        printf("VIDEO_STOP_STC failed (%m)\n");
+#endif /*AZBOX*/
+
                 if (ioctl(m_video_clip_fd, VIDEO_STOP, 0) < 0)
                         printf("VIDEO_STOP failed (%m)\n");
 
@@ -79,7 +84,7 @@ int showSinglePic(const char *filename)
 #ifndef AZBOX
                 if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
                         printf("video: VIDEO_CLEAR_BUFFER: %m\n");
-#endif /*NO AZBOX*/						
+#endif /*NO AZBOX*/
 
                 int seq_end_avail = 0;
                 size_t pos = 0;
