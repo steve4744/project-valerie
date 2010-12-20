@@ -557,7 +557,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 		if self.elementParent is not None:
 			Screen.close(self, (self.elementParent, self.element, ))
 		else:
-			Screen.close(self, (self.element), )
+			Screen.close(self, (self.element, ))
 		
 
 class ProjectValerieSyncManager(Screen):
