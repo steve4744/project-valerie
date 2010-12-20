@@ -25,6 +25,16 @@ static int m_video_clip_fd = -1;
 
 int showSinglePic(const char *filename)
 {
+#ifdef USE_STILLPICTURE
+  printf("USE_STILLPICUTRE\n");
+#else /*USE_STILLPICTURE*/
+ #ifdef AZBOX
+  printf("IS_AZBOX\n");
+ #else /*AZBOX*/ /*DREAMBOX*/
+  printf("USE_DM_COMPATIBILITY\n");
+ #endif /*AZBOX*/
+#endif /*USE_STILLPICTURE*/
+
     {
         printf("showSinglePic %s\n", filename);
         int f = open(filename, O_RDONLY);
@@ -67,6 +77,15 @@ int showSinglePic(const char *filename)
                         printf("VIDEO_STOP failed (%m)\n");
 
 #ifdef AZBOX
+                if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_DEMUX) < 0)
+                        printf("VIDEO_SELECT_SOURCE DEMUX failed (%m)\n");
+
+                if (ioctl(m_video_clip_fd, VIDEO_SET_STREAMTYPE, VIDEO_STREAMTYPE_MPEG2) < 0)
+                        printf("VIDEO_SET_STREAMTYPE failed(%m)\n");
+
+                if (ioctl(m_video_clip_fd, VIDEO_SELECT_SOURCE, VIDEO_SOURCE_MEMORY) < 0)
+                        printf("VIDEO_SELECT_SOURCE MEMORY failed (%m)\n");
+
                 if (ioctl(m_video_clip_fd, VIDEO_SET_STC) < 0)
                         printf("VIDEO_SET_STC failed (%m)\n");
 #endif /*AZBOX*/
