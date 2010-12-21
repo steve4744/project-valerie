@@ -165,7 +165,11 @@ class PVMC_MainMenu(Screen):
 	def __init__(self, session):
 		printl("PVMC_MainMenu:__init__")
 		from enigma import addFont
-		addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+		try:
+		  addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+		except Exception, ex: #probably just openpli
+			print ex
+      addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)  
 		
 		
 		Screen.__init__(self, session)
