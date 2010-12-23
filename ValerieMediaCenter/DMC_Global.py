@@ -79,39 +79,35 @@ def getBoxtype():
 
 #------------------------------------------------------------------------------------------
 
-def checkCtypes():
-	try:
-		import _ctypes
-	except Exception, e: 
-		import urllib2
-		try:
-		
-			box = getBoxtype()
-			dir = ""
-			#url = "http://duckbox.info/valerie/prebuilt/" + box[2]
-			#url += "/_ctypes.so"
-			if box[3] == "oe15":
-				#url += ".25"
-				dir = "/usr/lib/python2.5/lib-dynload/"
-			elif box[3] == "oe16":
-				#url += ".26"
-				dir = "/usr/lib/python2.6/lib-dynload/"
-			else:
-				dir = "/usr/lib/python2.6/lib-dynload/"
-			
-			#print "URL: " + url
-			#page = urllib2.urlopen(url)
-			page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
-			
-			f = open(dir + "_ctypes.so", 'wb')
-			f.write(page.read())
-			f.close()
-		except Exception, ex:
-			print "File download failed: ", ex
-			print type(ex)
-			print '-'*60
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
+#def checkCtypes():
+#	try:
+#		import _ctypes
+#	except Exception, e: 
+#		print "Ctypes module not installed, use prebuild", e
+#		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
+#		import urllib2
+#		try:
+#		
+#			box = getBoxtype()
+#			dir = ""
+#			if box[3] == "oe15":
+#				dir = "/usr/lib/python2.5/lib-dynload/"
+#			elif box[3] == "oe16":
+#				dir = "/usr/lib/python2.6/lib-dynload/"
+#			else:
+#				dir = "/usr/lib/python2.6/lib-dynload/"
+#
+#			page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
+#			
+#			f = open(dir + "_ctypes.so", 'wb')
+#			f.write(page.read())
+#			f.close()
+#		except Exception, ex:
+#			print "File download failed: ", ex
+#			print type(ex)
+#			print '-'*60
+#			traceback.print_exc(file=sys.stdout)
+#			print '-'*60
 
 #------------------------------------------------------------------------------------------
 
@@ -120,17 +116,18 @@ class Showiframe():
 		try:
 			self.load()
 		except Exception, ctypeEx: 
-			print "ARRRGH!! WHY IS CTYPE MISSING?", ctypeEx
-			checkCtypes()
-			self.load() #THIS WILL CRAHS IF CTYPE NOT AVAILABLE; AND THAT IS A GOOD THING !!!
+			print "ARRRGH!! SHOWIFRAME FAILED", ctypeEx
+			#checkCtypes()
+			#self.load() #THIS WILL CRAHS IF CTYPE NOT AVAILABLE; AND THAT IS A GOOD THING !!!
 			
 
 	def load(self):
+		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
 		self.ctypes = __import__("_ctypes") 
 		
 		libname = "libshowiframe.so.0.0.0"
-		if getBoxtype()[0] == "Azbox":
-			libname = "libshowiframe.az.so.0.0.0"
+		#if getBoxtype()[0] == "Azbox":
+		#	libname = "libshowiframe.az.so.0.0.0"
 		
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
