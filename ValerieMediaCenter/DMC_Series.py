@@ -563,14 +563,16 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def notifyNextEntry(self):
 		print "PVMC_Series::notifyNextEntry"
-		self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
-		self.trakt.send()
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
+			self.trakt.send()
 		
 		self.currentEpisodeNumber = str(int(self.currentEpisodeNumber) + 1)
 		
-		self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
-		self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
-		self.trakt.send()
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
+			self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
+			self.trakt.send()
 
 
 	def leaveMoviePlayer(self): 
