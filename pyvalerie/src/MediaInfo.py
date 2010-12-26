@@ -128,6 +128,11 @@ class MediaInfo(object):
         e2info = None
         f = Utf8.Utf8(name + u".meta", "r")
         lines = f.read()
+        if lines is None:
+            f.close()
+            f = open(name + u".meta", "r")
+            lines = f.read()
+            lines = Utf8.stringToUtf8(lines)
         if lines is not None:
             lines = lines.split(u"\n")
             if len(lines) > 2:

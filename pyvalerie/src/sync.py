@@ -252,12 +252,15 @@ class pyvalerie(Thread):
 						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
 						if tmp is None:
 							print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
+							# seems to be no tvshows so lets parse as movie
+							elementInfo.isMovie = True
+							elementInfo.isSerie = False
 						else:
 							elementInfo = tmp
-							searchStringSplitted = elementInfo.SearchString.split("::")
-							if len(searchStringSplitted) >= 2:
-								elementInfo.SearchString = searchStringSplitted[0];
-								
+						searchStringSplitted = elementInfo.SearchString.split("::")
+						if len(searchStringSplitted) >= 2:
+							elementInfo.SearchString = searchStringSplitted[0];
+							
 					#elementInfo = ImdbProvider().getMovieByTitle(elementInfo)
 					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 					if tmp is None:
