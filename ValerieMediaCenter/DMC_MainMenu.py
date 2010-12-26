@@ -162,8 +162,10 @@ class PVMC_MainMenu(Screen):
 
 	ShowStillPicture = False
 
-	def __init__(self, session):
+	def __init__(self, isAutostart, session):
 		printl("PVMC_MainMenu:__init__")
+		print "PVMC_MainMenu:__init__",isAutostart
+
 		from enigma import addFont
 		try:
 			addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
@@ -173,6 +175,7 @@ class PVMC_MainMenu(Screen):
 		
 		
 		Screen.__init__(self, session)
+		self.isAutostart = isAutostart
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
 		print "OLDSERVICE", self.oldService
 		self.session.nav.stopService()
@@ -229,12 +232,22 @@ class PVMC_MainMenu(Screen):
 		self["actions"] = HelpableActionMap(self, "PVMC_MainMenuActions", 
 			{
 				"ok": self.okbuttonClick,
-				"cancel": self.cancel,
 				"left": self.left,
 				"right": self.right,
 				"up": self.up,
 				"down": self.down,
 				"power": self.power,
+			}, -1)
+
+		if self.isAutostart is False and self.OldSkin is False:
+			self["cancelActions"] = ActionMap(["SetupActions", "ColorActions"],
+			{
+				"cancel": self.Exit,
+			}, -1)
+		elif self.OldSkin is True:
+			self["cancelActions"] = ActionMap(["SetupActions", "ColorActions"],
+			{
+				"cancel": self.cancel,
 			}, -1)
 
 		self.onFirstExecBegin.append(self.onExec)
@@ -332,10 +345,6 @@ class PVMC_MainMenu(Screen):
 					else:
 						self.session.open(MessageBox, "Please install the plugin \nProjectValerieSync\n to use this feature.", type = MessageBox.TYPE_INFO)
 				elif selection[1] == "InfoBar":
-					if self.ShowStillPicture is True:
-						self["showiframe"].finishStillPicture()
-					print "OLDSERVICE", self.oldService
-					self.session.nav.playService(self.oldService)
 					self.Exit()
 				elif selection[1] == "Exit":
 					self.Exit()
@@ -381,5 +390,13 @@ class PVMC_MainMenu(Screen):
 		return
 
 	def Exit(self):
-		self.close()
+		if self.ShowStillPicture is True:
+			self["showiframe"].finishStillPicture()
+		print "OLDSERVICE", self.oldService
+		self.session.nav.playService(self.oldService)
+	
+		if self.isAutostart:
+			self. close()
+		else:
+			self.close((True,) )
 

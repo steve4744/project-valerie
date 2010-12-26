@@ -121,7 +121,7 @@
 				scrollbarMode="showOnDemand" 
 				backgroundColor="#FF000000"
 				backgroundColorSelected="#FF000000"
-				foregroundColor="#D0424242"
+				foregroundColor="#A0424242"
 				foregroundColorSelected="#00FFFFFF" >
 				<convert type="TemplatedMultiContent">
 				{"template": [ MultiContentEntryText(pos = (0, 0), size = (540, 63), flags = RT_HALIGN_LEFT, text = 0) ],

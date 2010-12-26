@@ -4,14 +4,6 @@ from DMC_Global import printl
 		
 #------------------------------------------------------------------------------------------
 
-def main(session, **kwargs):
-		session.open(PVMC_MainMenu)
-
-def menu(menuid, **kwargs):
-	if menuid == "mainmenu":
-		return [(_("Project Valerie"), main, "pvmc_mainmenu", 44)]
-	return []
-
 gE2Control = None
 gSessionPV = None
 gReasonPV = -1
@@ -21,7 +13,7 @@ def autostart(reason, **kwargs):
 	global gSessionPV
 
 	if kwargs.has_key("session"):
-                gSessionPV = kwargs["session"]
+		gSessionPV = kwargs["session"]
 	printl("Reason: " + str(reason))
 	gReasonPV = reason
 
@@ -34,12 +26,26 @@ def autostart(reason, **kwargs):
 	
 
 def PVMC_Wizard(*args, **kwargs):
-	from DMC_Wizard import PVMC_Wizard
-	return PVMC_Wizard(*args, **kwargs)
+	import DMC_Wizard
+	return DMC_Wizard.PVMC_Wizard(*args, **kwargs)
 
 def PVMC_MainMenu(*args, **kwargs):
-	from DMC_MainMenu import PVMC_MainMenu
-	return PVMC_MainMenu(*args, **kwargs)
+	import DMC_MainMenu
+	print "PVMC_MainMenu", args
+	print "PVMC_MainMenu", kwargs
+	return DMC_MainMenu.PVMC_MainMenu(False, *args, **kwargs)
+
+def PVMC_MainMenuAutostart(*args, **kwargs):
+	import DMC_MainMenu
+	return DMC_MainMenu.PVMC_MainMenu(True, *args, **kwargs)
+
+def main(session, **kwargs):
+	session.open(PVMC_MainMenu)
+
+def menu(menuid, **kwargs):
+	if menuid == "mainmenu":
+		return [(_("Project Valerie"), main, "pvmc_mainmenu", 44)]
+	return []
 
 def Plugins(**kwargs):
 	list = []
@@ -47,7 +53,7 @@ def Plugins(**kwargs):
 	if config.plugins.pvmc.showwizard.value == True:
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(58, PVMC_Wizard)))
 	if config.plugins.pvmc.autostart.value == True:
-		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(59, PVMC_MainMenu)))
+		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(59, PVMC_MainMenuAutostart)))
 
 	list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart))
 
