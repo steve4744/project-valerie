@@ -130,13 +130,18 @@ class Showiframe():
 		#if getBoxtype()[0] == "Azbox":
 		#	libname = "libshowiframe.az.so.0.0.0"
 		
+		print "LIB_PATH:", config.plugins.pvmc.pluginfolderpath.value + libname
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
 		except OSError, e: 
-			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
-			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
+			print "self.ctypes.dlsym - FAILED!!!"
+			try:
+				self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
+				self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
+			except OSError, e: 
+				print "self.ctypes.dlsym - FAILED AGAIN !!!"
 
 	def  showStillpicture(self, pic):
 		self.ctypes.call_function(self.showSinglePic, (pic, ))
