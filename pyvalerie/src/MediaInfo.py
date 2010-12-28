@@ -101,6 +101,7 @@ class MediaInfo(object):
     
 
     def isEnigma2Recording(self, name):
+        print "META:", Utf8.utf8ToLatin(name + u".meta")
         if os.path.isfile(Utf8.utf8ToLatin(name + u".meta")):
             return True
         return False

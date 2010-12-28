@@ -28,6 +28,8 @@ def url_fix(s):
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
     path = urllib.quote(path, '/%')
     qs = urllib.quote_plus(qs, ':&=')
+    #print "qs", qs #%26
+    qs = qs.replace(u"&", u"%26")
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
 def folderSize(folder):
