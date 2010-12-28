@@ -265,6 +265,7 @@ class pyvalerie(Thread):
 					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 					if tmp is None:
 						print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
+						db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
 						continue
 					elementInfo = tmp
 					

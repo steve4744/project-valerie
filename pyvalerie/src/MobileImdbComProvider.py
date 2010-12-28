@@ -177,6 +177,8 @@ class MobileImdbComProvider():
             print "MobileImdbComProvider::getMoviesByTitle() <- self.testNoResults in html" 
             return None
         
+        print "MIMDB seraches for ", info.isMovie, info.isEpisode, info.isSerie
+        
         results = self.getResults(html)
         for result in results:
             if info.isEpisode or info.isSerie:
