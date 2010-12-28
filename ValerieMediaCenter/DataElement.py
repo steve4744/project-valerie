@@ -1,9 +1,18 @@
 from Components.Renderer.Renderer import Renderer
 
-from enigma import eCanvas, eRect
+from enigma import eWidget, eCanvas, eRect
 
+class eDataElement(eWidget):
+	def __init__(self, parent):
+		print "eDataElement::__init__", parent
+		eWidget.__init__(self, parent)
+		self.setTransparent(True)
+	
+	def setText(self,t):
+		print "eDataElement::setText", t
+		
 class DataElement(Renderer):
-	GUI_WIDGET = eCanvas
+	GUI_WIDGET = eDataElement
 	data = ""
 	def __init__(self):
 		Renderer.__init__(self)
@@ -21,5 +30,5 @@ class DataElement(Renderer):
 		self.sequence = None
 
 		for (attrib, value) in self.skinAttributes:
-			if attrib == "id":
+			if attrib == "text":
 				self.setData(value)

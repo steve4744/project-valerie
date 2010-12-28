@@ -1,11 +1,19 @@
 from Components.Renderer.Renderer import Renderer
 
-from enigma import eCanvas, eRect
+from enigma import eWidget, eLabel, eCanvas, eRect
 from DMC_Global import Showiframe
 
+class eStillPicture(eWidget):
+	def __init__(self, parent):
+		print "eStillPicture::__init__", parent
+		eWidget.__init__(self, parent)
+		self.setTransparent(True)
+	
+	def setText(self,t):
+		print "eStillPicture::setText", t
 
 class StillPicture(Renderer):
-	GUI_WIDGET = eCanvas
+	GUI_WIDGET = eStillPicture #eLabel
 	
 	element = False
 	
@@ -46,7 +54,7 @@ class StillPicture(Renderer):
 		if self.skinAttributes is not None:
 			self.element = True
 			for (attrib, value) in self.skinAttributes:
-				if attrib == "id":
+				if attrib == "text":
 					self.setStillPicture(value, True, False)
 
 	def showStillPicture(self):

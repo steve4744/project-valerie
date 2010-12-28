@@ -123,6 +123,7 @@ class Showiframe():
 
 	def load(self):
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
+		print "CTYPES_PATH:", config.plugins.pvmc.pluginfolderpath.value + "prebuild"
 		self.ctypes = __import__("_ctypes") 
 		
 		libname = "libshowiframe.so.0.0.0"

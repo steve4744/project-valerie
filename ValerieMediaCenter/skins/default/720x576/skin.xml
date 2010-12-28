@@ -14,7 +14,7 @@
 				position="0,0" 
 				zPosition="0" 
 				size="720,576" 
-				id="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background.m1v" 
+				text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background.m1v" 
 			/>
 			
 			<eLabel text="Project Valerie" 
@@ -88,7 +88,7 @@
 				position="0,0" 
 				zPosition="0" 
 				size="720,576" 
-				id="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background.m1v" 
+				text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background.m1v" 
 			/>
 
 			<eLabel text="Project Valerie" 
@@ -150,14 +150,14 @@
 				position="0,0" 
 				zPosition="0" 
 				size="720,576" 
-				id="/hdd/valerie/media/defaultbackdrop.m1v" 
+				text="/hdd/valerie/media/defaultbackdrop.m1v" 
 			/>
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="720,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/fanart_overlay-fs8.png" />
 			<ePixmap name="mb_bg_list" position="185,40" zPosition="2" size="300,536" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/fanart_list_bg-fs8.png" />
 			
 
-			<widget name="listview_itemsperpage" id="11" position="0,0" zPosition="0" size="1,1"/>
+			<widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
 			<widget source="listview"
 				render="Listbox" 
 				zPosition="3" 
@@ -237,13 +237,13 @@
 				position="0,0" 
 				zPosition="0" 
 				size="720,576" 
-				id="/hdd/valerie/media/defaultbackdrop.m1v" 
+				text="/hdd/valerie/media/defaultbackdrop.m1v" 
 			/>
 
 			<ePixmap name="mb_bg" position="0,0" zPosition="1" size="720,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/fanart_overlay-fs8.png" />
 			<ePixmap name="mb_bg_list" position="185,40" zPosition="2" size="300,536" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/fanart_list_bg-fs8.png" />
 
-			<widget name="listview_itemsperpage" id="11" position="0,0" zPosition="0" size="1,1"/>
+			<widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
 			<widget source="listview"
 				render="Listbox" 
 				zPosition="3" 
