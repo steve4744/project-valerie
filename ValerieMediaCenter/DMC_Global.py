@@ -79,36 +79,6 @@ def getBoxtype():
 
 #------------------------------------------------------------------------------------------
 
-#def checkCtypes():
-#	try:
-#		import _ctypes
-#	except Exception, e: 
-#		print "Ctypes module not installed, use prebuild", e
-#		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
-#		import urllib2
-#		try:
-#		
-#			box = getBoxtype()
-#			dir = ""
-#			if box[3] == "oe15":
-#				dir = "/usr/lib/python2.5/lib-dynload/"
-#			elif box[3] == "oe16":
-#				dir = "/usr/lib/python2.6/lib-dynload/"
-#			else:
-#				dir = "/usr/lib/python2.6/lib-dynload/"
-#
-#			page = open(config.plugins.pvmc.pluginfolderpath.value + "prebuild/_ctypes.so", 'rb')
-#			
-#			f = open(dir + "_ctypes.so", 'wb')
-#			f.write(page.read())
-#			f.close()
-#		except Exception, ex:
-#			print "File download failed: ", ex
-#			print type(ex)
-#			print '-'*60
-#			traceback.print_exc(file=sys.stdout)
-#			print '-'*60
-
 #------------------------------------------------------------------------------------------
 
 class Showiframe():
@@ -117,14 +87,17 @@ class Showiframe():
 			self.load()
 		except Exception, ctypeEx: 
 			print "ARRRGH!! SHOWIFRAME FAILED", ctypeEx
-			#checkCtypes()
-			#self.load() #THIS WILL CRAHS IF CTYPE NOT AVAILABLE; AND THAT IS A GOOD THING !!!
 			
 
 	def load(self):
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
-		print "CTYPES_PATH:", config.plugins.pvmc.pluginfolderpath.value + "prebuild"
-		self.ctypes = __import__("_ctypes") 
+		print "SYS.PATH", sys.path
+		try:
+			self.ctypes = __import__("_ctypes")
+		except Exception, e:
+			print "self.ctypes import failed", e
+			self.ctypes = None
+			return False
 		
 		libname = "libshowiframe.so.0.0.0"
 		#if getBoxtype()[0] == "Azbox":
@@ -135,20 +108,24 @@ class Showiframe():
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
-		except OSError, e: 
-			print "self.ctypes.dlsym - FAILED!!!"
+		except Exception, e: 
+			print "self.ctypes.dlsym - FAILED!!!", e
 			try:
 				self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
 				self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
-			except OSError, e: 
-				print "self.ctypes.dlsym - FAILED AGAIN !!!"
+			except Exception, e2: 
+				print "self.ctypes.dlsym - FAILED AGAIN !!!", e2
+				return False
+		return True
 
 	def  showStillpicture(self, pic):
-		self.ctypes.call_function(self.showSinglePic, (pic, ))
+		if self.ctypes is not None:
+			self.ctypes.call_function(self.showSinglePic, (pic, ))
 
 	def finishStillPicture(self):
-		self.ctypes.call_function(self.finishShowSinglePic, ())
-		#dlclose(self.showiframe)
+		if self.ctypes is not None:
+			self.ctypes.call_function(self.finishShowSinglePic, ())
+			#dlclose(self.showiframe)
 
 def printl(string):
 	print "[Project Valerie] ", string

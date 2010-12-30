@@ -71,15 +71,18 @@ class PVMC_Player(MoviePlayer):
 		self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
 
 	def leavePlayerConfirmed(self, answer):
-		print "ANSWER:", answer[1]
-		if answer[1] == "quit":
+		if answer is not None and len(answer) >= 2: # I dont get how ChoiceBox can return None, but well this has happend in Issue 88
+			print "ANSWER:", answer[1]
+			if answer[1] == "quit":
+				self.close()
+			elif answer[1] == "next":
+				self.nextPlaylistEntry()
+				if self.notifyNextEntry is not None:
+					self.notifyNextEntry()
+			elif answer[1] == "continue":
+				return None
+		else:
 			self.close()
-		elif answer[1] == "next":
-			self.nextPlaylistEntry()
-			if self.notifyNextEntry is not None:
-				self.notifyNextEntry()
-		elif answer[1] == "continue":
-			return None
 
 # Some functions need to be overriden so they are not called
 	def showMovies(self):
