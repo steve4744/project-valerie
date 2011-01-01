@@ -56,7 +56,29 @@ class Database(object):
     def removeFailed(self, entry):
         if entry in self.dbFailed:
             self.dbFailed.remove(entry)
-     
+    
+    def deleteMissingFiles(self):
+        listMissing = []
+        
+        for key in self.dbMovies:
+            m = self.dbMovies[key]
+            path = m.Path + u"/" + m.Filename + u"." + m.Extension
+            if os.path.exists(Utf8.utf8ToLatin(path)) is False:
+                listMissing.append(m)
+        
+        for key in self.dbSeries:
+            if key in self.dbEpisodes:
+                for season in self.dbEpisodes[key]:
+                    for episode in self.dbEpisodes[key][season]:
+                        m = self.dbEpisodes[key][season][episode]
+                        path = m.Path + u"/" + m.Filename + u"." + m.Extension
+                        if os.path.exists(Utf8.utf8ToLatin(path)) is False:
+                            listMissing.append(m)
+        
+        print "Missing:", len(listMissing)
+        for m in listMissing:
+            self.remove(m)
+    
     def searchDeleted(self):
         for key in self.dbMovies:
             m = self.dbMovies[key]

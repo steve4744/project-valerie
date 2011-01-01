@@ -16,7 +16,8 @@ import xml.dom.minidom as minidom
 import Utf8
 import re
 
-cacheDir = "/hdd/valerie/cache"
+#cacheDir = "/hdd/valerie/cache"
+cacheDir = "/tmp/valerie/cache"
 downloadDir = "/hdd/valerie/media"
 
 RETRIES = 3

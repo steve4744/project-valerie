@@ -38,6 +38,14 @@ def checkDefaults():
 		print(" - Created\n")
 	
 	try: 
+		print("Check "+"/tmp/valerie/cache")
+		os.makedirs("/tmp/valerie/cache") 
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	try: 
 		print("Check "+"/hdd/valerie/media")
 		os.makedirs("/hdd/valerie/media")
 	except OSError, e:
@@ -152,6 +160,8 @@ class pyvalerie(Thread):
 		db = Database()
 		db.reload()
 		db.clearFailed()
+		if self.mode != self.FAST and Config.getBoolean("delete") is True:
+			db.deleteMissingFiles()
 		
 		print "  ", db
 		elapsed_time = time.time() - start_time
