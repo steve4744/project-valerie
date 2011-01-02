@@ -40,6 +40,9 @@ from DMC_Global import Showiframe
 from DMC_Player import PVMC_Player 
 from DataElement import DataElement
 import math
+
+from TraktAPI import TraktAPI 
+
 #------------------------------------------------------------------------------------------
 
 class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
@@ -121,6 +124,12 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			}, -2)
 		
 		self.loadMovies()
+		
+		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt = TraktAPI("pvmc")
+			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
+			self.trakt.setType(TraktAPI.TYPE_MOVIE)
 		
 		self.onFirstExecBegin.append(self.refresh)
 
@@ -408,19 +417,29 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				playbackList.append( (self.moviedb[selection[1]]["Path"], self.moviedb[selection[1]]["Title"]), )
 				
 				print "PLAYBACK: ", playbackList
+				if config.plugins.pvmc.trakt.value is True:
+					self.trakt.setName(self.moviedb[selection[1]]["Title"])
+					self.trakt.setYear(self.moviedb[selection[1]]["Year"])
+					self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
+					self.trakt.setImdbId(self.moviedb[selection[1]]["ImdbId"])
+					self.trakt.send()
 				self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
 			else:
 				self.session.open(MessageBox, "Not found!\n" + self.moviedb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 		
 
 	def leaveMoviePlayer(self): 
+		if config.plugins.pvmc.trakt.value is True:
+			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
+			self.trakt.send()
 		self.session.nav.playService(None) 
-		selection = self["listview"].getCurrent()
-		if selection is not None:
-			if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-				self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
-			else:
-				self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
+		self.refresh()
+		#selection = self["listview"].getCurrent()
+		#if selection is not None:
+		#	if os.access("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+		#		self.showiframe.showStillpicture("/hdd/valerie/media/tt" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+		#	else:
+		#		self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyGenres(self):
 		menu = self.getAvailGenres()

@@ -53,7 +53,7 @@ def Plugins(**kwargs):
 	if config.plugins.pvmc.showwizard.value == True:
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(58, PVMC_Wizard)))
 	if config.plugins.pvmc.autostart.value == True:
-		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(59, PVMC_MainMenuAutostart)))
+		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(63, PVMC_MainMenuAutostart)))
 
 	list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart))
 

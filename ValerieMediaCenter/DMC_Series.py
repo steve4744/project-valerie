@@ -580,11 +580,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
 			self.trakt.send()
 		self.session.nav.playService(None) 
+		self.refresh()
 		#self.visibility(True)
-		if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-			self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v")
-		else:
-			self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
+		#if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+		#	self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v")
+		#else:
+		#	self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyExit(self):
 		if self.inSeries is True:

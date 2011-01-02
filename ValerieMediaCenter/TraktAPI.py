@@ -11,7 +11,7 @@ except ImportError:
   import sha
 
 class TraktAPI():
-	URL = "http://api.trakt.tv"
+	URL = "http://api.trakt.tv/post"
 
 	STATUS_IDLE     = "idle"
 	STATUS_WATCHING = "watching"
@@ -20,7 +20,7 @@ class TraktAPI():
 	TYPE_TVSHOW = "TVShow"
 	TYPE_MOVIE  = "Movie"
 
-	APIVERSION = "0.0.7" #ACtually this is not the version of the plugin, but the API version to use
+	APIVERSION = "0.1.0" #ACtually this is not the version of the plugin, but the API version to use
 
 	mMediaCenterShortName = "pytrakt"
 	mMediaCenterVersion   = "1.0"
@@ -39,6 +39,7 @@ class TraktAPI():
 	mPassword   = "nopass"
 	
 	mProgress   = -1
+	mDuration   = -1
 	
 	def __init__(self, mcshortname=None, mcversion=None, mcbuidldate=None):
 		if mcshortname is not None:
@@ -64,6 +65,7 @@ class TraktAPI():
 	def setType(self, type):
 		self.mType = type
 		self.mProgress = -1
+		self.mDuration = -1
 
 	def setUsernameAndPassword(self, user, passwd):
 		self.mUsername = user
@@ -82,6 +84,9 @@ class TraktAPI():
 
 	def setProgress(self, progress):
 		self.mProgress = progress
+
+	def setDuration(self, duration):
+		self.mDuration = duration
 
 	def send(self):
 		dict = None
@@ -105,6 +110,9 @@ class TraktAPI():
 			
 			if self.mProgress > 0 and self.mProgress <= 100:
 				dict["progress"] = self.mProgress
+			
+			if self.mDuration > 0:
+				dict["duration"] = self.mDuration
 			
 			dict["status"]   = self.mStatus
 			dict["username"] = self.mUsername 
