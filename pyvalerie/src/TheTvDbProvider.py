@@ -9,6 +9,8 @@ import WebGrabber
 import re
 import Utf8
 
+import Genres
+
 class TheTvDbProvider(object):
     '''
     classdocs
@@ -176,7 +178,7 @@ class TheTvDbProvider(object):
                 for genre in strGenres:
                     genre = genre.strip()
                     if len(genre) > 1:
-                        genres += genre + u"|"
+                        genres += Genres.getGenre(genre) + u"|"
                 if len(genres) > 1:
                     info.Genres = genres[:len(genres) - 1] # Remove the last pipe
                     return info

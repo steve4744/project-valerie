@@ -254,9 +254,19 @@ class PVMC_MainMenu(Screen):
 		
 		if config.plugins.pvmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
+		
+		# Executes a start script
+		self.onFirstExecBegin.append(self.onExecStartScript)
 
 	def onExec(self):
 		self["menu"].setIndex(2)
+
+	def onExecStartScript(self):
+		import os
+		try:
+			os.system("/hdd/valerie/start.sh")
+		except Exception, e:
+			print "onExecStartScript failed", e
 
 	def power(self):
 		import Screens.Standby

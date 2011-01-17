@@ -1,4 +1,4 @@
-﻿from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
+from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
 from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
@@ -404,7 +404,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			elif self.inEpisode is True:
 				self.setText("title", selection[0])
 				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what="Overview")
-			
+
+				self.setText("genre", self.episodesdb[selection[1]]["Genres"].replace('|', ", "), what="Genre")
+				self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
+				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + " min")
+
 			itemsPerPage = int(self["listview_itemsperpage"].getData())
 			itemsTotal = self["listview"].count()
 			#print "itemsPerPage", itemsPerPage

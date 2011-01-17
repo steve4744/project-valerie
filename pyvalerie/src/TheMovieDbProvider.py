@@ -7,6 +7,8 @@ Created on 22.05.2010
 import WebGrabber
 import re
 
+import Genres
+
 class TheMovieDbProvider(object):
     '''
     classdocs
@@ -106,7 +108,7 @@ class TheMovieDbProvider(object):
             for genreListItem in genreList:
                 for eGenre in genreListItem.getElementsByTagName("category"):
                     if eGenre.getAttribute("type") == "genre":
-                        genre += eGenre.getAttribute("name") + u"|"
+                        genre += Genres.getGenre(eGenre.getAttribute("name")) + u"|"
             
             if len(genre) > 0:
                 info.Genres = genre[:len(genre) - 1] # Remove the last pipe

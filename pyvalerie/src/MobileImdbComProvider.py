@@ -51,7 +51,7 @@ class MobileImdbComProvider():
             entry = self.ResultEntry()
             strEntry = htmlSplitter[0:pos]
             
-            if u"TV series" in strEntry:
+            if u"TV series" in strEntry: #maybe also miniseries
                 entry.IsTVSeries = True;
             
             mImdbId = re.search(r'/title/tt\d*/', strEntry)

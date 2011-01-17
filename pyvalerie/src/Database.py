@@ -17,6 +17,8 @@ import cPickle as pickle
 import DirectoryScanner
 from FailedEntry import FailedEntry
 
+import Genres
+
 class Database(object):
     '''
     classdocs
@@ -46,6 +48,52 @@ class Database(object):
         self.duplicateDetector = []
         
         self.load()
+    
+    def transformGenres(self):
+        for key in self.dbMovies:
+            transformedGenre = ""
+            for genre in self.dbMovies[key].Genres.split("|"):
+                if Genres.isGenre(genre) is False:
+                    newGenre = Genres.getGenre(genre)
+                    if newGenre != "Unknown":
+                        print "GENRE:", genre, "->", newGenre
+                        transformedGenre += newGenre + u"|"
+                else:
+                    transformedGenre += genre + u"|"
+            if len(transformedGenre) > 0:
+                transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
+            self.dbMovies[key].Genres = transformedGenre
+        
+        for key in self.dbSeries:
+            transformedGenre = ""
+            for genre in self.dbSeries[key].Genres.split("|"):
+                if Genres.isGenre(genre) is False:
+                    newGenre = Genres.getGenre(genre)
+                    if newGenre != "Unknown":
+                        print "GENRE:", genre, "->", newGenre
+                        transformedGenre += newGenre + u"|"
+                else:
+                    transformedGenre += genre + u"|"
+            if len(transformedGenre) > 0:
+                transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
+            self.dbSeries[key].Genres = transformedGenre
+            
+            if key in self.dbEpisodes:
+                for season in self.dbEpisodes[key]:
+                    for episode in self.dbEpisodes[key][season]:
+                        transformedGenre = ""
+                        for genre in self.dbEpisodes[key][season][episode].Genres.split("|"):
+                            if Genres.isGenre(genre) is False:
+                                newGenre = Genres.getGenre(genre)
+                                if newGenre != "Unknown":
+                                    print "GENRE:", genre, "->", newGenre
+                                    transformedGenre += newGenre + u"|"
+                            else:
+                                transformedGenre += genre + u"|"
+                        if len(transformedGenre) > 0:
+                            transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
+                        self.dbEpisodes[key][season][episode].Genres = transformedGenre
+
     
     def clearFailed(self):
         del self.dbFailed[:]
@@ -526,19 +574,31 @@ class Database(object):
         print "Took (episodes/*.txd): ", elapsed_time
 
     def loadPickle(self):
-        start_time = time.time()
-        fd = open(self.MOVIESDB, "rb")
-        self.dbMovies = pickle.load(fd)
-        fd.close()
-        elapsed_time = time.time() - start_time
-        print "Took (movie.db):", elapsed_time
+        try:
+            start_time = time.time()
+            fd = open(self.MOVIESDB, "rb")
+            self.dbMovies = pickle.load(fd)
+            fd.close()
+            elapsed_time = time.time() - start_time
+            print "Took (movie.db):", elapsed_time
+        except Exception, ex:
+            print "-"*30
+            print "Database::loadPickle"
+            print ex
+            print "-"*30
         
-        start_time = time.time()
-        fd = open(self.TVSHOWSDB, "rb")
-        self.dbSeries = pickle.load(fd)
-        fd.close()
-        elapsed_time = time.time() - start_time
-        print "Took (tvshows.db):", elapsed_time
+        try:
+            start_time = time.time()
+            fd = open(self.TVSHOWSDB, "rb")
+            self.dbSeries = pickle.load(fd)
+            fd.close()
+            elapsed_time = time.time() - start_time
+            print "Took (tvshows.db):", elapsed_time
+        except Exception, ex:
+            print "-"*30
+            print "Database::loadPickle"
+            print ex
+            print "-"*30
         
         #start_time = time.time()
         #self.dbEpisodes = {}
@@ -550,11 +610,17 @@ class Database(object):
         #elapsed_time = time.time() - start_time
         #print "Took (episodes/*.db): ", elapsed_time
         
-        start_time = time.time()
-        self.dbEpisodes = {}
-        fd = open(self.EPISODESDB, "rb")
-        self.dbEpisodes = pickle.load(fd)
-        fd.close()
-        elapsed_time = time.time() - start_time
-        print "Took (episodes.db):", elapsed_time
-        
+        try:
+            start_time = time.time()
+            self.dbEpisodes = {}
+            fd = open(self.EPISODESDB, "rb")
+            self.dbEpisodes = pickle.load(fd)
+            fd.close()
+            elapsed_time = time.time() - start_time
+            print "Took (episodes.db):", elapsed_time
+        except Exception, ex:
+            print "-"*30
+            print "Database::loadPickle"
+            print ex
+            print "-"*30
+            

@@ -163,6 +163,10 @@ class pyvalerie(Thread):
 		if self.mode != self.FAST and Config.getBoolean("delete") is True:
 			db.deleteMissingFiles()
 		
+		if self.mode != self.FAST:
+			db.transformGenres()
+		
+		
 		print "  ", db
 		elapsed_time = time.time() - start_time
 		print "Took: ", elapsed_time
