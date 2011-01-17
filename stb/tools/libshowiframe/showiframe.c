@@ -64,7 +64,10 @@ int showSinglePic(const char *filename)
 
                 stillpic.iFrame = iframe;
                 stillpic.size = s.st_size;
-                
+
+                if (ioctl(m_video_clip_fd, VIDEO_CLEAR_BUFFER) < 0)
+                        printf("video: VIDEO_CLEAR_BUFFER: %m\n");
+
                 if (ioctl(m_video_clip_fd, VIDEO_STILLPICTURE, &stillpic) < 0)
                         printf("VIDEO_STILLPICTURE failed (%m)\n");
 #else /*NO USE_STILLPICTURE*/
