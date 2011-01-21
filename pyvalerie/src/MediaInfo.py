@@ -29,7 +29,7 @@ class MediaInfo(object):
     Title = u""
     Alternatives = {}
     
-    Year = 0
+    Year = -1
     ImdbIdNull = u"tt0000000"
     ImdbId     = ImdbIdNull
     TheTvDbIdNull = u"0"
@@ -375,6 +375,8 @@ class MediaInfo(object):
                       
                         self.SearchString = re.sub(r'(?P<seasonepisode>\d{3,4}).*', u" ", nameConverted)
         
+        print ":2: ", Utf8.utf8ToLatin(self.SearchString), self.Season, self.Episode, self.Year
+        
         if self.Extension == u"ts" and self.isEnigma2Recording(absFilename) is True:
             e2info = self.getEnigma2RecordingName(absFilename)
             if e2info is not None:
@@ -412,9 +414,10 @@ class MediaInfo(object):
         
         #print ":1: ", self.SearchString
         ### Replacements POST
+        print ":2a: ", Utf8.utf8ToLatin(self.SearchString)
         self.SearchString = re.sub(r'[-]', u" ", self.SearchString)
         self.SearchString = re.sub(r' +', u" ", self.SearchString)
-        print ":2: ", Utf8.utf8ToLatin(self.SearchString)
+        print ":2b: ", Utf8.utf8ToLatin(self.SearchString)
         
         self.SearchString = self.SearchString.strip()
         

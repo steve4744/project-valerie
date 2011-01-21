@@ -70,11 +70,21 @@ class Manager(object):
         else:
             element.isSerie = False
             element.isMovie = True
-            
+        
         results = Sync().syncWithId(element)
         if results is not None:
             return results
-                
+        else:
+            if istvshow is False:
+                element.isSerie = True
+                element.isMovie = False
+            else:
+                element.isSerie = False
+                element.isMovie = True
+            
+            results = Sync().syncWithId(element)
+            if results is not None:
+                return results
         return None
     
     def replace(self, oldElement, newElement):
