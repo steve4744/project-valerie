@@ -100,6 +100,7 @@ def getText(url):
     utfPage = checkCache(url)
     if utfPage is None:
         for i in range(RETRIES):
+            print "getText", "->", i, Utf8.utf8ToLatin(url), "(", version_info[1], ")"
             page = None
             kwargs = {}
             if version_info[1] >= 6:
@@ -109,13 +110,15 @@ def getText(url):
             try:
                 opener = urllib2.build_opener()
                 opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
-                page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
+                if version_info[1] >= 6:
+                    page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
+                else:
+                    page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
                 
                 
                 #page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)), **kwargs)
-            except Exception, ex:
-                print "URL", Utf8.utf8ToLatin(url)
-                print "urllib2::urlopen: ", ex
+            except IOError, ex:
+                print "getText", "Error", ex
                 continue
             
             if page is not None:
@@ -125,7 +128,7 @@ def getText(url):
                 addCache(url, utfPage)
                 break
     
-    print "utfPage: ", type(utfPage), "URL=", Utf8.utf8ToLatin(url)
+    print "getText", "<-", type(utfPage), Utf8.utf8ToLatin(url)
     return utfPage
     
 def getFile(url, name, retry=3):
