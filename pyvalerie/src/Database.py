@@ -410,14 +410,23 @@ class Database(object):
             self.dbFailed = pickle.load(fd)
             fd.close()
         
-        if os.path.isfile(self.MOVIESDB) and os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
-            self.loadPickle() 
-        elif os.path.isfile(self.MOVIESTXD) and os.path.isfile(self.TVSHOWSTXD):
-            self.loadTxd() 
+        if os.path.isfile(self.MOVIESDB):
+            self.loadPickle(True, False) 
+        elif os.path.isfile(self.MOVIESTXD):
+            self.loadTxd(True, False) 
         else:
-            self.loadTxt() 
+            self.loadTxt(True, False)
+       
+        if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
+            self.loadPickle(False, True) 
+        elif os.path.isfile(self.TVSHOWSTXD):
+            self.loadTxd(False, True) 
+        else:
+            self.loadTxt(False, True)
+            
     
-    def loadTxt(self):
+    def loadTxt(self, loadMovie, loadTVShow):
+      if loadMovie:
         start_time = time.time()
         try:
             db = Utf8.Utf8(u"/hdd/valerie/moviedb.txt", "r").read()
@@ -450,6 +459,7 @@ class Database(object):
         elapsed_time = time.time() - start_time
         print "Took (moviedb.txt): ", elapsed_time
 
+      if loadTVShow:
         start_time = time.time()
         try:
             db = Utf8.Utf8(u"/hdd/valerie/seriesdb.txt", "r").read()
@@ -503,7 +513,8 @@ class Database(object):
         print "Took (episodes/*.txt): ", elapsed_time
         
         
-    def loadTxd(self):
+    def loadTxd(self, loadMovie, loadTVShow):
+      if loadMovie:
         start_time = time.time()
         try:
             db = Utf8.Utf8(self.MOVIESTXD, "r").read()
@@ -527,6 +538,7 @@ class Database(object):
         elapsed_time = time.time() - start_time
         print "Took (movies.txd): ", elapsed_time
 
+      if loadTVShow:
         start_time = time.time()
         try:
             db = Utf8.Utf8(self.TVSHOWSTXD, "r").read()
@@ -573,7 +585,8 @@ class Database(object):
         elapsed_time = time.time() - start_time
         print "Took (episodes/*.txd): ", elapsed_time
 
-    def loadPickle(self):
+    def loadPickle(self, loadMovie, loadTVShow):
+      if loadMovie:
         try:
             start_time = time.time()
             fd = open(self.MOVIESDB, "rb")
@@ -586,7 +599,8 @@ class Database(object):
             print "Database::loadPickle"
             print ex
             print "-"*30
-        
+
+      if loadTVShow:
         try:
             start_time = time.time()
             fd = open(self.TVSHOWSDB, "rb")

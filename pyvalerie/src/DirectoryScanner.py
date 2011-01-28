@@ -86,7 +86,7 @@ class DirectoryScanner():
                     # File is f and path is directory
                     (shortname, extension) = self.filenameToTulpe(f)
                     print (shortname, extension)
-                    if extension in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
+                    if extension.lower() in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
                         self.fileList.append([directory, shortname, extension, type])
                 
                 elif os.path.isdir(file):
@@ -113,7 +113,7 @@ class DirectoryScanner():
                 if os.path.isfile(file):
                     # File is f and path is directory
                     (shortname, extension) = self.filenameToTulpe(f)
-                    if extension in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
+                    if extension.lower() in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
                         self.fileList.append([directory, shortname, extension, type])
                 
                 elif recursive is True and os.path.isdir(file):

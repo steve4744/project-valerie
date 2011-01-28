@@ -60,13 +60,15 @@ class PVMC_Player(MoviePlayer):
 
 	def leavePlayer(self, eof=False):
 		list = []
-		list.append((_("Yes"), "quit"))
-
+		
 		if self.nextPlaylistEntryAvailable() is True:
 			list.append((_("Yes, but play next episode"), "next"))
+		
+		list.append((_("Yes"), "quit"))
+		
 		if eof is False:
 			list.append((_("No, continue"), "continue"))
-		
+
 		from Screens.ChoiceBox import ChoiceBox
 		self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
 
@@ -81,8 +83,8 @@ class PVMC_Player(MoviePlayer):
 					self.notifyNextEntry()
 			elif answer[1] == "continue":
 				return None
-		else:
-			self.close()
+		#else:
+		#	self.close()
 
 # Some functions need to be overriden so they are not called
 	def showMovies(self):

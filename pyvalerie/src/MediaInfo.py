@@ -8,6 +8,13 @@ import replace
 import Utf8
 import os
 
+## WORKAROUND
+
+# Note a DVD is an Entry with Extension "ifo"
+# These entries need special threatment
+
+## WORKAROUND
+
 class MediaInfo(object):
     '''
     classdocs
@@ -207,6 +214,7 @@ class MediaInfo(object):
             for line in lines:
                 m = re.search(r'(?P<imdbid>tt\d{7})', line)
                 if m and m.group("imdbid"):
+                    f.close()
                     return m.group("imdbid")
         f.close()
         return None
@@ -215,6 +223,18 @@ class MediaInfo(object):
         absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
         name = self.Filename.lower()
         self.SearchString = name
+        
+        #################### DVD #####################
+        
+        if self.Extension.lower() == u"ifo":
+            dirs = self.Path.split(u"/")
+            #vidoets = dirs[len(dirs) - 1]
+            print "dirs=", dirs
+            self.SearchString = dirs[len(dirs) - 2]
+            print ":DVD:", Utf8.utf8ToLatin(self.SearchString)
+            return True
+        
+        #################### DVD ######################
         
         ### Replacements PRE
         for replacement in replace.replacements(u"pre"):

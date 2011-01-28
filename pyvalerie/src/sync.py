@@ -189,6 +189,8 @@ class pyvalerie(Thread):
 		fconf.close()
 		if len(lines) > 1:
 			filetypes = lines[0].strip().split('|')
+			filetypes.append("ifo")
+			filetypes.append("iso")
 			self.output("    Extensions: " + str(filetypes))
 			print filetypes
 			
@@ -209,7 +211,7 @@ class pyvalerie(Thread):
 				
 				if os.path.isdir(path):
 					ds.setDirectory(Utf8.utf8ToLatin(path))
-					ds.listDirectory(filetypes, "(sample)", type)
+					ds.listDirectory(filetypes, "(sample)|(VTS)", type)
 			elementList = ds.getFileList()
 			
 			elapsed_time = time.time() - start_time

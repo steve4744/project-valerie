@@ -414,17 +414,38 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			if os.path.isfile(playbackPath):
 				self.showiframe.finishStillPicture()
 				
-				playbackList = []
-				playbackList.append( (self.moviedb[selection[1]]["Path"], self.moviedb[selection[1]]["Title"]), )
-				
-				print "PLAYBACK: ", playbackList
 				if config.plugins.pvmc.trakt.value is True:
 					self.trakt.setName(self.moviedb[selection[1]]["Title"])
 					self.trakt.setYear(self.moviedb[selection[1]]["Year"])
 					self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
 					self.trakt.setImdbId(self.moviedb[selection[1]]["ImdbId"])
 					self.trakt.send()
-				self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
+				
+				isDVD = False
+				dvdFilelist = [ ]
+				dvdDevice = None
+				
+				if self.moviedb[selection[1]]["Path"].lower().endswith(u"ifo"): # DVD
+					isDVD = True
+					dvdFilelist.append(self.moviedb[selection[1]]["Path"].replace(u"VIDEO_TS.IFO", "").strip())
+				elif self.moviedb[selection[1]]["Path"].lower().endswith(u"iso"): # DVD
+					isDVD = True
+					dvdFilelist.append(self.moviedb[selection[1]]["Path"])
+				
+				if isDVD:
+					try:
+						from Plugins.Extensions.DVDPlayer.plugin import DVDPlayer
+						# when iso -> filelist, when folder -> device
+						self.session.openWithCallback(self.leaveMoviePlayer, DVDPlayer, dvd_device = dvdDevice, dvd_filelist = dvdFilelist)
+					except Exception, ex:
+						print "KeyOk::", ex
+				else:
+					playbackList = []
+					playbackList.append( (self.moviedb[selection[1]]["Path"], self.moviedb[selection[1]]["Title"]), )
+					
+					print "PLAYBACK: ", playbackList
+					
+					self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
 			else:
 				self.session.open(MessageBox, "Not found!\n" + self.moviedb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 		

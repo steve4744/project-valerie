@@ -101,40 +101,45 @@ class MobileImdbComProvider():
         return info[0:pos].strip()
         
     def getTag(self, info, html):
-        print "getTag"
+        print "getTag ->"
         tag = self.getInfo(html)
         if tag is None:
+            print "getTag <-", "if tag is None: a"
             return None
         print "tag", tag
         pos = tag.find(self.DIV_TAG_START)
         if pos < 0:
-            print "getTag", "if pos < 0: 1"
+            print "getTag <-", "if pos < 0: b"
             return None
         
         tag = tag[pos + len(self.DIV_TAG_START):]
 
         pos = tag.find(self.DIV_TAG_END)
         if pos < 0:
-            print "getTag", "if pos < 0: 2"
+            print "getTag <-", "if pos < 0: c"
             return None
         print "getTag", tag
         tag = tag[0:pos]
         tag = tag.strip()
         print "getTag", tag
         info.Tag = tag
+        print "getTag <-"
         return info
     
     def getVotes(self, info, html):
+        print "getVotes ->"
         votes = html
         
         pos = votes.find(self.DIV_VOTES_START)
         if pos < 0:
+            print "getVotes <-", "pos < 0: a"
             return None
         
         votes = votes[pos + len(self.DIV_VOTES_START):]
 
         pos = votes.find(self.DIV_VOTES_END)
         if pos < 0:
+            print "getVotes <-", "pos < 0: b"
             return None
 
         votes = votes[0:pos]
@@ -152,8 +157,8 @@ class MobileImdbComProvider():
             info.Popularity = int(votes)
         except Exception, ex:
             print ex
-                
         
+        print "getVotes <-"
         return info
     
     ###############################################
