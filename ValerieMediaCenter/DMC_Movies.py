@@ -1,4 +1,4 @@
-﻿from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
+from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
 from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Screens.ChoiceBox import ChoiceBox
@@ -427,7 +427,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				
 				if self.moviedb[selection[1]]["Path"].lower().endswith(u"ifo"): # DVD
 					isDVD = True
-					dvdFilelist.append(self.moviedb[selection[1]]["Path"].replace(u"VIDEO_TS.IFO", "").strip())
+					dvdFilelist.append(str(self.moviedb[selection[1]]["Path"].replace(u"/VIDEO_TS.IFO", "").strip()))
 				elif self.moviedb[selection[1]]["Path"].lower().endswith(u"iso"): # DVD
 					isDVD = True
 					dvdFilelist.append(self.moviedb[selection[1]]["Path"])
