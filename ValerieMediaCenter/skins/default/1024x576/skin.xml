@@ -83,9 +83,6 @@
     <widget name="year" transparent="1" zPosition="5" halign="left" position="460,140" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="460,140" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="460,165" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="otitle" transparent="1" zPosition="5" halign="left" position="460,190" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="director" transparent="1" zPosition="5" halign="left" position="460,215" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="writer" transparent="1" zPosition="5" halign="left" position="460,240" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="460,285" size="504,200" font="Modern;18" foregroundColor="#FFFFFF"/>        
 </screen>
 <!-- PVMC Movies -->
@@ -133,9 +130,6 @@
     <widget name="year" transparent="1" zPosition="5" halign="left" position="460,140" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="460,140" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="460,165" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="otitle" transparent="1" zPosition="5" halign="left" position="460,190" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="director" transparent="1" zPosition="5" halign="left" position="460,215" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
-    <widget name="writer" transparent="1" zPosition="5" halign="left" position="460,240" size="504,24" font="Modern;18" foregroundColor="#8BCAF6"/>
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="460,285" size="504,200" font="Modern;18" foregroundColor="#FFFFFF"/>     
 </screen>
 </skin>

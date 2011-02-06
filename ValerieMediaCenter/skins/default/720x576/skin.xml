@@ -81,9 +81,6 @@
     <widget name="poster" transparent="1" zPosition="5" position="45,230" size="146,214"/>
     <ePixmap name="posterborder" position="10,195" zPosition="6" size="214,283" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/blackborders_video_thumbnail-fs8.png"/>
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="460,240" size="250,230" font="Modern;18" foregroundColor="#FFFFFF"/>
-    <widget name="otitle" transparent="1" zPosition="5" halign="left" position="720,402" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
-    <widget name="director" transparent="1" zPosition="5" halign="left" position="720,425" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
-    <widget name="writer" transparent="1" zPosition="5" halign="left" position="720,448" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="460,200" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="year" transparent="1" zPosition="5" halign="left" position="460,140" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="left" position="460,170" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
@@ -131,9 +128,6 @@
     <widget name="poster" transparent="1" zPosition="5" position="45,230" size="146,214"/>
     <ePixmap name="posterborder" position="10,195" zPosition="6" size="214,283" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/720x576/images/blackborders_video_thumbnail-fs8.png"/>
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="460,240" size="250,230" font="Modern;18" foregroundColor="#FFFFFF"/>
-    <widget name="otitle" transparent="1" zPosition="5" halign="left" position="720,402" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
-    <widget name="director" transparent="1" zPosition="5" halign="left" position="720,425" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
-    <widget name="writer" transparent="1" zPosition="5" halign="left" position="720,448" size="196,16" font="Regular;16" foregroundColor="#FFFFFF" backgroundColor="#F200FF"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="460,200" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="year" transparent="1" zPosition="5" halign="left" position="460,140" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="left" position="460,170" size="250,24" font="Modern;20" foregroundColor="#8BCAF6"/>
