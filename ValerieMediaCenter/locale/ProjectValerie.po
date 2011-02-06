@@ -1,0 +1,383 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Project Valerie\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: IhaD <JackDaniel@i-have-a-dreambox.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: AUSTRIA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Show wizard on next start"
+msgstr ""
+
+msgid "Start Valerie on e2 start"
+msgstr ""
+
+msgid "Check for updates on Valerie start"
+msgstr ""
+
+msgid "Backdrop quality"
+msgstr ""
+
+msgid "Use Trakt.tv"
+msgstr ""
+
+msgid "Trakt.tv - Username"
+msgstr ""
+
+msgid "Trakt.tv - Password"
+msgstr ""
+
+msgid "TV"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Synchronize"
+msgstr ""
+
+msgid "Music"
+msgstr ""
+
+msgid "Movies"
+msgstr ""
+
+msgid "Series"
+msgstr ""
+
+msgid "Live TV"
+msgstr ""
+
+msgid ""
+"A new version of MediaCenter is available for download!\n"
+"\n"
+"Version: %s"
+msgstr ""
+
+msgid ""
+"UNEXPECTED ERROR:\n"
+"%s"
+msgstr ""
+
+msgid ""
+"Please install the plugin \n"
+"ProjectValerieSync\n"
+" to use this feature."
+msgstr ""
+
+msgid "Enigma2 will now restart!"
+msgstr ""
+
+msgid "Checking for updates ..."
+msgstr ""
+
+msgid ""
+"Updating ProjectValerie...\n"
+"\n"
+"\n"
+"Stay tuned :-)"
+msgstr ""
+
+msgid "Total movies:"
+msgstr ""
+
+msgid "Pages:"
+msgstr ""
+
+msgid "Total tv shows:"
+msgstr ""
+
+msgid "Total seasons:"
+msgstr ""
+
+msgid "Total episodes:"
+msgstr ""
+
+msgid "Categories"
+msgstr ""
+
+msgid "Sort"
+msgstr ""
+
+msgid "Not available"
+msgstr ""
+
+msgid "not available"
+msgstr ""
+
+msgid "Select Category"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Popularity"
+msgstr ""
+
+msgid "Sort by"
+msgstr ""
+
+msgid "Title:\n"
+msgstr ""
+
+msgid ""
+"\n"
+"\n"
+"Plot:\n"
+msgstr ""
+
+msgid "Documentary"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Adventure"
+msgstr ""
+
+msgid "Crime"
+msgstr ""
+
+msgid "Drama"
+msgstr ""
+
+msgid "Fantasy"
+msgstr ""
+
+msgid "Horror"
+msgstr ""
+
+msgid "Independent"
+msgstr ""
+
+msgid "Comedy"
+msgstr ""
+
+msgid "Mystery"
+msgstr ""
+
+msgid "Romance"
+msgstr ""
+
+msgid "Thriller"
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "War"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Not found!\n"
+msgstr ""
+
+msgid ""
+"\n"
+"\n"
+"Please make sure that your drive is connected/mounted."
+msgstr ""
+
+msgid "High"
+msgstr ""
+
+msgid "Low"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Toggle Type"
+msgstr ""
+
+msgid "Delete movies if file can not be found"
+msgstr ""
+
+msgid "Change searchpaths"
+msgstr ""
+
+msgid "Change settings"
+msgstr ""
+
+msgid "Delete cache"
+msgstr ""
+
+msgid "Delete all posters/backdrops"
+msgstr ""
+
+msgid "Delete database"
+msgstr ""
+
+msgid "Reset filter"
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "Alternatives"
+msgstr ""
+
+msgid "IMDbID"
+msgstr ""
+
+msgid "IMDb ID without tt"
+msgstr ""
+
+msgid "No alternatives found"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Fast Synchronize"
+msgstr ""
+
+msgid "Please press the green button to start synchronize!\n"
+msgstr ""
+
+msgid "Log:"
+msgstr ""
+
+msgid "Progress:"
+msgstr ""
+
+msgid "Last:"
+msgstr ""
+
+msgid "Year:"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "Add Path"
+msgstr ""
+
+msgid "Synchronize settings"
+msgstr ""
+
+msgid "Synchronize Manager options"
+msgstr ""
+
+msgid "Synchronize finished"
+msgstr ""
+
+msgid "Synchronize Manager"
+msgstr ""
+
+msgid "Synchronize Manager Info"
+msgstr ""
+
+msgid "Synchronize Manager Overview"
+msgstr ""
+
+msgid "Path:"
+msgstr ""
+
+msgid "Filename:"
+msgstr ""
+
+msgid "Title:"
+msgstr ""
+
+msgid "Season:"
+msgstr ""
+
+msgid "Episode:"
+msgstr ""
+
+msgid "Synchronize Manager Searchpaths"
+msgstr ""
+
+msgid "Welcome to the Project Valerie experiment"
+msgstr ""
+
+msgid "This Wizard allows you to setup Project Valerie"
+msgstr ""
+
+msgid "Press OK to continue"
+msgstr ""
+
+msgid "min"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Genre"
+msgstr ""
+
+msgid "Thread running"
+msgstr ""
+
+msgid "Loading Config"
+msgstr ""
+
+msgid "Loading Database"
+msgstr ""
+
+msgid "Loading Replacements"
+msgstr ""
+
+msgid "Loading Filesystem"
+msgstr ""
+
+msgid "Searching for media files"
+msgstr ""
+
+msgid "Found"
+msgstr ""
+
+msgid "media files"
+msgstr ""
+
+msgid "Saving database"
+msgstr ""
+
+msgid "Saving Filesystem"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Press Exit / Back"
+msgstr ""
+
+msgid "Extensions:"
+msgstr ""
+
+msgid "Stop playing this movie?"
+msgstr ""
+
+msgid "Yes, but play next episode"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No, continue"
+msgstr ""
+
