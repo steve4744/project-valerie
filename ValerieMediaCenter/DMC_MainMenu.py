@@ -14,7 +14,7 @@ from Components.ScrollLabel import ScrollLabel
 from Components.ConfigList import ConfigList
 from Components.config import *
 
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
 
@@ -23,7 +23,7 @@ from Components.ConfigList import ConfigListScreen
 import os
 import time
 
-from enigma import quitMainloop
+from enigma import quitMainloop, getDesktop
 
 # Plugins
 from DMC_Movies import PVMC_Movies
@@ -40,17 +40,61 @@ try:
 except Exception, e:
 	printl("import twisted.web.microdom failed")
 
+from os import environ
+import gettext
+from Components.Language import language
+
+def localeInit():
+	lang = language.getLanguage()
+	environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+localeInit()
+language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 	
 class PVMC_Settings(Screen, ConfigListScreen):
-	skin = """
-		<screen name="PVMC_Settings" position="160,150" size="450,200" title="Settings">
-			<ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on" />
-			<ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on" />
-			<widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-			<widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-			<widget name="config" position="10,44" size="430,146" />
-		</screen>"""
+        try:
+            sz_w = getDesktop(0).size().width()
+        except:
+            sz_w = 720
+        if sz_w == 1280:
+            skin = """
+            <screen name="PVMC_Settings" position="0,0" size="1280,720" title=" " flags="wfNoBorder">
+            <ePixmap position="0,0" zPosition="-10" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
+            <widget source="Title" render="Label" zPosition="5" halign="center" position="60,60" size="1160,50" font="Modern;35" backgroundColor="#FF000000" foregroundColor="#006CA4C5" transparent="1"/>
+            <ePixmap pixmap="skin_default/buttons/button_red.png" position="60,660" size="15,16" alphatest="blend"/>
+            <ePixmap pixmap="skin_default/buttons/button_green.png" position="280,660" size="15,16" alphatest="blend"/>
+            <widget source="key_red" render="Label" position="80,655" zPosition="1" size="200,28" font="Regular;20" halign="left" valign="center" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,655" zPosition="1" size="200,28" font="Regular;20" halign="left" valign="center" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1"/>
+            <widget name="config" position="60,140" size="1160,440" scrollbarMode="showOnDemand" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1" enableWrapAround="1"/>
+            </screen>"""
+        elif sz_w == 1024:
+            skin = """
+            <screen name="PVMC_Settings" position="160,150" size="450,200" title=" " flags="wfNoBorder">
+            <ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on"/>
+            <ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on"/>
+            <widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1"/>
+            <widget name="config" position="10,44" size="430,146" />
+            </screen>"""
+        else:
+            skin = """
+            <screen name="PVMC_Settings" position="160,150" size="450,200" title="Settings">
+            <ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on"/>
+            <ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on"/>
+            <widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1"/>
+            <widget name="config" position="10,44" size="430,146" />
+            </screen>"""
 
 	def __init__(self, session, parent):
 		from Components.Sources.StaticText import StaticText
@@ -70,6 +114,10 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		    "cancel": self.cancel,
 		    "ok": self.ok,
 		}, -2)
+                self.onLayoutFinish.append(self.setCustomTitle)
+                
+        def setCustomTitle(self):
+                self.setTitle(_("Settings"))
 
 	def initConfigList(self, element=None):
 		print "[initConfigList]", element
@@ -122,7 +170,7 @@ class PVMC_Update(Screen):
 
 		self.working = False
 		self.Console = Console()
-		self["text"] = ScrollLabel("Checking for updates ...")
+		self["text"] = ScrollLabel(_("Checking for updates ..."))
 		
 		self["actions"] = NumberActionMap(["WizardActions", "InputActions", "EPGSelectActions"],
 		{
@@ -147,14 +195,14 @@ class PVMC_Update(Screen):
 			self.Console.ePopen(cmd, self.checkIpkg)
 			return
 		
-		self["text"].setText("Updating ProjectValerie...\n\n\nStay tuned :-)")
+		self["text"].setText(_("Updating ProjectValerie...\n\n\nStay tuned :-)"))
 		cmd = " install -force-overwrite " + str(self.url)
 		print bin, cmd
 		self.session.open(SConsole,"Excecuting command: " + bin, [bin + cmd] , self.finishupdate)
 
 	def finishupdate(self):
 		time.sleep(2)
-		self.session.open(MessageBox,("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
+		self.session.open(MessageBox,_("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
 		time.sleep(4)
 		quitMainloop(3)
 
@@ -200,26 +248,26 @@ class PVMC_MainMenu(Screen):
 
 		if self.OldSkin is True:
 			list = []
-			list.append(("Movies", "PVMC_Watch", "menu_watch", "50"))
-			list.append(("TV", "InfoBar", "menu_tv", "50"))
-			list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
-			list.append(("Sync", "PVMC_Sync", "menu_sync", "50"))
-			list.append(("Music", "PVMC_AudioPlayer", "menu_music", "50"))
+			list.append((_("Movies"), "PVMC_Watch", "menu_watch", "50"))
+			list.append((_("TV"), "InfoBar", "menu_tv", "50"))
+			list.append((_("Settings"), "PVMC_Settings", "menu_settings", "50"))
+			list.append((_("Synchronize"), "PVMC_Sync", "menu_sync", "50"))
+			list.append((_("Music"), "PVMC_AudioPlayer", "menu_music", "50"))
 			self["menu"] = List(list, True)
 	
 			listWatch = []
 			listWatch.append((" ", "dummy", "menu_dummy", "50"))
-			listWatch.append(("Movies", "PVMC_Movies", "menu_movies", "50"))
-			listWatch.append(("Series", "PVMC_Series", "menu_series", "50"))
+			listWatch.append((_("Movies"), "PVMC_Movies", "menu_movies", "50"))
+			listWatch.append((_("Series"), "PVMC_Series", "menu_series", "50"))
 			self["menuWatch"] = List(listWatch, True)
 			self.Watch = False
 		else:
 			list = []
-			list.append(("Settings", "PVMC_Settings", "menu_settings", "50"))
-			list.append(("Sync",     "PVMC_Sync",     "menu_sync", "50"))
-			list.append(("Live TV",  "InfoBar",       "menu_tv", "50"))
-			list.append(("Movies",   "PVMC_Movies",   "menu_movies", "50"))
-			list.append(("TV Shows", "PVMC_Series",   "menu_series", "50"))
+			list.append((_("Settings"), "PVMC_Settings", "menu_settings", "50"))
+			list.append((_("Synchronize"),     "PVMC_Sync",     "menu_sync", "50"))
+			list.append((_("Live TV"),  "InfoBar",       "menu_tv", "50"))
+			list.append((_("Movies"),   "PVMC_Movies",   "menu_movies", "50"))
+			list.append((_("Series"), "PVMC_Series",   "menu_series", "50"))
 			self["menu"] = List(list, True)
 			
 			self["version"] = Label(config.plugins.pvmc.version.value)
@@ -300,7 +348,7 @@ class PVMC_MainMenu(Screen):
 			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl))
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
-				self.session.openWithCallback(self.startUpdate, MessageBox,_("""A new version of MediaCenter is available for download!\n\nVersion: %s""" % remoteversion), MessageBox.TYPE_YESNO)
+				self.session.openWithCallback(self.startUpdate, MessageBox,_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, MessageBox.TYPE_YESNO)
 
 		except Exception, e:
 			print """Could not download HTTP Page (%s)""" % e
@@ -311,7 +359,7 @@ class PVMC_MainMenu(Screen):
 			self.session.open(PVMC_Update, self.remoteurl)
 
 	def Error(self, error):
-		self.session.open(MessageBox,("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
+		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
 
 	def showStillPicture(self):
 		return
@@ -353,7 +401,7 @@ class PVMC_MainMenu(Screen):
 					if isInstalled:
 						self.session.openWithCallback(self.showStillPicture, ProjectValerieSync)
 					else:
-						self.session.open(MessageBox, "Please install the plugin \nProjectValerieSync\n to use this feature.", type = MessageBox.TYPE_INFO)
+						self.session.open(MessageBox, _("Please install the plugin \nProjectValerieSync\n to use this feature."), type = MessageBox.TYPE_INFO)
 				elif selection[1] == "InfoBar":
 					self.Exit()
 				elif selection[1] == "Exit":

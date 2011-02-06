@@ -8,6 +8,7 @@ from Components.Pixmap import Pixmap, MovingPixmap
 from Components.Label import Label
 from Components.ScrollLabel import ScrollLabel
 from Components.Button import Button
+from Components.Sources.StaticText import StaticText
 
 from Components.Sources.List import List
 from Screens.MessageBox import MessageBox
@@ -19,7 +20,7 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import *
 
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
 from Screens.InfoBar import MoviePlayer
@@ -43,6 +44,25 @@ import math
 
 from TraktAPI import TraktAPI 
 
+from os import environ
+import gettext
+from Components.Language import language
+
+def localeInit():
+	lang = language.getLanguage()
+	environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+localeInit()
+language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 
 class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
@@ -77,6 +97,9 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		
 		self["total"] = Label()
 		self["current"] = Label()
+                
+                self["key_red"] = StaticText(_("Sort"))
+                self["key_blue"] = StaticText(_("Categories"))
 		
 		self.ShowStillPicture = False
 		
@@ -118,8 +141,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"down": (self.down, "List down"),
 				"up_quick": (self.up_quick, "List up"),
 				"down_quick": (self.down_quick, "List down"),
-				"blue": (self.KeyGenres, "Genres"),
-				"red": (self.KeySort, "Sort"),
+				"blue": (self.KeyGenres, _("Categories")),
+				"red": (self.KeySort, _("Sort")),
 				"stop": (self.leaveMoviePlayer, "Stop Playback"),
 				"info": (self.KeyInfo, "show Plot"),
 			}, -2)
@@ -284,9 +307,9 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self[name].setText(value)
 				elif ignore is False:
 					if what is None:
-						self[name].setText("Not available")
+						self[name].setText(_("Not available"))
 					else:
-						self[name].setText(what + " not available")
+						self[name].setText(what + ' ' + _("not available"))
 				else:
 					self[name].setText(" ")
 		except Exception, ex:
@@ -315,24 +338,24 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.setText("otitle", "---")
 			
 			self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
-			self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what="Overview")
+			self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what=_("Overview"))
 			
 			if self.moviedb[selection[1]].has_key("Directors"):
 				self.setText("director", self.moviedb[selection[1]]["Directors"])
 			if self.moviedb[selection[1]].has_key("Writers"):
 				self.setText("writer", self.moviedb[selection[1]]["Writers"])
 			
-			self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what="Genre")
+			self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 			self.setText("year", str(self.moviedb[selection[1]]["Year"]))
-			self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + " min")
+			self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
 			
 			itemsPerPage = int(self["listview_itemsperpage"].getData())
 			itemsTotal = self["listview"].count()
 			#print "itemsPerPage", itemsPerPage
 			pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
 			pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
-			self.setText("total", "Total movies: " + str(itemsTotal))
-			self.setText("current", str(pageCurrent) + "/" + str(pageTotal))
+			self.setText("total", _("Total movies:") + ' ' + str(itemsTotal))
+			self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 			
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(i)].instance is not None:
@@ -465,7 +488,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 
 	def KeyGenres(self):
 		menu = self.getAvailGenres()
-		self.session.openWithCallback(self.genresCallback, ChoiceBox, title="Select Genre", list = menu)
+		self.session.openWithCallback(self.genresCallback, ChoiceBox, title=_("Select Category"), list = menu)
 
 	def genresCallback(self, choice):
 		if choice is None:
@@ -482,7 +505,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		menu.append((_("Title"), "title"))
 		menu.append((_("Year"), "Year"))
 		menu.append((_("Popularity"), "Popularity"))
-		self.session.openWithCallback(self.sortCallback, ChoiceBox, title="Sort by", list=menu)
+		self.session.openWithCallback(self.sortCallback, ChoiceBox, title=_("Sort by"), list=menu)
 
 	def sortCallback(self, choice):
 		if choice is None:
@@ -507,6 +530,6 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def KeyInfo(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			self.session.open(MessageBox, "Title:\n" + self.moviedb[selection[1]]["Title"] + "\n\nPlot:\n" + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
 #------------------------------------------------------------------------------------------

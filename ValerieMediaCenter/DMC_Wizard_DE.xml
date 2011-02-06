@@ -1,0 +1,43 @@
+<wizard>
+	<step id="welcome" nextstep="autostart">
+		<text value="Willkommen beim Projekt-Valerie Experiment" />
+		<code>
+self["textTop"].setText(" ")
+self["textCenter"].setText("Dieser Assistent ermöglicht Ihnen eine einfache Grundkonfiguration vom Project Valerie")
+self["textBottom"].setText("Weiter mit der OK Taste")
+		</code>
+	</step>
+	<step id="autostart" nextstep="checkforupdate">
+		<text value="Autostart-Konfiguration" />
+		<list evaluation="autostart" onselect="autostart">
+			<listentry caption="Ja" step="yes" />
+			<listentry caption="Nein" step="no" />
+		</list>
+		<code>
+self["textTop"].setText("Soll Project Valerie automatisch starten ?")
+self["textCenter"].setText(" ")
+self["textBottom"].setText("Weiter mit der OK Taste")
+		</code>
+	</step>
+	<step id="checkforupdate" nextstep="end">
+		<text value="Update-Konfiguration" />
+		<list evaluation="checkforupdate" onselect="checkforupdate">
+			<listentry caption="Ja" step="yes" />
+			<listentry caption="Nein" step="no" />
+		</list>
+		<code>
+self["textTop"].setText("Soll Project Valerie automatisch nach Updates beim Start suchen ?")
+self["textCenter"].setText(" ")
+self["textBottom"].setText("Weiter mit der OK Taste")
+		</code>
+	</step>
+	<step id="end">
+		<text value=" " />
+		<code>
+self["textTop"].setText(" ")
+self["textCenter"].setText("Alle Konfigurationen gespeichert")
+self["textBottom"].setText("Weiter mit der OK Taste")
+self.saveConfig()
+		</code>
+	</step>
+</wizard>

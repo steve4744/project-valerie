@@ -5,10 +5,18 @@ from Components.Pixmap import Pixmap
 from Components.Label import Label
 from DMC_Global import printl
 
+from os import environ
+
 class PVMC_Wizard(WizardLanguage):
 
 	def __init__(self, session):
-		self.xmlfile = config.plugins.pvmc.pluginfolderpath.value + "DMC_Wizard.xml"
+                if environ["LANGUAGE"] == "de":
+                    self.xmlfile = config.plugins.pvmc.pluginfolderpath.value + "DMC_Wizard_DE.xml"
+                else:
+                    if environ["LANGUAGE"] == "de_DE":
+                        self.xmlfile = config.plugins.pvmc.pluginfolderpath.value + "DMC_Wizard_DE.xml"
+                    else:
+                        self.xmlfile = config.plugins.pvmc.pluginfolderpath.value + "DMC_Wizard.xml"
 
 		WizardLanguage.__init__(self, session, showSteps = False, showStepSlider = False)
 		self["wizard"] = Pixmap()

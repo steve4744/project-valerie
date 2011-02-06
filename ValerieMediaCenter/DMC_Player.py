@@ -16,7 +16,7 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import *
 
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
 #from Screens.DMC_MoviePlayer import PVMC_MoviePlayer
@@ -33,6 +33,25 @@ from os import path as os_path
 
 from DMC_Global import Showiframe
 
+from os import environ
+import gettext
+from Components.Language import language
+
+def localeInit():
+	lang = language.getLanguage()
+	environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+localeInit()
+language.addCallback(localeInit)
 
 class PVMC_Player(MoviePlayer):
 	def __init__(self, session, playlist, notifyNextEntry=None):

@@ -16,7 +16,7 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import *
 
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from Components.FileList import FileList
 from Components.AVSwitch import AVSwitch
 #from Screens.DMC_MoviePlayer import PVMC_MoviePlayer
@@ -38,6 +38,25 @@ import math
 
 from TraktAPI import TraktAPI 
 
+from os import environ
+import gettext
+from Components.Language import language
+
+def localeInit():
+	lang = language.getLanguage()
+	environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+localeInit()
+language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 
 class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
@@ -343,9 +362,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self[name].setText(value)
 				elif ignore is False:
 					if what is None:
-						self[name].setText("Not available")
+						self[name].setText(_("Not available"))
 					else:
-						self[name].setText(what + " not available")
+						self[name].setText(what + ' ' + _("not available"))
 				else:
 					self[name].setText(" ")
 		except Exception, ex:
@@ -374,16 +393,16 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
 				self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
 				
-				self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what="Overview")
+				self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what=_("Overview"))
 				
 				if self.moviedb[selection[1]].has_key("Directors"):
 					self.setText("director", self.moviedb[selection[1]]["Directors"])
 				if self.moviedb[selection[1]].has_key("Writers"):
 					self.setText("writer", self.moviedb[selection[1]]["Writers"])
 					
-				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what="Genre")
+				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 				self.setText("year", str(self.moviedb[selection[1]]["Year"]))
-				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + " min")
+				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
 				
 				#itemsPerPage = int(self["listview_itemsperpage"].getData())
 				#itemsTotal = self["listview"].count()
@@ -403,11 +422,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 			elif self.inEpisode is True:
 				self.setText("title", selection[0])
-				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what="Overview")
+				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what=_("Overview"))
 
-				self.setText("genre", self.episodesdb[selection[1]]["Genres"].replace('|', ", "), what="Genre")
+				self.setText("genre", self.episodesdb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 				self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
-				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + " min")
+				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + ' ' + _("min"))
 
 			itemsPerPage = int(self["listview_itemsperpage"].getData())
 			itemsTotal = self["listview"].count()
@@ -415,12 +434,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
 			pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
 			if self.inSeries:
-				self.setText("total", "Total tv shows: " + str(itemsTotal))
+				self.setText("total", _("Total tv shows:") + ' ' + str(itemsTotal))
 			elif self.inSeasons:
-				self.setText("total", "Total seasons: " + str(itemsTotal))
+				self.setText("total", _("Total seasons:") + ' ' + str(itemsTotal))
 			elif self.inEpisode:
-				self.setText("total", "Total episodes: " + str(itemsTotal))
-			self.setText("current", str(pageCurrent) + "/" + str(pageTotal))
+				self.setText("total", _("Total episodes:") + ' ' + str(itemsTotal))
+			self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 
 	def up(self):
 		print "PVMC_Series::up"
@@ -563,7 +582,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
 						#self.visibility(False)
 					else:
-						self.session.open(MessageBox, "Not found!\n" + self.episodesdb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
+						self.session.open(MessageBox, _("Not found!\n") + self.episodesdb[selection[1]]["Path"] + _("\n\nPlease make sure that your drive is connected/mounted."), type = MessageBox.TYPE_ERROR)
 
 
 	def notifyNextEntry(self):
@@ -612,10 +631,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 	def KeyInfo(self):
 		selection = self["listview"].getCurrent()
 		if self.inEpisode is True:
-			self.session.open(MessageBox, "Title:\n" + self.episodesdb[selection[1]]["Title"] + "\n\nPlot:\n" + self.episodesdb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, _("Title:\n") + self.episodesdb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.episodesdb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 		elif self.inSeries is True:
 			if selection is not None:
-				self.session.open(MessageBox, "Title:\n" + self.moviedb[selection[1]]["Title"] + "\n\nPlot:\n" + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 				
 #------------------------------------------------------------------------------------------
 
