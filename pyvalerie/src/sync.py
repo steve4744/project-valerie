@@ -20,6 +20,27 @@ import replace
 import Utf8
 from FailedEntry import FailedEntry
 
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
+from os import environ
+import gettext
+from Components.Language import language
+
+def localeInit():
+	lang = language.getLanguage()
+	environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+localeInit()
+language.addCallback(localeInit)
+
 def checkDefaults():
 	try: 
 		print("Check "+"/hdd/valerie")
@@ -144,18 +165,18 @@ class pyvalerie(Thread):
 		self.info = info
 		self.finished = finished
 		self.mode = mode
-		self.output("Thread running")
+		self.output(_("Thread running"))
 		
 	def run(self):
 		#reload(sys)
 		#sys.setdefaultencoding( "latin-1" )
 		#sys.setdefaultencoding( "utf-8" )
 		
-		self.output("Loading Config")
+		self.output(_("Loading Config"))
 		
 		Config.load()
 		
-		self.output("Loading Database")
+		self.output(_("Loading Database"))
 		start_time = time.time()
 		db = Database()
 		db.reload()
@@ -174,16 +195,16 @@ class pyvalerie(Thread):
 		#db.searchDeleted()
 		#exit(0)
 		
-		self.output("Loading Replacements")
+		self.output(_("Loading Replacements"))
 		replace.load()
 		
-		self.output("Loading Filesystem")
+		self.output(_("Loading Filesystem"))
 		ds = DirectoryScanner.DirectoryScanner()
 		ds.clear()
 		if self.mode == self.FAST:
 			ds.load()
 		
-		self.output("Searching for media files")
+		self.output(_("Searching for media files"))
 		fconf = Utf8.Utf8("/hdd/valerie/paths.conf", "r")
 		lines = fconf.read().split(u"\n")
 		fconf.close()
@@ -191,7 +212,7 @@ class pyvalerie(Thread):
 			filetypes = lines[0].strip().split('|')
 			filetypes.append("ifo")
 			filetypes.append("iso")
-			self.output("    Extensions: " + str(filetypes))
+			self.output(_("Extensions:") + ' ' + str(filetypes))
 			print filetypes
 			
 			start_time = time.time()
@@ -218,9 +239,9 @@ class pyvalerie(Thread):
 			print "Took: ", elapsed_time
 			
 			if elementList is None:
-				self.output("Found " + str(0) + " media files")
+				self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))
 			else:
-				self.output("Found " + str(len(elementList)) + " media files")
+				self.output(_("Found") + ' ' + str(len(elementList)) + ' ' + _("media files"))
 				
 				self.range(len(elementList))
 				
@@ -305,19 +326,19 @@ class pyvalerie(Thread):
 			
 		
 		
-		self.output("Saving database")
+		self.output(_("Saving database"))
 		db.save()
 		
-		self.output("Saving Filesystem")
+		self.output(_("Saving Filesystem"))
 		ds.save()
 		del ds
 			
 		del elementList[:]
 		del db
 		
-		self.output("Done")
-		self.output("---------------------")
-		self.output("Press Exit / Back")
+		self.output(_("Done"))
+		self.output("---------------------------------------------------")
+		self.output(_("Press Exit / Back"))
 		
 		self.finished(True)
 		
