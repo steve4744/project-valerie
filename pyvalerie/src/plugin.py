@@ -953,85 +953,85 @@ class ProjectValerieSyncManager(Screen):
 				self["listview"].setIndex(index)
 
 class ProjectValerieSync(Screen):
-		try:
-			sz_w = getDesktop(0).size().width()
-		except:
-			sz_w = 720
-		if sz_w == 1280:
-			skin = """
-			<screen position="center,center" size="1280,720" title=" " flags="wfNoBorder">
-			<ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
-			<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="1160,65" font="Modern;50" foregroundColor="#006CA4C5"/>
-			<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,660" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,660" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="550,660" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="950,660" size="15,16" alphatest="blend"/>
-			<widget source="key_red" render="Label" position="80,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-			<widget source="key_green" render="Label" position="300,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-			<widget source="key_yellow" render="Label" position="570,652" zPosition="1" size="350,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-			<widget source="key_blue" render="Label" position="970,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-			<widget source="logtxt" render="Label" position="60,140" zPosition="1" size="874,34" font="Modern;24" transparent="1"/>
-			<widget name="console" position="60,175" zPosition="1" size="874,390" font="Modern;24" transparent="1"/>
-			<widget source="progresstxt" render="Label" position="60,600" zPosition="1" size="400,34" font="Modern;24" transparent="1"/>
-			<widget name="progress" position="190,610" zPosition="1" size="1030,15" borderWidth="1" borderColor="#00FFFFFF" transparent="1"/>
-			<eLabel position="954,140" zPosition="1" size="2,415" backgroundColor="#00FFFFFF"/>
-			<widget source="lasttxt" render="Label" position="964,140" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
-			<widget name="poster" position="964,175" zPosition="1" size="156,214"/>
-			<widget source="yeartxt" render="Label" position="964,400" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
-			<widget name="year" position="964,425" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
-			<widget source="nametxt" render="Label" position="964,450" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
-			<widget name="name" position="964,475" zPosition="1" size="256,70" font="Modern;24" transparent="1"/>
-			</screen>"""
-		elif sz_w == 1024:
-			skin = """
-			<screen position="center,center" size="1024,576" title=" " flags="wfNoBorder">
-			<ePixmap position="0,0" zPosition="-10" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1024.png"/>
-			<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="904,55" font="Modern;40" foregroundColor="#006CA4C5"/>
-			<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="500,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="800,516" size="15,16" alphatest="blend"/>
-			<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-			<widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-			<widget source="key_yellow" render="Label" position="520,508" zPosition="1" size="350,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-			<widget source="key_blue" render="Label" position="820,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-			<widget source="logtxt" render="Label" zPosition="1" position="60,100" size="400,32" font="Modern;22" transparent="1"/>
-			<widget name="console" zPosition="1" position="60,125" size="640,310" font="Modern;22" transparent="1"/>
-			<widget source="progresstxt" render="Label" zPosition="1" position="60,470" size="400,32" font="Modern;22" transparent="1"/>
-			<widget name="progress" position="200,480" zPosition="1" size="764,15" borderWidth="1" borderColor="#f0f0f0" transparent="1"/>
-			<eLabel text="" zPosition="2" position="740,100" size="1,350" backgroundColor="#00FFFFFF"/>
-			<widget source="lasttxt" render="Label" zPosition="1" position="750,125" size="400,32" font="Modern;22" transparent="1"/>
-			<widget name="poster" zPosition="1" position="750,155" size="156,214"/>
-			<widget source="yeartxt" render="Label" zPosition="1" position="750,350" size="180,32" font="Modern;22" transparent="1"/>
-			<widget name="year" zPosition="1" position="750,370" size="170,32" font="Modern;22" transparent="1"/>
-			<widget source="nametxt" render="Label" zPosition="1" position="750,390" size="180,32" font="Modern;22" transparent="1"/>
-			<widget name="name" zPosition="1" position="750,410" size="708,64" font="Modern;22" transparent="1"/>
-			</screen>"""
-		else:
-			skin = """
-			<screen position="center,center" size="720,576" title=" " flags="wfNoBorder">
-			<ePixmap position="0,0" zPosition="-10" size="720,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
-			<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="600,30" font="Modern;30" foregroundColor="#006CA4C5"/>
-			<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="170,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="320,516" size="15,16" alphatest="blend"/>
-			<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="540,516" size="15,16" alphatest="blend"/>
-			<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
-			<widget source="key_green" render="Label" position="190,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
-			<widget source="key_yellow" render="Label" position="340,508" zPosition="1" size="350,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
-			<widget source="key_blue" render="Label" position="560,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
-			<widget source="logtxt" render="Label" zPosition="1" position="60,100" size="400,30" font="Modern;20" transparent="1"/>
-			<widget name="console" zPosition="1" position="60,130" size="390,340" font="Modern;20" transparent="1"/>
-			<widget source="progresstxt" render="Label" zPosition="1" position="60,470" size="400,30" font="Modern;20" transparent="1"/>
-			<widget name="progress" zPosition="1" position="170,480" size="490,15" borderWidth="1" borderColor="#bbbbbb" transparent="1"/>
-			<eLabel text="" zPosition="1" position="460,100" size="2,370" backgroundColor="#00FFFFFF"/>
-			<widget source="lasttxt" render="Label" zPosition="1" position="470,100" size="400,30" font="Modern;20" transparent="1"/>
-			<widget name="poster" zPosition="1" position="470,130" size="156,214" transparent="1"/>
-			<widget source="yeartxt" zPosition="1" render="Label" position="470,350" size="180,30" font="Modern;20" transparent="1"/>
-			<widget name="year" zPosition="1" position="470,370" size="170,30" font="Modern;20" transparent="1"/>
-			<widget source="nametxt" render="Label" zPosition="1" position="470,390" size="180,30" font="Modern;20" transparent="1"/>
-			<widget name="name" zPosition="1" position="470,410" size="170,60" font="Modern;20" transparent="1"/>
-			</screen>"""
+	try:
+		sz_w = getDesktop(0).size().width()
+	except:
+		sz_w = 720
+	if sz_w == 1280:
+		skin = """
+		<screen position="center,center" size="1280,720" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="1160,65" font="Modern;50" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,660" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,660" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="550,660" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="950,660" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="300,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget source="key_yellow" render="Label" position="570,652" zPosition="1" size="350,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget source="key_blue" render="Label" position="970,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget source="logtxt" render="Label" position="60,140" zPosition="1" size="874,34" font="Modern;24" transparent="1"/>
+		<widget name="console" position="60,175" zPosition="1" size="874,390" font="Modern;24" transparent="1"/>
+		<widget source="progresstxt" render="Label" position="60,600" zPosition="1" size="400,34" font="Modern;24" transparent="1"/>
+		<widget name="progress" position="190,610" zPosition="1" size="1030,15" borderWidth="1" borderColor="#00FFFFFF" transparent="1"/>
+		<eLabel position="954,140" zPosition="1" size="2,415" backgroundColor="#00FFFFFF"/>
+		<widget source="lasttxt" render="Label" position="964,140" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
+		<widget name="poster" position="964,175" zPosition="1" size="156,214"/>
+		<widget source="yeartxt" render="Label" position="964,400" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
+		<widget name="year" position="964,425" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
+		<widget source="nametxt" render="Label" position="964,450" zPosition="1" size="256,34" font="Modern;24" transparent="1"/>
+		<widget name="name" position="964,475" zPosition="1" size="256,70" font="Modern;24" transparent="1"/>
+		</screen>"""
+	elif sz_w == 1024:
+		skin = """
+		<screen position="center,center" size="1024,576" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1024.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="904,55" font="Modern;40" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="500,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="800,516" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget source="key_yellow" render="Label" position="520,508" zPosition="1" size="350,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget source="key_blue" render="Label" position="820,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget source="logtxt" render="Label" zPosition="1" position="60,100" size="400,32" font="Modern;22" transparent="1"/>
+		<widget name="console" zPosition="1" position="60,125" size="640,310" font="Modern;22" transparent="1"/>
+		<widget source="progresstxt" render="Label" zPosition="1" position="60,470" size="400,32" font="Modern;22" transparent="1"/>
+		<widget name="progress" position="200,480" zPosition="1" size="764,15" borderWidth="1" borderColor="#f0f0f0" transparent="1"/>
+		<eLabel text="" zPosition="2" position="740,100" size="1,350" backgroundColor="#00FFFFFF"/>
+		<widget source="lasttxt" render="Label" zPosition="1" position="750,125" size="400,32" font="Modern;22" transparent="1"/>
+		<widget name="poster" zPosition="1" position="750,155" size="156,214"/>
+		<widget source="yeartxt" render="Label" zPosition="1" position="750,350" size="180,32" font="Modern;22" transparent="1"/>
+		<widget name="year" zPosition="1" position="750,370" size="170,32" font="Modern;22" transparent="1"/>
+		<widget source="nametxt" render="Label" zPosition="1" position="750,390" size="180,32" font="Modern;22" transparent="1"/>
+		<widget name="name" zPosition="1" position="750,410" size="708,64" font="Modern;22" transparent="1"/>
+		</screen>"""
+	else:
+		skin = """
+		<screen position="center,center" size="720,576" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="720,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="600,30" font="Modern;30" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="170,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="320,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="540,516" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="190,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
+		<widget source="key_yellow" render="Label" position="340,508" zPosition="1" size="350,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
+		<widget source="key_blue" render="Label" position="560,508" zPosition="1" size="200,28" font="Modern;18" halign="left" valign="center" transparent="1"/>
+		<widget source="logtxt" render="Label" zPosition="1" position="60,100" size="400,30" font="Modern;20" transparent="1"/>
+		<widget name="console" zPosition="1" position="60,130" size="390,340" font="Modern;20" transparent="1"/>
+		<widget source="progresstxt" render="Label" zPosition="1" position="60,470" size="400,30" font="Modern;20" transparent="1"/>
+		<widget name="progress" zPosition="1" position="170,480" size="490,15" borderWidth="1" borderColor="#bbbbbb" transparent="1"/>
+		<eLabel text="" zPosition="1" position="460,100" size="2,370" backgroundColor="#00FFFFFF"/>
+		<widget source="lasttxt" render="Label" zPosition="1" position="470,100" size="400,30" font="Modern;20" transparent="1"/>
+		<widget name="poster" zPosition="1" position="470,130" size="156,214" transparent="1"/>
+		<widget source="yeartxt" zPosition="1" render="Label" position="470,350" size="180,30" font="Modern;20" transparent="1"/>
+		<widget name="year" zPosition="1" position="470,370" size="170,30" font="Modern;20" transparent="1"/>
+		<widget source="nametxt" render="Label" zPosition="1" position="470,390" size="180,30" font="Modern;20" transparent="1"/>
+		<widget name="name" zPosition="1" position="470,410" size="170,60" font="Modern;20" transparent="1"/>
+		</screen>"""
 
 	def __init__(self, session, args = None):
 		Screen.__init__(self, session)
@@ -1051,7 +1051,7 @@ class ProjectValerieSync(Screen):
 		self["progresstxt"] = StaticText(_("Progress:"))
 		self["lasttxt"] = StaticText(_("Last:"))
 		self["yeartxt"] = StaticText(_("Year:"))
-				self["nametxt"] = StaticText(_("Name:"))
+		self["nametxt"] = StaticText(_("Name:"))
 		
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
 		{
