@@ -146,7 +146,11 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"stop": (self.leaveMoviePlayer, "Stop Playback"),
 				"info": (self.KeyInfo, "show Plot"),
 			}, -2)
-		
+                self.onLayoutFinish.append(self.setCustomTitle)
+                
+        def setCustomTitle(self):
+                self.setTitle(_("Movies"))
+
 		self.loadMovies()
 		
 		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value

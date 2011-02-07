@@ -36,9 +36,16 @@ from DMC_Global import printl, getBoxtype
 import urllib2
 # Unfortunaly not everyone has twisted installed ...
 try:
-	from twisted.web.microdom import parseString
+    from twisted.web.microdom import parseString
 except Exception, e:
 	printl("import twisted.web.microdom failed")
+
+from enigma import addFont
+try:
+    addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+except Exception, ex: #probably just openpli
+    print ex
+    addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)  
 
 from os import environ
 import gettext
@@ -68,32 +75,36 @@ class PVMC_Settings(Screen, ConfigListScreen):
             sz_w = 720
         if sz_w == 1280:
             skin = """
-            <screen name="PVMC_Settings" position="0,0" size="1280,720" title=" " flags="wfNoBorder">
-            <ePixmap position="0,0" zPosition="-10" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
-            <widget source="Title" render="Label" zPosition="5" halign="center" position="60,60" size="1160,50" font="Modern;35" backgroundColor="#FF000000" foregroundColor="#006CA4C5" transparent="1"/>
-            <ePixmap pixmap="skin_default/buttons/button_red.png" position="60,660" size="15,16" alphatest="blend"/>
-            <ePixmap pixmap="skin_default/buttons/button_green.png" position="280,660" size="15,16" alphatest="blend"/>
-            <widget source="key_red" render="Label" position="80,655" zPosition="1" size="200,28" font="Regular;20" halign="left" valign="center" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,655" zPosition="1" size="200,28" font="Regular;20" halign="left" valign="center" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1"/>
-            <widget name="config" position="60,140" size="1160,440" scrollbarMode="showOnDemand" backgroundColor="#FF000000" foregroundColor="#ffffff" transparent="1" enableWrapAround="1"/>
+            <screen position="0,0" size="1280,720" title=" " flags="wfNoBorder">
+            <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
+            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="1160,65" font="Modern;50" foregroundColor="#006CA4C5"/>
+            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,660" size="15,16" alphatest="blend"/>
+            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,660" size="15,16" alphatest="blend"/>
+            <widget source="key_red" render="Label" position="80,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+            <widget name="config" zPosition="1" position="60,140" size="1160,440" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
             </screen>"""
         elif sz_w == 1024:
             skin = """
-            <screen name="PVMC_Settings" position="160,150" size="450,200" title=" " flags="wfNoBorder">
-            <ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on"/>
-            <ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on"/>
-            <widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1"/>
-            <widget name="config" position="10,44" size="430,146" />
+            <screen position="0,0" size="1024,576" title=" " flags="wfNoBorder">
+            <ePixmap position="0,0" zPosition="-10" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1024.png"/>
+            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="904,55" font="Modern;40" foregroundColor="#006CA4C5"/>
+            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
+            <widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+            <widget name="config" zPosition="1" position="60,100" size="904,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
             </screen>"""
         else:
             skin = """
-            <screen name="PVMC_Settings" position="160,150" size="450,200" title="Settings">
-            <ePixmap pixmap="skin_default/buttons/red.png" position="10,0" size="140,40" alphatest="on"/>
-            <ePixmap pixmap="skin_default/buttons/green.png" position="300,0" size="140,40" alphatest="on"/>
-            <widget source="key_red" render="Label" position="10,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1"/>
-            <widget name="config" position="10,44" size="430,146" />
+            <screen position="0,0" size="720,576" title=" " flags="wfNoBorder">
+            <ePixmap position="0,0" zPosition="-10" size="720,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
+            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="600,45" font="Modern;30" foregroundColor="#006CA4C5"/>
+            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
+            <widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
+            <widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
+            <widget name="config" zPosition="1" position="60,100" size="600,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
             </screen>"""
 
 	def __init__(self, session, parent):
@@ -159,10 +170,10 @@ class PVMC_Settings(Screen, ConfigListScreen):
 
 
 class PVMC_Update(Screen):
-	skin = """
-		<screen position="100,100" size="500,380" title="Software Update" >
-			<widget name="text" position="10,10" size="480,360" font="Regular;22" />
-		</screen>"""
+        skin = """
+        <screen position="center,center" size="500,380" title="Software Update">
+        <widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
+        </screen>"""
 
 	def __init__(self, session, remoteurl):
 		self.skin = PVMC_Update.skin
@@ -202,9 +213,16 @@ class PVMC_Update(Screen):
 
 	def finishupdate(self):
 		time.sleep(2)
-		self.session.open(MessageBox,_("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
-		time.sleep(4)
-		quitMainloop(3)
+		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
+		#self.session.open(MessageBox,_("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
+		#time.sleep(4)
+		#quitMainloop(3)
+
+        def e2restart(self, answer):
+                if answer is True:
+                    quitMainloop(3)
+                else:
+                    self.close()
 
 class PVMC_MainMenu(Screen):
 
@@ -214,14 +232,6 @@ class PVMC_MainMenu(Screen):
 		printl("PVMC_MainMenu:__init__")
 		print "PVMC_MainMenu:__init__",isAutostart
 
-		from enigma import addFont
-		try:
-			addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
-		except Exception, ex: #probably just openpli
-			print ex
-			addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)  
-		
-		
 		Screen.__init__(self, session)
 		self.isAutostart = isAutostart
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()

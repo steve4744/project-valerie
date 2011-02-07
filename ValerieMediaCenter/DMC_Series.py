@@ -140,7 +140,11 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				"down_first": (self.down_quick, "List down"),
 				"info": (self.KeyInfo, "show Plot"),
 			}, -2)
-		
+                self.onLayoutFinish.append(self.setCustomTitle)
+                
+        def setCustomTitle(self):
+                self.setTitle(_("Series"))
+
 		if self.USE_DB_VERSION == self.DB_TXT:
 			self.loadSeriesDB()
 		elif self.USE_DB_VERSION == self.DB_TXD:
