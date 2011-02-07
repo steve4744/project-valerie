@@ -381,3 +381,8 @@ msgstr ""
 msgid "No, continue"
 msgstr ""
 
+msgid ""
+"Enigma2 must be restarted!\n"
+"Should Enigma2 now restart?"
+msgstr ""
+
