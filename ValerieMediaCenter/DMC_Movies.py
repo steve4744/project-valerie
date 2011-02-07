@@ -97,9 +97,9 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		
 		self["total"] = Label()
 		self["current"] = Label()
-                
-                self["key_red"] = StaticText(_("Sort"))
-                self["key_blue"] = StaticText(_("Categories"))
+		
+		self["key_red"] = StaticText(_("Sort"))
+		self["key_blue"] = StaticText(_("Categories"))
 		
 		self.ShowStillPicture = False
 		
@@ -146,11 +146,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 				"stop": (self.leaveMoviePlayer, "Stop Playback"),
 				"info": (self.KeyInfo, "show Plot"),
 			}, -2)
-                self.onLayoutFinish.append(self.setCustomTitle)
-                
-        def setCustomTitle(self):
-                self.setTitle(_("Movies"))
-
+		
 		self.loadMovies()
 		
 		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value
@@ -159,7 +155,11 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
 			self.trakt.setType(TraktAPI.TYPE_MOVIE)
 		
+		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.refresh)
+
+	def setCustomTitle(self):
+		self.setTitle(_("movies"))
 
 	DB_TXT = 1
 	DB_TXD = 2
@@ -219,7 +219,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					print "skipping ", d["Title"]
 					continue
 				self.moviedb[d["ImdbId"]] = d
-	
+				
 				print "adding ", d["Title"]
 				list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
 		
@@ -256,7 +256,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
 			movies = db.split("\n----END----\n")
 			
-
+			
 			for movie in movies:
 				movie = movie.split("---BEGIN---\n")
 				if len(movie) == 2: 
@@ -265,17 +265,17 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					for line in lines: 
 						#print "Line: ", line
 						if ":" in line: 
-						    key, text = (s.strip() for s in line.split(":", 1)) 
-
+							key, text = (s.strip() for s in line.split(":", 1)) 
+						
 						if key in filter: 
 							d[key] = text
-
+					
 					#print d
 					if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
 						print "skipping ", d["Title"]
 						continue
 					self.moviedb[d["ImdbId"]] = d
-
+					
 					print "adding ", d["Title"]
 					list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
 		
@@ -299,7 +299,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			for genre in genres.split("|"):
 				if len(genre) > 0 and (_(genre), genre) not in list:
 					list.append((_(genre), genre))
-
+		
 		list.sort()
 		list.insert(0,(_("All"), "all"))
 		return list
@@ -364,7 +364,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(i)].instance is not None:
 					self["star" + str(i)].instance.show()
-
+			
 			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 				if self["star" + str(9 - i)].instance is not None:
 					self["star" + str(9 - i)].instance.hide()
@@ -418,7 +418,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self["listview"].setIndex(index)
 		#self["listview"].pageUp()
 		self.refresh()
-		
+
 	def rightDown(self):
 		itemsPerPage = int(self["listview_itemsperpage"].getData())
 		itemsTotal = self["listview"].count()
@@ -428,7 +428,6 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		self["listview"].setIndex(index)
 		#self["listview"].pageDown()
 		self.refresh()
-
 
 	def KeyOk(self):
 		if self.isVisible == False:

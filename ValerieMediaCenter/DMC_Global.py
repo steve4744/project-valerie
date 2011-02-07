@@ -148,9 +148,9 @@ class E2Control():
 			makedirs("/hdd/valerie/media")
 		except OSError, e: 
 			printl("OSError: " + str(e))
-
+		
 		self.close()
-
+		
 		box = getBoxtype()
 		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"

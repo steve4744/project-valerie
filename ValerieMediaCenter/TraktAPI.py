@@ -139,4 +139,3 @@ class TraktAPI():
 					break
 				except Exception, ex:
 					print "TraktAPI Exception:", ex
-

@@ -140,11 +140,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				"down_first": (self.down_quick, "List down"),
 				"info": (self.KeyInfo, "show Plot"),
 			}, -2)
-                self.onLayoutFinish.append(self.setCustomTitle)
-                
-        def setCustomTitle(self):
-                self.setTitle(_("Series"))
-
+		
 		if self.USE_DB_VERSION == self.DB_TXT:
 			self.loadSeriesDB()
 		elif self.USE_DB_VERSION == self.DB_TXD:
@@ -155,8 +151,12 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.trakt = TraktAPI("pvmc")
 			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
 			self.trakt.setType(TraktAPI.TYPE_TVSHOW)
-
+		
+		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.refresh)
+
+	def setCustomTitle(self):
+		self.setTitle(_("tvshows"))
 
 	DB_TXT = 1
 	DB_TXD = 2
@@ -293,14 +293,14 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		if self.inSeasons or self.inEpisode:
 			filter.append("Season")
 			filter.append("Episode")
-				
+		
 		try:
 			if self.inSeries:
 				self.serieslist=[]
 				db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
 			else:
 				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
-					
+			
 			movies = db.split("\n----END----\n")
 			
 			for movie in movies:
@@ -357,7 +357,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			
 		self["listview"].setIndex(0)
 		self.refresh()
-			
 
 	def setText(self, name, value, ignore=False, what=None):
 		try:
@@ -386,13 +385,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							self["backdrop"].setStillPicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
 						else:
 							self["backdrop"].setStillPictureToDefault()
-						
+				
 				if self["poster"].instance is not None:
 					if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
 						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
 					else:
 						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
-						
+				
 				self.setText("title", selection[0])
 				self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
 				self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
@@ -403,7 +402,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self.setText("director", self.moviedb[selection[1]]["Directors"])
 				if self.moviedb[selection[1]].has_key("Writers"):
 					self.setText("writer", self.moviedb[selection[1]]["Writers"])
-					
+				
 				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 				self.setText("year", str(self.moviedb[selection[1]]["Year"]))
 				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
@@ -419,19 +418,19 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 					if self["star" + str(i)].instance is not None:
 						self["star" + str(i)].instance.show()
-
+				
 				for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
 					if self["star" + str(9 - i)].instance is not None:
 						self["star" + str(9 - i)].instance.hide()
-
+			
 			elif self.inEpisode is True:
 				self.setText("title", selection[0])
 				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what=_("Overview"))
-
+				
 				self.setText("genre", self.episodesdb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 				self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
 				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + ' ' + _("min"))
-
+			
 			itemsPerPage = int(self["listview_itemsperpage"].getData())
 			itemsTotal = self["listview"].count()
 			#print "itemsPerPage", itemsPerPage
@@ -494,7 +493,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self["listview"].setIndex(index)
 		#self["listview"].pageUp()
 		self.refresh()
-		
+
 	def rightDown(self):
 		itemsPerPage = int(self["listview_itemsperpage"].getData())
 		itemsTotal = self["listview"].count()
@@ -514,7 +513,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 	#		self.show()
 
 	def KeyOk(self):
-
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
@@ -533,35 +531,35 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					self.loadSeriesDB()
 				elif self.USE_DB_VERSION == self.DB_TXD:
 					self.loadSeriesTxd()
-		
+				
 				self.refresh()
 				
 			elif self.inSeasons is True:
 				self.inSeries = False
 				self.inSeasons = False
 				self.inEpisode = True
-
+				
 				self.selectedSeason = int(selection[1])
 				self.rememeberSeasonsIndex = self["listview"].getIndex()
-
+				
 				if self.USE_DB_VERSION == self.DB_TXT:
 					self.loadSeriesDB()
 				elif self.USE_DB_VERSION == self.DB_TXD:
 					self.loadSeriesTxd()
-		
+				
 				self.refresh()
-
+			
 			elif self.inEpisode is True:
 				if self.isVisible == False:
 					self.visibility()
 					return
-		
+				
 				selection = self["listview"].getCurrent()
 				if selection is not None:
 					playbackPath = self.episodesdb[selection[1]]["Path"]
 					if os.path.isfile(playbackPath):
 						self.showiframe.finishStillPicture()
-
+						
 						playbackList = []
 						self.currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
 						self.currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
@@ -574,7 +572,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 								i = i + 1
 							else:
 								break
-							
+						
 						print "PLAYBACK: ", playbackList
 						if config.plugins.pvmc.trakt.value is True:
 							self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
@@ -588,7 +586,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					else:
 						self.session.open(MessageBox, _("Not found!\n") + self.episodesdb[selection[1]]["Path"] + _("\n\nPlease make sure that your drive is connected/mounted."), type = MessageBox.TYPE_ERROR)
 
-
 	def notifyNextEntry(self):
 		print "PVMC_Series::notifyNextEntry"
 		if config.plugins.pvmc.trakt.value is True:
@@ -601,7 +598,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
 			self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
 			self.trakt.send()
-
 
 	def leaveMoviePlayer(self): 
 		if config.plugins.pvmc.trakt.value is True:
@@ -620,9 +616,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if self.isVisible == False:
 				self.visibility()
 				return
-		
+			
 			self.showiframe.finishStillPicture()
-
 			self.close()
 		elif self.inEpisode is True or self.inSeasons is True:
 			self.inSeries = True
@@ -639,7 +634,5 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		elif self.inSeries is True:
 			if selection is not None:
 				self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
-				
+
 #------------------------------------------------------------------------------------------
-
-

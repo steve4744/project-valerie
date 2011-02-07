@@ -87,7 +87,7 @@ class PVMC_Player(MoviePlayer):
 		
 		if eof is False:
 			list.append((_("No, continue"), "continue"))
-
+		
 		from Screens.ChoiceBox import ChoiceBox
 		self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
 
@@ -102,8 +102,6 @@ class PVMC_Player(MoviePlayer):
 					self.notifyNextEntry()
 			elif answer[1] == "continue":
 				return None
-		#else:
-		#	self.close()
 
 # Some functions need to be overriden so they are not called
 	def showMovies(self):
@@ -134,7 +132,7 @@ class PVMC_Player(MoviePlayer):
 		ref = eServiceReference(type, 0, selectedPath)
 		ref.setName(selectedName)
 		self.session.nav.playService(ref)
-		
+
 	def nextPlaylistEntry(self):
 		if self.nextPlaylistEntryAvailable():
 			self.current += 1
@@ -145,4 +143,3 @@ class PVMC_Player(MoviePlayer):
 			if (self.current + 1) < len(self.playlist):
 				return True
 		return False
-		

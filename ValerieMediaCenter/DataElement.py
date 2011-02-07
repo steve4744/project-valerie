@@ -10,7 +10,7 @@ class eDataElement(eWidget):
 	
 	def setText(self,t):
 		print "eDataElement::setText", t
-		
+
 class DataElement(Renderer):
 	GUI_WIDGET = eDataElement
 	data = ""
@@ -28,7 +28,7 @@ class DataElement(Renderer):
 	def postWidgetCreate(self, instance):
 		print "postWidgetCreate", instance
 		self.sequence = None
-
+		
 		for (attrib, value) in self.skinAttributes:
 			if attrib == "text":
 				self.setData(value)

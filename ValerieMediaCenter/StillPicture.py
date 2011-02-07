@@ -8,7 +8,7 @@ class eStillPicture(eWidget):
 		print "eStillPicture::__init__", parent
 		eWidget.__init__(self, parent)
 		self.setTransparent(True)
-	
+
 	def setText(self,t):
 		print "eStillPicture::setText", t
 
@@ -19,7 +19,7 @@ class StillPicture(Renderer):
 	
 	stillpicture = ""
 	stillpictureDefault = ""
-	
+
 	def __init__(self):
 		Renderer.__init__(self)
 		self.showiframe = Showiframe()

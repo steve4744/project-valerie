@@ -36,16 +36,16 @@ from DMC_Global import printl, getBoxtype
 import urllib2
 # Unfortunaly not everyone has twisted installed ...
 try:
-    from twisted.web.microdom import parseString
+	from twisted.web.microdom import parseString
 except Exception, e:
 	printl("import twisted.web.microdom failed")
 
 from enigma import addFont
 try:
-    addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
 except Exception, ex: #probably just openpli
-    print ex
-    addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)  
+	print ex
+	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)  
 
 from os import environ
 import gettext
@@ -69,43 +69,43 @@ language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 	
 class PVMC_Settings(Screen, ConfigListScreen):
-        try:
-            sz_w = getDesktop(0).size().width()
-        except:
-            sz_w = 720
-        if sz_w == 1280:
-            skin = """
-            <screen position="0,0" size="1280,720" title=" " flags="wfNoBorder">
-            <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
-            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="1160,65" font="Modern;50" foregroundColor="#006CA4C5"/>
-            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,660" size="15,16" alphatest="blend"/>
-            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,660" size="15,16" alphatest="blend"/>
-            <widget source="key_red" render="Label" position="80,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
-            <widget name="config" zPosition="1" position="60,140" size="1160,440" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
-            </screen>"""
-        elif sz_w == 1024:
-            skin = """
-            <screen position="0,0" size="1024,576" title=" " flags="wfNoBorder">
-            <ePixmap position="0,0" zPosition="-10" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1024.png"/>
-            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="904,55" font="Modern;40" foregroundColor="#006CA4C5"/>
-            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
-            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
-            <widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
-            <widget name="config" zPosition="1" position="60,100" size="904,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
-            </screen>"""
-        else:
-            skin = """
-            <screen position="0,0" size="720,576" title=" " flags="wfNoBorder">
-            <ePixmap position="0,0" zPosition="-10" size="720,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
-            <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="600,45" font="Modern;30" foregroundColor="#006CA4C5"/>
-            <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
-            <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
-            <widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
-            <widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
-            <widget name="config" zPosition="1" position="60,100" size="600,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
-            </screen>"""
+	try:
+		sz_w = getDesktop(0).size().width()
+	except:
+	    sz_w = 720
+	if sz_w == 1280:
+		skin = """
+		<screen position="0,0" size="1280,720" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1280.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="1160,65" font="Modern;50" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,660" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,660" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="300,652" zPosition="1" size="200,34" font="Modern;24" halign="left" valign="center" transparent="1"/>
+		<widget name="config" zPosition="1" position="60,140" size="1160,440" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
+		</screen>"""
+	elif sz_w == 1024:
+		skin = """
+		<screen position="0,0" size="1024,576" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background1024.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="904,55" font="Modern;40" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,32" font="Modern;22" halign="left" valign="center" transparent="1"/>
+		<widget name="config" zPosition="1" position="60,100" size="904,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
+		</screen>"""
+	else:
+		skin = """
+		<screen position="0,0" size="720,576" title=" " flags="wfNoBorder">
+		<ePixmap position="0,0" zPosition="-10" size="720,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="60,30" size="600,45" font="Modern;30" foregroundColor="#006CA4C5"/>
+		<ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,516" size="15,16" alphatest="blend"/>
+		<ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="280,516" size="15,16" alphatest="blend"/>
+		<widget source="key_red" render="Label" position="80,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
+		<widget source="key_green" render="Label" position="300,508" zPosition="1" size="200,30" font="Modern;20" halign="left" valign="center" transparent="1"/>
+		<widget name="config" zPosition="1" position="60,100" size="600,200" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
+		</screen>"""
 
 	def __init__(self, session, parent):
 		from Components.Sources.StaticText import StaticText
@@ -125,10 +125,10 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		    "cancel": self.cancel,
 		    "ok": self.ok,
 		}, -2)
-                self.onLayoutFinish.append(self.setCustomTitle)
-                
-        def setCustomTitle(self):
-                self.setTitle(_("Settings"))
+		self.onLayoutFinish.append(self.setCustomTitle)
+
+	def setCustomTitle(self):
+		self.setTitle(_("Settings"))
 
 	def initConfigList(self, element=None):
 		print "[initConfigList]", element
@@ -167,18 +167,16 @@ class PVMC_Settings(Screen, ConfigListScreen):
 	def cancel(self):
 		self.close()
 
-
-
 class PVMC_Update(Screen):
-        skin = """
-        <screen position="center,center" size="500,380" title="Software Update">
-        <widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
-        </screen>"""
+	skin = """
+	<screen position="center,center" size="500,380" title="Software Update">
+	<widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
+	</screen>"""
 
 	def __init__(self, session, remoteurl):
 		self.skin = PVMC_Update.skin
 		Screen.__init__(self, session)
-
+		
 		self.working = False
 		self.Console = Console()
 		self["text"] = ScrollLabel(_("Checking for updates ..."))
@@ -218,11 +216,11 @@ class PVMC_Update(Screen):
 		#time.sleep(4)
 		#quitMainloop(3)
 
-        def e2restart(self, answer):
-                if answer is True:
-                    quitMainloop(3)
-                else:
-                    self.close()
+	def e2restart(self, answer):
+		if answer is True:
+			quitMainloop(3)
+		else:
+			self.close()
 
 class PVMC_MainMenu(Screen):
 
@@ -231,7 +229,7 @@ class PVMC_MainMenu(Screen):
 	def __init__(self, isAutostart, session):
 		printl("PVMC_MainMenu:__init__")
 		print "PVMC_MainMenu:__init__",isAutostart
-
+		
 		Screen.__init__(self, session)
 		self.isAutostart = isAutostart
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -246,7 +244,7 @@ class PVMC_MainMenu(Screen):
 			self.ShowStillPicture = True
 		except Exception, ex:
 			print ex
-
+		
 		self.OldSkin = False
 		try:
 			if self["menuWatch"] == None:
@@ -255,7 +253,7 @@ class PVMC_MainMenu(Screen):
 				self.OldSkin = True
 		except Exception, ex:
 			self.OldSkin = False
-
+		
 		if self.OldSkin is True:
 			list = []
 			list.append((_("Movies"), "PVMC_Watch", "menu_watch", "50"))
@@ -264,7 +262,7 @@ class PVMC_MainMenu(Screen):
 			list.append((_("Synchronize"), "PVMC_Sync", "menu_sync", "50"))
 			list.append((_("Music"), "PVMC_AudioPlayer", "menu_music", "50"))
 			self["menu"] = List(list, True)
-	
+			
 			listWatch = []
 			listWatch.append((" ", "dummy", "menu_dummy", "50"))
 			listWatch.append((_("Movies"), "PVMC_Movies", "menu_movies", "50"))
@@ -281,12 +279,12 @@ class PVMC_MainMenu(Screen):
 			self["menu"] = List(list, True)
 			
 			self["version"] = Label(config.plugins.pvmc.version.value)
-
+		
 		self["title"] = StaticText("")
 		self["welcomemessage"] = StaticText("")
-
+		
 		self.inter = 0
-
+		
 		self["actions"] = HelpableActionMap(self, "PVMC_MainMenuActions", 
 			{
 				"ok": self.okbuttonClick,
@@ -296,7 +294,7 @@ class PVMC_MainMenu(Screen):
 				"down": self.down,
 				"power": self.power,
 			}, -1)
-
+		
 		if self.isAutostart is False and self.OldSkin is False:
 			self["cancelActions"] = ActionMap(["SetupActions", "ColorActions"],
 			{
@@ -307,7 +305,7 @@ class PVMC_MainMenu(Screen):
 			{
 				"cancel": self.cancel,
 			}, -1)
-
+		
 		self.onFirstExecBegin.append(self.onExec)
 		
 		if config.plugins.pvmc.checkforupdate.value == True:
@@ -359,10 +357,9 @@ class PVMC_MainMenu(Screen):
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
 				self.session.openWithCallback(self.startUpdate, MessageBox,_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, MessageBox.TYPE_YESNO)
-
+		
 		except Exception, e:
 			print """Could not download HTTP Page (%s)""" % e
-
 
 	def startUpdate(self, answer):
 		if answer is True:
@@ -376,7 +373,7 @@ class PVMC_MainMenu(Screen):
 
 	def okbuttonClick(self):
 		print "okbuttonClick"
-
+		
 		if self.OldSkin is True and self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
@@ -454,7 +451,7 @@ class PVMC_MainMenu(Screen):
 			if self.Watch == True:
 				self["menuWatch"].setIndex(0)
 				self.Watch = False;
-
+		
 		return
 
 	def Exit(self):
@@ -462,9 +459,8 @@ class PVMC_MainMenu(Screen):
 			self["showiframe"].finishStillPicture()
 		print "OLDSERVICE", self.oldService
 		self.session.nav.playService(self.oldService)
-	
+		
 		if self.isAutostart:
 			self. close()
 		else:
 			self.close((True,) )
-

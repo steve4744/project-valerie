@@ -1,7 +1,7 @@
 from Plugins.Plugin import PluginDescriptor
 from Components.config import config
 from DMC_Global import printl
-		
+
 #------------------------------------------------------------------------------------------
 
 gE2Control = None
@@ -11,19 +11,18 @@ gReasonPV = -1
 def autostart(reason, **kwargs):
 	global gE2Control
 	global gSessionPV
-
+	
 	if kwargs.has_key("session"):
 		gSessionPV = kwargs["session"]
 	printl("Reason: " + str(reason))
 	gReasonPV = reason
-
+	
 	from DMC_Global import E2Control
 	if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
 		gE2Control = E2Control()
 	elif gReasonPV == 1 and gE2Control != None:
 #		gE2Control.stop()
 		gE2Control = None
-	
 
 def PVMC_Wizard(*args, **kwargs):
 	import DMC_Wizard
@@ -54,8 +53,8 @@ def Plugins(**kwargs):
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(58, PVMC_Wizard)))
 	if config.plugins.pvmc.autostart.value == True:
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(63, PVMC_MainMenuAutostart)))
-
+	
 	list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart))
-
- 	return list
+	
+	return list
 
