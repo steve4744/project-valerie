@@ -156,6 +156,8 @@ class E2Control():
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"
 		printl(s)
 		try:
+			import os
+			os.system("chmod 777 " + s)
 			popen(s)
 		except OSError, e: 
 			printl("OSError: " + str(e))
