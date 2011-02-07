@@ -156,7 +156,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.onFirstExecBegin.append(self.refresh)
 
 	def setCustomTitle(self):
-		self.setTitle(_("tvshows"))
+		self.setTitle(_("tv shows"))
 
 	DB_TXT = 1
 	DB_TXD = 2

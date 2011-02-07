@@ -275,7 +275,7 @@ class PVMC_MainMenu(Screen):
 			list.append((_("Synchronize"),     "PVMC_Sync",     "menu_sync", "50"))
 			list.append((_("Live TV"),  "InfoBar",       "menu_tv", "50"))
 			list.append((_("Movies"),   "PVMC_Movies",   "menu_movies", "50"))
-			list.append((_("Series"), "PVMC_Series",   "menu_series", "50"))
+			list.append((_("TV Shows"), "PVMC_Series",   "menu_series", "50"))
 			self["menu"] = List(list, True)
 			
 			self["version"] = Label(config.plugins.pvmc.version.value)
