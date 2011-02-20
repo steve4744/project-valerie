@@ -43,7 +43,7 @@
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/>
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="210,40" zPosition="2" size="540,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_bg-fs8.png"/>
-    <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
+    <widget name="listview_itemsperpage" text="14" position="0,0" zPosition="0" size="1,1"/>
     <widget source="listview" render="Listbox" zPosition="3" position="290,140" size="380,450" scrollbarMode="showNever" transparent="1" backgroundColorSelected="#00272727" foregroundColorSelected="#00FFFFFF">
         <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0, 0), size = (350, 28), flags = RT_HALIGN_LEFT, text = 0) ],
@@ -90,7 +90,7 @@
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/> 
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="210,40" zPosition="2" size="540,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_bg-fs8.png"/>
-    <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
+    <widget name="listview_itemsperpage" text="14" position="0,0" zPosition="0" size="1,1"/>
     <widget source="listview" render="Listbox" zPosition="3" position="290,140" size="380,450" scrollbarMode="showNever" transparent="1" backgroundColorSelected="#00272727" foregroundColorSelected="#00FFFFFF">
         <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0, 0), size = (350, 28), flags = RT_HALIGN_LEFT, text = 0) ],
