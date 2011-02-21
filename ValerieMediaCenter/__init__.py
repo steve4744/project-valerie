@@ -13,6 +13,7 @@ from skin import loadSkin
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from DMC_Global import printl
 from enigma import getDesktop
+import os
 
 printl("Init")
 
@@ -46,7 +47,17 @@ printl("uselocal=" + str(config.plugins.pvmc.uselocal.value))
 config.plugins.pvmc.version           = ConfigText(default = "r001")
 config.plugins.pvmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
 config.plugins.pvmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPath)
-config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
+
+skins = []
+try:
+	for skin in os.listdir(config.plugins.pvmc.skinfolderpath.value):
+		if os.path.isdir(os.path.join(config.plugins.pvmc.skinfolderpath.value, skin)) and skin != ".svn":
+			skins.append(skin)
+except Exception, e:
+	print e
+	skins.append(defaultSkin)
+#config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
+config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
 config.plugins.pvmc.url               = ConfigText(default = defaultURL)
 config.plugins.pvmc.updatexml         = ConfigText(default = defaultUpdateXML)
 
@@ -86,4 +97,3 @@ if skinLoaded == False:
 
 config.plugins.pvmc.save()
 config.save()
-

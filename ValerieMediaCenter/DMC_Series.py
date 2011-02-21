@@ -32,6 +32,7 @@ import os
 from os import path as os_path
 
 from DMC_Global import Showiframe
+from DMC_Global import printl
 from DMC_Player import PVMC_Player 
 from DataElement import DataElement
 import math
@@ -61,6 +62,8 @@ language.addCallback(localeInit)
 
 class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
+	ShowStillPicture = False
+
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		InfoBarBase.__init__(self)
@@ -68,8 +71,20 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.showiframe = Showiframe()
 		
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
-		self.session.nav.stopService()	
-
+		self.session.nav.stopService()
+		
+		self.APILevel = 1 
+		try:
+			self.APILevel = int(DataElement().getDataPreloading(self, "API"))
+		except Exception, ex:
+			printl(str(ex))
+			self.APILevel = 1
+		
+		printl("APILevel=" + str(self.APILevel))
+		
+		if self.APILevel >= 2:
+			self["API"] = DataElement()
+		
 		self.isVisible = True
 		self.inSeries = True
 		self.inSeasons = False
@@ -81,31 +96,36 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.episodesdb = {}
 		
 		list = []
-		self["listview"] = List(list, True)
+		if self.APILevel == 1:
+			self["listview"] = MenuList(list)
+		elif self.APILevel >= 2:
+			self["listview"] = List(list, True)
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
-		self["otitle"] 				= Label()
+		if self.APILevel == 1:
+			self["otitle"] 				= Label()
 		self["tag"] 				= Label()
 		self["shortDescription"] 	= Label()
-		self["director"] 			= Label()
-		self["writer"] 				= Label()
+		if self.APILevel == 1:
+			self["director"] 			= Label()
+			self["writer"] 				= Label()
 		self["genre"] 				= Label()
 		self["year"] 				= Label()
 		self["runtime"] 			= Label()
 		
-		self["total"] = Label()
-		self["current"] = Label()
-		
-		self.ShowStillPicture = False
+		if self.APILevel >= 2:
+			self["total"] = Label()
+			self["current"] = Label()
 		
 		try:
 			from StillPicture import StillPicture
-			self["backdrop"] = StillPicture()
+			self["backdrop"] = StillPicture(session)
 			self.ShowStillPicture = True
 		except Exception, ex:
 			print ex
 		
-		self["listview_itemsperpage"] = DataElement()
+		if self.APILevel >= 2:
+			self["listview_itemsperpage"] = DataElement()
 		
 		for i in range(10):
 			stars = "star" + str(i)
@@ -268,8 +288,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		elif self.inEpisode:
 			list.sort()
 			self["listview"].setList(list)
-			
-		self["listview"].setIndex(0)
+		
+		if self.APILevel >= 2:
+			self["listview"].setIndex(0)
 		self.refresh()
 
 	def loadSeriesDB(self):
@@ -354,8 +375,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		elif self.inEpisode:
 			list.sort()
 			self["listview"].setList(list)
-			
-		self["listview"].setIndex(0)
+		
+		if self.APILevel >= 2:
+			self["listview"].setIndex(0)
 		self.refresh()
 
 	def setText(self, name, value, ignore=False, what=None):
@@ -393,27 +415,21 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 				
 				self.setText("title", selection[0])
-				self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
+				if self.APILevel == 1:
+					self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
 				self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
 				
 				self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what=_("Overview"))
 				
-				if self.moviedb[selection[1]].has_key("Directors"):
-					self.setText("director", self.moviedb[selection[1]]["Directors"])
-				if self.moviedb[selection[1]].has_key("Writers"):
-					self.setText("writer", self.moviedb[selection[1]]["Writers"])
+				if self.APILevel == 1:
+					if self.moviedb[selection[1]].has_key("Directors"):
+						self.setText("director", self.moviedb[selection[1]]["Directors"])
+					if self.moviedb[selection[1]].has_key("Writers"):
+						self.setText("writer", self.moviedb[selection[1]]["Writers"])
 				
 				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
 				self.setText("year", str(self.moviedb[selection[1]]["Year"]))
 				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
-				
-				#itemsPerPage = int(self["listview_itemsperpage"].getData())
-				#itemsTotal = self["listview"].count()
-				#print "itemsPerPage", itemsPerPage
-				#pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
-				#pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
-				#self.setText("total", "Total movies: " + str(itemsTotal))
-				#self.setText("current", str(pageCurrent) + "/" + str(pageTotal))
 				
 				for i in range(int(self.moviedb[selection[1]]["Popularity"])):
 					if self["star" + str(i)].instance is not None:
@@ -431,34 +447,36 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
 				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + ' ' + _("min"))
 			
-			itemsPerPage = int(self["listview_itemsperpage"].getData())
-			itemsTotal = self["listview"].count()
-			#print "itemsPerPage", itemsPerPage
-			pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
-			pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
-			if self.inSeries:
-				self.setText("total", _("Total tv shows:") + ' ' + str(itemsTotal))
-			elif self.inSeasons:
-				self.setText("total", _("Total seasons:") + ' ' + str(itemsTotal))
-			elif self.inEpisode:
-				self.setText("total", _("Total episodes:") + ' ' + str(itemsTotal))
-			self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
+			if self.APILevel >= 2:
+				itemsPerPage = int(self["listview_itemsperpage"].getData())
+				itemsTotal = self["listview"].count()
+				#print "itemsPerPage", itemsPerPage
+				pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
+				pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
+				if self.inSeries:
+					self.setText("total", _("Total tv shows:") + ' ' + str(itemsTotal))
+				elif self.inSeasons:
+					self.setText("total", _("Total seasons:") + ' ' + str(itemsTotal))
+				elif self.inEpisode:
+					self.setText("total", _("Total episodes:") + ' ' + str(itemsTotal))
+				self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 
 	def up(self):
 		print "PVMC_Series::up"
-		#self["listview"].up()
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def up_first(self):
 		print "PVMC_Series::up_first"
-		#self["listview"].up()
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def up_quick(self):
 		print "PVMC_Series::up_quick"
-		self["listview"].selectPrevious()
+		if self.APILevel == 1:
+			self["listview"].up()
+		elif self.APILevel >= 2:
+			self["listview"].selectPrevious()
 		if self.FAST_STILLPIC is False:
 			self.refresh(False)
 		else:
@@ -466,51 +484,48 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 
 	def down(self):
 		print "PVMC_Series::down"
-		#self["listview"].down()
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def down_first(self):
 		print "PVMC_Series::down_first"
-		#self["listview"].down()
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def down_quick(self):
 		print "PVMC_Series::down_quick"
-		self["listview"].selectNext()
+		if self.APILevel == 1:
+			self["listview"].down()
+		elif self.APILevel >= 2:
+			self["listview"].selectNext()
 		if self.FAST_STILLPIC is False:
 			self.refresh(False)
 		else:
 			self.refresh()
 
 	def leftUp(self):
-		itemsPerPage = int(self["listview_itemsperpage"].getData())
-		itemsTotal = self["listview"].count()
-		index = self["listview"].getIndex() - itemsPerPage
-		if index < 0:
-			index = 0
-		self["listview"].setIndex(index)
-		#self["listview"].pageUp()
+		if self.APILevel == 1:
+			self["listview"].pageUp()
+		elif self.APILevel >= 2:
+			itemsPerPage = int(self["listview_itemsperpage"].getData())
+			itemsTotal = self["listview"].count()
+			index = self["listview"].getIndex() - itemsPerPage
+			if index < 0:
+				index = 0
+			self["listview"].setIndex(index)
 		self.refresh()
 
 	def rightDown(self):
-		itemsPerPage = int(self["listview_itemsperpage"].getData())
-		itemsTotal = self["listview"].count()
-		index = self["listview"].getIndex() + itemsPerPage
-		if index >= itemsTotal:
-			index = itemsTotal - 1
-		self["listview"].setIndex(index)
-		#self["listview"].pageDown()
+		if self.APILevel == 1:
+			self["listview"].pageDown()
+		elif self.APILevel >= 2:
+			itemsPerPage = int(self["listview_itemsperpage"].getData())
+			itemsTotal = self["listview"].count()
+			index = self["listview"].getIndex() + itemsPerPage
+			if index >= itemsTotal:
+				index = itemsTotal - 1
+			self["listview"].setIndex(index)
 		self.refresh()
-
-	#def visibility(self, show):
-	#	if self.isVisible is True and show is False:
-	#		self.isVisible = False
-	#		self.hide()
-	#	elif self.isVisible is False and show is True:
-	#		self.isVisible = True
-	#		self.show()
 
 	def KeyOk(self):
 		selection = self["listview"].getCurrent()
@@ -560,20 +575,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					if os.path.isfile(playbackPath):
 						self.showiframe.finishStillPicture()
 						
-						playbackList = []
 						self.currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
 						self.currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
-						i = 0
-						while True:
-							key = self.currentSeasonNumber *100 + self.currentEpisodeNumber + i
-							if key in self.episodesdb:
-								d = self.episodesdb[key]
-								playbackList.append( (self.episodesdb[key]["Path"], str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + self.episodesdb[key]["Title"]), )
-								i = i + 1
-							else:
-								break
 						
-						print "PLAYBACK: ", playbackList
 						if config.plugins.pvmc.trakt.value is True:
 							self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
 							self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
@@ -581,8 +585,40 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
 							self.trakt.setTheTvDbId(self.episodesdb[selection[1]]["TheTvDb"])
 							self.trakt.send()
-						self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
-						#self.visibility(False)
+						
+						isDVD = False
+						dvdFilelist = [ ]
+						dvdDevice = None
+						
+						if self.episodesdb[selection[1]]["Path"].lower().endswith(u"ifo"): # DVD
+							isDVD = True
+							dvdFilelist.append(str(self.episodesdb[selection[1]]["Path"].replace(u"/VIDEO_TS.IFO", "").strip()))
+						elif self.episodesdb[selection[1]]["Path"].lower().endswith(u"iso"): # DVD
+							isDVD = True
+							dvdFilelist.append(self.episodesdb[selection[1]]["Path"])
+						
+						if isDVD:
+							try:
+								from Plugins.Extensions.DVDPlayer.plugin import DVDPlayer
+								# when iso -> filelist, when folder -> device
+								self.session.openWithCallback(self.leaveMoviePlayer, DVDPlayer, dvd_device = dvdDevice, dvd_filelist = dvdFilelist)
+							except Exception, ex:
+								print "KeyOk::", ex
+						else:
+							playbackList = []
+							i = 0
+							while True:
+								key = self.currentSeasonNumber *100 + self.currentEpisodeNumber + i
+								if key in self.episodesdb:
+									d = self.episodesdb[key]
+									playbackList.append( (self.episodesdb[key]["Path"], str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + self.episodesdb[key]["Title"]), )
+									i = i + 1
+								else:
+									break
+							
+							print "PLAYBACK: ", playbackList
+							
+							self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
 					else:
 						self.session.open(MessageBox, _("Not found!\n") + self.episodesdb[selection[1]]["Path"] + _("\n\nPlease make sure that your drive is connected/mounted."), type = MessageBox.TYPE_ERROR)
 

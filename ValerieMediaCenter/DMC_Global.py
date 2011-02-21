@@ -1,10 +1,24 @@
+# -*- coding: utf-8 -*-
+
+from os import makedirs, environ, popen, system
+import sys
+import traceback
+
 from Components.config import config
 
-from os import environ, popen, makedirs
-from sys import version_info
-import sys, traceback
+from DataElement import DataElement
 
 #------------------------------------------------------------------------------------------
+
+def getAPILevel(parent):
+	APILevel = 1
+	try:
+		APILevel = int(DataElement().getDataPreloading(parent, "API"))
+	except Exception, ex:
+		printl(str(ex))
+		APILevel = 1
+	return APILevel
+
 #------------------------------------------------------------------------------------------
 
 def getBoxtype():
@@ -100,8 +114,8 @@ class Showiframe():
 			return False
 		
 		libname = "libshowiframe.so.0.0.0"
-		#if getBoxtype()[0] == "Azbox":
-		#	libname = "libshowiframe.az.so.0.0.0"
+		if getBoxtype()[0] == "Azbox":
+			libname = "libshowiframe.az.so.0.0.0"
 		
 		print "LIB_PATH:", config.plugins.pvmc.pluginfolderpath.value + libname
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
@@ -157,7 +171,7 @@ class E2Control():
 		printl(s)
 		try:
 			import os
-			os.system("chmod 777 " + s)
+			system("chmod 777 " + s)
 			popen(s)
 		except OSError, e: 
 			printl("OSError: " + str(e))

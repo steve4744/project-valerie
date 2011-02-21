@@ -59,6 +59,14 @@ def checkDefaults():
 		print(" - Created\n")
 	
 	try: 
+		print("Check "+"/hdd/valerie/dreamscene")
+		os.makedirs("/hdd/valerie/dreamscene") 
+	except OSError, e:
+		print(" - OK\n")
+	else:
+		print(" - Created\n")
+	
+	try: 
 		print("Check "+"/tmp/valerie/cache")
 		os.makedirs("/tmp/valerie/cache") 
 	except OSError, e:

@@ -232,7 +232,7 @@ class MediaInfo(object):
             print "dirs=", dirs
             self.SearchString = dirs[len(dirs) - 2]
             print ":DVD:", Utf8.utf8ToLatin(self.SearchString)
-            return True
+            #return True
         
         #################### DVD ######################
         
