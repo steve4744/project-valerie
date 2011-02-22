@@ -269,8 +269,8 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		</screen>"""
 
 	def __init__(self, session, args = 0):
-		self.session = session
 		Screen.__init__(self, session)
+		self.session = session
 		
 		self.APILevel = getAPILevel(self)
 		printl("APILevel=" + str(self.APILevel))
@@ -374,6 +374,7 @@ class ProjectValerieSyncSettings(Screen):
 		</screen>"""
 
 	def __init__(self, session, args = 0):
+		Screen.__init__(self, session)
 		self.session = session
 		
 		self.APILevel = getAPILevel(self)

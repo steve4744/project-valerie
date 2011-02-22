@@ -39,12 +39,16 @@ class DataElement(Renderer):
 	def getDataPreloading(self, screen, name):
 		try:
 			for entry in skin.dom_skins:
+				#print entry[0], " - ", config.plugins.pvmc.skinfolderpath.value
 				if entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
 					for element in entry[1]:
+						#print element
 						if 'name' in element.keys() and element.get('name') == screen.skinName:
+							#print element.get('name')
 							for child in element:
 								if 'name' in child.keys() and child.get('name') == name:
 									return child.get('text')
-		except:
+		except Exception, ex:
+			print ex
 			return ""
 		return ""
