@@ -25,7 +25,7 @@ class PVMC_Wizard(WizardLanguage):
 		self["textCenter"] = Label()
 		self["textBottom"] = Label()
 		
-		self["showiframe"] = StillPicture()
+		self["showiframe"] = StillPicture(session)
 
 	def autostart(self, selection = None):
 		if selection is None:
@@ -55,6 +55,11 @@ class PVMC_Wizard(WizardLanguage):
 		printl("config.plugins.pvmc.uselocal -> " + str(config.plugins.pvmc.uselocal.value))
 
 	def saveConfig(self):
+		printl("saveConfig")
 		config.plugins.pvmc.showwizard.value = False
 		config.save() 
 		printl("Saved !")
+
+	def finishUp(self):
+		printl("finishUp")
+		self["showiframe"].finishStillPicture()
