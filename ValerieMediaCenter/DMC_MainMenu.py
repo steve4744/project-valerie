@@ -198,17 +198,16 @@ class PVMC_MainMenu(Screen):
 	ShowStillPicture = False
 
 	def __init__(self, isAutostart, session):
-		printl("PVMC_MainMenu:__init__")
-		print "PVMC_MainMenu:__init__", isAutostart
+		printl("-> isAutostart=" + str(isAutostart), self)
 		
 		Screen.__init__(self, session)
 		self.isAutostart = isAutostart
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
-		print "OLDSERVICE", self.oldService
+		printl("self.oldService=" + str(self.oldService), self)
 		self.session.nav.stopService()
 
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("self.APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 
@@ -218,7 +217,7 @@ class PVMC_MainMenu(Screen):
 				self["showiframe"] = StillPicture(session)
 				self.ShowStillPicture = True
 			except Exception, ex:
-				print ex
+				printl(str(ex), self)
 		
 		if self.APILevel >= 2:
 			self.UseDreamScene = ""
@@ -228,8 +227,8 @@ class PVMC_MainMenu(Screen):
 				printl(str(ex))
 				self.UseDreamScene = ""
 			
-			printl("UseDreamScene=" + str(self.UseDreamScene))
-			if len(self.UseDreamScene) > 0:
+			printl("self.UseDreamScene=" + str(self.UseDreamScene), self)
+			if len(self.UseDreamScene) > 4:
 				self["stillpicture_usedreamscene"] = DataElement()
 		
 		if self.APILevel == 1:
@@ -290,7 +289,7 @@ class PVMC_MainMenu(Screen):
 		
 		if config.plugins.pvmc.checkforupdate.value == True:
 			self.onFirstExecBegin.append(self.checkForUpdate)
-		
+		printl("<-", self)
 
 
 	def onExec(self):
@@ -300,20 +299,19 @@ class PVMC_MainMenu(Screen):
 			self["menu"].setIndex(2)
 
 	def onExecStartScript(self):
-		printl("PVMC_MainMenu::onExecStartScript ->")
+		printl("->", self)
 		try:
 			import os
 			os.system("chmod 777 /hdd/valerie/start.sh")
 			os.system("/bin/sh /hdd/valerie/start.sh")
 		except Exception, e:
-			printl("Exception: " + str(e))
-		printl("PVMC_MainMenu::onExecStartScript <-")
+			printl("Exception: " + str(e),self)
 		
 		if self.APILevel >= 2 and self.ShowStillPicture is True and len(self.UseDreamScene) > 0:
 			printl("Using DreamScene at " + self.UseDreamScene)
 			if os.access(self.UseDreamScene, os.F_OK) is True:
 				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
-			#self["showiframe"].setStillPicture("/mnt/nfs/Development/1/blue.mp4", True, False, True)
+		printl("<-",self)
 
 	def power(self):
 		import Screens.Standby
@@ -321,9 +319,9 @@ class PVMC_MainMenu(Screen):
 
 	def checkForUpdate(self):
 		box = getBoxtype()
-		printl(box)
+		printl("box=" + str(box), self)
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
-		printl("Checking URL: " + self.url) 
+		printl("Checking URL: " + str(self.url), self) 
 		try:
 			opener = urllib2.build_opener()
 			box = getBoxtype()
@@ -340,30 +338,29 @@ class PVMC_MainMenu(Screen):
 			self.remoteurl = ""
 			for url in urls:
 				if url.getAttribute("arch") == box[2]:
-					printl(url.getAttribute("version"))
 					if url.getAttribute("version") is None or url.getAttribute("version") == box[3]:
 						self.remoteurl = url.childNodes[0].data
 			
-			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl))
+			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
 				self.session.openWithCallback(self.startUpdate, MessageBox,_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, MessageBox.TYPE_YESNO)
 		
 		except Exception, e:
-			print """Could not download HTTP Page (%s)""" % e
+			printl("""Could not download HTTP Page (%s)""" % (e), self)
 
 	def startUpdate(self, answer):
 		if answer is True:
 			self.session.open(PVMC_Update, self.remoteurl)
 
 	def Error(self, error):
-		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error),  MessageBox.TYPE_INFO)
+		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error), MessageBox.TYPE_INFO)
 
 	def showStillPicture(self):
 		return
 
 	def okbuttonClick(self):
-		print "okbuttonClick"
+		printl("", self)
 		
 		if self.APILevel == 1 and self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
@@ -378,7 +375,7 @@ class PVMC_MainMenu(Screen):
 					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
 		else:
 			selection = self["menu"].getCurrent()
-			print "SELECTION", selection
+			printl("selection=" + str(selection), self)
 			if selection is not None:
 				if selection[1] == "PVMC_Watch":
 					self["menuWatch"].setIndex(1)
@@ -403,7 +400,7 @@ class PVMC_MainMenu(Screen):
 						isInstalled = True
 					except Exception, ex:
 						isInstalled = False
-						print "Exception: ", ex
+						printl("Exception: " + str(ex), self)
 					if isInstalled:
 						self.session.openWithCallback(self.showStillPicture, ProjectValerieSync)
 					else:
@@ -456,7 +453,7 @@ class PVMC_MainMenu(Screen):
 	def Exit(self):
 		if self.APILevel >= 2 and self.ShowStillPicture is True:
 			self["showiframe"].finishStillPicture()
-		print "OLDSERVICE", self.oldService
+		printl("self.oldService=" + str(self.oldService), self)
 		self.session.nav.playService(self.oldService)
 		
 		if self.isAutostart:

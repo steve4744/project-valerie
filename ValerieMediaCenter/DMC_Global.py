@@ -100,12 +100,12 @@ class Showiframe():
 		try:
 			self.load()
 		except Exception, ctypeEx: 
-			print "ARRRGH!! SHOWIFRAME FAILED", ctypeEx
+			printl("ARRRGH!! SHOWIFRAME FAILED " + str(ctypeEx), self)
 			
 
 	def load(self):
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
-		print "SYS.PATH", sys.path
+		#printl("SYS.PATH=" + str(sys.path), self)
 		try:
 			self.ctypes = __import__("_ctypes")
 		except Exception, e:
@@ -117,7 +117,7 @@ class Showiframe():
 		if getBoxtype()[0] == "Azbox":
 			libname = "libshowiframe.az.so.0.0.0"
 		
-		print "LIB_PATH:", config.plugins.pvmc.pluginfolderpath.value + libname
+		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self)
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
@@ -141,50 +141,60 @@ class Showiframe():
 			self.ctypes.call_function(self.finishShowSinglePic, ())
 			#dlclose(self.showiframe)
 
-def printl(string):
-	print "[Project Valerie] ", string
+def printl(string, parent=None):
+	if parent is None:
+		print "[Project Valerie] ", string
+	else:
+		classname = str(parent.__class__).rsplit(".", 1)
+		if len(classname) == 2:
+			classname = classname[1]
+			classname = classname.rstrip("\'>")
+			classname += "::"
+			
+		else:
+			classname = ""
+		print "[Project Valerie] " + classname + str(sys._getframe(1).f_code.co_name), string
 
 #------------------------------------------------------------------------------------------
 
 class E2Control():
 	def __init__(self):
-		printl("E2Control::__init__ ->")
+		printl("->", self)
 		
 		try:
 			makedirs("/hdd/valerie")
 		except OSError, e: 
-			printl("OSError: " + str(e))
+			printl("OSError: " + str(e), self)
 		try:
 			makedirs("/hdd/valerie/episodes")
 		except OSError, e: 
-			printl("OSError: " + str(e))
+			printl("OSError: " + str(e), self)
 		try:
 			makedirs("/hdd/valerie/media")
 		except OSError, e: 
-			printl("OSError: " + str(e))
+			printl("OSError: " + str(e), self)
 		
 		self.close()
 		
 		box = getBoxtype()
 		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"
-		printl(s)
+		printl(s, self)
 		try:
-			import os
 			system("chmod 777 " + s)
 			popen(s)
 		except OSError, e: 
-			printl("OSError: " + str(e))
+			printl("OSError: " + str(e), self)
 		
-		printl("E2Control::__init__ <-")
+		printl("<-", self)
 
 	def close(self):
-		printl("E2Control::close ->")
+		printl("->", self)
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control stop"
-		printl(s)
+		printl(s, self)
 		try:
 			popen(s)
 		except OSError, e: 
-			printl("OSError: " + str(e))
-		printl("E2Control::close <-")
+			printl("OSError: " + str(e), self)
+		printl("<-", self)
 

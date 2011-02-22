@@ -1,7 +1,10 @@
 from Components.Renderer.Renderer import Renderer
 from Components.config import *
 from enigma import eWidget, eCanvas, eRect
+
 import skin
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 class eDataElement(eWidget):
 	def __init__(self, parent):
@@ -23,7 +26,7 @@ class DataElement(Renderer):
 		return self.data
 
 	def setData(self, value):
-		print "setData", value
+		printl("value=" + str(value), self)
 		self.data = value
 		return
 
@@ -31,12 +34,16 @@ class DataElement(Renderer):
 		#print "postWidgetCreate", instance
 		self.sequence = None
 		
-		for (attrib, value) in self.skinAttributes:
-			if attrib == "text":
-				self.setData(value)
+		if self.skinAttributes is not None:
+			for (attrib, value) in self.skinAttributes:
+				if attrib == "text":
+					self.setData(value)
+		else:
+			printl("self.skinAttributes is None!!!", self)
 
 
 	def getDataPreloading(self, screen, name):
+		printl("screen=" + str(screen.skinName) + " name=" + str(name), self)
 		try:
 			for entry in skin.dom_skins:
 				#print entry[0], " - ", config.plugins.pvmc.skinfolderpath.value
@@ -49,6 +56,6 @@ class DataElement(Renderer):
 								if 'name' in child.keys() and child.get('name') == name:
 									return child.get('text')
 		except Exception, ex:
-			print ex
+			printl(str(ex), self)
 			return ""
 		return ""

@@ -1,9 +1,10 @@
-from Components.Renderer.Renderer import Renderer
 
 from enigma import eWidget, eLabel, eCanvas, eRect, eServiceReference, iPlayableService, eTimer
-from DMC_Global import Showiframe
-
+from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
+
+from DMC_Global import Showiframe
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 class eStillPicture(eWidget):
 	def __init__(self, parent):
@@ -16,7 +17,7 @@ class eStillPicture(eWidget):
 		pass
 
 class StillPicture(Renderer, InfoBarBase):
-	GUI_WIDGET = eStillPicture #eLabel
+	GUI_WIDGET = eStillPicture
 	
 	element = False
 	
@@ -26,7 +27,7 @@ class StillPicture(Renderer, InfoBarBase):
 	session = None
 	poll_timer = None
 
-	def __init__(self, session = None):
+	def __init__(self, session):
 		Renderer.__init__(self)
 		
 		self.showiframe = Showiframe()
@@ -37,6 +38,7 @@ class StillPicture(Renderer, InfoBarBase):
 		InfoBarBase.__init__(self)
 
 	def addEventTracker(self):
+		printl("", self)
 		self.session.nav.event.append(self.event)
 		#self.eventSafe = self.session.nav.event
 		#self.session.nav.event = []
@@ -45,6 +47,7 @@ class StillPicture(Renderer, InfoBarBase):
 		#print "addEventTracker.session.nav.event", self.session.nav.event
 	
 	def removeEventTracker(self):
+		printl("", self)
 		self.session.nav.event.remove(self.event)
 		#print "addEventTracker.eventSafe", self.eventSafe
 		#print "addEventTracker.session.nav.event", self.session.nav.event
@@ -64,17 +67,17 @@ class StillPicture(Renderer, InfoBarBase):
 			pos = seek.getPlayPosition()
 
 	def pollStart(self):
-		print "pollStart"
+		printl("", self)
 		self.addEventTracker()
 		self.poll_timer.start(500)
 
 	def pollStop(self):
-		print "pollStop"
+		printl("", self)
 		self.removeEventTracker()
 		self.poll_timer.stop()
 
 	def __evEOF(self):
-		print "__evEOF"
+		printl("", self)
 		self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
 		#self.showStillPicture()
 
