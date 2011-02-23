@@ -57,5 +57,18 @@ class DataElement(Renderer):
 									return child.get('text')
 		except Exception, ex:
 			printl(str(ex), self)
-			return ""
+			
+			#Maybe OpenPli
+			try:
+				for entry in skin.dom_screens:
+					for element in entry[0]:
+						print element
+						if 'name' in element.keys() and element.get('name') == screen.skinName:
+							print element.get('name')
+							for child in element:
+								if 'name' in child.keys() and child.get('name') == name:
+									return child.get('text')
+			except Exception, ex:
+				printl(str(ex), self)
+				return ""
 		return ""
