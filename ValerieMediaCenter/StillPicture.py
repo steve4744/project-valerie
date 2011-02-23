@@ -35,7 +35,7 @@ class StillPicture(Renderer, InfoBarBase):
 		self.poll_timer = eTimer()
 		self.poll_timer.callback.append(self.poll)
 		
-		InfoBarBase.__init__(self)
+		
 
 	def addEventTracker(self):
 		printl("", self)
@@ -126,6 +126,7 @@ class StillPicture(Renderer, InfoBarBase):
 					self.showiframe.showStillpicture(self.getStillpicture())
 				elif self.isLoop is True:
 					print "showStillPicture", "loop", self.getStillpicture()
+					ServiceEventTracker.setActiveInfoBar(self, None, None)
 					self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()))
 					self.pollStart()
 			except Exception, ex:
@@ -140,6 +141,7 @@ class StillPicture(Renderer, InfoBarBase):
 				elif self.isLoop is True:
 					self.pollStop()
 					self.session.nav.stopService()
+					ServiceEventTracker.popActiveInfoBar()
 			except Exception, ex:
 				print ex
 
