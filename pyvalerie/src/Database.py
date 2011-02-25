@@ -12,6 +12,7 @@ import Genres
 from MediaInfo import MediaInfo
 import Utf8
 
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 class Database(object):
 
@@ -158,6 +159,7 @@ class Database(object):
 		#	return False
 
 	def remove(self, media):
+		printl("isMovie=" + str(media.isMovie) + "isSerie=" + str(media.isSerie) + "isEpisode=" + str(media.isEpisode), self)
 		if media.isMovie:
 			if self.dbMovies.has_key(media.ImdbId) is True:
 				del(self.dbMovies[media.ImdbId])

@@ -394,7 +394,7 @@ class Sync():
 				
 			return (elementInfo, )
 		
-		elif elementInfo.isSerie or elementInfo.isEpisode:
+		elif elementInfo.isSerie:
 			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
 			if tmp is None:
 				print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"

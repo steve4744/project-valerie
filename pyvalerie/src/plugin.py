@@ -658,7 +658,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 
 	def update(self):
 		if type(self.element) is MediaInfo:
-			element = self.manager.syncElement(None, None, None, None, None, self.element)
+			element = self.manager.syncElement(None, None, None, None, self.element.isEpisode, self.element)
 			if element is not None:
 				if len(element) == 2:
 					self.elementParent = element[0]
@@ -763,6 +763,7 @@ class ProjectValerieSyncManager(Screen):
 	def load(self, type, param=None):
 		from FailedEntry import FailedEntry
 		self.currentCategory = type
+		self.currentParam = param
 		list = []
 		entries = self.manager.getAll(type, param)
 		if type == Manager.FAILED:
@@ -805,7 +806,7 @@ class ProjectValerieSyncManager(Screen):
 				print "elementChanged - Changed"
 				self.manager.replace(self.oldElement, newElement)
 				index = self["listview"].getIndex()
-				self.load(self.currentCategory)
+				self.load(self.currentCategory, self.currentParam)
 				if index >= self["listview"].count():
 					index = self["listview"].count() - 1
 				self["listview"].setIndex(index)

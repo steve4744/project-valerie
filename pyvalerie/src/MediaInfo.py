@@ -475,15 +475,16 @@ class MediaInfo(object):
         ustr += u"\n\tResolution:   " + self.Resolution
         ustr += u"\n\tSound:        " + self.Sound
         #ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
-        ustr += "\n\tDirectors:    " + unicode(self.Directors)
-        ustr += "\n\tWriters:      " + unicode(self.Writers)
+        #ustr += "\n\tDirectors:    " + unicode(self.Directors)
+        #ustr += "\n\tWriters:      " + unicode(self.Writers)
         ustr += "\n\tRuntime:      " + unicode(self.Runtime)
         ustr += "\n\tGenres:       " + unicode(self.Genres)
         ustr += "\n\tTagLine:      " + self.Tag
         ustr += "\n\tPopularity:   " + unicode(self.Popularity)
         ustr += "\n\tPlot:         " + self.Plot
-        ustr += "\n\tSeason:       " + unicode(self.Season)
-        ustr += "\n\tEpisode:      " + unicode(self.Episode)
+        if self.isEpisode:
+            ustr += "\n\tSeason:       " + unicode(self.Season)
+            ustr += "\n\tEpisode:      " + unicode(self.Episode)
         ustr += "\n\n"
         #ustr += "\n\tPoster:       " + unicode(self.Poster)
         #ustr += "\n\tBackdrop:     " + unicode(self.Backdrop)

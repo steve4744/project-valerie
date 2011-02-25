@@ -214,7 +214,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					size = 9
 				
 				for i in range(1, linesLen, size):
-					print lines[i+0]
+					#print lines[i+0]
 					if lines[i+0] == "EOF":
 						break
 					d = {} 

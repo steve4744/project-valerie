@@ -67,21 +67,26 @@ class Manager(object):
 		printl("SEARCH=" + str(element.SearchString), self)
 		return MobileImdbComProvider().getAlternatives(element)
 
-	def syncElement(self, path, filename, extension, imdbid, istvshow, element=None):
+	def syncElement(self, path, filename, extension, imdbid, istvshow, oldelement=None):
 		printl(str(path) + " " + str(filename) + " " + str(extension) + " " + str(imdbid) + " " + str(istvshow), self)
 		from sync import Sync
-		if element is None:
+		
+		element = None
+		
+		if oldelement is None:
 			element = MediaInfo(path, filename, extension)
 			element.parse()
 			element.ImdbId = imdbid
-			if istvshow:
-				element.isSerie = True
-				element.isMovie = False
-			else:
-				element.isSerie = False
-				element.isMovie = True
 		else:
-			printl("Update element=" + str(element), self)
+			element = oldelement.copy()
+		
+		if istvshow:
+			element.isSerie = True
+			element.isMovie = False
+		else:
+			element.isSerie = False
+			element.isMovie = True
+		
 		results = Sync().syncWithId(element)
 		if results is not None:
 			return results
