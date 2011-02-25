@@ -78,7 +78,10 @@ class TheTvDbProvider(object):
             eYear = self.getElem(elem, "FirstAired")
             if eYear is not None and eYear.data is not None and len(eYear.data) > 0:
                 strImdb = eYear.data
-                info.Year = int(strImdb[0:strImdb.find(u"-")])
+                date = strImdb.split(u"-")
+                info.Year = int(date[0])
+                info.Month = int(date[1])
+                info.Day = int(date[2])
                 return info
         except Exception, ex:
             print "TheTvDbProvider::getFirstAired: ", ex

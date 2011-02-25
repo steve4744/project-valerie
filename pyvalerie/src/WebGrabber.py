@@ -77,11 +77,13 @@ def getXml(url):
             try:
                 decodedXml = minidom.parseString(rawXml)
             except Exception, ex:
-                decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))    
+                print "minidom.parseString as latin-1 failed, retrieing as utf-8"
+                decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
     except Exception, ex:
+        print "minidom.parseString as latin-1 and utf-8 failed, ignoring"
         print "URL", Utf8.utf8ToLatin(url)
-        print "WebGrabber.getXml: ", ex
-        
+        print "rawXml: <" + str(type(rawXml)) + ">", rawXml
+        print "WebGrabber.getXml: <" + str(type(ex)) + ">", ex
     return decodedXml
      
 def getHtml(url):

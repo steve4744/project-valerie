@@ -90,8 +90,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.inSeasons = False
 		self.inEpisode = False
 		self.rememeberSeriesIndex = 0
+		self.rememeberSeasonIndex = 0
 		self.selectedSeries = 0
 		self.serieslist = []
+		self.seasonlist = []
 		self.moviedb = {}
 		self.episodesdb = {}
 		
@@ -191,9 +193,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		entrys =[]
 		try:
 			if self.inSeries:
-				self.serieslist=[]
+				self.serieslist = []
 				db = open("/hdd/valerie/tvshows.txd").read()[:-1]
 			elif self.inSeasons:
+				self.seasonlist = []
 				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txd").read()[:-1]
 			
 			if not self.inEpisode:
@@ -203,22 +206,40 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			
 			if self.inSeries:
 				#self.moviedb.clear()
-				for i in range(1, linesLen, 9):
+				
+				size = 9
+				if int(version) >= 3:
+					size = 11
+				else:
+					size = 9
+				
+				for i in range(1, linesLen, size):
 					print lines[i+0]
 					if lines[i+0] == "EOF":
 						break
 					d = {} 
-					d["ImdbId"]    = lines[i+0]
-					d["TheTvDb"]   = lines[i+1]
-					d["Title"]     = lines[i+2]
-					d["Tag"]       = lines[i+3]
-					d["Year"]      = lines[i+4]
-					
-					d["Plot"]       = lines[i+5]
-					d["Runtime"]    = lines[i+6]
-					d["Popularity"] = lines[i+7]
-					
-					d["Genres"] = lines[i+8]
+					if int(version) >=3:
+						d["ImdbId"]     = lines[i+0]
+						d["TheTvDb"]    = lines[i+1]
+						d["Title"]      = lines[i+2]
+						d["Tag"]        = lines[i+3]
+						d["Year"]       = int(lines[i+4])
+						d["Month"]      = int(lines[i+5])
+						d["Day"]        = int(lines[i+6])
+						d["Plot"]       = lines[i+7]
+						d["Runtime"]    = lines[i+8]
+						d["Popularity"] = lines[i+9]
+						d["Genres"] = lines[i+10]
+					else:
+						d["ImdbId"]     = lines[i+0]
+						d["TheTvDb"]    = lines[i+1]
+						d["Title"]      = lines[i+2]
+						d["Tag"]        = lines[i+3]
+						d["Year"]       = int(lines[i+4])
+						d["Plot"]       = lines[i+5]
+						d["Runtime"]    = lines[i+6]
+						d["Popularity"] = lines[i+7]
+						d["Genres"]     = lines[i+8]
 					
 					# deprecated
 					d["Directors"] = ""
@@ -232,25 +253,43 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					
 			elif self.inSeasons:
 				self.episodesdb.clear()
-				for i in range(1, linesLen, 12):
+				
+				size = 12
+				if int(version) >= 3:
+					size = 14
+				else:
+					size = 12
+				
+				for i in range(1, linesLen, size):
 					if lines[i+0] == "EOF":
 						break
 					d = {} 
-					d["TheTvDb"]    = lines[i+0]
-					d["Title"]     = lines[i+1]
-					d["Tag"]       = ""
-					d["Year"]      = lines[i+2]
-					
-					d["Path"] = lines[i+3] + "/" + lines[i+4] + "." + lines[i+5]
-					
-					d["Season"]       = int(lines[i+6])
-					d["Episode"]      = int(lines[i+7])
-					
-					d["Plot"]       = lines[i+8]
-					d["Runtime"]    = lines[i+9]
-					d["Popularity"] = lines[i+10]
-					
-					d["Genres"] = lines[i+11]
+					if int(version) >=3:
+						d["TheTvDb"]    = lines[i+0]
+						d["Title"]      = lines[i+1]
+						d["Tag"]        = ""
+						d["Year"]       = int(lines[i+2])
+						d["Month"]      = int(lines[i+3])
+						d["Day"]        = int(lines[i+4])
+						d["Path"]       = lines[i+5] + "/" + lines[i+6] + "." + lines[i+7]
+						d["Season"]     = int(lines[i+8])
+						d["Episode"]    = int(lines[i+9])
+						d["Plot"]       = lines[i+10]
+						d["Runtime"]    = lines[i+11]
+						d["Popularity"] = lines[i+12]
+						d["Genres"]     = lines[i+13]
+					else:
+						d["TheTvDb"]    = lines[i+0]
+						d["Title"]      = lines[i+1]
+						d["Tag"]        = ""
+						d["Year"]       = int(lines[i+2])
+						d["Path"]       = lines[i+3] + "/" + lines[i+4] + "." + lines[i+5]
+						d["Season"]     = int(lines[i+6])
+						d["Episode"]    = int(lines[i+7])
+						d["Plot"]       = lines[i+8]
+						d["Runtime"]    = lines[i+9]
+						d["Popularity"] = lines[i+10]
+						d["Genres"]     = lines[i+11]
 					
 					# deprecated
 					d["Directors"] = ""
@@ -260,11 +299,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					if d["Season"] == -1:
 						continue
 					
-					#self.moviedb[d["Season"] * 100 + d["Episode"]] = d
 					self.episodesdb[d["Season"] * 100 + d["Episode"]] = d
 					if not d["Season"] in entrys:
 						entrys.append(d["Season"])
-						list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
+						self.seasonlist.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
 			else:
 				for episode in self.episodesdb:
 					d = self.episodesdb[episode]
@@ -280,11 +318,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 		if self.inSeries:
 			self.serieslist.sort()
-			
-			self["listview"].setList(self.serieslist)	
+			self["listview"].setList(self.serieslist)
 		elif self.inSeasons:
-			list.sort()
-			self["listview"].setList(list)
+			self.seasonlist.sort()
+			self["listview"].setList(self.seasonlist)
 		elif self.inEpisode:
 			list.sort()
 			self["listview"].setList(list)
@@ -317,9 +354,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		
 		try:
 			if self.inSeries:
-				self.serieslist=[]
+				self.serieslist = []
 				db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
 			else:
+				self.seasonlist = []
 				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
 			
 			movies = db.split("\n----END----\n")
@@ -342,6 +380,9 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 					if "Episode" in d:
 						d["Episode"] = int(d["Episode"])
 					
+					if "Year" in d:
+						d["Year"] = int(d["Year"])
+					
 					#print d
 					if self.inSeries:
 						self.moviedb[d["TheTvDb"]] = d
@@ -359,7 +400,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							if d["Season"] == self.selectedSeason:
 								if not d["Episode"] in entrys:
 									entrys.append(d["Episode"])
-									list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
+									self.seasonlist.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
 		
 		except OSError, e: 
 			print "OSError: ", e
@@ -370,8 +411,8 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.serieslist.sort()
 			self["listview"].setList(self.serieslist)	
 		elif self.inSeasons:
-			list.sort()
-			self["listview"].setList(list)
+			self.seasonlist.sort()
+			self["listview"].setList(self.seasonlist)
 		elif self.inEpisode:
 			list.sort()
 			self["listview"].setList(list)
@@ -428,7 +469,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.setText("writer", self.moviedb[selection[1]]["Writers"])
 				
 				self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
-				self.setText("year", str(self.moviedb[selection[1]]["Year"]))
+				#self.setText("year", str(self.moviedb[selection[1]]["Year"]))
+				sele = self.moviedb[selection[1]]
+				date = str(sele["Year"])
+				if sele.has_key("Month") and sele.has_key("Day"):
+					if sele["Month"] > 0 and sele["Day"] > 0:
+						date = "%04d-%02d-%02d" % (sele["Year"], sele["Month"], sele["Day"], )
+				self.setText("year", date)
 				self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
 				
 				for i in range(int(self.moviedb[selection[1]]["Popularity"])):
@@ -444,7 +491,13 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.setText("shortDescription", self.episodesdb[selection[1]]["Plot"], what=_("Overview"))
 				
 				self.setText("genre", self.episodesdb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
-				self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
+				#self.setText("year", str(self.episodesdb[selection[1]]["Year"]))
+				sele = self.episodesdb[selection[1]]
+				date = str(sele["Year"])
+				if sele.has_key("Month") and sele.has_key("Day"):
+					if sele["Month"] > 0 and sele["Day"] > 0:
+						date = "%04d-%02d-%02d" % (sele["Year"], sele["Month"], sele["Day"], )
+				self.setText("year", date)
 				self.setText("runtime", self.episodesdb[selection[1]]["Runtime"] + ' ' + _("min"))
 			
 			if self.APILevel >= 2:
@@ -555,7 +608,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.inEpisode = True
 				
 				self.selectedSeason = int(selection[1])
-				self.rememeberSeasonsIndex = self["listview"].getIndex()
+				self.rememeberSeasonIndex = self["listview"].getIndex()
 				
 				if self.USE_DB_VERSION == self.DB_TXT:
 					self.loadSeriesDB()
@@ -655,8 +708,15 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			
 			self.showiframe.finishStillPicture()
 			self.close()
-		elif self.inEpisode is True or self.inSeasons is True:
-			self.inSeries = True
+		elif self.inEpisode is True:
+			self.inSeries  = False
+			self.inSeasons = True
+			self.inEpisode = False
+			self["listview"].setList(self.seasonlist)
+			self["listview"].setIndex(self.rememeberSeasonIndex)
+			self.refresh()
+		elif self.inSeasons is True:
+			self.inSeries  = True
 			self.inSeasons = False
 			self.inEpisode = False
 			self["listview"].setList(self.serieslist)

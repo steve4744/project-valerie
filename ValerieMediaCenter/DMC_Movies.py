@@ -214,22 +214,39 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			version = lines[0]
 			linesLen = len(lines)
 			print "Lines:", linesLen
-			for i in range(1, linesLen, 11):
+			
+			size = 11
+			if int(version) >= 3:
+				size = 13
+			else:
+				size = 11
+			
+			for i in range(1, linesLen, size):
 				if lines[i+0] == "EOF":
 					break
 				d = {} 
-				d["ImdbId"]    = lines[i+0]
-				d["Title"]     = lines[i+1]
-				d["Tag"]       = lines[i+2]
-				d["Year"]      = int(lines[i+3])
-				
-				d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
-				
-				d["Plot"]       = lines[i+7]
-				d["Runtime"]    = lines[i+8]
-				d["Popularity"] = lines[i+9]
-				
-				d["Genres"] = lines[i+10]
+				if int(version) >=3:
+					d["ImdbId"]     = lines[i+0]
+					d["Title"]      = lines[i+1]
+					d["Tag"]        = lines[i+2]
+					d["Year"]       = int(lines[i+3])
+					d["Month"]      = int(lines[i+4])
+					d["Day"]        = int(lines[i+5])
+					d["Path"]       = lines[i+6] + "/" + lines[i+7] + "." + lines[i+8]
+					d["Plot"]       = lines[i+9]
+					d["Runtime"]    = lines[i+10]
+					d["Popularity"] = lines[i+11]
+					d["Genres"]     = lines[i+12]
+				else:
+					d["ImdbId"]    = lines[i+0]
+					d["Title"]     = lines[i+1]
+					d["Tag"]       = lines[i+2]
+					d["Year"]      = int(lines[i+3])
+					d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
+					d["Plot"]       = lines[i+7]
+					d["Runtime"]    = lines[i+8]
+					d["Popularity"] = lines[i+9]
+					d["Genres"] = lines[i+10]
 				
 				# deprecated
 				d["Directors"] = ""
@@ -375,7 +392,12 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self.setText("writer", self.moviedb[selection[1]]["Writers"])
 			
 			self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
-			self.setText("year", str(self.moviedb[selection[1]]["Year"]))
+			sele = self.moviedb[selection[1]]
+			date = str(sele["Year"])
+			if sele.has_key("Month") and sele.has_key("Day"):
+				if sele["Month"] > 0 and sele["Day"] > 0:
+					date = "%04d-%02d-%02d" % (sele["Year"], sele["Month"], sele["Day"], )
+			self.setText("year", date)
 			self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
 			
 			if self.APILevel >= 2:

@@ -37,6 +37,8 @@ class MediaInfo(object):
     Alternatives = {}
     
     Year = -1
+    Month = -1
+    Day = -1
     ImdbIdNull = u"tt0000000"
     ImdbId     = ImdbIdNull
     TheTvDbIdNull = u"0"
@@ -93,6 +95,8 @@ class MediaInfo(object):
         m.TheTvDbId    = self.TheTvDbId
         m.Title        = self.Title
         m.Year         = self.Year
+        m.Month        = self.Month
+        m.Day          = self.Day
         m.Resolution   = self.Resolution
         m.Sound        = self.Sound
         m.isMovie      = self.isMovie
@@ -237,9 +241,11 @@ class MediaInfo(object):
         #################### DVD ######################
         
         ### Replacements PRE
+        print "[pre] -", self.SearchString
         for replacement in replace.replacements(u"pre"):
-            #print "[pre] ", replacement[0], " --> ", replacement[1]
+            print "[pre] ", replacement[0], " --> ", replacement[1]
             self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
+            print "[pre] -", self.SearchString
         
         print ":-1: ", Utf8.utf8ToLatin(self.SearchString)
         
@@ -464,6 +470,8 @@ class MediaInfo(object):
         ustr += u"\n\tTitle:        " + self.Title
         ustr += u"\n\tSearchString: " + self.SearchString
         ustr += u"\n\tYear:         " + unicode(self.Year)
+        ustr += u"\n\tMonth:        " + unicode(self.Month)
+        ustr += u"\n\tDay:          " + unicode(self.Day)
         ustr += u"\n\tResolution:   " + self.Resolution
         ustr += u"\n\tSound:        " + self.Sound
         #ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
@@ -678,7 +686,7 @@ class MediaInfo(object):
         stri += u'\n----END----\n\n'
         return stri
     
-    def exportDefined(self):
+    def exportDefined(self, level):
         
         # Workaround, can be removed in the future
         self.Plot = re.sub("\n", " ", self.Plot).strip()
@@ -689,6 +697,9 @@ class MediaInfo(object):
             stri += self.Title + u'\n'
             stri += self.Tag + u'\n'
             stri += unicode(self.Year) + u'\n'
+            if level >=3:
+                stri += unicode(self.Month) + u'\n'
+                stri += unicode(self.Day) + u'\n'
             
             stri += self.Path + u'\n'
             stri += self.Filename + u'\n'
@@ -706,6 +717,9 @@ class MediaInfo(object):
             stri += self.Title + u'\n'
             stri += self.Tag + u'\n'
             stri += unicode(self.Year) + u'\n'
+            if level >=3:
+                stri += unicode(self.Month) + u'\n'
+                stri += unicode(self.Day) + u'\n'
             
             stri += self.Plot + u'\n'
             stri += unicode(self.Runtime) + u'\n'
@@ -717,6 +731,9 @@ class MediaInfo(object):
             stri += self.TheTvDbId + u'\n'
             stri += self.Title + u'\n'
             stri += unicode(self.Year) + u'\n'
+            if level >=3:
+                stri += unicode(self.Month) + u'\n'
+                stri += unicode(self.Day) + u'\n'
             
             stri += self.Path + u'\n'
             stri += self.Filename + u'\n'
@@ -732,4 +749,4 @@ class MediaInfo(object):
             stri += self.Genres + u'\n'
             
         stri += u''
-        return stri    
+        return stri

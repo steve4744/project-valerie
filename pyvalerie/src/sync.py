@@ -359,13 +359,13 @@ class Sync():
 				print "TheMovieDbProvider().getMovieByImdbID(elementInfo) returned None"
 			else:
 				elementInfo = tmp
-
+			
 			tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
 			if tmp is None:
 				print "TheMovieDbProvider().getMovie(elementInfo, u\"en\") returned None"
 			else:
 				elementInfo = tmp
-
+			
 			userLang = Config.getString("local")
 			if userLang != u"en":
 				tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
@@ -374,7 +374,7 @@ class Sync():
 				else:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
-
+			
 			if userLang != elementInfo.LanguageOfPlot:
 				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
 				if tmp is None:
@@ -384,7 +384,7 @@ class Sync():
 					elementInfo.LanguageOfPlot = userLang;
 			
 			###
-
+			
 			tmp = TheMovieDbProvider().getArtByImdbId(elementInfo)
 			if tmp is None:
 				print "TheMovieDbProvider().getArtByImdbId(elementInfo) returned None"
@@ -394,7 +394,7 @@ class Sync():
 				
 			return (elementInfo, )
 		
-		elif elementInfo.isSerie:
+		elif elementInfo.isSerie or elementInfo.isEpisode:
 			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
 			if tmp is None:
 				print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"

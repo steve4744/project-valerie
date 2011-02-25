@@ -567,7 +567,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self["episodetxt"] = StaticText(_("Episode:"))
 		
 		self["path"] = Label()
-		self["filename"] = Label()				
+		self["filename"] = Label()
 		self["title"] =  Label()
 		self["year"] =  Label()
 		self["season"] =  Label()
@@ -593,7 +593,11 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self["filename"].setText(Utf8.utf8ToLatin(self.element.Filename) + "." + Utf8.utf8ToLatin(self.element.Extension))
 		if type(self.element) is MediaInfo:
 			self["title"].setText(Utf8.utf8ToLatin(self.element.Title))
-			self["year"].setText(str(self.element.Year))
+			date = str(self.element.Year)
+			if self.element.Month > 0 and self.element.Day > 0:
+				date = date + "-" + str(self.element.Month) + "-" + str(self.element.Day)
+			self["year"].setText(date)
+			
 			if self.element.isMovie:
 				self["season"].setText(" ")
 				self["episode"].setText(" ")
@@ -654,7 +658,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 
 	def update(self):
 		if type(self.element) is MediaInfo:
-			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, self.element.ImdbId, self.element.isSerie)
+			element = self.manager.syncElement(None, None, None, None, None, self.element)
 			if element is not None:
 				if len(element) == 2:
 					self.elementParent = element[0]
@@ -715,8 +719,9 @@ class ProjectValerieSyncManager(Screen):
 		self["listview"] = List(list, True)
 		self["key_red"] = StaticText(_("Failed"))
 		self["key_green"] = StaticText(_("Movies"))
-		self["key_yellow"] = StaticText(_("Series"))
-		#self["key_blue"] = StaticText(_(" "))
+		self["key_yellow"] = StaticText(_("TVShows"))
+		if self.APILevel >= 3:
+			self["key_blue"] = StaticText(_("TVShows (All)"))
 		
 		self.manager = Manager()
 		
@@ -725,6 +730,7 @@ class ProjectValerieSyncManager(Screen):
 			"red": self.loadFailed,
 			"green": self.loadMovies,
 			"yellow": self.loadTVShows,
+			"blue": self.loadTVShowsFilenames,
 			"cancel": self.onFinish,
 			"ok": self.showInfo,
 		}, -1)
@@ -751,16 +757,23 @@ class ProjectValerieSyncManager(Screen):
 	def loadTVShows(self):
 		self.load(Manager.TVSHOWS)
 
-	def load(self, type):
+	def loadTVShowsFilenames(self):
+		self.load(Manager.TVSHOWSEPISODES)
+
+	def load(self, type, param=None):
 		from FailedEntry import FailedEntry
 		self.currentCategory = type
 		list = []
-		entries = self.manager.getAll(type)
+		entries = self.manager.getAll(type, param)
 		if type == Manager.FAILED:
 			for entry in entries:
 				if entry.Cause != FailedEntry.ALREADY_IN_DB:
 					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
 								Utf8.utf8ToLatin(entry.CauseStr), entry), )
+		elif type == Manager.TVSHOWS:
+			for entry in entries:
+				list.append((Utf8.utf8ToLatin(entry.Title), 
+							Utf8.utf8ToLatin(entry.Title), entry), )
 		else:
 			for entry in entries:
 				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
@@ -770,10 +783,16 @@ class ProjectValerieSyncManager(Screen):
 		self["listview"].setList(list)
 
 	def showInfo(self):
-		selection = self["listview"].getCurrent()
-		if selection is not None:
-			self.oldElement = selection[2]
-			self.session.openWithCallback(self.elementChanged, ProjectValerieSyncManagerInfo, self.manager, self.oldElement)
+		if self.currentCategory == Manager.TVSHOWS:
+			selection = self["listview"].getCurrent()
+			if selection is not None:
+				element = selection[2]
+				self.load(Manager.TVSHOWSEPISODES, element.TheTvDbId)
+		else:
+			selection = self["listview"].getCurrent()
+			if selection is not None:
+				self.oldElement = selection[2]
+				self.session.openWithCallback(self.elementChanged, ProjectValerieSyncManagerInfo, self.manager, self.oldElement)
 
 	def elementChanged(self, newElement):
 		print "elementChanged", newElement
