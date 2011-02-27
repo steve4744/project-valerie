@@ -40,7 +40,7 @@ self["textBottom"].setText("Weiter mit der OK Taste")
 self.saveConfig()
 		</code>
 	</step>
-	<step id="close">
+	<step id="end">
 		<code>
 self.finishUp()
 self.close()
