@@ -88,15 +88,15 @@ except Exception, e:
 	config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 	config.plugins.pvmc.skin.value           = defaultSkin
 	
-if skinLoaded == False:
-	try:
-		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
-		skinLoaded = True
-	except Exception, e:
-		print e
-		skinLoaded = False
-		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
-		config.plugins.pvmc.skin.value           = defaultSkin
+#if skinLoaded == False:
+#	try:
+#		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+#		skinLoaded = True
+#	except Exception, e:
+#		print e
+#		skinLoaded = False
+#		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
+#		config.plugins.pvmc.skin.value           = defaultSkin
 
 #Webinterface
 #gWebInterface = WebInterface()

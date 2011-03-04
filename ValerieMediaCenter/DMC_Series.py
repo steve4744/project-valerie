@@ -714,6 +714,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.inEpisode = False
 			self["listview"].setList(self.seasonlist)
 			self["listview"].setIndex(self.rememeberSeasonIndex)
+			self.setText("title", self.serieslist[self.rememeberSeriesIndex][0])
 			self.refresh()
 		elif self.inSeasons is True:
 			self.inSeries  = True

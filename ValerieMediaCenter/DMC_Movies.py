@@ -248,7 +248,10 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					d["Popularity"] = lines[i+9]
 					d["Genres"] = lines[i+10]
 				
-				d["Creation"] = os.stat(d["Path"]).st_mtime
+				try:
+					d["Creation"] = os.stat(d["Path"]).st_mtime
+				except:
+					d["Creation"] = 0
 				
 				# deprecated
 				d["Directors"] = ""
@@ -311,7 +314,10 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 						if key in filter: 
 							d[key] = text
 					
-					d["Creation"] = os.stat(d["Path"]).st_mtime
+					try:
+						d["Creation"] = os.stat(d["Path"]).st_mtime
+					except:
+						d["Creation"] = 0
 					
 					#print d
 					if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
@@ -588,12 +594,18 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		
 #		finishStillPicture()
 		self.showiframe.finishStillPicture()
-
+		
 		self.close()
+
+	#class PVMC_MessageBoxInfo(MessageBox):
+	#	def __init__(self, session, title, plot):
+	#		text = _("Title:\n") + title + _("\n\nPlot:\n") + plot
+	#		MessageBox.__init__(self, session, text, type = MessageBox.TYPE_INFO)
 
 	def KeyInfo(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
+			#self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]]["Title"], self.moviedb[selection[1]]["Plot"])
 			self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
 #------------------------------------------------------------------------------------------
