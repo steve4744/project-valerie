@@ -1,15 +1,16 @@
-'''
-Created on 18.12.2010
+# -*- coding: utf-8 -*-
 
-@author: i7
-'''
-from Database import Database
-from MediaInfo import MediaInfo
-from MobileImdbComProvider import MobileImdbComProvider
-import replace
+import Blacklist
 import Config
+from   Database import Database
+from   MediaInfo import MediaInfo
+from   MobileImdbComProvider import MobileImdbComProvider
+import replace
+from   sync import Sync
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 class Manager(object):
 
@@ -69,7 +70,6 @@ class Manager(object):
 
 	def syncElement(self, path, filename, extension, imdbid, istvshow, oldelement=None):
 		printl(str(path) + " " + str(filename) + " " + str(extension) + " " + str(imdbid) + " " + str(istvshow), self)
-		from sync import Sync
 		
 		element = None
 		
@@ -121,3 +121,16 @@ class Manager(object):
 			else:
 				printl("newElement=" + str(newElement[0]), self)
 				printl("ADD " + str(self.db.add(newElement[0])), self)
+
+	def remove(self, oldElement):
+		printl("", self)
+		if oldElement is not None:
+			printl("oldElement=" + str(oldElement), self)
+			if type(oldElement) is MediaInfo:
+				b = self.db.remove(oldElement)
+				printl("RM " + str(b), self)
+				if b:
+					Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
+					Blacklist.save()
+			else:
+				self.db.removeFailed(oldElement)

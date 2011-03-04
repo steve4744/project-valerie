@@ -11,9 +11,12 @@ from Components.config import ConfigYesNo
 from Components.config import ConfigPassword
 from skin import loadSkin
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
-from DMC_Global import printl
+
 from enigma import getDesktop
 import os
+
+from DMC_Global import printl
+#from WebInterface import WebInterface
 
 printl("Init")
 
@@ -94,6 +97,10 @@ if skinLoaded == False:
 		skinLoaded = False
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin
+
+#Webinterface
+#gWebInterface = WebInterface()
+#gWebInterface.start()
 
 config.plugins.pvmc.save()
 config.save()

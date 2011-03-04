@@ -1,29 +1,34 @@
 # -*- coding: utf-8 -*-
 
-from threading import Thread
-
-import sys
 import os
+from   os import environ
+import sys
+from   threading import Thread
+import time
 
-import Config
-import DirectoryScanner
-import MediaInfo
-from Arts import Arts
-from MobileImdbComProvider import MobileImdbComProvider
-from LocalImdbProvider import LocalImdbProvider
-from TheMovieDbProvider import TheMovieDbProvider
-from TheTvDbProvider import TheTvDbProvider
-from GoogleProvider import GoogleProvider
-from Database import Database
-import WebGrabber
-import replace
-import Utf8
-from FailedEntry import FailedEntry
-
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
-from os import environ
+from   Components.Language import language
 import gettext
-from Components.Language import language
+from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
+
+from   Arts import Arts
+import Blacklist
+import Config
+from   Database import Database
+import DirectoryScanner
+from   FailedEntry import FailedEntry
+from   GoogleProvider import GoogleProvider
+from   LocalImdbProvider import LocalImdbProvider
+import MediaInfo
+from   MobileImdbComProvider import MobileImdbComProvider
+import replace
+from   TheMovieDbProvider import TheMovieDbProvider
+from   TheTvDbProvider import TheTvDbProvider
+import Utf8
+import WebGrabber
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 def localeInit():
 	lang = language.getLanguage()
@@ -43,128 +48,125 @@ language.addCallback(localeInit)
 
 def checkDefaults():
 	try: 
-		print("Check "+"/hdd/valerie")
+		printl("Check "+"/hdd/valerie", __name__)
 		os.makedirs("/hdd/valerie") 
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	try: 
-		print("Check "+"/hdd/valerie/cache")
+		printl("Check "+"/hdd/valerie/cache", __name__)
 		os.makedirs("/hdd/valerie/cache") 
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	try: 
-		print("Check "+"/hdd/valerie/dreamscene")
+		printl("Check "+"/hdd/valerie/dreamscene", __name__)
 		os.makedirs("/hdd/valerie/dreamscene") 
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	try: 
-		print("Check "+"/tmp/valerie/cache")
+		printl("Check "+"/tmp/valerie/cache", __name__)
 		os.makedirs("/tmp/valerie/cache") 
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	try: 
-		print("Check "+"/hdd/valerie/media")
+		printl("Check "+"/hdd/valerie/media", __name__)
 		os.makedirs("/hdd/valerie/media")
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
 	
-	print("Check "+"/hdd/valerie/media")
+	printl("Check "+"/hdd/valerie/media/*", __name__)
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
-		print("Check defaultbackdrop.m1v - Missing -> Downloading")
+		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "../media/defaultbackdrop.m1v")
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
-		print("Check defaultposter.png - Missing -> Downloading")
+		printl("Check defaultposter.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "../media/defaultposter.png")
-	
 	try: 
-		print("Check "+"/hdd/valerie/episodes")
+		printl("Check "+"/hdd/valerie/episodes", __name__)
 		os.makedirs("/hdd/valerie/episodes")
 	except OSError, e:
-		print(" - OK\n")
+		printl("\t- OK", __name__)
 	else:
-		print(" - Created\n")
+		printl("\t- Created", __name__)
 	
 	###
 	
 	try:
-		print("Check "+"/hdd/valerie/valerie.conf")
+		printl("Check "+"/hdd/valerie/valerie.conf", __name__)
 		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
-			print("Check valerie.conf - Missing -> Downloading")
+			printl("Check valerie.conf - Missing -> Downloading", __name__)
 			WebGrabber.getFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
-			print(" - Created\n")
+			printl("\t- Created", __name__)
 		else:
-			print(" - OK\n")
-	except Exception:
-		print(" - ERROR\n")
-		
-		
+			printl("\t- OK", __name__)
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
+	
 	try:
-		print("Check "+"/hdd/valerie/pre.conf")
+		printl("Check "+"/hdd/valerie/pre.conf", __name__)
 		if os.path.isfile("/hdd/valerie/pre.conf") is False:
-			print("Check pre.conf - Missing -> Downloading")
+			printl("Check pre.conf - Missing -> Downloading", __name__)
 			WebGrabber.getFile(DEFAULTURL+"pre.conf", "../pre.conf")
-			print(" - Created\n")
+			printl("\t- Created", __name__)
 		else:
-			print(" - OK\n")
-	except Exception:
-		print(" - ERROR\n")
+			printl("\t- OK", __name__)
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		print("Check "+"/hdd/valerie/post_movie.conf")
+		printl("Check "+"/hdd/valerie/post_movie.conf", __name__)
 		if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
-			print("Check post_movie.conf - Missing -> Downloading")
+			printl("Check post_movie.conf - Missing -> Downloading", __name__)
 			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
-			print(" - Created\n")
+			printl("\t- Created", __name__)
 		else:
-			print(" - OK\n")
-	except Exception:
-		print(" - ERROR\n")
+			printl("\t- OK", __name__)
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		print("Check "+"/hdd/valerie/post_tv.conf")
+		printl("Check "+"/hdd/valerie/post_tv.conf", __name__)
 		if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
-			print("Check post_tv.conf - Missing -> Downloading")
+			printl("Check post_tv.conf - Missing -> Downloading", __name__)
 			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
-			print(" - Created\n")
+			printl("\t- Created", __name__)
 		else:
-			print(" - OK\n")
-	except Exception:
-		print(" - ERROR\n")
+			printl("\t- OK", __name__)
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		print("Check "+"/hdd/valerie/paths.conf")
+		printl("Check "+"/hdd/valerie/paths.conf", __name__)
 		if os.path.isfile("/hdd/valerie/paths.conf") is False:
-			print("Check paths.conf - Missing -> Downloading")
+			printl("Check paths.conf - Missing -> Downloading", __name__)
 			WebGrabber.getFile(DEFAULTURL+"paths.conf", "../paths.conf")
-			print(" - Created\n")
+			printl("\t- Created", __name__)
 		else:
-			print(" - OK\n")
-	except Exception:
-		print(" - ERROR\n")
-	
-import time
+			printl("\t- OK", __name__)
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
+
 class pyvalerie(Thread):
 	
 	NORMAL = 0
 	FAST = 1
 	UPDATE = 2
-	
+
 	def __init__ (self, output, progress, range, info, finished, mode):
 		Thread.__init__(self)
 		self.output = output
@@ -174,7 +176,7 @@ class pyvalerie(Thread):
 		self.finished = finished
 		self.mode = mode
 		self.output(_("Thread running"))
-		
+
 	def run(self):
 		#reload(sys)
 		#sys.setdefaultencoding( "latin-1" )
@@ -185,6 +187,7 @@ class pyvalerie(Thread):
 		Config.load()
 		
 		self.output(_("Loading Database"))
+		printl("Loading Database", self)
 		start_time = time.time()
 		db = Database()
 		db.reload()
@@ -195,41 +198,39 @@ class pyvalerie(Thread):
 		if self.mode != self.FAST:
 			db.transformGenres()
 		
-		
-		print "  ", db
+		printl("Entries: " + str(db), self)
 		elapsed_time = time.time() - start_time
-		print "Took: ", elapsed_time
-		
-		#db.searchDeleted()
-		#exit(0)
+		printl("Loading Database took: " + str(elapsed_time), self)
 		
 		self.output(_("Loading Replacements"))
+		printl("Loading Replacements", self)
 		replace.load()
 		
 		self.output(_("Loading Filesystem"))
+		printl("Loading Filesystem", self)
 		ds = DirectoryScanner.DirectoryScanner()
 		ds.clear()
 		if self.mode == self.FAST:
 			ds.load()
 		
 		self.output(_("Searching for media files"))
+		printl("Searching for media files", self)
+		start_time = time.time()
 		fconf = Utf8.Utf8("/hdd/valerie/paths.conf", "r")
 		lines = fconf.read().split(u"\n")
 		fconf.close()
+		
+		elementList = None
+		
 		if len(lines) > 1:
 			filetypes = lines[0].strip().split('|')
 			filetypes.append("ifo")
 			filetypes.append("iso")
 			self.output(_("Extensions:") + ' ' + str(filetypes))
-			print filetypes
+			printl("Extensions: " + str(filetypes), self)
 			
-			start_time = time.time()
-			
-			elementList = None
 			for path in lines[1:]: 
 				path = path.strip()
-				
-				print "PATH: ", path
 				
 				p = path.split(u'|')
 				path = p[0]
@@ -242,153 +243,149 @@ class pyvalerie(Thread):
 					ds.setDirectory(Utf8.utf8ToLatin(path))
 					ds.listDirectory(filetypes, "(sample)|(VTS)", type)
 			elementList = ds.getFileList()
+		
+		elapsed_time = time.time() - start_time
+		printl("Searching for media files took: " + str(elapsed_time), self)
+		
+		if elementList is None:
+			self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))
+			printl("Found 0 media files", self)
+		else:
+			self.output(_("Found") + ' ' + str(len(elementList)) + ' ' + _("media files"))
+			printl("Found " + str(len(elementList)) + " media files", self)
 			
-			elapsed_time = time.time() - start_time
-			print "Took: ", elapsed_time
+			self.range(len(elementList))
 			
-			if elementList is None:
-				self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))
-			else:
-				self.output(_("Found") + ' ' + str(len(elementList)) + ' ' + _("media files"))
+			i = 0
+			for element in elementList:
+				i = i + 1
+				self.progress(i)
 				
-				self.range(len(elementList))
+				path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
+				filename  = Utf8.stringToUtf8(element[1])
+				extension = Utf8.stringToUtf8(element[2])
+				type      = element[3]
+				if path is None or filename is None or extension is None:
+					continue
 				
-				i = 0
-				for element in elementList:
-					i = i + 1
-					self.progress(i)
-					
-					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
-					filename  = Utf8.stringToUtf8(element[1])
-					extension = Utf8.stringToUtf8(element[2])
-					type      = element[3]
-					if path is None or filename is None or extension is None:
-						continue
-					
-					if "RECYCLE.BIN" in path:
-						continue
-						
-					if db.checkDuplicate(path, filename, extension):
-						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
-						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
-						continue
-					
-					self.output("(" + str(i) + "/" + str(len(elementList))  + ")")	
-					print "-"*60	
-					self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
-						
-					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
-					
-					print "TYPE:", type
-					
-					if type == u"MOVIE":
+				if "RECYCLE.BIN" in path:
+					continue
+				
+				if (filename + u"." + extension) in Blacklist.get():
+					printl("File blacklisted", self)
+					continue
+				
+				if db.checkDuplicate(path, filename, extension):
+					#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
+					#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
+					continue
+				
+				printl("#"*60, self)
+				self.output("(" + str(i) + "/" + str(len(elementList))  + ")")
+				printl("(" + str(i) + "/" + str(len(elementList))  + ")", self)
+				printl("#"*6, self)
+				self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
+				printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
+				
+				elementInfo = MediaInfo.MediaInfo(path, filename, extension)
+				
+				printl("TYPE: " + str(type), self)
+				
+				if type == u"MOVIE":
+					elementInfo.isMovie = True
+					elementInfo.isSerie = False
+				elif type == u"TV":
+					elementInfo.isMovie = False
+					elementInfo.isSerie = True
+				
+				result = elementInfo.parse()
+				
+				if result == False:
+					continue
+				
+				if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
+					tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
+					if tmp is None:
+						# seems to be no tvshows so lets parse as movie
 						elementInfo.isMovie = True
 						elementInfo.isSerie = False
-					elif type == u"TV":
-						elementInfo.isMovie = False
-						elementInfo.isSerie = True
-					
-					result = elementInfo.parse()
-					
-					if result == False:
-						continue
-					
-					if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
-						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
-						if tmp is None:
-							print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
-							# seems to be no tvshows so lets parse as movie
-							elementInfo.isMovie = True
-							elementInfo.isSerie = False
-						else:
-							elementInfo = tmp
-						searchStringSplitted = elementInfo.SearchString.split("::")
-						if len(searchStringSplitted) >= 2:
-							elementInfo.SearchString = searchStringSplitted[0];
-							
-					#elementInfo = ImdbProvider().getMovieByTitle(elementInfo)
-					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
-					if tmp is None:
-						print "MobileImdbComProvider().getMoviesByTitle(elementInfo) returned None"
-						db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
-						continue
-					elementInfo = tmp
-					
-					results = Sync().syncWithId(elementInfo)
-					if results is not None:
-						for result in results:
-							if db.add(result):
-								if result.isMovie:
-									self.info(str(result.ImdbId) + "_poster.png", 
-									Utf8.utf8ToLatin(result.Title), result.Year)
-								else:
-									self.info(str(result.TheTvDbId) + "_poster.png", 
-											Utf8.utf8ToLatin(result.Title), result.Year)
+					else:
+						elementInfo = tmp
+					searchStringSplitted = elementInfo.SearchString.split("::")
+					if len(searchStringSplitted) >= 2:
+						elementInfo.SearchString = searchStringSplitted[0];
+				
+				tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
+				if tmp is None:
+					db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
+					continue
+				elementInfo = tmp
+				
+				results = Sync().syncWithId(elementInfo)
+				if results is not None:
+					for result in results:
+						if db.add(result):
+							if result.isMovie:
+								self.info(str(result.ImdbId) + "_poster.png", 
+								Utf8.utf8ToLatin(result.Title), result.Year)
 							else:
-								db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB))
-								print "Title already in db"
-
-				self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
-				self.progress(i)
+								self.info(str(result.TheTvDbId) + "_poster.png", 
+										Utf8.utf8ToLatin(result.Title), result.Year)
+						else:
+							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB))
+							printl("Title already in db", self)
 			
-			
-		
+			self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
+			printl("(" + str(i) + "/" + str(len(elementList)) + ")", self)
+			self.progress(i)
 		
 		self.output(_("Saving database"))
+		printl("Saving database", self)
 		db.save()
 		
 		self.output(_("Saving Filesystem"))
+		printl("Saving Filesystem", self)
 		ds.save()
 		del ds
-			
 		del elementList[:]
 		del db
 		
 		self.output(_("Done"))
+		printl("Done", self)
 		self.output("---------------------------------------------------")
 		self.output(_("Press Exit / Back"))
 		
 		self.finished(True)
-		
+
 class Sync():
 	def syncWithId(self, elementInfo):
 		if elementInfo.isMovie:
 			# Ask TheMovieDB for the local title and plot
 			tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
-			if tmp is None:
-				print "TheMovieDbProvider().getMovieByImdbID(elementInfo) returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 			
 			tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
-			if tmp is None:
-				print "TheMovieDbProvider().getMovie(elementInfo, u\"en\") returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 			
 			userLang = Config.getString("local")
 			if userLang != u"en":
 				tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
-				if tmp is None:
-					print "TheMovieDbProvider().getMovie(elementInfo, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
 			
 			if userLang != elementInfo.LanguageOfPlot:
 				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
-				if tmp is None:
-					print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
 			
 			###
 			
 			tmp = TheMovieDbProvider().getArtByImdbId(elementInfo)
-			if tmp is None:
-				print "TheMovieDbProvider().getArtByImdbId(elementInfo) returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 				Arts().download(elementInfo)
 				
@@ -396,39 +393,29 @@ class Sync():
 		
 		elif elementInfo.isSerie:
 			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
-			if tmp is None:
-				print "TheTvDbProvider().getSerieByImdbID(elementInfo) returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 			
 			tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
-			if tmp is None:
-				print "TheTvDbProvider().getSerie(elementInfo, u\"en\") returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 				
 			userLang = Config.getString("local")
 			if userLang != u"en":
 				tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
-				if tmp is None:
-					print "TheTvDbProvider().getSerie(elementInfo, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
 					
 			if userLang != elementInfo.LanguageOfPlot:
 				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
-				if tmp is None:
-					print "LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
 			###
-											
+			
 			tmp = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
-			if tmp is None:
-				print "TheTvDbProvider().getArtByTheTvDbId(elementInfo) returned None"
-			else:
+			if tmp is not None:
 				elementInfo = tmp
 				Arts().download(elementInfo)
 					
@@ -440,24 +427,18 @@ class Sync():
 			###
 			
 			tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
-			if tmp is None:
-				print "TheTvDbProvider().getEpisode(elementInfoe, u\"en\") returned None"
-			else:
+			if tmp is not None:
 				elementInfoe = tmp
 			
 			if userLang != u"en":
 				tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
-				if tmp is None:
-					print "TheTvDbProvider().getEpisode(elementInfoe, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfoe = tmp
 					elementInfoe.LanguageOfPlot = userLang;
 			
 			if userLang != elementInfoe.LanguageOfPlot:
 				tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang)
-				if tmp is None:
-					print "LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang) returned None"
-				else:
+				if tmp is not None:
 					elementInfoe = tmp
 					elementInfoe.LanguageOfPlot = userLang;
 					

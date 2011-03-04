@@ -1,156 +1,149 @@
-'''
-Created on 22.05.2010
-
-@author: i3
-'''
+# -*- coding: utf-8 -*-
 
 import os
-import urllib2
-import socket
-from sys import version_info
-import sys, traceback
-
-from HtmlEncoding import decode_htmlentities
-#import twisted.web.microdom as microdom
-import xml.dom.minidom as minidom
-import Utf8
 import re
+import socket
+import sys, traceback
+from   sys import version_info
+import urllib
+import urllib2
+import urlparse
+import xml.dom.minidom as minidom
+
+from   HtmlEncoding import decode_htmlentities
+import Utf8
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 #cacheDir = "/hdd/valerie/cache"
 cacheDir = "/tmp/valerie/cache"
 downloadDir = "/hdd/valerie/media"
 
-RETRIES = 3
-
-import urllib
-import urlparse
+RETRIES = 5
 
 def url_fix(s):
-    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    path = urllib.quote(path, '/%')
-    qs = urllib.quote_plus(qs, ':&=')
-    #print "qs", qs #%26
-    qs = qs.replace(u"&", u"%26")
-    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+	scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
+	path = urllib.quote(path, '/%')
+	qs = urllib.quote_plus(qs, ':&=')
+	#print "qs", qs #%26
+	qs = qs.replace(u"&", u"%26")
+	return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
 def folderSize(folder):
-    folder_size = 0
-    for (path, dirs, files) in os.walk(folder):
-        for file in files:
-            filename = os.path.join(path, file)
-            folder_size += os.path.getsize(filename)
-    return folder_size/(1024*1024.0)
+	folder_size = 0
+	for (path, dirs, files) in os.walk(folder):
+		for file in files:
+			filename = os.path.join(path, file)
+			folder_size += os.path.getsize(filename)
+	return folder_size/(1024*1024.0)
 
 def freeSpace(folder):
-    s = os.statvfs(folder)
-    return (s.f_bavail * s.f_frsize)/(1024*1024.0)
+	s = os.statvfs(folder)
+	return (s.f_bavail * s.f_frsize)/(1024*1024.0)
 
 def checkCache(url):
-    cacheFile = re.sub(r'\W', "", url).strip()
-    rtv = None
-    if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
-        f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
-        rtv = f.read()
-        f.close()
-    
-    return rtv
+	cacheFile = re.sub(r'\W', "", url).strip()
+	rtv = None
+	if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
+		f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
+		rtv = f.read()
+		f.close()
+	
+	return rtv
 
 def addCache(url, text):
-    if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
-        for f in os.listdir(cacheDir):
-            file = os.path.join(cacheDir, f)
-            print "RM: ", file
-            os.remove(file)
-    
-    cacheFile = re.sub(r'\W', "", url).strip()
-    if text is not None and len(text) > 0:
-        f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
-        f.write(text)
-        f.close
-    
-     
-def getXml(url):
-    rawXml = getText(url) 
-    decodedXml = None
-    try:
-        if rawXml is not None:
-            try:
-                decodedXml = minidom.parseString(rawXml)
-            except Exception, ex:
-                print "minidom.parseString as latin-1 failed, retrieing as utf-8"
-                decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
-    except Exception, ex:
-        print "minidom.parseString as latin-1 and utf-8 failed, ignoring"
-        print "URL", Utf8.utf8ToLatin(url)
-        print "rawXml: <" + str(type(rawXml)) + ">", rawXml
-        print "WebGrabber.getXml: <" + str(type(ex)) + ">", ex
-    return decodedXml
-     
+	if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
+		for f in os.listdir(cacheDir):
+			file = os.path.join(cacheDir, f)
+			printl("RM: " + str(file), self)
+			os.remove(file)
+	
+	cacheFile = re.sub(r'\W', "", url).strip()
+	if text is not None and len(text) > 0:
+		f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
+		f.write(text)
+		f.close
+
+def getXml(url, rawXml = None):
+	if rawXml is None:
+		rawXml = getText(url) 
+	decodedXml = None
+	try:
+		if rawXml is not None:
+			try:
+				decodedXml = minidom.parseString(rawXml)
+			except Exception, ex:
+				printl("minidom.parseString as latin-1 failed, retrieing as utf-8. Ex: " + str(ex), __name__)
+				decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+	except Exception, ex:
+		printl("minidom.parseString as latin-1 and utf-8 failed, ignoring. Ex: " + str(ex), __name__)
+		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
+		printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__)
+	return decodedXml
+
 def getHtml(url):
-    rawHtml = getText(url) 
-    decodedHtml = None
-    try:
-        if rawHtml is not None:
-            decodedHtml = decode_htmlentities(rawHtml)
-    except Exception, ex:
-        print "URL", Utf8.utf8ToLatin(url)
-        print "WebGrabber.getHtml: ", ex
-        
-    return decodedHtml
-     
+	rawHtml = getText(url) 
+	decodedHtml = None
+	try:
+		if rawHtml is not None:
+			decodedHtml = decode_htmlentities(rawHtml)
+	except Exception, ex:
+		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception: " + str(ex), __name__)
+	
+	return decodedHtml
+
 def getText(url): 
-    utfPage = checkCache(url)
-    if utfPage is None:
-        for i in range(RETRIES):
-            print "getText", "->", i, Utf8.utf8ToLatin(url), "(", version_info[1], ")"
-            page = None
-            kwargs = {}
-            if version_info[1] >= 6:
-                kwargs['timeout'] = 10
-            else:
-                socket.setdefaulttimeout(10)
-            try:
-                opener = urllib2.build_opener()
-                opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
-                if version_info[1] >= 6:
-                    page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
-                else:
-                    page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
-                
-                
-                #page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)), **kwargs)
-            except IOError, ex:
-                print "getText", "Error", ex
-                continue
-            
-            if page is not None:
-                rawPage = page.read()
-                utfPage = Utf8.stringToUtf8(rawPage)
-                
-                addCache(url, utfPage)
-                break
-    
-    print "getText", "<-", type(utfPage), Utf8.utf8ToLatin(url)
-    return utfPage
-    
+	utfPage = checkCache(url)
+	if utfPage is None:
+		for i in range(RETRIES):
+			printl("-> (" + str(i) + ") " + str(Utf8.utf8ToLatin(url)), __name__)
+			page = None
+			kwargs = {}
+			if version_info[1] >= 6:
+				kwargs['timeout'] = 10
+			else:
+				socket.setdefaulttimeout(10)
+			try:
+				opener = urllib2.build_opener()
+				opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
+				#opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
+				if version_info[1] >= 6:
+					page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
+				else:
+					page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
+			
+			except IOError, ex:
+				printl("IOError: " +  str(ex), __name__)
+				continue
+			
+			if page is not None:
+				rawPage = page.read()
+				utfPage = Utf8.stringToUtf8(rawPage)
+				
+				addCache(url, utfPage)
+				break
+	
+	printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
+	return utfPage
+
 def getFile(url, name, retry=3):
-    localFilename = downloadDir + "/" + name
-    url = url.strip() # Just to be on the save side
-    if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
-        for i in range(retry):
-            try:
-                page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
-                f = open(Utf8.utf8ToLatin(localFilename), 'wb')
-                f.write(page.read())
-                f.close()
-                break
-            except Exception, ex:
-                print "File download failed: ", ex
-                print "Name: ", Utf8.utf8ToLatin(name)
-                print "Url: ", Utf8.utf8ToLatin(url)
-                print type(ex)
-                print '-'*60
-                traceback.print_exc(file=sys.stdout)
-                print '-'*60
-        
-    return
+	localFilename = downloadDir + "/" + name
+	url = url.strip() # Just to be on the save side
+	if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
+		for i in range(retry):
+			try:
+				page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
+				f = open(Utf8.utf8ToLatin(localFilename), 'wb')
+				f.write(page.read())
+				f.close()
+				break
+			except Exception, ex:
+				printl("File download failed. Ex: " + str(ex), __name__)
+				printl("Name: " + str(Utf8.utf8ToLatin(name)), __name__)
+				printl("Url: " + str(Utf8.utf8ToLatin(url)), __name__)
+				printl("type(ex): " + str(type(ex)), __name__)
+	return

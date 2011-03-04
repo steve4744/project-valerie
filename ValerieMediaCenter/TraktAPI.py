@@ -4,28 +4,30 @@ import urllib2
 
 # disgracefully stolen from xbmc subtitles
 try:
-  # Python 2.6 +
-  from hashlib import sha as sha
+	# Python 2.6 +
+	from hashlib import sha as sha
 except ImportError:
-  # Python 2.5 and earlier
-  import sha
+	# Python 2.5 and earlier
+	import sha
 
 class TraktAPI():
-	URL = "http://api.trakt.tv/post"
-
+	URL = "http://api.trakt.tv/<type>/<status>/<apikey>"
+	
+	DEVAPI = "b71b82897479c480f97a39b3ace8a9c97fae446a"
+	
 	STATUS_IDLE     = "idle"
 	STATUS_WATCHING = "watching"
-	STATUS_WATCHED  = "watched"
-
-	TYPE_TVSHOW = "TVShow"
-	TYPE_MOVIE  = "Movie"
-
-	APIVERSION = "0.1.0" #ACtually this is not the version of the plugin, but the API version to use
-
+	STATUS_WATCHED  = "scrobble"
+	
+	TYPE_TVSHOW = "show"
+	TYPE_MOVIE  = "movie"
+	
+	APIVERSION = "0.1.3" #ACtually this is not the version of the plugin, but the API version to use
+	
 	mMediaCenterShortName = "pytrakt"
 	mMediaCenterVersion   = "1.0"
-	mMediaCenterBuildDate = "'1970-01-01"
-
+	mMediaCenterBuildDate = "1970-01-01"
+	
 	mStatus     = STATUS_IDLE
 	mMovieName  = ""
 	mYear       = 0
@@ -34,13 +36,13 @@ class TraktAPI():
 	mSeason     = 0
 	mEpisode    = 0
 	mType       = TYPE_TVSHOW
-
+	
 	mUsername   = "noname"
 	mPassword   = "nopass"
 	
 	mProgress   = -1
 	mDuration   = -1
-	
+
 	def __init__(self, mcshortname=None, mcversion=None, mcbuidldate=None):
 		if mcshortname is not None:
 			self.mMediaCenterShortName = mcshortname
@@ -92,17 +94,15 @@ class TraktAPI():
 		dict = None
 		if self.mType == self.TYPE_MOVIE:
 			dict = {
-				"type":     self.TYPE_MOVIE,
 				"title":    self.mMovieName, 
 				"year":     self.mYear, 
-				"imdbid":   self.mImdbId
+				"imdb_id":   self.mImdbId
 			}
 		elif self.mType == self.TYPE_TVSHOW:
 			dict = {
-				"type":     self.TYPE_TVSHOW,
 				"title":    self.mMovieName, 
 				"year":     self.mYear, 
-				"tvdbid":   self.mTheTvDbId,
+				"tvdb_id":   self.mTheTvDbId,
 				"season":   self.mSeason,
 				"episode":  self.mEpisode
 			}
@@ -114,18 +114,24 @@ class TraktAPI():
 			if self.mDuration > 0:
 				dict["duration"] = self.mDuration
 			
-			dict["status"]   = self.mStatus
-			dict["username"] = self.mUsername 
-			dict["password"] = self.mPassword
 			dict["media_center"]         = self.mMediaCenterShortName
 			dict["media_center_version"] = self.mMediaCenterVersion
 			dict["media_center_date"]    = self.mMediaCenterBuildDate
 			dict["plugin_version"] = self.APIVERSION
 			
+			# POST Auth.
+			dict["username"] = self.mUsername 
+			dict["password"] = self.mPassword
+			
 			print "TOSEND", dict
 			toSend = urllib.urlencode(dict)
 			
-			req = urllib2.Request(self.URL,
+			url = self.URL
+			url = url.replace("<type>", self.mType)
+			url = url.replace("<status>", self.mStatus)
+			url = url.replace("<apikey>", self.DEVAPI)
+			print "URL", url
+			req = urllib2.Request(url,
 				toSend, 
 				headers = {"Accept": "*/*",
 					"User-Agent": "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)",

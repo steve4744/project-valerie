@@ -3,7 +3,7 @@
 import gettext
 import os
 import sys
-from threading import Thread
+from   threading import Thread
 
 from enigma import getDesktop, addFont
 from Components.ActionMap import ActionMap
@@ -29,21 +29,24 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
-from Manager import Manager
-from MediaInfo import MediaInfo
-from sync import pyvalerie
+from   FailedEntry import FailedEntry
+from   Manager import Manager
+from   MediaInfo import MediaInfo
+from   sync import pyvalerie
+from   sync import checkDefaults as SyncCheckDefaults
 import Utf8
 
 # Hack as long as these plugins are seperated
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.DataElement import DataElement
-from Plugins.Extensions.ProjectValerie.DMC_Global import printl, getAPILevel
+from Plugins.Extensions.ProjectValerie.DMC_Global import getAPILevel
 
 #------------------------------------------------------------------------------------------
 
 try:
 	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
 except Exception, ex: #probably just openpli
-	print ex
+	printl("Exception: " + str(ex))
 	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)
 
 def localeInit():
@@ -59,9 +62,10 @@ def _(txt):
 		t = gettext.gettext(txt)
 	return t
 
-
 localeInit()
 language.addCallback(localeInit)
+
+
 
 #------------------------------------------------------------------------------------------
 
@@ -83,7 +87,7 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 		self.session = session
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -110,27 +114,26 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 		self.setTitle(_("Add Path"))
 
 	def selectionChanged(self):
-		print "selectionChanged"
-	
+		printl("", self)
+
 	selection = ""
-	
+
 	def add(self):
-		print "add"
-		print "prev", self.selection
-		print "now", self.folderList.getFilename()
+		printl("prev: " + str(self.selection), self)
+		printl("now: " +str(self.folderList.getFilename()), self)
 		if self.selection in self.folderList.getFilename():
 			self.close(self.folderList.getFilename())
 		else:
 			self.close(self.selection)
 
 	def descent(self):
-		print "descent"
+		printl("", self)
 		if self.folderList.canDescent():
 			self.selection = self.folderList.getFilename()
 			self.folderList.descent()
 
 	def exit(self):
-		print "exit"
+		printl("", self)
 		self.close(None)
 
 class ProjectValerieSyncSettingsConfPaths(Screen):
@@ -154,7 +157,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		self.session = session
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -164,7 +167,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		self.pathsList = []
 		fconf = open("/hdd/valerie/paths.conf", "r")
 		self.filetypes = fconf.readline().strip()
-		print self.filetypes
+		printl("self.filetypes: " + str(self.filetypes), self)
 		for path in fconf.readlines(): 
 			path = path.strip()
 			p = path.split('|')
@@ -198,20 +201,19 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		self.setTitle(_("Synchronize Manager Searchpaths"))
 
 	def remove(self):
-		print "remove"
 		entry = self["pathsList"].l.getCurrentSelection()
-		print "entry: ", entry
+		printl("entry: " + str(entry), self)
 		self.pathsList.remove(entry)
 		self["pathsList"].l.setList(self.pathsList)
 
 	def add(self):
-		print "add"
+		printl("", self)
 		self.session.openWithCallback(self.addPathToList, ProjectValerieSyncSettingsConfPathsAdd)
 
 	def addPathToList(self, path):
-		print "addPathToList"
+		printl("", self)
 		if path is not None:
-			print path
+			printl("path: " + str(path), self)
 			if path not in self.pathsList:
 				type = "MOVIE_AND_TV"
 				self.pathsList.append((path + " [" + type + "]", path, type))
@@ -219,22 +221,21 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 
 	def toggleType(self):
 		entry = self["pathsList"].l.getCurrentSelection()
-		print "entrySrc: ", entry
+		printl("entrySrc: " + str(entry), self)
 		index = self.pathsList.index(entry)
-		print "index: ", index
-		#self.pathsList.remove(entry)
+		printl("index: " + str(index), self)
 		if entry[2] == "MOVIE_AND_TV":
 			entry = (entry[1] + " [MOVIE]", entry[1], "MOVIE")
 		elif entry[2] == "MOVIE":
 			entry = (entry[1] + " [TV]", entry[1], "TV")
 		elif entry[2] == "TV":
 			entry = (entry[1] + " [MOVIE_AND_TV]", entry[1], "MOVIE_AND_TV")
-		print "entryDst: ", entry
+		printl("entryDst: " + str(entry), self)
 		self.pathsList[index] = entry
 		self["pathsList"].l.setList(self.pathsList)
 
 	def save(self):
-		print "save"
+		printl("", self)
 		fconf = open("/hdd/valerie/paths.conf", "w")
 		fconf.write(self.filetypes + "\n")
 		for entry in self.pathsList:
@@ -244,12 +245,11 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		self.exit()
 
 	def ok(self):
-		print "ok"
 		entry = self["folderList"].l.getCurrentSelection()[1]
-		print "entry: " + entry
+		printl("entry: " + str(entry), self)
 
 	def exit(self):
-		print "exit"
+		printl("", self)
 		self.close()
 
 class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
@@ -273,7 +273,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		self.session = session
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -300,7 +300,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		self.setTitle(_("Synchronize settings"))
 
 	def initConfigList(self, element=None):
-		print "[initConfigList]", element
+		printl("element: " + str(element), self)
 		self.list = []
 		try:
 			defaultLang = "en"
@@ -325,8 +325,8 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 			self.deleteIfNotFound = ConfigYesNo(default = defaultDelete)
 			self.list.append(getConfigListEntry(_("Delete movies if file can not be found"), self.deleteIfNotFound))
 			
-		except KeyError:
-			print "keyError"
+		except KeyError, ex:
+			printl("KeyError: " + str(ex), self)
 		
 		self["config"].setList(self.list)	
 
@@ -334,12 +334,11 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		self.initConfigList()
 
 	def ok(self):
-		print "ok"
+		printl("", self)
 
 	def save(self):
-		print "save"
-		print self.local.value
-		print self.deleteIfNotFound.value
+		printl("self.local.value: " + str(self.local.value), self)
+		printl("self.deleteIfNotFound.value: " + str(self.deleteIfNotFound.value), self)
 		
 		conf = []
 		fconf = open("/hdd/valerie/valerie.conf", "r")
@@ -378,7 +377,7 @@ class ProjectValerieSyncSettings(Screen):
 		self.session = session
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -410,13 +409,12 @@ class ProjectValerieSyncSettings(Screen):
 	def remove(self, file):
 		try:
 			os.remove(file)
-		except os.error:
-			pass
+		except os.error, ex:
+			printl("os.error: " + str(ex), self)
 
 	def ok(self):
-		print "ok"
 		returnValue = self["settingsMenu"].l.getCurrentSelection()[1]
-		print "returnValue: " + returnValue
+		printl("returnValue: " + str(returnValue), self)
 		if returnValue is not None:
 			if returnValue == "confPaths":
 				self.session.open(ProjectValerieSyncSettingsConfPaths)
@@ -444,7 +442,7 @@ class ProjectValerieSyncSettings(Screen):
 				self.cancel()
 
 	def cancel(self):
-		print "cancel"
+		printl("", self)
 		self.close()
 
 	def removeDir(self, dir):
@@ -454,8 +452,8 @@ class ProjectValerieSyncSettings(Screen):
 			for name in dirs:
 				try:
 					os.rmdir(os.path.join(root, name))
-				except os.error:
-					pass
+				except os.error, ex:
+					printl("os.error: " + str(ex), self)
 
 class ProjectValerieSyncInfo():
 	outputInstance = None
@@ -474,7 +472,7 @@ class ProjectValerieSyncInfo():
 	inProgress = False
 	
 	session = None
-	
+
 	def reset(self):
 		self.i = 0
 		self.linecount = 40
@@ -509,7 +507,6 @@ class ProjectValerieSyncFinished(Screen):
 
 	def setCustomTitle(self):
 		self.setTitle(_("Synchronize Manager"))
-		
 
 class ProjectValerieSyncManagerInfo(Screen):
 	skinDeprecated = """
@@ -539,6 +536,10 @@ class ProjectValerieSyncManagerInfo(Screen):
 			<widget name="episode"  position="100,210"  size="500,30" font="Regular;20"  />
 		</screen>"""
 
+	colorButtons = {}
+	
+	colorButtonsIndex = 0
+
 	def __init__(self, session, manager, element):
 		Screen.__init__(self, session)
 		
@@ -547,40 +548,50 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self.elementParent = None
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
 		
-		self["key_red"] = StaticText(_("Alternatives"))
-		self["key_green"] = StaticText(_("IMDb ID"))
-		self["key_yellow"] = StaticText(_("Update"))
-		self["key_blue"] = StaticText(_("Save"))
+		self.colorButtons[0] = {}
+		self.colorButtons[0]["key_red"]    = (_("Alternatives"), self.showAlternatives, )
+		self.colorButtons[0]["key_green"]  = (_("Update"),       self.update, )
+		self.colorButtons[0]["key_yellow"] = (_("Save"),         self.save, )
+		self.colorButtons[0]["key_blue"]   = (_("More"),         self.more, )
+		self.colorButtons[1] = {}
+		self.colorButtons[1]["key_red"]    = (_("IMDb ID"),      self.showEnterImdbId, )
+		self.colorButtons[1]["key_green"]  = (_("Delete"),       self.delete, )
+		self.colorButtons[1]["key_yellow"] = ("",                self.nothing, )
+		self.colorButtons[1]["key_blue"]   = (_("More"),         self.more, )
 		
-		self["pathtxt"] = StaticText(_("Path:"))
+		self["key_red"]    = StaticText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
+		self["key_green"]  = StaticText(self.colorButtons[self.colorButtonsIndex]["key_green"][0])
+		self["key_yellow"] = StaticText(self.colorButtons[self.colorButtonsIndex]["key_yellow"][0])
+		self["key_blue"]   = StaticText(self.colorButtons[self.colorButtonsIndex]["key_blue"][0])
+		
+		self["pathtxt"]     = StaticText(_("Path:"))
 		self["filenametxt"] = StaticText(_("Filename:"))
-		self["titletxt"] = StaticText(_("Title:"))
-		self["yeartxt"] = StaticText(_("Year:"))
-		self["seasontxt"] = StaticText(_("Season:"))
-		self["episodetxt"] = StaticText(_("Episode:"))
+		self["titletxt"]    = StaticText(_("Title:"))
+		self["yeartxt"]     = StaticText(_("Year:"))
+		self["seasontxt"]   = StaticText(_("Season:"))
+		self["episodetxt"]  = StaticText(_("Episode:"))
 		
-		self["path"] = Label()
+		self["path"]     = Label()
 		self["filename"] = Label()
-		self["title"] =  Label()
-		self["year"] =  Label()
-		self["season"] =  Label()
-		self["episode"] =  Label()
+		self["title"]    = Label()
+		self["year"]     = Label()
+		self["season"]   = Label()
+		self["episode"]  = Label()
 		
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
 		{
-			"red": self.showAlternatives,
-			"green": self.showEnterImdbId,
-			"yellow": self.update,
-			"blue": self.save,
+			"red": self.key_red,
+			"green": self.key_green,
+			"yellow": self.key_yellow,
+			"blue": self.key_blue,
 			"cancel": self.close,
-			"ok": self.close,
 		}, -1)
 		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.onLoad)
@@ -610,6 +621,36 @@ class ProjectValerieSyncManagerInfo(Screen):
 			self["season"].setText(" ")
 			self["episode"].setText(" ")
 
+	def key_red(self):
+		self.colorButtons[self.colorButtonsIndex]["key_red"][1]()
+
+	def key_green(self):
+		self.colorButtons[self.colorButtonsIndex]["key_green"][1]()
+
+	def key_yellow(self):
+		self.colorButtons[self.colorButtonsIndex]["key_yellow"][1]()
+
+	def key_blue(self):
+		self.colorButtons[self.colorButtonsIndex]["key_blue"][1]()
+
+	def more(self):
+		self.colorButtonsIndex = self.colorButtonsIndex + 1
+		if self.colorButtons.has_key(self.colorButtonsIndex) is False:
+			self.colorButtonsIndex = 0
+		self["key_red"].setText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
+		self["key_green"].setText(self.colorButtons[self.colorButtonsIndex]["key_green"][0])
+		self["key_yellow"].setText(self.colorButtons[self.colorButtonsIndex]["key_yellow"][0])
+		self["key_blue"].setText(self.colorButtons[self.colorButtonsIndex]["key_blue"][0])
+
+	def delete(self):
+		printl("", self)
+		self.manager.remove(self.element)
+		self.element = None
+		self.save()
+
+	def nothing(self):
+		pass
+
 	def close(self):
 		Screen.close(self, None)
 
@@ -617,7 +658,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self.session.openWithCallback(self.showEnterImdbIdCallback, InputBox, title=_("IMDb ID without tt"), type=Input.NUMBER)#useableChars="0123456789")
 
 	def showEnterImdbIdCallback(self, what):
-		print "showEnterImdbIdCallback", what
+		printl("what=" + str(what), self)
 		if what is not None:
 			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, "tt" + what, False)
 			if element is not None:
@@ -645,7 +686,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 			self.session.openWithCallback(self.showAlternativesCallback, ChoiceBox, title=_("Alternatives"), list=menu)
 
 	def showAlternativesCallback(self, what):
-		print "showAlternativesCallback", what
+		printl("what=" + str(what), self)
 		if what is not None and len(what) == 3:
 			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, what[1], what[2])
 			if element is not None:
@@ -672,8 +713,10 @@ class ProjectValerieSyncManagerInfo(Screen):
 	def save(self):
 		if self.elementParent is not None:
 			Screen.close(self, (self.elementParent, self.element, ))
-		else:
+		elif self.element is not None:
 			Screen.close(self, (self.element, ))
+		else:
+			Screen.close(self, None)
 
 class ProjectValerieSyncManager(Screen):
 	skinDeprecated = """
@@ -708,7 +751,7 @@ class ProjectValerieSyncManager(Screen):
 		Screen.__init__(self, session)
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -761,7 +804,6 @@ class ProjectValerieSyncManager(Screen):
 		self.load(Manager.TVSHOWSEPISODES)
 
 	def load(self, type, param=None):
-		from FailedEntry import FailedEntry
 		self.currentCategory = type
 		self.currentParam = param
 		list = []
@@ -796,20 +838,26 @@ class ProjectValerieSyncManager(Screen):
 				self.session.openWithCallback(self.elementChanged, ProjectValerieSyncManagerInfo, self.manager, self.oldElement)
 
 	def elementChanged(self, newElement):
-		print "elementChanged", newElement
+		printl("newElement: " + str(newElement), self)
 		if newElement is not None:
 			if len(newElement) == 2:
 				testElement = newElement[1]
 			else:
 				testElement = newElement[0]
 			if testElement is not self.oldElement:
-				print "elementChanged - Changed"
+				printl("elementChanged - Changed", self)
 				self.manager.replace(self.oldElement, newElement)
 				index = self["listview"].getIndex()
 				self.load(self.currentCategory, self.currentParam)
 				if index >= self["listview"].count():
 					index = self["listview"].count() - 1
 				self["listview"].setIndex(index)
+		else:
+			index = self["listview"].getIndex()
+			self.load(self.currentCategory, self.currentParam)
+			if index >= self["listview"].count():
+				index = self["listview"].count() - 1
+			self["listview"].setIndex(index)
 
 class ProjectValerieSync(Screen):
 	skinDeprecated = """
@@ -846,7 +894,7 @@ class ProjectValerieSync(Screen):
 		Screen.__init__(self, session)
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -880,8 +928,7 @@ class ProjectValerieSync(Screen):
 			"cancel": self.close,
 		}, -1)
 		
-		print "PYTHONPATH=", sys.path
-		from Tools.Directories import resolveFilename, SCOPE_PLUGINS 
+		printl("PYTHONPATH=" + str(sys.path), self)
 		sys.path.append(resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerieSync") )
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
@@ -892,12 +939,12 @@ class ProjectValerieSync(Screen):
 
 	def startup(self):
 		global gSyncInfo
-		print "startup", type(gSyncInfo)
+		printl("type(gSyncInfo): " + str(type(gSyncInfo)), self)
 		if gSyncInfo is None:
 			gSyncInfo = ProjectValerieSyncInfo()
 		gSyncInfo.outputInstance = self
 		gSyncInfo.session = self.session
-		print "gSyncInfo.inProgress", gSyncInfo.inProgress
+		printl("gSyncInfo.inProgress: " + str(gSyncInfo.inProgress), self)
 		if gSyncInfo.inProgress is True:
 			gSyncInfo.inForeground = True
 			
@@ -915,7 +962,6 @@ class ProjectValerieSync(Screen):
 			self.checkDefaults()
 
 	def checkDefaults(self):
-		from sync import checkDefaults as SyncCheckDefaults
 		SyncCheckDefaults()
 
 	def close(self):
@@ -924,17 +970,19 @@ class ProjectValerieSync(Screen):
 		Screen.close(self)
 
 	def menu(self):
+		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncSettings)
 
 	def manage(self):
+		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncManager)
 
 	def go(self):
+		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			self["console"].lastPage()
-			global gSyncInfo
 			gSyncInfo.reset()
 			gSyncInfo.inForeground = True
 			gSyncInfo.inProgress = True
@@ -943,9 +991,9 @@ class ProjectValerieSync(Screen):
 			self.thread.start()
 
 	def gofast(self):
+		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			self["console"].lastPage()
-			global gSyncInfo
 			gSyncInfo.reset()
 			gSyncInfo.inForeground = True
 			gSyncInfo.inProgress = True
@@ -954,15 +1002,16 @@ class ProjectValerieSync(Screen):
 			self.thread.start()
 
 	def finished(self, successfully):
+		global gSyncInfo
 		gSyncInfo.inProgress = False
 		if gSyncInfo.inForeground is False:
 			gSyncInfo.session.open(ProjectValerieSyncFinished)
 
 	def output(self, text):
 		global gSyncInfo
-		print text
-		print "gSyncInfo.inProgress", gSyncInfo.inProgress
-		print "gSyncInfo.inForeground", gSyncInfo.inForeground
+		#printl(text, self)
+		#print "gSyncInfo.inProgress", gSyncInfo.inProgress
+		#print "gSyncInfo.inForeground", gSyncInfo.inForeground
 		if gSyncInfo.inForeground is True:
 			if len(gSyncInfo.lines) >= gSyncInfo.linecount:
 				gSyncInfo.i = 0
@@ -980,31 +1029,36 @@ class ProjectValerieSync(Screen):
 		gSyncInfo.lines.append(text)
 
 	def progress(self, value):
+		global gSyncInfo
 		gSyncInfo.progress = value
 		if gSyncInfo.inForeground is True:
 			gSyncInfo.outputInstance["progress"].setValue(value)
 
 	def range(self, value):
+		global gSyncInfo
 		gSyncInfo.range = value
 		if gSyncInfo.inForeground is True:
 			gSyncInfo.outputInstance["progress"].range = (0, value)
 
 	def info(self, poster, name, year):
-		print name
+		global gSyncInfo
+		printl("name: " + str(name), self)
 		gSyncInfo.poster = poster
 		gSyncInfo.str = str
 		gSyncInfo.year = year
 		
 		if gSyncInfo.inForeground is True:
 			try:
-				if poster is not None and len(poster) > 0:
+				if poster is not None and len(poster) > 0 and os.access("/hdd/valerie/media/" + poster, os.F_OK) is True:
 					gSyncInfo.outputInstance["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
+				else:
+					gSyncInfo.outputInstance["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 				if name is not None and len(name) > 0:
 					gSyncInfo.outputInstance["name"].setText(name)
 				if year is not None and year > 0:
 					gSyncInfo.outputInstance["year"].setText(str(year))
 			except Exception, ex:
-				print "ProjectValerieSync::info", ex
+				printl("Exception: " + str(ex), self)
 
 def main(session, **kwargs):
 	session.open(ProjectValerieSync)

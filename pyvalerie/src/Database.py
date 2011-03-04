@@ -1,18 +1,20 @@
+# -*- coding: utf-8 -*-
 
-import cPickle as pickle
-from datetime import date
+import cPickle   as pickle
+from   datetime import date
 import os
-#import pickle
 import time
 
 import Config
 import DirectoryScanner
-from FailedEntry import FailedEntry
+from   FailedEntry       import FailedEntry
 import Genres
-from MediaInfo import MediaInfo
+from   MediaInfo         import MediaInfo
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 class Database(object):
 
@@ -43,7 +45,7 @@ class Database(object):
 				if Genres.isGenre(genre) is False:
 					newGenre = Genres.getGenre(genre)
 					if newGenre != "Unknown":
-						print "GENRE:", genre, "->", newGenre
+						printl("GENRE: " + str(genre) + " -> " + str(newGenre), self)
 						transformedGenre += newGenre + u"|"
 				else:
 					transformedGenre += genre + u"|"
@@ -57,7 +59,7 @@ class Database(object):
 				if Genres.isGenre(genre) is False:
 					newGenre = Genres.getGenre(genre)
 					if newGenre != "Unknown":
-						print "GENRE:", genre, "->", newGenre
+						printl("GENRE: " + str(genre) + " -> " + str(newGenre), self)
 						transformedGenre += newGenre + u"|"
 				else:
 					transformedGenre += genre + u"|"
@@ -73,7 +75,7 @@ class Database(object):
 							if Genres.isGenre(genre) is False:
 								newGenre = Genres.getGenre(genre)
 								if newGenre != "Unknown":
-									print "GENRE:", genre, "->", newGenre
+									printl("GENRE: " + str(genre) + " -> " + str(newGenre), self)
 									transformedGenre += newGenre + u"|"
 							else:
 								transformedGenre += genre + u"|"
@@ -81,17 +83,16 @@ class Database(object):
 							transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
 						self.dbEpisodes[key][season][episode].Genres = transformedGenre
 
-	
 	def clearFailed(self):
 		del self.dbFailed[:]
-	
+
 	def addFailed(self, entry):
 		self.dbFailed.append(entry)
-	
+
 	def removeFailed(self, entry):
 		if entry in self.dbFailed:
 			self.dbFailed.remove(entry)
-	
+
 	def deleteMissingFiles(self):
 		listMissing = []
 		
@@ -110,16 +111,16 @@ class Database(object):
 						if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 							listMissing.append(m)
 		
-		print "Missing:", len(listMissing)
+		printl("Missing: " + str(len(listMissing)), self)
 		for m in listMissing:
 			self.remove(m)
-	
+
 	def searchDeleted(self):
 		for key in self.dbMovies:
 			m = self.dbMovies[key]
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-				print ":-( " + Utf8.utf8ToLatin(path)
+				printl(":-( " + Utf8.utf8ToLatin(path), self)
 		
 		for key in self.dbSeries:
 			if key in self.dbEpisodes:
@@ -128,15 +129,14 @@ class Database(object):
 						m = self.dbEpisodes[key][season][episode]
 						path = m.Path + u"/" + m.Filename + u"." + m.Extension
 						if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-							print ":-( " + Utf8.utf8ToLatin(path)
-		
+							printl(":-( " + Utf8.utf8ToLatin(path), self)
+
 	##
 	# Checks if file is already in the db
 	# @param path: utf-8 
 	# @param filename: utf-8 
 	# @param extension: utf-8 
 	# @return: True if already in db, False if not
-		
 	def checkDuplicate(self, path, filename, extension):
 		for key in self.dbMovies:
 			if self.dbMovies[key].Path == path:
@@ -153,40 +153,28 @@ class Database(object):
 								if self.dbEpisodes[key][season][episode].Extension == extension:
 									return True
 		return False
-		#if pth in self.duplicateDetector:
-		#	return True
-		#else:
-		#	return False
 
-	def remove(self, media):
-		printl("isMovie=" + str(media.isMovie) + "isSerie=" + str(media.isSerie) + "isEpisode=" + str(media.isEpisode), self)
-		if media.isMovie:
+	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
+		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
+		if media.isMovie or isMovie:
 			if self.dbMovies.has_key(media.ImdbId) is True:
 				del(self.dbMovies[media.ImdbId])
 				return True
-		elif media.isSerie:
+		if media.isSerie or isSerie:
 			if self.dbSeries.has_key(media.TheTvDbId) is True:
-				print "z"
 				del(self.dbSeries[media.TheTvDbId])
 				return True
-		elif media.isEpisode:
+		if media.isEpisode or isEpisode:
 			if self.dbEpisodes.has_key(media.TheTvDbId) is True:
-				print "a"
 				if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is True:
-					print "b"
 					if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is True:
-						print "c"
 						del(self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode])
 						if len(self.dbEpisodes[media.TheTvDbId][media.Season]) == 0:
-							print "e"
 							del(self.dbEpisodes[media.TheTvDbId][media.Season])
 						if len(self.dbEpisodes[media.TheTvDbId]) == 0:
-							print "f"
 							del(self.dbEpisodes[media.TheTvDbId])
 							if self.dbSeries.has_key(media.TheTvDbId) is True:
-								print "g"
 								del(self.dbSeries[media.TheTvDbId])
-						print "h"
 						return True
 		return False
 
@@ -195,7 +183,6 @@ class Database(object):
 	# @param media: The media file
 	# @return: False if file is already in db or movie already in db, else True 
 	def add(self, media):
-		
 		if media.isSerie:
 			if self.dbSeries.has_key(media.TheTvDbId) is False:
 				self.dbSeries[media.TheTvDbId] = media
@@ -207,7 +194,7 @@ class Database(object):
 		# Checks if the file is already in db
 		if self.checkDuplicate(media.Path, media.Filename, media.Extension):
 			return False
-
+		
 		pth = media.Path + "/" + media.Filename + "." + media.Extension
 		self.duplicateDetector.append(pth)
 		
@@ -227,7 +214,6 @@ class Database(object):
 				self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
 			else:
 				return False
-			
 		return True
 
 	def __str__(self):
@@ -236,7 +222,7 @@ class Database(object):
 			if key in self.dbEpisodes:
 				for season in self.dbEpisodes[key]:
 					epcount +=  len(self.dbEpisodes[key][season])
-		rtv =   unicode(len(self.dbMovies)) + \
+		rtv = unicode(len(self.dbMovies)) + \
 				u" " + \
 				unicode(len(self.dbSeries)) + \
 				u" " + \
@@ -261,15 +247,17 @@ class Database(object):
 	DB_SQLITE= 4
 	USE_DB_VERSION = DB_TXD
 
+	TXD_VERSION = 3
+
 	def rmTxt(self):
 		try:
 			os.remove(self.MOVIESTXT)
 		except Exception, ex:
-			print ex
+			printl("Exception: " + str(ex), self)
 		try:
 			os.remove(self.TVSHOWSTXT)
 		except Exception, ex:
-			print ex
+			printl("Exception: " + str(ex), self)
 			
 		ds = DirectoryScanner.DirectoryScanner()
 		ds.clear()
@@ -278,11 +266,7 @@ class Database(object):
 		filetypes.append("txt")
 		ds.listDirectory(filetypes, None, 0)
 		for ele in ds.getFileList():
-			print "TO BE DELETED:", ele
-		#	try:
-		#		os.remove(ele[0] + "/" + ele[1] + "." + ele[2])
-		#	except Exception, ex:
-		#		print ex
+			printl("TO BE DELETED: " + str(ele), self)
 
 	def save(self):
 		if self.USE_DB_VERSION == self.DB_TXT:
@@ -295,8 +279,6 @@ class Database(object):
 		#elif self.USE_DB_VERSION == self.DB_PICKLE:
 		self.savePickel()
 
-
-		
 	def saveTxt(self):
 		start_time = time.time()	
 		f = Utf8.Utf8(u"/hdd/valerie/moviedb.txt", 'w')
@@ -304,10 +286,9 @@ class Database(object):
 		for key in self.dbMovies:
 			f.write(self.dbMovies[key].export())
 			self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
-		#	valeriedbCursor.execute('''insert into movies values (?)''', [(self.dbMovies[key].ImdbId,), (self.dbMovies[key].Title,), (self.dbMovies[key].Year,)] )
 		f.close()
 		elapsed_time = time.time() - start_time
-		print "Took: ", elapsed_time
+		printl("Took (moviedb.txt): " + str(elapsed_time), self)
 		
 		start_time = time.time()	
 		f = Utf8.Utf8(u"/hdd/valerie/seriesdb.txt", 'w')
@@ -317,8 +298,8 @@ class Database(object):
 				f.write(self.dbSeries[key].export())
 		f.close()
 		elapsed_time = time.time() - start_time
-		print "Took (seriesdb.txt): ", elapsed_time
-
+		printl("Took (seriesdb.txt): " + str(elapsed_time), self)
+		
 		start_time = time.time()  
 		for serie in self.dbEpisodes:
 			f = Utf8.Utf8(u"/hdd/valerie/episodes/" + serie + u".txt", 'w')
@@ -329,10 +310,8 @@ class Database(object):
 					self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path)
 			f.close()
 		elapsed_time = time.time() - start_time
-		print "Took (episodes/*.txt): ", elapsed_time
-	
-	TXD_VERSION = 3
-	
+		printl("Took (episodes/*.txt): " + str(elapsed_time), self)
+
 	def saveTxd(self):
 		start_time = time.time()	
 		f = Utf8.Utf8(self.MOVIESTXD, 'w')
@@ -342,7 +321,7 @@ class Database(object):
 		f.write("EOF\n")
 		f.close()
 		elapsed_time = time.time() - start_time
-		print "Took (episodes/*.txd):", elapsed_time
+		printl("Took (movies.txd): " + str(elapsed_time), self)
 		
 		start_time = time.time()	
 		f = Utf8.Utf8(self.TVSHOWSTXD, 'w')
@@ -353,8 +332,8 @@ class Database(object):
 		f.write("EOF\n")
 		f.close()
 		elapsed_time = time.time() - start_time
-		print "Took (seriesdb.txd): ", elapsed_time
-
+		printl("Took (tvshows.txd): " + str(elapsed_time), self)
+		
 		start_time = time.time()  
 		for serie in self.dbEpisodes:
 			f = Utf8.Utf8(u"/hdd/valerie/episodes/" + serie + u".txd", 'w')
@@ -365,29 +344,29 @@ class Database(object):
 			f.write("EOF\n")
 			f.close()
 		elapsed_time = time.time() - start_time
-		print "Took (episodes/*.txd): ", elapsed_time
-			
+		printl("Took (episodes/*.txd): " + str(elapsed_time), self)
+
 	def savePickel(self):
 		start_time = time.time()  
 		fd = open(self.FAILEDDB, "wb")
 		pickle.dump(self.dbFailed, fd, pickle.HIGHEST_PROTOCOL)
 		fd.close()
 		elapsed_time = time.time() - start_time
-		print "Took: ", elapsed_time
+		printl("Took (failed.db): " + str(elapsed_time), self)
 		
 		start_time = time.time()  
 		fd = open(self.MOVIESDB, "wb")
 		pickle.dump(self.dbMovies, fd, pickle.HIGHEST_PROTOCOL)
 		fd.close()
 		elapsed_time = time.time() - start_time
-		print "Took: ", elapsed_time
+		printl("Took (movies.db): " + str(elapsed_time), self)
 		
 		start_time = time.time()  
 		fd = open(self.TVSHOWSDB, "wb")
 		pickle.dump(self.dbSeries, fd, pickle.HIGHEST_PROTOCOL)
 		fd.close()
 		elapsed_time = time.time() - start_time
-		print "Took (tvshows.db): ", elapsed_time
+		printl("Took (tvshows.db): " + str(elapsed_time), self)
 		
 		#start_time = time.time()
 		#for serie in self.dbEpisodes:
@@ -402,8 +381,8 @@ class Database(object):
 		pickle.dump(self.dbEpisodes, fd, pickle.HIGHEST_PROTOCOL)
 		fd.close()
 		elapsed_time = time.time() - start_time
-		print "Took (episodes.db): ", elapsed_time
-		
+		printl("Took (episodes.db): " + str(elapsed_time), self)
+
 	def load(self):
 		if os.path.isfile(self.FAILEDDB):
 			fd = open(self.FAILEDDB, "rb")
@@ -424,7 +403,6 @@ class Database(object):
 		else:
 			self.loadTxt(False, True)
 		
-		
 		# FIX: GHOSTFILES
 		if self.dbEpisodes.has_key("0"):
 			ghost = self.dbEpisodes["0"].values()
@@ -433,6 +411,13 @@ class Database(object):
 					self.remove(episode)
 			if self.dbEpisodes.has_key("0"):
 				del self.dbEpisodes["0"]
+		
+		for tvshow in self.dbEpisodes.values():
+			for season in tvshow.values():
+				for episode in season.values():
+					if episode.isEpisode is False:
+						b = self.remove(episode, isEpisode=True)
+						printl("RM: " + str(b), self)
 
 	def loadTxt(self, loadMovie, loadTVShow):
 		if loadMovie:
@@ -447,17 +432,7 @@ class Database(object):
 							m = MediaInfo("","","")
 							m.importStr(movie[1], True, False, False)
 							path = m.Path + u"/" + m.Filename + u"." + m.Extension
-							#if Config.getBoolean("delete") is False or os.path.isfile(Utf8.utf8ToLatin(path)):
-							#	if m.isValerieInfoAvailable(m.Path):
-							#		if m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
-							#			self.add(m)
-							#	else:
-							#		self.add(m)
-							#else:
-							print "Not found: ", Utf8.utf8ToLatin(path)
-							#	print os.path.isfile(Utf8.utf8ToLatin(path))
-							#	print m.getValerieInfoAccessTime(m.Path)
-							#	print m.getValerieInfoLastAccessTime(m.Path)
+							printl("Not found: " + Utf8.utf8ToLatin(path), self)
 			except Exception, ex:
 				print ex
 				print '-'*60
@@ -466,8 +441,8 @@ class Database(object):
 				print '-'*60
 			
 			elapsed_time = time.time() - start_time
-			print "Took (moviedb.txt): ", elapsed_time
-
+			printl("Took (moviedb.txt): " + str(elapsed_time), self)
+		
 		if loadTVShow:
 			start_time = time.time()
 			try:
@@ -487,7 +462,7 @@ class Database(object):
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
 			elapsed_time = time.time() - start_time
-			print "Took (seriesdb.txt):", elapsed_time
+			printl("Took (seriesdb.txt): " + str(elapsed_time), self)
 			
 			start_time = time.time()
 			try:	
@@ -508,10 +483,10 @@ class Database(object):
 									else:
 										self.add(m)
 								else:
-									print "Not found: ", Utf8.utf8ToLatin(path)
-									print os.path.isfile(Utf8.utf8ToLatin(path))
-									print m.getValerieInfoAccessTime(m.Path)
-									print m.getValerieInfoLastAccessTime(m.Path)
+									printl("Not found: " + Utf8.utf8ToLatin(path), self)
+									printl(str(os.path.isfile(Utf8.utf8ToLatin(path))), self)
+									printl(str(m.getValerieInfoAccessTime(m.Path)), self)
+									printl(str(m.getValerieInfoLastAccessTime(m.Path)), self)
 			except Exception, ex:
 				print ex
 				print '-'*60
@@ -519,7 +494,7 @@ class Database(object):
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
 			elapsed_time = time.time() - start_time
-			print "Took (episodes/*.txt): ", elapsed_time
+			printl("Took (episodes/*.txt): " + str(elapsed_time), self)
 
 	def loadTxd(self, loadMovie, loadTVShow):
 		if loadMovie:
@@ -544,8 +519,8 @@ class Database(object):
 				print '-'*60
 			
 			elapsed_time = time.time() - start_time
-			print "Took (movies.txd): ", elapsed_time
-
+			printl("Took (movies.txd): " + str(elapsed_time), self)
+		
 		if loadTVShow:
 			start_time = time.time()
 			try:
@@ -568,7 +543,7 @@ class Database(object):
 				print '-'*60
 			
 			elapsed_time = time.time() - start_time
-			print "Took (tvshows.txd): ", elapsed_time
+			printl("Took (tvshows.txd): " + str(elapsed_time), self)
 			
 			start_time = time.time()
 			try:	
@@ -591,7 +566,7 @@ class Database(object):
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
 			elapsed_time = time.time() - start_time
-			print "Took (episodes/*.txd): ", elapsed_time
+			printl("Took (episodes/*.txd): " + str(elapsed_time), self)
 
 	def loadPickle(self, loadMovie, loadTVShow):
 		if loadMovie:
@@ -601,13 +576,10 @@ class Database(object):
 				self.dbMovies = pickle.load(fd)
 				fd.close()
 				elapsed_time = time.time() - start_time
-				print "Took (movie.db):", elapsed_time
+				printl("Took (movies.db): " + str(elapsed_time), self)
 			except Exception, ex:
-				print "-"*30
-				print "Database::loadPickle"
-				print ex
-				print "-"*30
-
+				printl("Exception: " + str(ex), self)
+		
 		if loadTVShow:
 			try:
 				start_time = time.time()
@@ -615,12 +587,9 @@ class Database(object):
 				self.dbSeries = pickle.load(fd)
 				fd.close()
 				elapsed_time = time.time() - start_time
-				print "Took (tvshows.db):", elapsed_time
+				printl("Took (tvshows.db): " + str(elapsed_time), self)
 			except Exception, ex:
-				print "-"*30
-				print "Database::loadPickle"
-				print ex
-				print "-"*30
+				printl("Exception: " + str(ex), self)
 			
 			#start_time = time.time()
 			#self.dbEpisodes = {}
@@ -639,9 +608,6 @@ class Database(object):
 				self.dbEpisodes = pickle.load(fd)
 				fd.close()
 				elapsed_time = time.time() - start_time
-				print "Took (episodes.db):", elapsed_time
+				printl("Took (episodes.db): " + str(elapsed_time), self)
 			except Exception, ex:
-				print "-"*30
-				print "Database::loadPickle"
-				print ex
-				print "-"*30
+				printl("Exception: " + str(ex), self)

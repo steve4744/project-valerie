@@ -499,6 +499,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					self.trakt.setYear(self.moviedb[selection[1]]["Year"])
 					self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
 					self.trakt.setImdbId(self.moviedb[selection[1]]["ImdbId"])
+					self.trakt.setProgress(1)
+					self.trakt.setDuration(90)
 					self.trakt.send()
 				
 				isDVD = False
