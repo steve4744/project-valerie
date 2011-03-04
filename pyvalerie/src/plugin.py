@@ -819,8 +819,14 @@ class ProjectValerieSyncManager(Screen):
 							Utf8.utf8ToLatin(entry.Title), entry), )
 		else:
 			for entry in entries:
-				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
-							Utf8.utf8ToLatin(entry.Title), entry), )
+				if entry.Extension.lower() == u"ifo":
+					dirs = entry.Path.split(u"/")
+					dirs[len(dirs) - 2]
+					list.append((Utf8.utf8ToLatin(dirs[len(dirs) - 2]) + " [VIDEO_TS]", 
+								Utf8.utf8ToLatin(entry.Title), entry), )
+				else:
+					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+								Utf8.utf8ToLatin(entry.Title), entry), )
 		
 		list = sorted(list)
 		self["listview"].setList(list)
