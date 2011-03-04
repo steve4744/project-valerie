@@ -248,6 +248,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 					d["Popularity"] = lines[i+9]
 					d["Genres"] = lines[i+10]
 				
+				d["Creation"] = os.stat(d["Path"]).st_mtime
+				
 				# deprecated
 				d["Directors"] = ""
 				d["Writers"]   = ""
@@ -308,6 +310,8 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 						
 						if key in filter: 
 							d[key] = text
+					
+					d["Creation"] = os.stat(d["Path"]).st_mtime
 					
 					#print d
 					if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
@@ -552,17 +556,18 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 	def genresCallback(self, choice):
 		if choice is None:
 			return
-
+		
 		if choice[1] == "all":
 			self.genreFilter = ""
 		else:
 			self.genreFilter = choice[1]
 		self.loadMovies()
-		
+
 	def KeySort(self):
 		menu = []
-		menu.append((_("Title"), "title"))
-		menu.append((_("Year"), "Year"))
+		menu.append((_("Title"), "Title"))
+		menu.append((_("Aired"), "Year"))
+		menu.append((_("Creation"), "Creation"))
 		menu.append((_("Popularity"), "Popularity"))
 		self.session.openWithCallback(self.sortCallback, ChoiceBox, title=_("Sort by"), list=menu)
 
@@ -570,7 +575,7 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 		if choice is None:
 			return
 
-		if choice[1] == "title":
+		if choice[1] == "Title":
 			self.Sort = ""
 		else:
 			self.Sort = choice[1]
