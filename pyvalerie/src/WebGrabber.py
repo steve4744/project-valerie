@@ -44,106 +44,127 @@ def freeSpace(folder):
 	return (s.f_bavail * s.f_frsize)/(1024*1024.0)
 
 def checkCache(url):
-	cacheFile = re.sub(r'\W', "", url).strip()
-	rtv = None
-	if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
-		f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
-		rtv = f.read()
-		f.close()
+	try:
+		cacheFile = re.sub(r'\W', "", url).strip()
+		rtv = None
+		if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
+			f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
+			rtv = f.read()
+			f.close()
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
 	
 	return rtv
 
 def addCache(url, text):
-	if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
-		for f in os.listdir(cacheDir):
-			file = os.path.join(cacheDir, f)
-			printl("RM: " + str(file), self)
-			os.remove(file)
-	
-	cacheFile = re.sub(r'\W', "", url).strip()
-	if text is not None and len(text) > 0:
-		f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
-		f.write(text)
-		f.close
+	try:
+		if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
+			for f in os.listdir(cacheDir):
+				file = os.path.join(cacheDir, f)
+				printl("RM: " + str(file), self)
+				os.remove(file)
+		
+		cacheFile = re.sub(r'\W', "", url).strip()
+		if text is not None and len(text) > 0:
+			f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
+			f.write(text)
+			f.close
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
 
 def getXml(url, rawXml = None):
-	if rawXml is None:
-		rawXml = getText(url) 
-	decodedXml = None
 	try:
-		if rawXml is not None:
-			try:
-				decodedXml = minidom.parseString(rawXml)
-			except Exception, ex:
-				printl("minidom.parseString as latin-1 failed, retrieing as utf-8. Ex: " + str(ex), __name__)
-				decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+		if rawXml is None:
+			rawXml = getText(url) 
+		decodedXml = None
+		try:
+			if rawXml is not None:
+				try:
+					decodedXml = minidom.parseString(rawXml)
+				except Exception, ex:
+					printl("minidom.parseString as latin-1 failed, retrieing as utf-8. Ex: " + str(ex), __name__)
+					decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+		except Exception, ex:
+			printl("minidom.parseString as latin-1 and utf-8 failed, ignoring. Ex: " + str(ex), __name__)
+			printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
+			printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
+			printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__)
 	except Exception, ex:
-		printl("minidom.parseString as latin-1 and utf-8 failed, ignoring. Ex: " + str(ex), __name__)
-		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
-		printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
-		printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__)
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+	
 	return decodedXml
 
 def getHtml(url):
-	rawHtml = getText(url) 
-	decodedHtml = None
 	try:
+		rawHtml = getText(url) 
+		decodedHtml = None
 		if rawHtml is not None:
 			decodedHtml = decode_htmlentities(rawHtml)
 	except Exception, ex:
-		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
-		printl("Exception: " + str(ex), __name__)
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
 	
 	return decodedHtml
 
 def getText(url): 
-	utfPage = checkCache(url)
-	if utfPage is None:
-		for i in range(RETRIES):
-			printl("-> (" + str(i) + ") " + str(Utf8.utf8ToLatin(url)), __name__)
-			page = None
-			kwargs = {}
-			if version_info[1] >= 6:
-				kwargs['timeout'] = 10
-			else:
-				socket.setdefaulttimeout(10)
-			try:
-				opener = urllib2.build_opener()
-				opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
-				#opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
-				if version_info[1] >= 6:
-					page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
-				else:
-					page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
-			
-			except IOError, ex:
-				printl("IOError: " +  str(ex), __name__)
-				continue
-			
-			if page is not None:
-				rawPage = page.read()
-				utfPage = Utf8.stringToUtf8(rawPage)
+	try:
+		utfPage = checkCache(url)
+		if utfPage is None:
+			for i in range(RETRIES):
+				printl("-> (" + str(i) + ") " + str(Utf8.utf8ToLatin(url)), __name__)
+				page = None
+				kwargs = {}
+				try:
+					opener = urllib2.build_opener()
+					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
+					#opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
+					if version_info[1] >= 6:
+						page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
+					else:
+						socket.setdefaulttimeout(10)
+						page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
 				
-				addCache(url, utfPage)
-				break
+				except IOError, ex:
+					printl("IOError: " +  str(ex), __name__)
+					continue
+				
+				if page is not None:
+					rawPage = page.read()
+					utfPage = Utf8.stringToUtf8(rawPage)
+					
+					addCache(url, utfPage)
+					break
+		
+		printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
+		return utfPage
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
 	
-	printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
-	return utfPage
+	return u""
 
 def getFile(url, name, retry=3):
-	localFilename = downloadDir + "/" + name
-	url = url.strip() # Just to be on the save side
-	if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
-		for i in range(retry):
-			try:
-				page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
-				f = open(Utf8.utf8ToLatin(localFilename), 'wb')
-				f.write(page.read())
-				f.close()
-				break
-			except Exception, ex:
-				printl("File download failed. Ex: " + str(ex), __name__)
-				printl("Name: " + str(Utf8.utf8ToLatin(name)), __name__)
-				printl("Url: " + str(Utf8.utf8ToLatin(url)), __name__)
-				printl("type(ex): " + str(type(ex)), __name__)
+	try:
+		localFilename = downloadDir + "/" + name
+		url = url.strip() # Just to be on the save side
+		if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
+			for i in range(retry):
+				try:
+					page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
+					f = open(Utf8.utf8ToLatin(localFilename), 'wb')
+					f.write(page.read())
+					f.close()
+					break
+				except Exception, ex:
+					printl("File download failed. Ex: " + str(ex), __name__)
+					printl("Name: " + str(Utf8.utf8ToLatin(name)), __name__)
+					printl("Url: " + str(Utf8.utf8ToLatin(url)), __name__)
+					printl("type(ex): " + str(type(ex)), __name__)
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+	
 	return
