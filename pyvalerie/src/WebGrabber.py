@@ -62,7 +62,7 @@ def addCache(url, text):
 		if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
 			for f in os.listdir(cacheDir):
 				file = os.path.join(cacheDir, f)
-				printl("RM: " + str(file), self)
+				printl("RM: " + str(file), __name__)
 				os.remove(file)
 		
 		cacheFile = re.sub(r'\W', "", url).strip()
