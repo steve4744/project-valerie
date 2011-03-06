@@ -109,7 +109,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate))
 			self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
 			self.list.append(getConfigListEntry(_("Skin"), config.plugins.pvmc.skin))
-			
+			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
 			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
 			
 			
@@ -361,7 +361,10 @@ class PVMC_MainMenu(Screen):
 
 	def power(self):
 		import Screens.Standby
-		self.session.open(Screens.Standby.TryQuitMainloop, 1)
+		if config.plugins.pvmc.onpowerpress.value == "Standby":
+			self.session.open(Screens.Standby.Standby)
+		else:
+			self.session.open(Screens.Standby.TryQuitMainloop, 1)
 
 	def checkForUpdate(self):
 		box = getBoxtype()

@@ -41,6 +41,8 @@ config.plugins.pvmc.checkforupdate    = ConfigYesNo(default = True)
 
 config.plugins.pvmc.showmovieandtvinmainmenu    = ConfigYesNo(default = False)
 
+config.plugins.pvmc.onpowerpress   = ConfigSelection(default="DeepStandby", choices = ["DeepStandby", "Standby", ])
+
 config.plugins.pvmc.backdropquality   = ConfigSelection(default="High", choices = ["High", "Low", ])
 config.plugins.pvmc.uselocal          = ConfigYesNo(default = False)
 
