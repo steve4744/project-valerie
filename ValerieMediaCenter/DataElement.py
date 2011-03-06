@@ -46,7 +46,7 @@ class DataElement(Renderer):
 		printl("screen=" + str(screen.skinName) + " name=" + str(name), self)
 		try:
 			for entry in skin.dom_skins:
-				#print entry[0], " - ", config.plugins.pvmc.skinfolderpath.value
+				print entry[0], " - ", config.plugins.pvmc.skinfolderpath.value
 				if entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
 					for element in entry[1]:
 						#print element

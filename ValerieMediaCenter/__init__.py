@@ -16,6 +16,7 @@ from enigma import getDesktop
 import os
 
 from DMC_Global import printl
+from __plugin__ import loadPlugins
 #from WebInterface import WebInterface
 
 printl("Init")
@@ -37,6 +38,8 @@ config.plugins.pvmc.language          = ConfigSelection(default="EN", choices = 
 config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
 config.plugins.pvmc.checkforupdate    = ConfigYesNo(default = True)
+
+config.plugins.pvmc.showmovieandtvinmainmenu    = ConfigYesNo(default = False)
 
 config.plugins.pvmc.backdropquality   = ConfigSelection(default="High", choices = ["High", "Low", ])
 config.plugins.pvmc.uselocal          = ConfigYesNo(default = False)
@@ -88,15 +91,18 @@ except Exception, e:
 	config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 	config.plugins.pvmc.skin.value           = defaultSkin
 	
-#if skinLoaded == False:
-#	try:
-#		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
-#		skinLoaded = True
-#	except Exception, e:
-#		print e
-#		skinLoaded = False
-#		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
-#		config.plugins.pvmc.skin.value           = defaultSkin
+if skinLoaded == False:
+	try:
+		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+		skinLoaded = True
+	except Exception, e:
+		print e
+		skinLoaded = False
+		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
+		config.plugins.pvmc.skin.value           = defaultSkin
+
+loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
+loadPlugins(config.plugins.pvmc.pluginfolderpath.value + "/DMC_Plugins", "Plugins.Extensions.ProjectValerie.DMC_Plugins.")
 
 #Webinterface
 #gWebInterface = WebInterface()

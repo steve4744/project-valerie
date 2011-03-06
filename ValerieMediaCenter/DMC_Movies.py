@@ -608,4 +608,5 @@ class PVMC_Movies(Screen, HelpableScreen, InfoBarBase):
 			#self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]]["Title"], self.moviedb[selection[1]]["Plot"])
 			self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
-#------------------------------------------------------------------------------------------
+from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+registerPlugin(Plugin(name=_("Movies"), start=PVMC_Movies, where=Plugin.MENU_VIDEOS))

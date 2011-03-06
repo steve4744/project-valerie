@@ -26,7 +26,7 @@
 </screen>
 <!-- PVMC Main Menu -->
 <screen name="PVMC_MainMenu" position="0,0" size="720,576" title=" " backgroundColor="#FF000000" flags="wfNoBorder">
-    <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
+    <widget name="API" text="3" position="0,0" zPosition="0" size="1,1"/>
     <widget name="stillpicture_usedreamscene" text="/hdd/valerie/dreamscene/blackSwan.mp4" position="0,0" zPosition="0" size="1,1"/>
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/background.m1v"/>
     <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="60,60" size="600,55" font="Modern;40" backgroundColor="#FF000000" foregroundColor="#006CA4C5" transparent="1" />
@@ -289,5 +289,41 @@
     <widget source="key_green" render="Label" position="180,441" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/>
     <!-- widget source="key_yellow" render="Label" position="330,441" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/ -->
     <!-- widget source="key_blue" render="Label" position="480,441" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/ -->
+</screen>
+<!-- PLUGINS -->
+<!-- PVMC_PicturePlayer -->
+<screen name="PVMC_PicturePlayer" position="center,center" size="720,576" title=" " flags="wfNoBorder" transparent="0">
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/blackSwan-fs8.png" zPosition="-10" position="0,0" size="720,576" transparent="0"/>
+    <eLabel zPosition="0" position="50,50" size="620,476" backgroundColor="#545454" transparent="0"/>
+    <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="60,60" size="600,45" font="Modern;30" foregroundColor="#006CA4C5"/>
+    <eLabel zPosition="1" position="60,110" size="400,370" backgroundColor="#404040" transparent="0"/>
+    <widget name="filelist" position="64,114" zPosition="2" size="392,362" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#404040"/>
+    <!-- empty line -->
+    <eLabel text="" zPosition="1" position="470,110" size="2,375" backgroundColor="#00FFFFFF"/>
+    <!-- empty line -->
+    <widget name="thn" position="480,110" size="180,160" alphatest="on" />
+    <!-- empty line -->
+    <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,499" size="15,16" alphatest="blend"/>
+    <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="210,499" size="15,16" alphatest="blend"/>
+    <ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="1" position="360,499" size="15,16" alphatest="blend"/>
+    <ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="1" position="510,499" size="15,16" alphatest="blend"/>
+    <widget source="key_red" render="Label" position="80,491" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/>
+    <widget source="key_green" render="Label" position="230,491" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/>
+    <widget source="key_yellow" render="Label" position="380,491" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/>
+    <widget source="key_blue" render="Label" position="530,491" zPosition="1" size="130,30" font="Modern;18" halign="left" valign="top" transparent="1"/>
+</screen>
+<!-- PVMC_PicturePlayerSetup -->
+<screen name="PVMC_PicturePlayerSetup" position="center,center" size="720,576" title=" " flags="wfNoBorder" transparent="0">
+    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/blackSwan-fs8.png" zPosition="-1" position="0,0" size="720,576" alphatest="off"/>
+    <eLabel zPosition="0" position="50,50" size="620,476" backgroundColor="#545454" transparent="0"/>
+    <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="60,60" size="600,45" font="Modern;30" foregroundColor="#006CA4C5"/>
+    <eLabel zPosition="1" position="60,110" size="600,370" backgroundColor="#404040" transparent="0"/>
+    <widget name="config" zPosition="2" position="60,110" size="600,370" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#404040"/>
+    <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="60,499" size="15,16" alphatest="blend"/>
+    <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="210,499" size="15,16" alphatest="blend"/>
+    <widget source="key_red" render="Label" position="80,491" zPosition="1" size="130,30" font="Modern;20" halign="left" valign="top" transparent="1"/>
+    <widget source="key_green" render="Label" position="230,491" zPosition="1" size="130,30" font="Modern;20" halign="left" valign="top" transparent="1"/>
+</screen>
+<screen name="PVMC_PicturePlayerFullView" position="center,center" size="720,576" title=" " flags="wfNoBorder" transparent="0">
 </screen>
 </skin>

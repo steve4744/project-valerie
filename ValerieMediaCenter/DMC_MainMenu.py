@@ -26,6 +26,7 @@ from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
+from __plugin__ import getPlugins, Plugin, registerPlugin
 from DataElement import DataElement
 from DMC_Global import printl, getBoxtype, getAPILevel
 from DMC_Movies import PVMC_Movies
@@ -68,7 +69,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			<widget name="config" position="10,44" size="430,146" />
 		</screen>"""
 
-	def __init__(self, session, parent):
+	def __init__(self, session):
 		from Components.Sources.StaticText import StaticText
 		Screen.__init__(self, session)
 		
@@ -84,7 +85,6 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		self["key_green"] = StaticText(_("Save"))
 
 		ConfigListScreen.__init__(self, [])
-		self.parent = parent
 		self.initConfigList()
 		#config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
 
@@ -109,6 +109,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate))
 			self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
 			self.list.append(getConfigListEntry(_("Skin"), config.plugins.pvmc.skin))
+			
+			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
+			
 			
 			self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
 			self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
@@ -246,13 +249,56 @@ class PVMC_MainMenu(Screen):
 			listWatch.append((_("Series"), "PVMC_Series", "menu_series", "50"))
 			self["menuWatch"] = List(listWatch, True)
 			self.Watch = False
-		elif self.APILevel >= 2:
+		elif self.APILevel == 2:
 			list = []
 			list.append((_("Settings"), "PVMC_Settings", "menu_settings", "50"))
-			list.append((_("Synchronize"),     "PVMC_Sync",     "menu_sync", "50"))
+			list.append((_("Synchronize"), "PVMC_Sync",     "menu_sync", "50"))
 			list.append((_("Live TV"),  "InfoBar",       "menu_tv", "50"))
 			list.append((_("Movies"),   "PVMC_Movies",   "menu_movies", "50"))
 			list.append((_("TV Shows"), "PVMC_Series",   "menu_series", "50"))
+			
+			self["menu"] = List(list, True)
+			
+			self["version"] = Label(config.plugins.pvmc.version.value)
+		
+		elif self.APILevel >= 3:
+			list = []
+			plugins = getPlugins(where=Plugin.MENU_PICTURES)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("Pictures"), plugins[0], "", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("Pictures >"), plugins, "", "50"))
+			
+			plugins = getPlugins(where=Plugin.MENU_MUSIC)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("Music"), plugins[0], "", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("Music >"), plugins, "", "50"))
+			
+			list.append((_("Live TV"),  "InfoBar", "", "50"))
+			
+			if config.plugins.pvmc.showmovieandtvinmainmenu.value is True:
+				list.append((_("Movies"),   "PVMC_Movies","", "50"))
+				list.append((_("TV Shows"), "PVMC_Series", "", "50"))
+			
+			plugins = getPlugins(where=Plugin.MENU_VIDEOS)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("Videos"), plugins[0], "", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("Videos >"), plugins, "", "50"))
+			
+			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("Programs"), plugins[0], "", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("Programs >"), plugins, "", "50"))
+			
+			plugins = getPlugins(where=Plugin.MENU_SYSTEM)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("System"), plugins[0], "", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("System >"), plugins, "", "50"))
+			
 			self["menu"] = List(list, True)
 			
 			self["version"] = Label(config.plugins.pvmc.version.value)
@@ -377,6 +423,7 @@ class PVMC_MainMenu(Screen):
 			selection = self["menu"].getCurrent()
 			printl("selection=" + str(selection), self)
 			if selection is not None:
+				print type(selection[1])
 				if selection[1] == "PVMC_Watch":
 					self["menuWatch"].setIndex(1)
 					self.Watch = True;
@@ -392,7 +439,7 @@ class PVMC_MainMenu(Screen):
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)
 				elif selection[1] == "PVMC_Settings":
-					self.session.openWithCallback(self.showStillPicture, PVMC_Settings, self)
+					self.session.openWithCallback(self.showStillPicture, PVMC_Settings)
 				elif selection[1] == "PVMC_Sync":
 					isInstalled = False
 					try:
@@ -409,6 +456,27 @@ class PVMC_MainMenu(Screen):
 					self.Exit()
 				elif selection[1] == "Exit":
 					self.Exit()
+				else:
+					if self.APILevel >= 3:
+						s = selection[1]
+						if  type(s) is list:
+							self.menu_main_list_index = self["menu"].getIndex()
+							self.menu_main_list = self["menu"].list
+							l = []
+							l.append(("< " + _("Back"), Plugin.MENU_MAIN, "", "50"))
+							for plugin in s:
+								l.append((plugin.name, plugin, "", "50"))
+							self["menu"].setList(l)
+							self["menu"].setIndex(1)
+						elif type(s) is int:
+							if s == Plugin.MENU_MAIN:
+								self["menu"].setList(self.menu_main_list)
+								self["menu"].setIndex(self.menu_main_list_index)
+						elif type(s) is not str:
+							if s.supportStillPicture is False:
+								if self.APILevel >= 2 and self.ShowStillPicture is True:
+									self["showiframe"].finishStillPicture()
+							self.session.openWithCallback(self.showStillPicture, s.start)
 
 	def up(self):
 		if self.APILevel == 1:
@@ -460,3 +528,5 @@ class PVMC_MainMenu(Screen):
 			self. close()
 		else:
 			self.close((True,) )
+
+registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True))

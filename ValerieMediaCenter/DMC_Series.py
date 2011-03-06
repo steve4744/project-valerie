@@ -732,4 +732,5 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if selection is not None:
 				self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
-#------------------------------------------------------------------------------------------
+from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+registerPlugin(Plugin(name=_("TV Shows"), start=PVMC_Series, where=Plugin.MENU_VIDEOS))
