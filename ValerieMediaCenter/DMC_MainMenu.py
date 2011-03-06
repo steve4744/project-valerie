@@ -476,7 +476,10 @@ class PVMC_MainMenu(Screen):
 							if s.supportStillPicture is False:
 								if self.APILevel >= 2 and self.ShowStillPicture is True:
 									self["showiframe"].finishStillPicture()
-							self.session.openWithCallback(self.showStillPicture, s.start)
+							if s.start is not None:
+								self.session.openWithCallback(self.showStillPicture, s.start)
+							elif s.fnc is not None:
+								s.fnc(self.session)
 
 	def up(self):
 		if self.APILevel == 1:

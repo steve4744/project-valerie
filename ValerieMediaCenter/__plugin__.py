@@ -55,11 +55,13 @@ class Plugin():
 
 	name = None
 	start = None
+	fnc = None
 	where = None
 	supportStillPicture = False
 
-	def __init__(self, name=None, start=None, where=None, supportStillPicture=False):
+	def __init__(self, name=None, start=None, fnc=None, where=None, supportStillPicture=False):
 		self.name = name
 		self.start = start
+		self.fnc = fnc
 		self.where = where
 		self.supportStillPicture = supportStillPicture
