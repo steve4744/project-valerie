@@ -252,13 +252,11 @@ class MediaInfo(object):
 
 	def getImdbIdFromNfo(self, lines):
 		printl("", self)
-		if lines is not None:
-			lines = lines.split(u"\n")
-			for line in lines:
-				m = re.search(r'(?P<imdbid>tt\d{7})', line)
-				if m and m.group("imdbid"):
-					f.close()
-					self.ImdbId = int(m.group("imdbid"))
+		for line in lines:
+			m = re.search(r'(?P<imdbid>tt\d{7})', line)
+			if m and m.group("imdbid"):
+				f.close()
+				self.ImdbId = int(m.group("imdbid"))
 		return None
 
 	def parse(self):
