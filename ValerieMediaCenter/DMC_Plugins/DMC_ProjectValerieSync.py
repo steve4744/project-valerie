@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from Components.config import config
+from Components.config import ConfigYesNo
+from Components.config import ConfigSubsection
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+
+#------------------------------------------------------------------------------------------
 
 gAvailable = False
 try:
@@ -9,6 +16,9 @@ try:
 	gAvailable = True
 except:
 	gAvailable = False
+
+config.plugins.pvmc.plugins.sync = ConfigSubsection()
+config.plugins.pvmc.plugins.sync.fastsynconautostart = ConfigYesNo(default=False)
 
 class ProjectValerieSync(PluginProjectValerieSync):
 
@@ -20,6 +30,13 @@ class ProjectValerieSync(PluginProjectValerieSync):
 		# If no own screen os provided, use the one of the plugin
 		self.skinName = "ProjectValerieSync"
 
+def settings():
+	s = []
+	s.append((_("Fast Sync on autostart"), config.plugins.pvmc.plugins.sync.fastsynconautostart, ))
+	return s
+
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("ProjectValerieSync"), start=ProjectValerieSync, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
-	registerPlugin(Plugin(name=_(""), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(name=_("Syncronize"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(name=_("Syncronize"), start=ProjectValerieSync, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
+	if config.plugins.pvmc.plugins.sync.fastsynconautostart.value is True:
+		registerPlugin(Plugin(name=_("Syncronize"), fnc=autostart, where=Plugin.AUTOSTART))

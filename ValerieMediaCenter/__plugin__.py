@@ -5,6 +5,10 @@ import os
 from Components.config import config
 from Tools.Import import my_import
 
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
+
 gPlugins = []
 
 def loadPlugins(dir, imp):
@@ -13,14 +17,15 @@ def loadPlugins(dir, imp):
 		if os.path.isfile(file):
 			pos = f.find(".py")
 			if pos > 0:
-				#print f
+				#printl("f: " + str(f), __name__)
 				f = f[:pos]
 				if f == "__init__":
 					continue
 				try:
 					m = __import__(imp + f)
 				except Exception, ex:
-					print "Exception:", ex
+					printl("Exception: " + str(ex), __name__)
+					printl("\tf: " + str(f), __name__)
 
 def registerPlugin(plugin):
 	ps = []
@@ -30,6 +35,7 @@ def registerPlugin(plugin):
 		ps.append(plugin)
 	for p in ps:
 		if p not in gPlugins:
+			printl("name=" + str(p.name) + " where=" + str(p.where), __name__)
 			gPlugins.append(p)
 
 def getPlugins(where=None):
@@ -54,10 +60,12 @@ class Plugin():
 	MENU_SYSTEM = 8
 	
 	AUTOSTART = 9
+	
+	SETTINGS = 10
 
-	name = None
+	name  = None
 	start = None
-	fnc = None
+	fnc   = None
 	where = None
 	supportStillPicture = False
 

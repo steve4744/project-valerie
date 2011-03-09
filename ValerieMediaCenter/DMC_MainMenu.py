@@ -95,9 +95,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 
 		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
-			"green": self.save,
-			"red": self.cancel,
-			"cancel": self.cancel,
+			"green": self.keySave,
+			"red": self.keyCancel,
+			"cancel": self.keyCancel,
 			"ok": self.ok,
 		}, -2)
 		self.onLayoutFinish.append(self.setCustomTitle)
@@ -117,34 +117,25 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
 			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
 			
-			
 			self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
 			self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
 			self.list.append(getConfigListEntry(_("Trakt.tv - Password"), config.plugins.pvmc.traktpass))
+
+			plugins = getPlugins(where=Plugin.SETTINGS)
+			for plugin in plugins:
+				pluginSettingsList = plugin.fnc()
+				for pluginSetting in pluginSettingsList:
+					self.list.append(getConfigListEntry("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
 
 			self["config"].setList(self.list)
 		except KeyError:
 			print "keyError"
 
-	def changedConfigList(self):
-		self.initConfigList()
-
 	def ok(self):
 		print "ok"
 
-	def LocationBoxClosed(self, path):
-		print "PathBrowserClosed:", path
-		#if path is not None:
-		#	config.mediaplayer.defaultDir.setValue(path)
-
-	def save(self):
-		print "save"
-		for x in self["config"].list:
-			x[1].save()
-		self.close()
-
-	def cancel(self):
-		self.close()
+	def keySave(self):
+		ConfigListScreen.keySave(self)
 
 class PVMC_Update(Screen):
 	skin = """
