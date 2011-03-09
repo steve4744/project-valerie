@@ -39,7 +39,10 @@ class StillPicture(Renderer, InfoBarBase):
 
 	def addEventTracker(self):
 		printl("", self)
-		self.session.nav.event.append(self.event)
+		if self.session.nav is not None:
+			self.session.nav.event.append(self.event)
+		else:
+			printl("ARGGHHHH!!! self.session.nav is None", self)
 		#self.eventSafe = self.session.nav.event
 		#self.session.nav.event = []
 		#self.session.nav.event.append(self.event)
@@ -48,7 +51,10 @@ class StillPicture(Renderer, InfoBarBase):
 	
 	def removeEventTracker(self):
 		printl("", self)
-		self.session.nav.event.remove(self.event)
+		if self.session.nav is not None:
+			self.session.nav.event.remove(self.event)
+		else:
+			printl("ARGGHHHH!!! self.session.nav is None", self)
 		#print "addEventTracker.eventSafe", self.eventSafe
 		#print "addEventTracker.session.nav.event", self.session.nav.event
 		#self.session.nav.event = self.eventSafe
@@ -61,10 +67,13 @@ class StillPicture(Renderer, InfoBarBase):
 
 	def poll(self):
 		#print "poll"
-		service = self.session.nav.getCurrentService()
-		seek = service and service.seek()
-		if seek is not None:
-			pos = seek.getPlayPosition()
+		if self.session.nav is not None:
+			service = self.session.nav.getCurrentService()
+			seek = service and service.seek()
+			if seek is not None:
+				pos = seek.getPlayPosition()
+		else:
+			printl("ARGGHHHH!!! self.session.nav is None", self)
 
 	def pollStart(self):
 		printl("", self)
@@ -78,7 +87,10 @@ class StillPicture(Renderer, InfoBarBase):
 
 	def __evEOF(self):
 		printl("", self)
-		self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
+		if self.session.nav is not None:
+			self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
+		else:
+			printl("ARGGHHHH!!! self.session.nav is None", self)
 		#self.showStillPicture()
 
 	onClose = []
@@ -125,10 +137,13 @@ class StillPicture(Renderer, InfoBarBase):
 				if self.isLoop is False:
 					self.showiframe.showStillpicture(self.getStillpicture())
 				elif self.isLoop is True:
-					print "showStillPicture", "loop", self.getStillpicture()
-					ServiceEventTracker.setActiveInfoBar(self, None, None)
-					self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()))
-					self.pollStart()
+					if self.session.nav is not None:
+						print "showStillPicture", "loop", self.getStillpicture()
+						ServiceEventTracker.setActiveInfoBar(self, None, None)
+						self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()))
+						self.pollStart()
+					else:
+						printl("ARGGHHHH!!! self.session.nav is None", self)
 			except Exception, ex:
 				print ex
 		#print "showStillPicture", "<--"
@@ -140,8 +155,11 @@ class StillPicture(Renderer, InfoBarBase):
 					self.showiframe.finishStillPicture()
 				elif self.isLoop is True:
 					self.pollStop()
-					self.session.nav.stopService()
-					ServiceEventTracker.popActiveInfoBar()
+					if self.session.nav is not None:
+						self.session.nav.stopService()
+						ServiceEventTracker.popActiveInfoBar()
+					else:
+						printl("ARGGHHHH!!! self.session.nav is None", self)
 			except Exception, ex:
 				print ex
 

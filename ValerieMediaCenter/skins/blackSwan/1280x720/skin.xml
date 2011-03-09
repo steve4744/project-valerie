@@ -52,7 +52,7 @@
 <!-- PVMC Series -->
 <screen name="PVMC_Series" position="0,0" size="1280,720" title=" " flags="wfNoBorder">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/blackSwan/backdrop.m1v"/>
+    <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/>
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="328,50" zPosition="2" size="533,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/fanart_list_bg-fs8.png"/>
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
@@ -91,7 +91,7 @@
     <widget name="nostar8" transparent="1" zPosition="5" position="1059,650" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on"/>
     <widget name="nostar9" transparent="1" zPosition="5" position="1089,650" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on"/>
     <widget name="poster" transparent="1" zPosition="5" position="80,287" size="259,267"/>
-    <ePixmap name="posterborder" position="17,243" zPosition="6" size="380,353" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/blackborders_video_thumbnail-fs8.png"/>
+    <ePixmap name="posterborder" position="45,253" zPosition="6" size="380,353" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/blackborders_video_thumbnail-fs8.png"/>
     <widget name="year" transparent="1" zPosition="5" halign="left" position="817,175" size="337,37" font="Modern;25" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="817,175" size="337,37" font="Modern;25" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="817,212" size="444,37" font="Modern;25" foregroundColor="#8BCAF6"/>    
@@ -100,7 +100,7 @@
 <!-- PVMC Movies -->
 <screen name="PVMC_Movies" position="0,0" size="1280,720" title="Media Center - Movies" flags="wfNoBorder">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/blackSwan/backdrop.m1v"/> 
+    <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/> 
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="328,50" zPosition="2" size="533,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/fanart_list_bg-fs8.png"/>
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
@@ -139,7 +139,7 @@
     <widget name="nostar8" transparent="1" zPosition="5" position="1059,650" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on"/>
     <widget name="nostar9" transparent="1" zPosition="5" position="1089,650" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on"/>
     <widget name="poster" transparent="1" zPosition="5" position="80,287" size="259,267"/>
-    <ePixmap name="posterborder" position="17,243" zPosition="6" size="380,353" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/blackborders_video_thumbnail-fs8.png"/>
+    <ePixmap name="posterborder" position="45,253" zPosition="6" size="380,353" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/blackborders_video_thumbnail-fs8.png"/>
     <widget name="year" transparent="1" zPosition="5" halign="left" position="817,175" size="337,37" font="Modern;25" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="817,175" size="337,37" font="Modern;25" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="817,212" size="444,37" font="Modern;25" foregroundColor="#8BCAF6"/>    

@@ -47,17 +47,25 @@ localeInit()
 language.addCallback(localeInit)
 
 def checkDefaults():
+	
+	try:
+		printl("Check "+"/tmp/valerie", __name__)
+		os.makedirs("/tmp/valerie") 
+	except OSError, e:
+		printl("\t- OK", __name__)
+	else:
+		printl("\t- Created", __name__)
 	try: 
-		printl("Check "+"/hdd/valerie", __name__)
-		os.makedirs("/hdd/valerie") 
+		printl("Check "+"/tmp/valerie/cache", __name__)
+		os.makedirs("/tmp/valerie/cache") 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
 		printl("\t- Created", __name__)
 	
 	try: 
-		printl("Check "+"/hdd/valerie/cache", __name__)
-		os.makedirs("/hdd/valerie/cache") 
+		printl("Check "+"/hdd/valerie", __name__)
+		os.makedirs("/hdd/valerie") 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:

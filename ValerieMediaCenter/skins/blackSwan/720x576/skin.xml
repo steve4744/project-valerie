@@ -53,7 +53,7 @@
 <!-- PVMC Series -->
 <screen name="PVMC_Series" position="0,0" size="720,576" title=" " flags="wfNoBorder">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <widget name="backdrop" position="0,0" zPosition="0" size="720,576" text="/hdd/valerie/media/blackSwan/backdrop.m1v"/>
+    <widget name="backdrop" position="0,0" zPosition="0" size="720,576" text="/hdd/valerie/media/defaultbackdrop.m1v"/>
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="720,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="185,40" zPosition="2" size="300,536" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/fanart_list_bg-fs8.png"/>
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
@@ -101,7 +101,7 @@
 <!-- PVMC Movies -->
 <screen name="PVMC_Movies" position="0,0" size="720,576" title="Media Center - Movies" flags="wfNoBorder">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <widget name="backdrop" position="0,0" zPosition="0" size="720,576" text="/hdd/valerie/media/blackSwan/backdrop.m1v"/> 
+    <widget name="backdrop" position="0,0" zPosition="0" size="720,576" text="/hdd/valerie/media/defaultbackdrop.m1v"/> 
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="720,576" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/fanart_overlay-fs8.png"/>
     <ePixmap name="mb_bg_list" position="185,40" zPosition="2" size="300,536" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/720x576/images/fanart_list_bg-fs8.png"/>
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>

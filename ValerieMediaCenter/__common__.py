@@ -8,12 +8,18 @@ import sys
 
 gLogFile = None
 #gLogFileHtml = None
-logDir = "/tmp/valerie/log"
+baseDir = "/tmp/valerie"
+logDir = baseDir + "/log"
 
 def openLogFile():
 	global gLogFile
 #	global gLogFileHtml
 	now = datetime.datetime.now()
+	
+	try: 
+		os.makedirs(baseDir)
+	except OSError, e:
+		pass
 	
 	try: 
 		os.makedirs(logDir)
