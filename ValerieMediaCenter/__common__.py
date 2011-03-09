@@ -8,12 +8,19 @@ import sys
 
 gLogFile = None
 #gLogFileHtml = None
+logDir = "/tmp/valerie/log"
 
 def openLogFile():
 	global gLogFile
 #	global gLogFileHtml
 	now = datetime.datetime.now()
-	gLogFile = open("/tmp/valerie_%04d%02d%02d_%02d%02d.log" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
+	
+	try: 
+		os.makedirs(logDir)
+	except OSError, e:
+		pass
+	
+	gLogFile = open(logDir + "/valerie_%04d%02d%02d_%02d%02d.log" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
 	#gLogFileHtml = open("/tmp/valerie_%04d%02d%02d_%02d%02d.html" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
 
 def printl2(string, parent=None):
