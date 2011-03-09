@@ -67,8 +67,9 @@ class DirectoryScanner():
 		for folderKey in allFolderKeys:
 			try:
 				mtime = os.path.getmtime(folderKey)
-				if self.folderList[self.directory][folderKey] != mtime:
-					printl("folderKey=" +str(folderKey) + " " + str(self.folderList[self.directory][folderKey]) + " " + str(mtime), self)
+				# Also enter if is mounted directoy as these often have the wrong time
+				if self.directory == folderKey or self.folderList[self.directory][folderKey] != mtime:
+					printl("folderKey=" + str(folderKey) + " " + str(self.folderList[self.directory][folderKey]) + " " + str(mtime), self)
 					self._directoryHasChanged(folderKey, fileExtList, fileIgnoreRegex, type)
 					self.folderList[self.directory][folderKey] = mtime
 			except Exception, ex:

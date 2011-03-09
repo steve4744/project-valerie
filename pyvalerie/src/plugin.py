@@ -5,7 +5,7 @@ import os
 import sys
 from   threading import Thread
 
-from enigma import getDesktop, addFont
+from enigma import getDesktop, addFont, eTimer
 from Components.ActionMap import ActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.config import ConfigSelection
@@ -43,11 +43,16 @@ from Plugins.Extensions.ProjectValerie.DMC_Global import getAPILevel
 
 #------------------------------------------------------------------------------------------
 
-try:
-	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
-except Exception, ex: #probably just openpli
-	printl("Exception: " + str(ex))
-	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)
+#dSize = getDesktop(0).size()
+#font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/mayatypeuitvg_16.9.ttf"
+#if dSize.width() == 720 and dSize.height() == 576:
+	#font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/mayatypeuitvg_4.3.ttf"
+#printl("Loading Font: " + font)
+#try:
+	#addFont(font, "Modern", 100, False)
+#except Exception, ex: #probably just openpli
+	#print ex
+	#addFont(font, "Modern", 100, False, 0)
 
 def localeInit():
 	lang = language.getLanguage()
@@ -455,34 +460,135 @@ class ProjectValerieSyncSettings(Screen):
 				except os.error, ex:
 					printl("os.error: " + str(ex), self)
 
+def autostart(session):
+	global gSyncInfo
+	gSyncInfo = ProjectValerieSyncInfo()
+	gSyncInfo.registerOutputInstance(None, session)
+	gSyncInfo.start(pyvalerie.FAST)
+
 class ProjectValerieSyncInfo():
 	outputInstance = None
-	syncInfo = None
-	i = 0
-	linecount = 40
+	
 	progress = 0
 	range = 0
-	lines = []
+	log = []
+	loglinesize = 40
 	
 	poster = None
-	name = ""
-	year = 0
-	
-	inForeground = False
+	name = None
+	year = None
+
 	inProgress = False
 	
 	session = None
+	
+	thread = None
+
+	def start(self, type):
+		try:
+			if self.inProgress:
+				return False
+			self.reset()
+			
+			self.inProgress = True
+			self.setOutput(None)
+			self.thread = pyvalerie(self.setOutput, self.setProgress, self.setRange, self.setInfo, self.finished, type)
+			self.thread.start()
+			return True
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+			return False
+
+	def registerOutputInstance(self, instance, session):
+		try:
+			self.outputInstance = instance
+			self.session = session
+			if self.inProgress:
+				self.setRange(self.range)
+				self.setProgress(self.progress)
+				self.setInfo(self.poster, self.name, self.year)
+					
+				self.outputInstance.clearLog()
+				
+				if len(self.log) > 0:
+					for text in self.log:
+						self.outputInstance.appendLog(text)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def unregisterOutputInstance(self):
+		try:
+			self.outputInstance = None
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def setOutput(self, text):
+		try:
+			if text is None:
+				del self.log[:]
+				if self.outputInstance is not None:
+					self.outputInstance.clearLog()
+			else :
+				if len(self.log) >= self.loglinesize:
+					del self.log[:]
+					if self.outputInstance is not None:
+						self.outputInstance.clearLog()
+						self.outputInstance.appendLog(text)
+				else:
+					if self.outputInstance is not None:
+						self.outputInstance.appendLog(text)
+				self.log.append(text)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def setRange(self, value):
+		try:
+			self.range = value
+			if self.outputInstance is not None:
+				self.outputInstance.setRange(self.range)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def setProgress(self, value):
+		try:
+			self.progress = value
+			if self.outputInstance is not None:
+				self.outputInstance.setProgress(self.progress)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def setInfo(self, poster, name, year):
+		try:
+			self.poster = poster
+			self.name = name
+			self.year = year
+			if self.outputInstance is not None:
+				self.outputInstance.setPoster(self.poster)
+				self.outputInstance.setName(self.name)
+				self.outputInstance.setYear(self.year)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+
+	def finished(self, successfully):
+		try:
+			self.inProgress = False
+			if self.outputInstance is None:
+				self.session.open(ProjectValerieSyncFinished)
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
 
 	def reset(self):
-		self.i = 0
-		self.linecount = 40
-		self.progress = 0
-		self.range = 0
-		self.lines = []
-		
-		self.poster = None
-		self.name = ""
-		self.year = 0
+		try:
+			self.linecount = 40
+			self.progress = 0
+			self.range = 0
+			del self.log[:]
+			
+			self.poster = None
+			self.name = None
+			self.year = None
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
 
 gSyncInfo = None
 
@@ -503,10 +609,60 @@ class ProjectValerieSyncFinished(Screen):
 			"ok": self.close,
 			"cancel": self.close
 		}, -1)
+		
+		timeout = 8
+		
+		self.timerRunning = False
+		self.initTimeout(timeout)
+		
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
 		self.setTitle(_("Synchronize Manager"))
+
+	def initTimeout(self, timeout):
+		self.timeout = timeout
+		if timeout > 0:
+			self.timer = eTimer()
+			self.timer.callback.append(self.timerTick)
+			self.onExecBegin.append(self.startTimer)
+			self.origTitle = None
+			if self.execing:
+				self.timerTick()
+			else:
+				self.onShown.append(self.__onShown)
+			self.timerRunning = True
+		else:
+			self.timerRunning = False
+
+	def __onShown(self):
+		self.onShown.remove(self.__onShown)
+		self.timerTick()
+
+	def startTimer(self):
+		self.timer.start(1000)
+
+	def stopTimer(self):
+		if self.timerRunning:
+			del self.timer
+			self.onExecBegin.remove(self.startTimer)
+			self.setTitle(self.origTitle)
+			self.timerRunning = False
+
+	def timerTick(self):
+		if self.execing:
+			self.timeout -= 1
+			if self.origTitle is None:
+				self.origTitle = self.instance.getTitle()
+			self.setTitle(self.origTitle + " (" + str(self.timeout) + ")")
+			if self.timeout == 0:
+				self.timer.stop()
+				self.timerRunning = False
+				self.timeoutCallback()
+
+	def timeoutCallback(self):
+		print "Timeout!"
+		self.close()
 
 class ProjectValerieSyncManagerInfo(Screen):
 	skinDeprecated = """
@@ -893,7 +1049,6 @@ class ProjectValerieSync(Screen):
 			
 			<eLabel text="Name:" position="430,390" size="180,20" font="Regular;18" />
 			<widget name="name" position="440,410" size="170,60" font="Regular;16"/>
-
 		</screen>"""
 
 	def __init__(self, session, args = None):
@@ -948,23 +1103,9 @@ class ProjectValerieSync(Screen):
 		printl("type(gSyncInfo): " + str(type(gSyncInfo)), self)
 		if gSyncInfo is None:
 			gSyncInfo = ProjectValerieSyncInfo()
-		gSyncInfo.outputInstance = self
-		gSyncInfo.session = self.session
+		gSyncInfo.registerOutputInstance(self, self.session)
 		printl("gSyncInfo.inProgress: " + str(gSyncInfo.inProgress), self)
-		if gSyncInfo.inProgress is True:
-			gSyncInfo.inForeground = True
-			
-			self.range(gSyncInfo.range)
-			self.progress(gSyncInfo.progress)
-			self.info(gSyncInfo.poster, gSyncInfo.name, gSyncInfo.year)
-			
-			self["console"].setText("")
-			
-			if len(gSyncInfo.lines) > 0:
-				for line in gSyncInfo.lines:
-					self["console"].appendText(line + "\n")
-				self["console"].lastPage()
-		else:	
+		if gSyncInfo.inProgress is False:
 			self.checkDefaults()
 
 	def checkDefaults(self):
@@ -972,7 +1113,7 @@ class ProjectValerieSync(Screen):
 
 	def close(self):
 		global gSyncInfo
-		gSyncInfo.inForeground = False
+		gSyncInfo.unregisterOutputInstance()
 		Screen.close(self)
 
 	def menu(self):
@@ -988,87 +1129,48 @@ class ProjectValerieSync(Screen):
 	def go(self):
 		global gSyncInfo
 		if gSyncInfo.inProgress is False:
-			self["console"].lastPage()
-			gSyncInfo.reset()
-			gSyncInfo.inForeground = True
-			gSyncInfo.inProgress = True
-			gSyncInfo.outputInstance["console"].setText("")
-			self.thread = pyvalerie(self.output, self.progress, self.range, self.info, self.finished, pyvalerie.NORMAL)
-			self.thread.start()
+			gSyncInfo.start(pyvalerie.NORMAL)
 
 	def gofast(self):
 		global gSyncInfo
 		if gSyncInfo.inProgress is False:
-			self["console"].lastPage()
-			gSyncInfo.reset()
-			gSyncInfo.inForeground = True
-			gSyncInfo.inProgress = True
-			gSyncInfo.outputInstance["console"].setText("")
-			self.thread = pyvalerie(self.output, self.progress, self.range, self.info, self.finished, pyvalerie.FAST)
-			self.thread.start()
+			gSyncInfo.start(pyvalerie.FAST)
 
-	def finished(self, successfully):
-		global gSyncInfo
-		gSyncInfo.inProgress = False
-		if gSyncInfo.inForeground is False:
-			gSyncInfo.session.open(ProjectValerieSyncFinished)
+	def clearLog(self):
+		self["console"].setText("")
+		self["console"].lastPage()
 
-	def output(self, text):
-		global gSyncInfo
-		#printl(text, self)
-		#print "gSyncInfo.inProgress", gSyncInfo.inProgress
-		#print "gSyncInfo.inForeground", gSyncInfo.inForeground
-		if gSyncInfo.inForeground is True:
-			if len(gSyncInfo.lines) >= gSyncInfo.linecount:
-				gSyncInfo.i = 0
-				gSyncInfo.outputInstance["console"].setText("")
-			gSyncInfo.outputInstance["console"].appendText(text + "\n")
+	def appendLog(self, text):
+		self["console"].appendText(text + "\n")
+		self["console"].lastPage()
 
-			gSyncInfo.i += 1
-			
-			gSyncInfo.outputInstance["console"].lastPage()
+	def setProgress(self, value):
+		self["progress"].setValue(value)
+
+	def setRange(self, value):
+		self["progress"].range = (0, value)
+
+	def setPoster(self, poster):
+		if poster is not None and len(poster) > 0 and os.access("/hdd/valerie/media/" + poster, os.F_OK) is True:
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
 		else:
-			gSyncInfo.i = 0
-			
-		if len(gSyncInfo.lines) >= gSyncInfo.linecount:
-			del gSyncInfo.lines[:]
-		gSyncInfo.lines.append(text)
+			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
 
-	def progress(self, value):
-		global gSyncInfo
-		gSyncInfo.progress = value
-		if gSyncInfo.inForeground is True:
-			gSyncInfo.outputInstance["progress"].setValue(value)
+	def setName(self, name):
+		if name is not None and len(name) > 0:
+			self["name"].setText(name)
+		else:
+			self["name"].setText("")
 
-	def range(self, value):
-		global gSyncInfo
-		gSyncInfo.range = value
-		if gSyncInfo.inForeground is True:
-			gSyncInfo.outputInstance["progress"].range = (0, value)
-
-	def info(self, poster, name, year):
-		global gSyncInfo
-		printl("name: " + str(name), self)
-		gSyncInfo.poster = poster
-		gSyncInfo.str = str
-		gSyncInfo.year = year
-		
-		if gSyncInfo.inForeground is True:
-			try:
-				if poster is not None and len(poster) > 0 and os.access("/hdd/valerie/media/" + poster, os.F_OK) is True:
-					gSyncInfo.outputInstance["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
-				else:
-					gSyncInfo.outputInstance["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
-				if name is not None and len(name) > 0:
-					gSyncInfo.outputInstance["name"].setText(name)
-				if year is not None and year > 0:
-					gSyncInfo.outputInstance["year"].setText(str(year))
-			except Exception, ex:
-				printl("Exception: " + str(ex), self)
+	def setYear(self, year):
+		if year is not None and year > 0:
+			self["year"].setText(str(year))
+		else:
+			self["year"].setText("")
 
 def main(session, **kwargs):
 	session.open(ProjectValerieSync)
 
-def Plugins(**kwargs):
-	return PluginDescriptor(name="ProjectValerieSync", description="syncs", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
+#def Plugins(**kwargs):
+#	return PluginDescriptor(name="ProjectValerieSync", description="syncs", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
 	#return PluginDescriptor(name="ProjectValerieSync", description="syncs", where = PluginDescriptor.WHERE_WIZARD, fnc=main)

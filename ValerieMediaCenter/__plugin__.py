@@ -52,6 +52,8 @@ class Plugin():
 	MENU_TVSHOWS = 6
 	MENU_PROGRAMS = 7
 	MENU_SYSTEM = 8
+	
+	AUTOSTART = 9
 
 	name = None
 	start = None

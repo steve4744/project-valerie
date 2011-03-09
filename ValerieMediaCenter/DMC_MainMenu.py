@@ -34,11 +34,16 @@ from DMC_Series import PVMC_Series
 
 #------------------------------------------------------------------------------------------
 
+#dSize = getDesktop(0).size()
+font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf"
+#if dSize.width() == 720 and dSize.height() == 576:
+#	font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/mayatypeuitvg_4.3.ttf"
+printl("Loading Font: " + font)
 try:
-	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False)
+	addFont(font, "Modern", 100, False)
 except Exception, ex: #probably just openpli
 	print ex
-	addFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf", "Modern", 100, False, 0)
+	addFont(font, "Modern", 100, False, 0)
 
 def localeInit():
 	lang = language.getLanguage()
@@ -343,6 +348,11 @@ class PVMC_MainMenu(Screen):
 			self["menu"].setIndex(0)
 		elif self.APILevel >= 2:
 			self["menu"].setIndex(2)
+		
+		if self.APILevel >= 2 and self.ShowStillPicture is True and len(self.UseDreamScene) > 0:
+			printl("Using DreamScene at " + self.UseDreamScene)
+			if os.access(self.UseDreamScene, os.F_OK) is True:
+				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
 
 	def onExecStartScript(self):
 		printl("->", self)
@@ -353,10 +363,10 @@ class PVMC_MainMenu(Screen):
 		except Exception, e:
 			printl("Exception: " + str(e),self)
 		
-		if self.APILevel >= 2 and self.ShowStillPicture is True and len(self.UseDreamScene) > 0:
-			printl("Using DreamScene at " + self.UseDreamScene)
-			if os.access(self.UseDreamScene, os.F_OK) is True:
-				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
+		plugins = getPlugins(where=Plugin.AUTOSTART)
+		for plugin in plugins:
+			plugin.fnc(self.session)
+		
 		printl("<-",self)
 
 	def power(self):

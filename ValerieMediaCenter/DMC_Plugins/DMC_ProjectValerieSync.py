@@ -5,6 +5,7 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 gAvailable = False
 try:
 	from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync as PluginProjectValerieSync
+	from Plugins.Extensions.ProjectValerieSync.plugin import autostart
 	gAvailable = True
 except:
 	gAvailable = False
@@ -21,4 +22,4 @@ class ProjectValerieSync(PluginProjectValerieSync):
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("ProjectValerieSync"), start=ProjectValerieSync, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
-	
+	registerPlugin(Plugin(name=_(""), fnc=autostart, where=Plugin.AUTOSTART))

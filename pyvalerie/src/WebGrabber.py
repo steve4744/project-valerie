@@ -46,8 +46,12 @@ def freeSpace(folder):
 def checkCache(url):
 	try:
 		cacheFile = re.sub(r'\W', "", url).strip()
+		cacheFileName = cacheDir + u"/" + cacheFile + u".cache"
 		rtv = None
-		if os.path.isfile(Utf8.utf8ToLatin(cacheDir + "/" + cacheFile + ".cache")):
+		if os.path.isfile(Utf8.utf8ToLatin(cacheFileName)):
+			if os.path.getsize(Utf8.utf8ToLatin(cacheFileName)) == 0:
+				os.remove(Utf8.utf8ToLatin(cacheFileName))
+				return rtv
 			f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "r")
 			rtv = f.read()
 			f.close()
@@ -66,10 +70,15 @@ def addCache(url, text):
 				os.remove(file)
 		
 		cacheFile = re.sub(r'\W', "", url).strip()
+		cacheFileName = cacheDir + u"/" + cacheFile + u".cache"
 		if text is not None and len(text) > 0:
-			f = Utf8.Utf8(cacheDir + u"/" + cacheFile + u".cache", "w")
+			f = Utf8.Utf8(cacheFileName, "w")
 			f.write(text)
 			f.close
+			
+			if os.path.getsize(Utf8.utf8ToLatin(cacheFileName)) == 0:
+				os.remove(Utf8.utf8ToLatin(cacheFileName))
+			
 	except Exception, ex:
 		printl("Exception (ef): " + str(ex), __name__)
 		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
@@ -82,14 +91,14 @@ def getXml(url, rawXml = None):
 		try:
 			if rawXml is not None:
 				try:
-					decodedXml = minidom.parseString(rawXml)
-				except Exception, ex:
-					printl("minidom.parseString as latin-1 failed, retrieing as utf-8. Ex: " + str(ex), __name__)
 					decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+				except Exception, ex:
+					printl("minidom.parseString as utf-8 failed, retrieing as latin-1. Ex: " + str(ex), __name__)
+					decodedXml = minidom.parseString(rawXml)
 		except Exception, ex:
-			printl("minidom.parseString as latin-1 and utf-8 failed, ignoring. Ex: " + str(ex), __name__)
+			printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__)
 			printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
-			printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
+			#printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
 			printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__)
 	except Exception, ex:
 		printl("Exception (ef): " + str(ex), __name__)
@@ -133,7 +142,13 @@ def getText(url):
 				
 				if page is not None:
 					rawPage = page.read()
-					utfPage = Utf8.stringToUtf8(rawPage)
+					contenttype = page.headers['Content-type']
+					print contenttype
+					if contenttype.find("charset=") >= 0:
+						encoding = page.headers['Content-type'].split('charset=')[1] # iso-8859-1
+						utfPage = rawPage.decode(encoding).encode('utf-8')
+					else:
+						utfPage = Utf8.stringToUtf8(rawPage)
 					
 					addCache(url, utfPage)
 					break
