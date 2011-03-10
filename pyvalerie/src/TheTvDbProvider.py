@@ -202,6 +202,7 @@ class TheTvDbProvider(object):
 		xml = WebGrabber.getXml(url)
 		
 		if xml is None:
+			WebGrabber.removeFromCache(url)
 			printl(" <- None (xml is None)", self)
 			return None
 		
@@ -233,6 +234,7 @@ class TheTvDbProvider(object):
 				info = tmp
 			return info
 		
+		WebGrabber.removeFromCache(url)
 		printl(" <- None (eof)", self)
 		return None
 
@@ -253,6 +255,7 @@ class TheTvDbProvider(object):
 		xml = WebGrabber.getXml(url)
 		
 		if xml is None:
+			WebGrabber.removeFromCache(url)
 			printl(" <- None (xml is None)", self)
 			return None
 		
@@ -289,6 +292,7 @@ class TheTvDbProvider(object):
 				info = tmp
 			return info
 		
+		WebGrabber.removeFromCache(url)
 		printl(" <- None (eof)", self)
 		return None
 
@@ -308,6 +312,7 @@ class TheTvDbProvider(object):
 		xml = WebGrabber.getXml(url)
 		
 		if xml is None:
+			WebGrabber.removeFromCache(url)
 			printl(" <- None (xml is None)", self)
 			return None
 		
@@ -366,6 +371,7 @@ class TheTvDbProvider(object):
 			
 			return info
 		
+		WebGrabber.removeFromCache(url)
 		printl(" <- None (eof)", self)
 		return None
 
@@ -380,6 +386,7 @@ class TheTvDbProvider(object):
 		xml = WebGrabber.getXml(url);
 		
 		if xml is None:
+			WebGrabber.removeFromCache(url)
 			printl(" <- None (xml is None)", self)
 			return None
 		
@@ -395,5 +402,6 @@ class TheTvDbProvider(object):
 					break
 			return info
 		
+		WebGrabber.removeFromCache(url)
 		printl(" <- None (eof)", self)
 		return None

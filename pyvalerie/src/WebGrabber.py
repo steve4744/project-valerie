@@ -72,6 +72,17 @@ def createCacheFolder():
 	except OSError, e:
 		pass
 
+def removeFromCache(url):
+	try:
+		cacheFile = re.sub(r'\W', "", url).strip()
+		cacheFileName = cacheDir + u"/" + cacheFile + u".cache"
+		
+		if os.path.isfile(Utf8.utf8ToLatin(cacheFileName)):
+			os.remove(Utf8.utf8ToLatin(cacheFileName))
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__)
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+
 def addCache(url, text):
 	
 	# this line should be moved to a more suitable place

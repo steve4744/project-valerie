@@ -51,6 +51,8 @@ class MobileImdbComProvider():
 			
 			if u"TV series" in strEntry: #maybe also miniseries
 				entry.IsTVSeries = True;
+			elif u"Video game" in strEntry:
+				continue
 			
 			mImdbId = re.search(r'/title/tt\d*/', strEntry)
 			if mImdbId and mImdbId.group():
@@ -70,6 +72,8 @@ class MobileImdbComProvider():
 			if mYear and mYear.group():
 				sYear = mYear.group()[1:].strip();
 				entry.Year = int(sYear);
+			
+			#printl(entry.Title + " " + str(entry.Year), self)
 			
 			if entry.Year > 0: 
 				results.append(entry)
@@ -180,7 +184,14 @@ class MobileImdbComProvider():
 		
 		#print "MIMDB seraches for ", info.isMovie, info.isEpisode, info.isSerie
 		
+		year = info.Year
+		
 		results = self.getResults(html)
+		printl("Results are: ", self)
+		
+		for result in results:
+			printl("\t" + str(result), self)
+		
 		for result in results:
 			if info.isEpisode or info.isSerie:
 				if not result.IsTVSeries:
@@ -189,17 +200,16 @@ class MobileImdbComProvider():
 				if result.IsTVSeries:
 					continue
 			
-			info.ImdbId = result.ImdbId
-			info.Title = result.Title
-			
-			tmp = self.getMoviesByImdbID(info)
-			if tmp is not None:
-				info = tmp
-			return info
+			if year <= 0 or year == result.Year:
+				info.ImdbId = result.ImdbId
+				info.Title = result.Title
+				
+				tmp = self.getMoviesByImdbID(info)
+				if tmp is not None:
+					info = tmp
+					return info
 		
-		#print "Results:\n"
-		#for result in results:
-		#	print str(result) + "\n"
+
 		
 		printl("<- None (eof)", self)
 		return None
