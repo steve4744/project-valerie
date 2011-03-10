@@ -17,8 +17,8 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
-#cacheDir = "/hdd/valerie/cache"
-cacheDir = "/tmp/valerie/cache"
+baseDir = "/tmp/valerie"
+cacheDir = baseDir + "/cache"
 downloadDir = "/hdd/valerie/media"
 
 RETRIES = 5
@@ -61,7 +61,22 @@ def checkCache(url):
 	
 	return rtv
 
+def createCacheFolder():
+	try: 
+		os.makedirs(baseDir)
+	except OSError, e:
+		pass
+	
+	try: 
+		os.makedirs(cacheDir)
+	except OSError, e:
+		pass
+
 def addCache(url, text):
+	
+	# this line should be moved to a more suitable place
+	createCacheFolder()
+	
 	try:
 		if folderSize(cacheDir) > 4.0 or freeSpace(cacheDir) < 2.0: #10mb
 			for f in os.listdir(cacheDir):

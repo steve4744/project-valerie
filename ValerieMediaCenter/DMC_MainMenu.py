@@ -329,8 +329,6 @@ class PVMC_MainMenu(Screen):
 		# Executes a start script
 		self.onFirstExecBegin.append(self.onExecStartScript)
 		
-		if config.plugins.pvmc.checkforupdate.value == True:
-			self.onFirstExecBegin.append(self.checkForUpdate)
 		printl("<-", self)
 
 
@@ -346,6 +344,20 @@ class PVMC_MainMenu(Screen):
 				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
 
 	def onExecStartScript(self):
+		printl("->", self)
+		
+		doUpdate = False
+		
+		if config.plugins.pvmc.checkforupdate.value == True:
+			doUpdate = self.checkForUpdate()
+		
+		printl("doUpdate=" + str(doUpdate), self)
+		
+		if doUpdate is False:
+			self.runAutostart()
+		printl("<-",self)
+
+	def runAutostart(self):
 		printl("->", self)
 		try:
 			import os
@@ -395,13 +407,17 @@ class PVMC_MainMenu(Screen):
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
 				self.session.openWithCallback(self.startUpdate, MessageBox,_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, MessageBox.TYPE_YESNO)
+				return True
 		
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % (e), self)
+		return False
 
 	def startUpdate(self, answer):
 		if answer is True:
 			self.session.open(PVMC_Update, self.remoteurl)
+		else:
+			self.runAutostart()
 
 	def Error(self, error):
 		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error), MessageBox.TYPE_INFO)
