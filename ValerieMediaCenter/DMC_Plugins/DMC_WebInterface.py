@@ -24,10 +24,13 @@ config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
 config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 
 def autostart(session):
-	root = File('/tmp/valerie/log', defaultType="text/plain")
-	site = Site(root)
-	port = config.plugins.pvmc.plugins.webinterface.port.value
-	reactor.listenTCP(port, site, interface="0.0.0.0")
+	try:
+		root = File('/tmp/valerie/log', defaultType="text/plain")
+		site = Site(root)
+		port = config.plugins.pvmc.plugins.webinterface.port.value
+		reactor.listenTCP(port, site, interface="0.0.0.0")
+	except Exception, ex:
+		printl("Exception: " + str(ex), __name__)
 
 def settings():
 	s = []
