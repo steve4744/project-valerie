@@ -84,7 +84,11 @@ class Database(object):
 						self.dbEpisodes[key][season][episode].Genres = transformedGenre
 
 	def clearFailed(self):
-		del self.dbFailed[:]
+		try:
+			del self.dbFailed[:]
+			#self.dbFailed = []
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
 
 	def addFailed(self, entry):
 		self.dbFailed.append(entry)
@@ -360,6 +364,39 @@ class Database(object):
 		fd.close()
 		elapsed_time = time.time() - start_time
 		printl("Took (movies.db): " + str(elapsed_time), self)
+		
+		
+		#dbMovies2 = []
+		#for movie in self.dbMovies.values():
+		#	#print movie
+		#	from struct.Media import MediaMovie
+		#	m = MediaMovie()
+		#	m.Path         = movie.Path
+		#	m.Filename     = movie.Filename
+		#	m.Extension    = movie.Extension
+		#	m.Title        = movie.Title
+		#	m.AiredYear    = movie.Year
+		#	m.AiredMonth   = movie.Month
+		#	m.AiredDay     = movie.Day
+		#	m.CreatedYear  = 0
+		#	m.CreatedMonth = 0
+		#	m.CreatedDay   = 0
+		#	m.Runtime      = movie.Runtime
+		#	
+		#	m.ImdbId       = movie.ImdbId
+		#	m.TmDbId       = movie.TmDbId
+		#	m.Tag          = movie.Tag
+		#	m.Popularity   = movie.Popularity
+		#	m.Resolution   = movie.Resolution
+		#	m.Sound        = movie.Sound
+		#	dbMovies2.append(m)
+		#
+		#start_time = time.time()  
+		#fd = open(self.MOVIESDB+"2", "wb")
+		#pickle.dump(dbMovies2, fd, pickle.HIGHEST_PROTOCOL)
+		#fd.close()
+		#elapsed_time = time.time() - start_time
+		#printl("Took (movies.db): " + str(elapsed_time), self)
 		
 		start_time = time.time()  
 		fd = open(self.TVSHOWSDB, "wb")
