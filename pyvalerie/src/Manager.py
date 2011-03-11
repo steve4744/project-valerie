@@ -134,3 +134,5 @@ class Manager(object):
 					Blacklist.save()
 			else:
 				self.db.removeFailed(oldElement)
+				Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
+				Blacklist.save()
