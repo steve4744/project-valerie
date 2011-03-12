@@ -54,6 +54,9 @@ class TraktAPI():
 	def setStatus(self, status):
 		self.mStatus = status
 
+	def getStatus(self):
+		return self.mStatus
+
 	def setName(self, name):
 		self.mMovieName = name
 
@@ -68,6 +71,9 @@ class TraktAPI():
 		self.mType = type
 		self.mProgress = -1
 		self.mDuration = -1
+	
+	def getType(self):
+		return self.mType
 
 	def setUsernameAndPassword(self, user, passwd):
 		self.mUsername = user
@@ -86,6 +92,9 @@ class TraktAPI():
 
 	def setProgress(self, progress):
 		self.mProgress = progress
+
+	def getProgress(self):
+		return self.mProgress
 
 	def setDuration(self, duration):
 		self.mDuration = duration

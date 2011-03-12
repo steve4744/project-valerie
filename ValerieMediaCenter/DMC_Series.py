@@ -1,47 +1,32 @@
-from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
-from Screens.Screen import Screen
-from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
-from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
-from Components.Pixmap import Pixmap, MovingPixmap
-from Components.Label import Label
-from Components.Button import Button
+# -*- coding: utf-8 -*-
 
-from Components.Sources.List import List
-from Screens.MessageBox import MessageBox
-from Screens.HelpMenu import HelpableScreen
-
-from Components.ServicePosition import ServicePositionGauge
-from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-
-from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import *
-
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
-from Components.FileList import FileList
-from Components.AVSwitch import AVSwitch
-#from Screens.DMC_MoviePlayer import PVMC_MoviePlayer
-from Screens.InfoBar import MoviePlayer
-
-from Plugins.Plugin import PluginDescriptor
-
-
-from Components.MenuList import MenuList
-from Tools.LoadPixmap import LoadPixmap
-
-import os
-from os import path as os_path
-
-from DMC_Global import Showiframe
-from DMC_Global import printl
-from DMC_Player import PVMC_Player 
-from DataElement import DataElement
-import math
-
-from TraktAPI import TraktAPI 
-
-from os import environ
 import gettext
+import math
+import os
+from   os import environ
+
+from Components.ActionMap import ActionMap, HelpableActionMap
+from Components.config import *
+from Components.Label import Label
 from Components.Language import language
+from Components.MenuList import MenuList
+from Components.Pixmap import Pixmap
+from Components.Sources.List import List
+from Components.Sources.StaticText import StaticText
+from Screens.ChoiceBox import ChoiceBox
+from Screens.HelpMenu import HelpableScreen
+from Screens.MessageBox import MessageBox
+from Screens.Screen import Screen
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
+
+from DataElement import DataElement
+from DMC_Global import Showiframe
+from DMC_Player import PVMC_Player
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
+
+#------------------------------------------------------------------------------------------
 
 def localeInit():
 	lang = language.getLanguage()
@@ -60,13 +45,12 @@ localeInit()
 language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 
-class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
+class PVMC_Series(Screen, HelpableScreen):
 
 	ShowStillPicture = False
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		InfoBarBase.__init__(self)
 		HelpableScreen.__init__(self)
 		self.showiframe = Showiframe()
 		
@@ -124,21 +108,21 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self["backdrop"] = StillPicture(session)
 			self.ShowStillPicture = True
 		except Exception, ex:
-			print ex
+			printl("Exception: " + str(ex), self)
 		
 		if self.APILevel >= 2:
 			self["listview_itemsperpage"] = DataElement()
 		
 		for i in range(10):
 			stars = "star" + str(i)
-			print stars
+			printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 			if self[stars].instance is not None:
 				self[stars].instance.hide()
 
 		for i in range(10):
 			stars = "nostar" + str(i)
-			print stars
+			printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 		
 		self.backdropquality = ""
@@ -167,12 +151,6 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.loadSeriesDB()
 		elif self.USE_DB_VERSION == self.DB_TXD:
 			self.loadSeriesTxd()
-		
-		print "TRAKT.TV: ", config.plugins.pvmc.trakt.value
-		if config.plugins.pvmc.trakt.value is True:
-			self.trakt = TraktAPI("pvmc")
-			self.trakt.setUsernameAndPassword(config.plugins.pvmc.traktuser.value, config.plugins.pvmc.traktpass.value)
-			self.trakt.setType(TraktAPI.TYPE_TVSHOW)
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.refresh)
@@ -311,10 +289,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 							entrys.append(d["Episode"])
 							list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
 							
-		except OSError, e: 
-			print "OSError: ", e
-		except IOError, e: 
-			print "OSError: ", e
+		except OSError, ex: 
+			printl("OSError: " + str(ex), self)
+		except IOError, ex: 
+			printl("IOError: " + str(ex), self)
 		
 		if self.inSeries:
 			self.serieslist.sort()
@@ -402,10 +380,10 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 									entrys.append(d["Episode"])
 									self.seasonlist.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
 		
-		except OSError, e: 
-			print "OSError: ", e
-		except IOError, e: 
-			print "OSError: ", e
+		except OSError, ex:
+			printl("OSError: " + str(ex), self)
+		except IOError, ex:
+			printl("IOError: " + str(ex), self)
 		
 		if self.inSeries:
 			self.serieslist.sort()
@@ -434,7 +412,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				else:
 					self[name].setText(" ")
 		except Exception, ex:
-			print "setText::", ex
+			printl("Exception: " + str(ex), self)
 
 	def refresh(self, changeBackdrop=True):
 		selection = self["listview"].getCurrent()
@@ -515,17 +493,17 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 				self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 
 	def up(self):
-		print "PVMC_Series::up"
+		printl("", self)
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def up_first(self):
-		print "PVMC_Series::up_first"
+		printl("", self)
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def up_quick(self):
-		print "PVMC_Series::up_quick"
+		printl("", self)
 		if self.APILevel == 1:
 			self["listview"].up()
 		elif self.APILevel >= 2:
@@ -536,17 +514,17 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.refresh()
 
 	def down(self):
-		print "PVMC_Series::down"
+		printl("", self)
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def down_first(self):
-		print "PVMC_Series::down_first"
+		printl("", self)
 		if self.FAST_STILLPIC is False:
 			self.refresh()
 
 	def down_quick(self):
-		print "PVMC_Series::down_quick"
+		printl("", self)
 		if self.APILevel == 1:
 			self["listview"].down()
 		elif self.APILevel >= 2:
@@ -557,6 +535,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			self.refresh()
 
 	def leftUp(self):
+		printl("", self)
 		if self.APILevel == 1:
 			self["listview"].pageUp()
 		elif self.APILevel >= 2:
@@ -569,6 +548,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.refresh()
 
 	def rightDown(self):
+		printl("", self)
 		if self.APILevel == 1:
 			self["listview"].pageDown()
 		elif self.APILevel >= 2:
@@ -581,6 +561,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 		self.refresh()
 
 	def KeyOk(self):
+		printl("", self)
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if self.inSeries is True:
@@ -631,13 +612,17 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 						self.currentSeasonNumber = self.episodesdb[selection[1]]["Season"]
 						self.currentEpisodeNumber = self.episodesdb[selection[1]]["Episode"]
 						
-						if config.plugins.pvmc.trakt.value is True:
-							self.trakt.setName(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"])
-							self.trakt.setYear(self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"])
-							self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
-							self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
-							self.trakt.setTheTvDbId(self.episodesdb[selection[1]]["TheTvDb"])
-							self.trakt.send()
+						args = {}
+						args["title"]   = self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Title"]
+						args["year"]    = self.moviedb[self.episodesdb[selection[1]]["TheTvDb"]]["Year"]
+						args["thetvdb"] = self.episodesdb[selection[1]]["TheTvDb"]
+						args["season"]  = self.currentSeasonNumber
+						args["episode"] = self.currentEpisodeNumber
+						args["status"]  = "playing"
+						args["type"]    = "tvshow"
+						plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
+						for plugin in plugins:
+							pluginSettingsList = plugin.fnc(args)
 						
 						isDVD = False
 						dvdFilelist = [ ]
@@ -656,7 +641,7 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 								# when iso -> filelist, when folder -> device
 								self.session.openWithCallback(self.leaveMoviePlayer, DVDPlayer, dvd_device = dvdDevice, dvd_filelist = dvdFilelist)
 							except Exception, ex:
-								print "KeyOk::", ex
+								printl("Exception: " + str(ex), self)
 						else:
 							playbackList = []
 							i = 0
@@ -669,36 +654,39 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 								else:
 									break
 							
-							print "PLAYBACK: ", playbackList
+							printl("playbackList: " + str(playbackList), self)
 							
 							self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
 					else:
 						self.session.open(MessageBox, _("Not found!\n") + self.episodesdb[selection[1]]["Path"] + _("\n\nPlease make sure that your drive is connected/mounted."), type = MessageBox.TYPE_ERROR)
 
 	def notifyNextEntry(self):
-		print "PVMC_Series::notifyNextEntry"
-		if config.plugins.pvmc.trakt.value is True:
-			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
-			self.trakt.send()
+		printl("", self)
+		args = {}
+		args["status"] = "stopped"
+		plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
+		for plugin in plugins:
+			pluginSettingsList = plugin.fnc(args) 
 		
 		self.currentEpisodeNumber = str(int(self.currentEpisodeNumber) + 1)
 		
-		if config.plugins.pvmc.trakt.value is True:
-			self.trakt.setSeasonAndEpisode(self.currentSeasonNumber, self.currentEpisodeNumber)
-			self.trakt.setStatus(TraktAPI.STATUS_WATCHING)
-			self.trakt.send()
+		argsNE = {}
+		argsNE["season"]  = self.currentSeasonNumber
+		argsNE["episode"] = self.currentEpisodeNumber
+		argsNE["status"]  = "playing"
+		plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
+		for plugin in plugins:
+			pluginSettingsList = plugin.fnc(argsNE) 
 
 	def leaveMoviePlayer(self): 
-		if config.plugins.pvmc.trakt.value is True:
-			self.trakt.setStatus(TraktAPI.STATUS_WATCHED)
-			self.trakt.send()
+		args = {}
+		args["status"] = "stopped"
+		plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
+		for plugin in plugins:
+			pluginSettingsList = plugin.fnc(args) 
+		
 		self.session.nav.playService(None) 
 		self.refresh()
-		#self.visibility(True)
-		#if os.access("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-		#	self.showiframe.showStillpicture("/hdd/valerie/media/" + self.selectedSeries + "_backdrop" + self.backdropquality + ".m1v")
-		#else:
-		#	self.showiframe.showStillpicture("/hdd/valerie/media/defaultbackdrop.m1v")
 
 	def KeyExit(self):
 		if self.inSeries is True:
@@ -732,5 +720,4 @@ class PVMC_Series(Screen, HelpableScreen, InfoBarBase):
 			if selection is not None:
 				self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
-from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 registerPlugin(Plugin(name=_("TV Shows"), start=PVMC_Series, where=Plugin.MENU_VIDEOS))

@@ -62,6 +62,8 @@ class Plugin():
 	AUTOSTART = 9
 	
 	SETTINGS = 10
+	
+	INFO_PLAYBACK = 100
 
 	name  = None
 	start = None

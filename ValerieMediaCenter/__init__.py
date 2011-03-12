@@ -71,9 +71,9 @@ config.plugins.pvmc.updatexml         = ConfigText(default = defaultUpdateXML)
 
 config.plugins.pvmc.plugins = ConfigSubsection()
 
-config.plugins.pvmc.trakt              = ConfigYesNo(default = False)
-config.plugins.pvmc.traktuser          = ConfigText(default = "No Username")
-config.plugins.pvmc.traktpass          = ConfigPassword(default = "No Password")
+#config.plugins.pvmc.trakt              = ConfigYesNo(default = False)
+#config.plugins.pvmc.traktuser          = ConfigText(default = "No Username")
+#config.plugins.pvmc.traktpass          = ConfigPassword(default = "No Password")
 
 # We updated to a newer version, so redisplay wizard
 if config.plugins.pvmc.version.value != currentVersion:

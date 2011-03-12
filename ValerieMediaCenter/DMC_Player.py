@@ -1,41 +1,19 @@
-from enigma import eTimer, eWidget, eRect, eServiceReference, iServiceInformation, iPlayableService, ePicLoad
-from Screens.Screen import Screen
-from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
-from Components.ActionMap import ActionMap, NumberActionMap, HelpableActionMap
-from Components.Pixmap import Pixmap, MovingPixmap
-from Components.Label import Label
-from Components.Button import Button
+# -*- coding: utf-8 -*-
 
-from Components.Sources.List import List
-from Screens.MessageBox import MessageBox
-from Screens.HelpMenu import HelpableScreen
-
-from Components.ServicePosition import ServicePositionGauge
-from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
-
-from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import *
-
-from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
-from Components.FileList import FileList
-from Components.AVSwitch import AVSwitch
-#from Screens.DMC_MoviePlayer import PVMC_MoviePlayer
-from Screens.InfoBar import MoviePlayer
-
-from Plugins.Plugin import PluginDescriptor
-
-
-from Components.MenuList import MenuList
-from Tools.LoadPixmap import LoadPixmap
-
-import os
-from os import path as os_path
-
-from DMC_Global import Showiframe
-
-from os import environ
 import gettext
+import os
+from   os import environ
+
+from enigma import eTimer, eServiceReference
 from Components.Language import language
+from Screens.ChoiceBox import ChoiceBox
+from Screens.InfoBar import MoviePlayer
+from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
+
+#------------------------------------------------------------------------------------------
 
 def localeInit():
 	lang = language.getLanguage()
@@ -58,6 +36,10 @@ class PVMC_Player(MoviePlayer):
 		self.session = session
 		self.playlist = playlist
 		
+		self.progressTimer = eTimer()
+		self.progressTimer.callback.append(self.progressUpdate)
+		self.progressTimer.start(1000)
+		
 		self.notifyNextEntry = notifyNextEntry
 		
 		if isinstance(playlist, list):
@@ -71,9 +53,11 @@ class PVMC_Player(MoviePlayer):
 				type = 4097
 			ref = eServiceReference(type, 0, firstPath)
 			ref.setName(firstName)
+			self.playing = True
 			MoviePlayer.__init__(self, session, ref)
 		else:
 			self.isPlaylist = False
+			self.playing = True
 			MoviePlayer.__init__(self, session, playlist)
 		self.skinName = "MoviePlayer"
 
@@ -88,13 +72,13 @@ class PVMC_Player(MoviePlayer):
 		if eof is False:
 			list.append((_("No, continue"), "continue"))
 		
-		from Screens.ChoiceBox import ChoiceBox
 		self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
 
 	def leavePlayerConfirmed(self, answer):
 		if answer is not None and len(answer) >= 2: # I dont get how ChoiceBox can return None, but well this has happend in Issue 88
 			print "ANSWER:", answer[1]
 			if answer[1] == "quit":
+				self.playing = False
 				self.close()
 			elif answer[1] == "next":
 				self.nextPlaylistEntry()
@@ -103,7 +87,7 @@ class PVMC_Player(MoviePlayer):
 			elif answer[1] == "continue":
 				return None
 
-# Some functions need to be overriden so they are not called
+	# Some functions need to be overriden so they are not called
 	def showMovies(self):
 		return None
 
@@ -119,8 +103,44 @@ class PVMC_Player(MoviePlayer):
 ##
 # Is notified if movie has ended
 	def doEofInternal(self, playing):
+		self.playing = False
 		if self.execing and playing:
 			self.leavePlayer(True)
+
+	progressUpdateCounter = 0
+	progressUpdateCounterMargin = 10*60 #10min
+	progressUpdateNextPercentMargin = 0
+	progressUpdateNextPercentDistance = 5
+
+	def progressUpdate(self):
+		self.progressUpdateCounter += 1
+		service = self.session.nav.getCurrentService()
+		seek = service and service.seek()
+		if seek != None:
+			rLen = seek.getLength()
+			rPos = seek.getPlayPosition()
+			if not rLen[0] and not rPos[0]:
+				pos = int(rPos[1] / 90000)
+				len = int(rLen[1] / 90000)
+				percent = int((pos * 100.0) / len)
+				printl("percent: " + str(percent) + " len: " + str(len) + " pos: " + str(pos), self)
+				printl("self.progressUpdateCounter: " + str(self.progressUpdateCounter), self)
+				printl("self.progressUpdateNextPercentMargin: " + str(self.progressUpdateNextPercentMargin), self)
+				if self.progressUpdateCounter >= self.progressUpdateCounterMargin:
+					self.progressUpdateCounter = 0
+					self. communicatelApiProgressAndDuration(percent, len)
+				elif percent >= self.progressUpdateNextPercentMargin:
+					self.progressUpdateCounter = 0
+					self.progressUpdateNextPercentMargin += self.progressUpdateNextPercentDistance
+					self. communicatelApiProgressAndDuration(percent, len)
+
+	def communicatelApiProgressAndDuration(self, progress, duration):
+		args = {}
+		args["progress"] = progress
+		args["duration"] = duration
+		plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
+		for plugin in plugins:
+			pluginSettingsList = plugin.fnc(args)
 
 	def playPlaylistEntry(self):
 		selectedPath = self.playlist[self.current][0]
@@ -131,6 +151,7 @@ class PVMC_Player(MoviePlayer):
 			type = 4097
 		ref = eServiceReference(type, 0, selectedPath)
 		ref.setName(selectedName)
+		self.playing = True
 		self.session.nav.playService(ref)
 
 	def nextPlaylistEntry(self):

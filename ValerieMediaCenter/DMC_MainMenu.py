@@ -117,9 +117,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
 			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
 			
-			self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
-			self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
-			self.list.append(getConfigListEntry(_("Trakt.tv - Password"), config.plugins.pvmc.traktpass))
+			#self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
+			#self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
+			#self.list.append(getConfigListEntry(_("Trakt.tv - Password"), config.plugins.pvmc.traktpass))
 
 			plugins = getPlugins(where=Plugin.SETTINGS)
 			for plugin in plugins:
