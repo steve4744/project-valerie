@@ -122,7 +122,12 @@ class PVMC_Player(MoviePlayer):
 			if not rLen[0] and not rPos[0]:
 				pos = int(rPos[1] / 90000)
 				len = int(rLen[1] / 90000)
-				percent = int((pos * 100.0) / len)
+				if len > 0: #DM seems to return zero sometimes ?
+					percent = int((pos * 100.0) / len)
+				elif self.progressUpdateNextPercentMargin > 0:
+					percent = self.progressUpdateNextPercentMargin - self.progressUpdateNextPercentDistance
+				else:
+					percent = 0
 				printl("percent: " + str(percent) + " len: " + str(len) + " pos: " + str(pos), self)
 				printl("self.progressUpdateCounter: " + str(self.progressUpdateCounter), self)
 				printl("self.progressUpdateNextPercentMargin: " + str(self.progressUpdateNextPercentMargin), self)
