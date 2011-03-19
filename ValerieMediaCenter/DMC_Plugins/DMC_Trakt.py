@@ -78,6 +78,9 @@ def info_playback(d):
 		if gtrakt.getStatus() == TraktAPI.STATUS_WATCHED:
 			if gtrakt.getProgress() >= 70:
 				gtrakt.send()
+			else:
+				gtrakt.setStatus(TraktAPI.STATUS_CANCELED)
+				gtrakt.send()
 		else:
 			gtrakt.send()
 

@@ -17,6 +17,7 @@ class TraktAPI():
 	
 	STATUS_IDLE     = "idle"
 	STATUS_WATCHING = "watching"
+	STATUS_CANCELED = "cancelwatching"
 	STATUS_WATCHED  = "scrobble"
 	
 	TYPE_TVSHOW = "show"
