@@ -966,8 +966,8 @@ class ProjectValerieSyncManager(Screen):
 		entries = self.manager.getAll(type, param)
 		if type == Manager.FAILED:
 			for entry in entries:
-				if entry.Cause != FailedEntry.ALREADY_IN_DB:
-					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+				#if entry.Cause != FailedEntry.ALREADY_IN_DB:
+				 list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
 								Utf8.utf8ToLatin(entry.CauseStr), entry), )
 		elif type == Manager.TVSHOWS:
 			for entry in entries:
