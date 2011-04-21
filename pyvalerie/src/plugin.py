@@ -719,7 +719,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self.colorButtons[1] = {}
 		self.colorButtons[1]["key_red"]    = (_("IMDb ID"),      self.showEnterImdbId, )
 		self.colorButtons[1]["key_green"]  = (_("Delete"),       self.delete, )
-		self.colorButtons[1]["key_yellow"] = ("",                self.nothing, )
+		self.colorButtons[1]["key_yellow"] = (_("Save"),         self.save, )
 		self.colorButtons[1]["key_blue"]   = (_("More"),         self.more, )
 		
 		self["key_red"]    = StaticText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
@@ -943,20 +943,35 @@ class ProjectValerieSyncManager(Screen):
 		self.manager.start()
 		self.loadFailed()
 
+	inFailed = False
+
 	def onFinish(self):
 		self.manager.finish()
 		Screen.close(self)
 
 	def loadFailed(self):
-		self.load(Manager.FAILED)
-	
+		if self.inFailed is True:
+			self.inFailed = False
+			self["key_red"].setText(_("Failed"))
+			self.load(Manager.FAILED_ALL)
+		else:
+			self.inFailed = True
+			self["key_red"].setText(_("Failed (All)"))
+			self.load(Manager.FAILED)
+
 	def loadMovies(self):
+		self.inFailed = False
+		self["key_red"].setText(_("Failed"))
 		self.load(Manager.MOVIES)
 
 	def loadTVShows(self):
+		self.inFailed = False
+		self["key_red"].setText(_("Failed"))
 		self.load(Manager.TVSHOWS)
 
 	def loadTVShowsFilenames(self):
+		self.inFailed = False
+		self["key_red"].setText(_("Failed"))
 		self.load(Manager.TVSHOWSEPISODES)
 
 	def load(self, type, param=None):
@@ -966,9 +981,13 @@ class ProjectValerieSyncManager(Screen):
 		entries = self.manager.getAll(type, param)
 		if type == Manager.FAILED:
 			for entry in entries:
-				#if entry.Cause != FailedEntry.ALREADY_IN_DB:
-				 list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+				if entry.Cause != FailedEntry.ALREADY_IN_DB:
+					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
 								Utf8.utf8ToLatin(entry.CauseStr), entry), )
+		elif type == Manager.FAILED_ALL:
+			for entry in entries:
+				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+							Utf8.utf8ToLatin(entry.CauseStr), entry), )
 		elif type == Manager.TVSHOWS:
 			for entry in entries:
 				list.append((Utf8.utf8ToLatin(entry.Title), 

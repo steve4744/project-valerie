@@ -18,7 +18,8 @@ class Manager(object):
 	TVSHOWS = 1
 	TVSHOWSEPISODES = 2
 	FAILED = 3
-
+	FAILED_ALL = 4
+	
 	def __init__(self):
 		pass
 
@@ -54,7 +55,7 @@ class Manager(object):
 						#	if self.db.dbEpisodes[serie][season][episode].TheTvDbId == "79488":
 						#		print self.db.dbEpisodes[serie][season][episode].Filename, serie, season, episode
 			return list
-		elif type == self.FAILED:
+		elif type == self.FAILED or type == self.FAILED_ALL:
 			return self.db.dbFailed
 		else:
 			return None
