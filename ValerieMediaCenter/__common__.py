@@ -29,7 +29,7 @@ def openLogFile():
 	gLogFile = open(logDir + "/valerie_%04d%02d%02d_%02d%02d.log" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
 	#gLogFileHtml = open("/tmp/valerie_%04d%02d%02d_%02d%02d.html" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
 
-def printl2(string, parent=None):
+def printl2(string, parent=None, type="I"):
 	global gLogFile
 	#global gLogFileHtml
 	if gLogFile is None:
@@ -47,7 +47,7 @@ def printl2(string, parent=None):
 		else:
 			classname = ""
 		out = str(classname) + str(sys._getframe(1).f_code.co_name) +" " + str(string)
-	print "[Valerie] " + str(out)
+	print "[Valerie] " + str(type) + "  " + str(out)
 	now = datetime.datetime.now()
 	gLogFile.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "\n")
 	#gLogFileHtml.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "<br />")
