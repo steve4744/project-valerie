@@ -351,7 +351,8 @@ class MobileImdbComProvider():
 				if result.IsTVSeries:
 					continue
 			
-			if year <= 0 or year == result.Year:
+			# We check if year +-1, cause sometimes the year is wrong by one year
+			if year <= 0 or year == result.Year or (year+1) == result.Year or (year-1) == result.Year:
 				info.ImdbId = result.ImdbId
 				info.Title = result.Title
 				info.Year = result.Year
