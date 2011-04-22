@@ -277,17 +277,17 @@ class PVMC_Series(Screen, HelpableScreen):
 					if d["Season"] == -1:
 						continue
 					
-					self.episodesdb[d["Season"] * 100 + d["Episode"]] = d
+					self.episodesdb[d["Season"] * 1000 + d["Episode"]] = d
 					if not d["Season"] in entrys:
 						entrys.append(d["Season"])
-						self.seasonlist.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
+						self.seasonlist.append(("  " + "Season " + str(d["Season"]), d["Season"], "menu_globalsettings", "50"))
 			else:
 				for episode in self.episodesdb:
 					d = self.episodesdb[episode]
 					if d["Season"] == self.selectedSeason:
 						if not d["Episode"] in entrys:
 							entrys.append(d["Episode"])
-							list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 100 + d["Episode"], "menu_globalsettings", "50"))
+							list.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 1000 + d["Episode"], "menu_globalsettings", "50"))
 							
 		except OSError, ex: 
 			printl("OSError: " + str(ex), self)
