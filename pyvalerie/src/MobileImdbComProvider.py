@@ -81,10 +81,26 @@ class MobileImdbComProvider():
 
 	DIV_INFO_START = u"<div class=\"mainInfo\">"
 	DIV_INFO_END = u"</div>"
+	DIV_DETAILS_START = u"<section class=\"details\">"
+	DIV_DETAILS_END = u"</section>"
 	DIV_TAG_START = u"<p>"
 	DIV_TAG_END = u"</p>"
 	DIV_VOTES_START = u"<div class=\"votes\">"
 	DIV_VOTES_END = u"</strong>"
+	DIV_TITLE2_START = u"<h1>"
+	DIV_TITLE2_END = u" ("
+	
+	DIV_PLOT_START = u"""<h1>Plot Summary</h1>
+    <p>"""
+	DIV_PLOT_END = u"<a href"
+
+	DIV_RUNTIME_START = u"""<h1>Run time</h1> 
+<p>"""
+	DIV_RUNTIME_END = u"</p>"
+
+	DIV_GENRE_START = u"""<h1>Genre</h1> 
+<p>"""
+	DIV_GENRE_END = u"</p>"
 
 	def getInfo(self, html):
 		info = html
@@ -100,6 +116,21 @@ class MobileImdbComProvider():
 			return None
 		
 		return info[0:pos].strip()
+
+	def getDetails(self, html):
+		details = html
+		
+		pos = details.find(self.DIV_DETAILS_START)
+		if pos < 0:
+			return None
+		
+		details = details[pos + len(self.DIV_DETAILS_START):]
+		
+		pos = details.find(self.DIV_DETAILS_END)
+		if pos < 0:
+			return None
+		
+		return details[0:pos].strip()
 
 	def getTag(self, info, html):
 		#print "getTag ->"
@@ -162,6 +193,126 @@ class MobileImdbComProvider():
 		#print "getVotes <-"
 		return info
 
+	def getTitle(self, info, html):
+		printl("->", self)
+		title = self.getInfo(html)
+		if title is None:
+			printl("<- (if title is None: a)", self, "W")
+			return None
+		#print "tag", tag
+		pos = title.find(self.DIV_TITLE2_START)
+		if pos < 0:
+			printl("<- (if pos < 0: b)", self, "W")
+			return None
+		
+		title = title[pos + len(self.DIV_TITLE2_START):]
+		
+		pos = title.find(self.DIV_TITLE2_END)
+		if pos < 0:
+			printl("<- (if pos < 0: c)", self, "W")
+			return None
+		title = title[0:pos]
+		title = title.strip()
+		info.Title = title
+		printl("<- Title: " + Utf8.utf8ToLatin(title), self)
+		return info
+
+	def getPlot(self, info, html):
+		printl("->", self)
+		plot = self.getDetails(html)
+		if plot is None:
+			printl("<- (if plot is None: a)", self, "W")
+			return None
+		#print "plot", plot
+		pos = plot.find(self.DIV_PLOT_START)
+		if pos < 0:
+			printl("Details " + plot, self, "W")
+			printl("<- (if pos < 0: b)", self, "W")
+			return None
+		
+		plot = plot[pos + len(self.DIV_PLOT_START):]
+		
+		pos = plot.find(self.DIV_PLOT_END)
+		if pos < 0:
+			printl("<- (if pos < 0: c)", self, "W")
+			return None
+		plot = plot[0:pos]
+		plot = plot.strip()
+		info.Plot = plot
+		info.Plot += u" [M.IMDB.COM]" 
+		printl("<- Plot: " + Utf8.utf8ToLatin(plot), self)
+		return info
+
+	def getRuntime(self, info, html):
+		printl("->", self)
+		runtime = self.getDetails(html)
+		if runtime is None:
+			printl("<- (if runtime is None: a)", self, "W")
+			return None
+		#print "runtime", runtime
+		pos = runtime.find(self.DIV_RUNTIME_START)
+		if pos < 0:
+			printl("Details " + runtime, self, "W")
+			printl("<- (if pos < 0: b)", self, "W")
+			return None
+		
+		runtime = runtime[pos + len(self.DIV_RUNTIME_START):]
+		
+		pos = runtime.find(self.DIV_RUNTIME_END)
+		if pos < 0:
+			printl("<- (if pos < 0: c)", self, "W")
+			return None
+		runtime = runtime[0:pos]
+		runtime = runtime.strip()
+		
+		runtime = runtime.split(" ")
+		try:
+			if len(runtime) == 2:
+				info.Runtime = int(runtime[0])
+			elif len(runtime) == 4:
+				info.Runtime = int(runtime[0]) * 60 + int(runtime[2])
+		except Exception, ex:
+			printl("Exception: " + str(ex), self, "E")
+			return None
+		printl("<- Runtime: " + str(info.Runtime) + " mins", self)
+		return info
+
+	def getGenre(self, info, html):
+		printl("->", self)
+		genre = self.getDetails(html)
+		if genre is None:
+			printl("<- (if genre is None: a)", self, "W")
+			return None
+		#print "genre", genre
+		pos = genre.find(self.DIV_GENRE_START)
+		if pos < 0:
+			printl("Details " + genre, self, "W")
+			printl("<- (if pos < 0: b)", self, "W")
+			return None
+		
+		genre = genre[pos + len(self.DIV_GENRE_START):]
+		
+		pos = genre.find(self.DIV_GENRE_END)
+		if pos < 0:
+			printl("<- (if pos < 0: c)", self, "W")
+			return None
+		genre = genre[0:pos]
+		genre = genre.strip()
+		
+		if len(genre) < 3:
+			printl("<- (en(genre) < 3)", self, "W")
+			return None
+		
+		info.Genres = u""
+		
+		genres = genre.split(", ")
+		for genre in genres:
+			info.Genres += genre + u"|"
+		if len(info.Genres) > 1:
+			info.Genres = info.Genres[:len(info.Genres) - 1]
+		printl("<- Genres: " + Utf8.utf8ToLatin(info.Genres), self)
+		return info
+
 	###############################################
 
 	def getMoviesByTitle(self, info):
@@ -203,6 +354,7 @@ class MobileImdbComProvider():
 			if year <= 0 or year == result.Year:
 				info.ImdbId = result.ImdbId
 				info.Title = result.Title
+				info.Year = result.Year
 				
 				tmp = self.getMoviesByImdbID(info)
 				if tmp is not None:
@@ -229,6 +381,22 @@ class MobileImdbComProvider():
 			info = tmp  
 		
 		tmp = self.getVotes(info, html)
+		if tmp is not None:
+			info = tmp  
+		
+		tmp = self.getTitle(info, html)
+		if tmp is not None:
+			info = tmp  
+		
+		tmp = self.getPlot(info, html)
+		if tmp is not None:
+			info = tmp  
+		
+		tmp = self.getRuntime(info, html)
+		if tmp is not None:
+			info = tmp  
+		
+		tmp = self.getGenre(info, html)
 		if tmp is not None:
 			info = tmp  
 		
