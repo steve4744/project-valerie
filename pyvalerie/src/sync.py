@@ -335,13 +335,15 @@ class pyvalerie(Thread):
 						if db.add(result):
 							if result.isMovie:
 								self.info(str(result.ImdbId) + "_poster.png", 
-								Utf8.utf8ToLatin(result.Title), result.Year)
+									Utf8.utf8ToLatin(result.Title), result.Year)
 							else:
 								self.info(str(result.TheTvDbId) + "_poster.png", 
-										Utf8.utf8ToLatin(result.Title), result.Year)
+									Utf8.utf8ToLatin(result.Title), result.Year)
 						else:
-							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB))
-							printl("Title already in db", self)
+							cause = db.getAddFailedCauseOf()
+							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
+								cause))
+							printl("Title already in db", self, "W")
 			
 			self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
 			printl("(" + str(i) + "/" + str(len(elementList)) + ")", self)

@@ -15,7 +15,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from enigma import getDesktop
 import os
 
-from DMC_Global import printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from __plugin__ import loadPlugins
 #from WebInterface import WebInterface
 

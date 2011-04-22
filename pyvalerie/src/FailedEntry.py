@@ -8,16 +8,18 @@ class FailedEntry():
 	
 	Cause = UNKNOWN
 	CauseStr = "Unknown"
+	Description = ""
 	Path = ""
 	Filename = ""
 	Extension = ""
 	
-	def __init__(self, path, filename, extension, cause):
+	def __init__(self, path, filename, extension, cause, description=""):
 		self.Path = path
 		self.Filename = filename
 		self.Extension = extension
 		self.Cause = cause
 		self.CauseStr = self.strCause(cause)
+		self.Description = description
 		
 	def strCause(self, cause):
 		if cause == self.DUPLICATE_FILE:

@@ -23,7 +23,7 @@ try:
 	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 	from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 	
-	import cgi
+	#import cgi
 	
 	gAvailable = True
 except:
@@ -161,11 +161,32 @@ class Database(Resource):
 				altString = "class=\"alt\""
 			else:
 				altString = ""
-			rows += u"""      <tr %s>
+			if self.type == "movies":
+				rows += u"""      <tr %s>
         <td>%s</td>
         <td>%d</td>
+        <td>%s</td>
+        <td>%s</td>
       </tr>
-""" % (altString, entry.Title, entry.Year)
+""" % (altString, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension)
+			elif self.type == "tvshowepisodes":
+				rows += u"""      <tr %s>
+        <td>%s</td>
+        <td>%d</td>
+        <td>%d</td>
+        <td>%d</td>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+      </tr>
+""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
+			elif self.type == "failed_all":
+				rows += u"""      <tr %s>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+      </tr>
+""" % (altString, entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.CauseStr, entry.Description)
 			alt = not alt
 		html = u"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -286,10 +307,29 @@ a:hover,a:active
 </div>
   <table id="entries">
     <thead>
-      <tr>
+      <tr>"""
+		if self.type == "movies":
+			html += """
         <th>Name</th>
         <th>Year</th>
-      </tr>
+        <th>ImdbId</th>
+        <th>File</th>"""
+		elif self.type == "tvshowepisodes":
+			html += """
+        <th>Name</th>
+        <th>Season</th>
+        <th>Episode</th>
+        <th>Year</th>
+        <th>ImdbId</th>
+        <th>TheTvDbId</th>
+        <th>File</th>"""
+		elif self.type == "failed_all":
+			html += """
+        <th>File</th>
+        <th>Cause</th>
+        <th>Description</th>"""
+		
+		html += """      </tr>
     </thead>
     <tbody>
 """

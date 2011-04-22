@@ -182,21 +182,33 @@ class Database(object):
 						return True
 		return False
 
+	_addFailedCauseOf = None
+
+	def getAddFailedCauseOf(self):
+		cause = self._addFailedCauseOf
+		self._addFailedCauseOf = None
+		return cause.Path + u"/" + cause.Filename + u"." + cause.Extension
+
 	##
 	# Adds media files to the db
 	# @param media: The media file
 	# @return: False if file is already in db or movie already in db, else True 
 	def add(self, media):
+		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isSerie:
 			if self.dbSeries.has_key(media.TheTvDbId) is False:
 				self.dbSeries[media.TheTvDbId] = media
 				return True
 			else:
-				return False
+				#self._addFailedCauseOf = self.dbSeries[media.TheTvDbId]
+				#return False
+				return True # We return true here cause this is not a failure but simply means that the tvshow already exists in the db
 		
 		media.Path = media.Path.replace("\\", "/")
 		# Checks if the file is already in db
 		if self.checkDuplicate(media.Path, media.Filename, media.Extension):
+			# This should never happen, this means that the same file is already in the db
+			# But is a failure describtion here necessary ?
 			return False
 		
 		pth = media.Path + "/" + media.Filename + "." + media.Extension
@@ -206,6 +218,7 @@ class Database(object):
 			if self.dbMovies.has_key(media.ImdbId) is False:
 				self.dbMovies[media.ImdbId] = media
 			else: 
+				self._addFailedCauseOf = self.dbMovies[media.ImdbId]
 				return False
 		elif media.isEpisode:
 			if self.dbEpisodes.has_key(media.TheTvDbId) is False:
@@ -217,6 +230,7 @@ class Database(object):
 			if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is False:
 				self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
 			else:
+				self._addFailedCauseOf = self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode]
 				return False
 		return True
 
