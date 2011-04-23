@@ -52,6 +52,59 @@ class Action(Resource):
 			pass
 		elif request.args["type"][0] == "alternatives":
 			pass
+		elif request.args["type"][0] == "get":
+			
+			manager = Manager()
+			manager.start()
+			
+			json = "{\n\"" + request.args["what"][0] + "\": {\n\"entry\": [\n"
+			
+			if request.args["what"][0] == "movies":
+				entries = manager.getAll(Manager.MOVIES)
+				for entry in entries:
+					json += u"{\n"
+					json += u"\"title\": \"" + entry.Title + "\",\n"
+					json += u"\"year\": " + str(entry.Year) + ",\n"
+					json += u"\"imdbid\": \"" + entry.ImdbId + "\",\n"
+					json += u"\"file\": \"" + entry.Filename + u"." + entry.Extension + "\",\n"
+					json += u"},\n"
+			
+			elif request.args["what"][0] == "tvshows":
+				entries = manager.getAll(Manager.TVSHOWS)
+				for entry in entries:
+					json += u"{\n"
+					json += u"\"title\": \"" + entry.Title + "\",\n"
+					json += u"\"year\": " + str(entry.Year) + ",\n"
+					json += u"\"imdbid\": \"" + entry.ImdbId + "\",\n"
+					json += u"\"thetvdbid\": \"" + entry.TheTvDbId + "\",\n"
+					json += u"},\n"
+			
+			elif request.args["what"][0] == "tvshowsepisodes":
+				entries = manager.getAll(Manager.TVSHOWSEPISODES)
+				for entry in entries:
+					json += u"{\n"
+					json += u"\"title\": \"" + entry.Title + "\",\n"
+					json += u"\"season\": " + str(entry.Season) + ",\n"
+					json += u"\"episode\": " + str(entry.Episode) + ",\n"
+					json += u"\"year\": " + str(entry.Year) + ",\n"
+					json += u"\"imdbid\": \"" + entry.ImdbId + "\",\n"
+					json += u"\"thetvdbid\": \"" + entry.TheTvDbId + "\",\n"
+					json += u"\"file\": \"" + entry.Filename + u"." + entry.Extension + "\",\n"
+					json += u"},\n"
+			
+			elif request.args["what"][0] == "failed_all":
+				entries = manager.getAll(Manager.FAILED_ALL)
+				for entry in entries:
+					json += u"{\n"
+					json += u"\"file\": \"" + entry.Path + u"/" + entry.Filename + u"." + entry.Extension + "\",\n"
+					json += u"\"cause\": \"" + entry.CauseStr + "\",\n"
+					json += u"\"description\": \"" + entry.Description + "\",\n"
+					json += u"},\n"
+			
+			json = json[:len(json)-2]
+			json += "\n]\n}\n}\n"
+			
+			return utf8ToLatin(json)
 		
 		return """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
