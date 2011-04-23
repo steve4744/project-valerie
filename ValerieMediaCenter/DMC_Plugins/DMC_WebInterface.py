@@ -23,7 +23,7 @@ try:
 	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 	from Plugins.Extensions.ProjectValerieSync.Utf8 import *
 	
-	#import cgi
+	import cgi
 	
 	gAvailable = True
 except:
@@ -32,6 +32,35 @@ except:
 config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
 config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 
+class Action(Resource):
+	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+
+	def action(self, request):
+		printl("request: " + str(request), self)
+		printl("request.args: " + str(request.args), self)
+		printl("request.args[type]: " + str(request.args["type"]), self)
+		
+		# Here we can react to different request
+		# After a request has been processed we can display a request specific answer
+		# For example, after requesting alternatives for a move we should return them instead of the 
+		#  Refresh html page you see below as default answer
+		if request.args["type"][0] == "delete":
+			pass
+		elif request.args["type"][0] == "alternatives":
+			pass
+		
+		return """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta HTTP-EQUIV="REFRESH" content="0; url=/">
+</head>
+<body>
+</body>
+</html>"""
 
 class Index(Resource):
 	def render_GET(self, request):
@@ -142,6 +171,9 @@ def autostart(session):
 		#Folder Lists
 		root.putChild("vlog", File('/tmp/valerie/log', defaultType="text/plain"))
 		root.putChild("elog", File('/hdd/', defaultType="text/plain"))
+		
+		#Action pages
+		root.putChild("action", Action())
 		
 		site = Site(root)
 		port = config.plugins.pvmc.plugins.webinterface.port.value
