@@ -34,7 +34,7 @@ language.addCallback(localeInit)
 class PVMC_Player(MoviePlayer):
 	def __init__(self, session, playlist, notifyNextEntry=None):
 		self.session = session
-		self.playlist = playlist
+		self.playlist = self.fixParts(playlist)
 		
 		self.progressTimer = eTimer()
 		self.progressTimer.callback.append(self.progressUpdate)
@@ -42,11 +42,11 @@ class PVMC_Player(MoviePlayer):
 		
 		self.notifyNextEntry = notifyNextEntry
 		
-		if isinstance(playlist, list):
+		if isinstance(self.playlist, list):
 			self.isPlaylist = True
 			self.current = 0
-			firstPath = playlist[0][0]
-			firstName = playlist[0][1]
+			firstPath = self.playlist[0][0]
+			firstName = self.playlist[0][1]
 			if firstPath.endswith(".ts"):
 				type = 1
 			else:
@@ -58,7 +58,7 @@ class PVMC_Player(MoviePlayer):
 		else:
 			self.isPlaylist = False
 			self.playing = True
-			MoviePlayer.__init__(self, session, playlist)
+			MoviePlayer.__init__(self, session, self.playlist)
 		self.skinName = "MoviePlayer"
 
 	def leavePlayer(self, eof=False):
@@ -87,6 +87,42 @@ class PVMC_Player(MoviePlayer):
 			elif answer[1] == "continue":
 				return None
 
+	filter = None
+
+	def fixPartsReplacer(self, filename):
+		for f in self.filter:
+			for i in range(2,10):
+				fWithNumber = f + str(i)
+				if fWithNumber in filename:
+					return filename.replace(fWithNumber, f + "1")
+		return filename
+
+	def fixParts(self, playlist):
+		if self.filter is None:
+			self.filter = []
+			self.filter.append("disk")
+			self.filter.append("cd")
+			self.filter.append("dvd")
+			self.filter.append("part")
+			self.filter.append("pt")
+		
+		if isinstance(playlist, list):
+			for i in range(0, len(playlist)):
+				playlist[i] = (self.fixPartsReplacer(playlist[i][0]), playlist[i][1])
+		else:
+			playlist[0] = self.fixPartsReplacer(playlist[0])
+		return playlist
+
+	def checkForAdditionalParts(self, filename):
+		for f in self.filter:
+			for i in range(1,10):
+				fWithNumber = f + str(i)
+				if fWithNumber in filename:
+					filename = filename.replace(fWithNumber, f + str(i+1))
+					if os.path.isfile(filename):
+						return filename
+		return None
+
 	# Some functions need to be overriden so they are not called
 	def showMovies(self):
 		return None
@@ -103,9 +139,28 @@ class PVMC_Player(MoviePlayer):
 ##
 # Is notified if movie has ended
 	def doEofInternal(self, playing):
+		printl("playing: " + str(playing), self)
 		self.playing = False
 		if self.execing and playing:
-			self.leavePlayer(True)
+			path = None
+			name = None
+			if isinstance(self.playlist, list):
+				path = self.playlist[self.current][0]
+				name = self.playlist[self.current][1]
+			else:
+				path = self.playlist[0]
+				name = self.playlist[1]
+			
+			path = self.checkForAdditionalParts(path)
+			
+			if path is None:
+				self.leavePlayer(True)
+			else:
+				if isinstance(self.playlist, list):
+					self.playlist[self.current] = (path, self.playlist[self.current][1])
+				else:
+					self.playlist = (path, self.playlist[1])
+				self.playFile(path, name)
 
 	progressUpdateCounter = 0
 	progressUpdateCounterMargin = 10*60 #10min
@@ -147,9 +202,7 @@ class PVMC_Player(MoviePlayer):
 		for plugin in plugins:
 			pluginSettingsList = plugin.fnc(args)
 
-	def playPlaylistEntry(self):
-		selectedPath = self.playlist[self.current][0]
-		selectedName = self.playlist[self.current][1]
+	def playFile(self, selectedPath, selectedName):
 		if selectedPath.endswith(".ts"):
 			type = 1
 		else:
@@ -157,7 +210,13 @@ class PVMC_Player(MoviePlayer):
 		ref = eServiceReference(type, 0, selectedPath)
 		ref.setName(selectedName)
 		self.playing = True
+		self.progressUpdateNextPercentMargin = 0
 		self.session.nav.playService(ref)
+
+	def playPlaylistEntry(self):
+		selectedPath = self.playlist[self.current][0]
+		selectedName = self.playlist[self.current][1]
+		self.playFile(selectedPath, selectedName)
 
 	def nextPlaylistEntry(self):
 		if self.nextPlaylistEntryAvailable():
