@@ -313,11 +313,11 @@ class pyvalerie(Thread):
 				
 				if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
 					tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
-					if tmp is None:
+					if tmp[0] is True and tmp[1] is None:
 						# seems to be no tvshows so lets parse as movie
 						elementInfo.isMovie = True
 						elementInfo.isSerie = False
-					else:
+					elif tmp[0] is True:
 						elementInfo = tmp
 					searchStringSplitted = elementInfo.SearchString.split("::")
 					if len(searchStringSplitted) >= 2:

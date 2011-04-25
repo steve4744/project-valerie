@@ -61,11 +61,19 @@ class Utf8():
 		
 	def open(self, file, arg):
 		try:
-			self.fd = codecs.open(file, arg, "utf-8")
+			try:
+				self.fd = codecs.open(file, arg, "utf-8")
+				return True
+			except Exception, ex:
+				printl("Exception: " + str(ex), self)
+			
+			self.fd = codecs.open(utf8ToLatin(file), arg, "utf-8")
 			return True
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
+			self.fd = None
 			return False
+		self.fd = None
 		return False
 
 	def close(self):

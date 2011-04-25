@@ -23,12 +23,20 @@ class GoogleProvider():
 			info.Season = int(m.group("season"))
 			info.Episode = int(m.group("episode"))
 			return info
+		
+		m = re.search(r'(?P<season>\d+)x(?P<episode>\d+)', result)
+		if m and m.group("season") and m.group("episode"):
+			printl("m.group()=" + str(m.group()), self)
+			info.Season = int(m.group("season"))
+			info.Episode = int(m.group("episode"))
+			return info
+		
 		return None
 
 	def getSeasonAndEpisodeFromEpisodeName(self, info):
 		if info.SearchString is None or len(info.SearchString) == 0:
 			printl(" <- None (info.SearchString is None or len(info.SearchString) == 0)", self) 
-			return None
+			return (False, None)
 		
 		url = self.apiSearch
 		url = re.sub("<search>", info.SearchString, url)
@@ -36,7 +44,7 @@ class GoogleProvider():
 		
 		if html is None:
 			printl(" <- None (html is None)", self) 
-			return None
+			return (False, None)
 		
 		# well there seems to be a problem with detecting tvshows,
 		#so lets build in a workaround, you will need at least 2 time the same
@@ -67,9 +75,9 @@ class GoogleProvider():
 				if s == info.Season and e == info.Episode:
 					count = count + 1
 					if count == 2:
-						return info
+						return (True, info)
 			else:
 				continue
 		
 		printl(" <- None (eof)", self) 
-		return None
+		return (True, None)

@@ -288,12 +288,12 @@ def decode_htmlentities(string):
 	try:
 		var = entity_re.subn(substitute_entity, string)[0]
 	except Exception, ex:
-		printl("Exception: " + str(ex), self)
+		printl("Exception: " + str(ex), __name__)
 		#source_encoding = "iso-8859-1"
 		#string = string.encode(source_encoding)
 		#string = unicode(string, 'utf-8')
 		#var = entity_re.subn(substitute_entity, string)[0]
-		var = ""
+		var = None
 		
 		
 	return var
