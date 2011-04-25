@@ -298,10 +298,12 @@ class PVMC_Series(Screen, HelpableScreen):
 			self.serieslist.sort()
 			self["listview"].setList(self.serieslist)
 		elif self.inSeasons:
-			self.seasonlist.sort()
+		#	self.seasonlist.sort()
+			self.seasonlist.sort(key=lambda x: x[1])
 			self["listview"].setList(self.seasonlist)
 		elif self.inEpisode:
-			list.sort()
+			#list.sort()
+			list.sort(key=lambda x: x[1])
 			self["listview"].setList(list)
 		
 		if self.APILevel >= 2:
