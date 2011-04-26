@@ -3,6 +3,7 @@
 			<div class="subheader">Authors</div>
 			<div class="text">
 				schischu65<br>
+        slugshot<br>
 				DonDavici<br>
 				<br>
 				... and contributors
