@@ -57,7 +57,7 @@ class Action(Resource):
 			manager = Manager()
 			manager.start()
 			
-			json = "{\n\"" + request.args["what"][0] + "\": {\n\"entry\": [\n"
+			json = "{\n\"page\": 1, \"total\": 2, \"rows\": [\n"
 			
 			if request.args["what"][0] == "movies":
 				entries = manager.getAll(Manager.MOVIES)
@@ -105,21 +105,25 @@ class Action(Resource):
 			json += "\n]\n}\n}\n"
 			
 			return utf8ToLatin(json)
-		
-		return """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta HTTP-EQUIV="REFRESH" content="0; url=/">
-</head>
-<body>
-</body>
-</html>"""
 
 class Index(Resource):
 	def render_GET(self, request):
 		f = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/index.html", "r")
 		html = f.read()
 		f.close()
+		
+		m = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/static/mainmenu.tpl", "r")
+		mainmenu = m.read()
+		m.close()
+		
+		html = html.replace("<!-- REPLACE_MAINMENU -->", mainmenu)
+		
+		c = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/static/about.tpl", "r")
+		content = c.read()
+		c.close()
+		
+		html = html.replace("<!-- REPLACE_CONTENT -->", content)
+
 		return utf8ToLatin(html)
 
 class Database(Resource):
@@ -199,9 +203,22 @@ class Database(Resource):
 			alt = not alt
 		
 		
-		f = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/browsetable.html", "r")
+		f = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/index.html", "r")
 		html = f.read()
 		f.close()
+		
+		m = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/static/mainmenu.tpl", "r")
+		mainmenu = m.read()
+		m.close()
+		
+		html = html.replace("<!-- REPLACE_MAINMENU -->", mainmenu)
+		
+		c = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/static/browsetable.tpl", "r")
+		content = c.read()
+		c.close()
+		
+		html = html.replace("<!-- REPLACE_CONTENT -->", content)
+		
 		
 		html = html.replace("<!-- REPLACE_THEAD -->", thead)
 		html = html.replace("<!-- REPLACE_TBODY -->", tbody)
