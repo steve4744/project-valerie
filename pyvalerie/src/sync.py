@@ -279,6 +279,9 @@ class pyvalerie(Thread):
 				if "RECYCLE.BIN" in path:
 					continue
 				
+				if ".AppleDouble" in path:
+					continue
+				
 				if (filename + u"." + extension) in Blacklist.get():
 					printl("File blacklisted", self)
 					continue
