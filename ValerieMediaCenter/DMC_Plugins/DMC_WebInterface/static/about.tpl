@@ -14,17 +14,9 @@
 			</div>
           
 			<div class="subheader">License</div>
-			<div class="text">All Files of this Software are licensed under the Creative Commons 
-			Attribution-NonCommercial-ShareAlike 3.0 Unported 
-			License if not stated otherwise in a files head. To view a copy of this license, visit
-			http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative
-			Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
-
-			This plugin is NOT free software. It is open source, you are allowed to
-			modify it (if you keep the license), but it may not be commercially 
-			distributed other than under the conditions noted above.
+			<div class="text">All Files of this Software are licensed under GNU GPL v3.
+			For more information please visit this  
+			<a id="about" href="http://www.gnu.org/licenses/gpl.html" align="center" target="_blank">site.</a>
 			</div>
 		</div>            
 	</div>
-
-
