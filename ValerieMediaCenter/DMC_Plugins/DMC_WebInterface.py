@@ -141,6 +141,8 @@ class Database(Resource):
 		alt = False
 		if self.type == "movies":
 			entries = manager.getAll(Manager.MOVIES)
+		elif self.type == "tvshows":
+			entries = manager.getAll(Manager.TVSHOWS)
 		elif self.type == "tvshowepisodes":
 			entries = manager.getAll(Manager.TVSHOWSEPISODES)
 		elif self.type == "failed_all":
@@ -152,6 +154,15 @@ class Database(Resource):
         <th>Name</th>
         <th>Year</th>
         <th>ImdbId</th>
+        <th>File</th>"""
+		elif self.type == "tvshows":
+			thead += """
+        <th>Name</th>
+        <th>Season</th>
+        <th>Episode</th>
+        <th>Year</th>
+        <th>ImdbId</th>
+        <th>TheTvDbId</th>
         <th>File</th>"""
 		elif self.type == "tvshowepisodes":
 			thead += """
@@ -182,6 +193,17 @@ class Database(Resource):
         <td>%s</td>
       </tr>
 """ % (altString, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension)
+			elif self.type == "tvshows":
+				tbody += u"""      <tr %s>
+        <td>%s</td>
+        <td>%d</td>
+        <td>%d</td>
+        <td>%d</td>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+      </tr>
+""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshowepisodes":
 				tbody += u"""      <tr %s>
         <td>%s</td>
@@ -232,6 +254,7 @@ def autostart(session):
 		#Dynamic Pages
 		root.putChild("", Index())
 		root.putChild("movies", Database("movies"))
+		root.putChild("tvshows", Database("tvshows"))
 		root.putChild("tvshowepisodes", Database("tvshowepisodes"))
 		root.putChild("failed_all", Database("failed_all"))
 		
