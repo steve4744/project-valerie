@@ -194,16 +194,16 @@ class Database(Resource):
       </tr>
 """ % (altString, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshows":
-				tbody += u"""      <tr %s>
+				tbody += u"""      <tr id=%s>
         <td>%s</td>
         <td>%d</td>
         <td>%d</td>
         <td>%d</td>
         <td>%s</td>
-        <td>%s</td>
+        <td><a href=http://thetvdb.com/index.php?tab=series&id=%s target="_blank">%s</a></td>
         <td>%s</td>
       </tr>
-""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
+""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshowepisodes":
 				tbody += u"""      <tr %s>
         <td>%s</td>

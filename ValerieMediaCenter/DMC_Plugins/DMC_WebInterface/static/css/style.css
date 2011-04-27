@@ -12,6 +12,11 @@ div .textheader {
 	height: 15px;
 }
 
+#content a {
+	color: #555555;
+}
+
+
 #about {
 	color: #555555;
 }
