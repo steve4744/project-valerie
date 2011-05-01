@@ -1,6 +1,10 @@
-from Plugins.Plugin import PluginDescriptor
+# -*- coding: utf-8 -*-
+
 from Components.config import config
-from DMC_Global import printl
+from Plugins.Plugin import PluginDescriptor
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from __plugin__ import getPlugins, Plugin
 
 #------------------------------------------------------------------------------------------
 
@@ -14,7 +18,7 @@ def autostart(reason, **kwargs):
 	
 	if kwargs.has_key("session"):
 		gSessionPV = kwargs["session"]
-	printl("Reason: " + str(reason))
+	printl("Reason: " + str(reason), __name__, "I")
 	gReasonPV = reason
 	
 	from DMC_Global import E2Control
@@ -23,6 +27,10 @@ def autostart(reason, **kwargs):
 	elif gReasonPV == 1 and gE2Control != None:
 #		gE2Control.stop()
 		gE2Control = None
+	
+	plugins = getPlugins(where=Plugin.AUTOSTART_E2)
+	for plugin in plugins:
+		plugin.fnc(gSessionPV)
 
 def PVMC_Wizard(*args, **kwargs):
 	import DMC_Wizard
@@ -30,8 +38,6 @@ def PVMC_Wizard(*args, **kwargs):
 
 def PVMC_MainMenu(*args, **kwargs):
 	import DMC_MainMenu
-	print "PVMC_MainMenu", args
-	print "PVMC_MainMenu", kwargs
 	return DMC_MainMenu.PVMC_MainMenu(False, *args, **kwargs)
 
 def PVMC_MainMenuAutostart(*args, **kwargs):
@@ -57,4 +63,3 @@ def Plugins(**kwargs):
 	list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc = autostart))
 	
 	return list
-

@@ -108,9 +108,5 @@ if skinLoaded == False:
 loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
 loadPlugins(config.plugins.pvmc.pluginfolderpath.value + "/DMC_Plugins", "Plugins.Extensions.ProjectValerie.DMC_Plugins.")
 
-#Webinterface
-#gWebInterface = WebInterface()
-#gWebInterface.start()
-
 config.plugins.pvmc.save()
 config.save()

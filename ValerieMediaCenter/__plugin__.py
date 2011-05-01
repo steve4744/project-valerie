@@ -61,6 +61,7 @@ class Plugin():
 	MENU_SYSTEM = 8
 	
 	AUTOSTART = 9
+	AUTOSTART_E2 = 12
 	
 	SETTINGS = 10
 	
