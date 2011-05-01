@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import codecs
+import unicodedata
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
@@ -16,16 +17,16 @@ def stringToUtf8(rawString):
 		try:
 			utf8String = unicode(rawString, "utf-8")
 		except UnicodeDecodeError, ex:
-			printl("Conversion to utf-8 failed, trying different approach! Ex: " + str(ex), __name__)
+			printl("Conversion to utf-8 failed, trying different approach! Ex: " + str(ex), __name__, "W")
 			try:
 				printl("type(rawString): " + str(type(rawString)), __name__)
 				utf8String = unicode(rawString, "latin-1")
 			except UnicodeDecodeError, ex2:
-				printl("Conversion to utf-8 failed!!! Ignoring Ex: " + str(ex2), __name__)
+				printl("Conversion to utf-8 failed!!! Ignoring Ex: " + str(ex2), __name__, "E")
 				utf8String = None
 		
 		except Exception, ex:
-			printl("Conversion to utf-8 failed!!! Something unexpected happened Ex: " + str(ex), __name__)
+			printl("Conversion to utf-8 failed!!! Something unexpected happened Ex: " + str(ex), __name__, "E")
 			utf8String = None
 	
 	return utf8String
@@ -37,19 +38,52 @@ def stringToUtf8(rawString):
 def utf8ToLatin(utfString):
 	latinString = None
 	if utfString is not None:
+		
+		
 		try:
 			latinString = utfString.encode('latin-1')
+			return latinString
 		except Exception, ex:
-			printl("Conversion to latin failed, trying different approach! Ex: " + str(ex), __name__)
-			try:
-				printl("type(rawString): " + str(type(utfString)), __name__)
-				latinString = utfString.encode('utf-8')
-			except UnicodeDecodeError, ex2:
-				printl("Conversion to latin failed!! Ex: " + str(ex2), __name__)
-				latinString = None
+			printl("Conversion to latin-1 failed 1! Ex: " + str(ex), __name__, "W")
+		
+		printl("Retrying 1", __name__, "W")
+		
+		try:
+			printl("type(rawString): " + str(type(utfString)), __name__, "D")
+			latinString = utfString.encode('utf-8')
+			printl("Fallback succedded", __name__, "S")
+			return latinString
+		except UnicodeDecodeError, ex2:
+			printl("Conversion to latin-1 failed 2! Ex: " + str(ex2), __name__, "W")
+		
+		printl("Retrying 2", __name__, "W")
+		printl("Retrying 3", __name__, "W")
+		# If we do it like this an ä will be transformed to an a ...
+		# We should this as an fallback
+		try:
+			latinString = unicodedata.normalize('NFKD', 
+				unicode(unicode(utfString, 'utf-8'))
+				).encode('ascii','ignore')
+			printl("Fallback succedded", __name__, "S")
+			return latinString
+		except Exception, ex:
+			printl("Conversion to latin failed (xbmc way) 3! Ex: " + str(ex), __name__, "W")
+		
+		printl("Retrying 4", __name__, "W")
+		
+		try:
+			latinString = unicodedata.normalize('NFKD', 
+				unicode(utfString)
+				).encode('ascii','ignore')
+			printl("Fallback succedded", __name__, "S")
+			return latinString
+		except Exception, ex:
+			printl("Conversion to latin failed (xbmc way) 4! Ex: " + str(ex), __name__, "E")
+		
+		latinString = None
 	
 	if latinString is None:
-		latinString = " "
+		latinString = ""
 	
 	return latinString
 
@@ -61,18 +95,21 @@ class Utf8():
 		
 	def open(self, file, arg):
 		try:
-			try:
-				self.fd = codecs.open(file, arg, "utf-8")
-				return True
-			except Exception, ex:
-				printl("Exception: " + str(ex), self)
-			
-			self.fd = codecs.open(utf8ToLatin(file), arg, "utf-8")
+			self.fd = codecs.open(file, arg, "utf-8")
 			return True
 		except Exception, ex:
-			printl("Exception: " + str(ex), self)
+			printl("Exception: " + str(ex), self, "W")
+			printl("Converting Filename to latin and retrying", self, "W")
+		
+		try:
+			self.fd = codecs.open(utf8ToLatin(file), arg, "utf-8")
+			printl("Fallback succedded", self, "S")
+			return True
+		except Exception, ex:
+			printl("Exception: " + str(ex), self, "E")
 			self.fd = None
 			return False
+		
 		self.fd = None
 		return False
 
@@ -84,8 +121,32 @@ class Utf8():
 		if self.fd is not None:
 			try:
 				self.fd.write(text)
+				return True
 			except Exception, ex:
-				printl("Exception: " + str(ex), self)
+				printl("Exception: " + str(ex), self, "W")
+			
+			printl("Retrying 1", self, "W")
+			
+			try:
+				self.fd.write(text.encode( "utf-8" ))
+				printl("Fallback succedded", self, "S")
+				return True
+			except Exception, ex:
+				printl("Exception: " + str(ex), self, "W")
+			
+			printl("Retrying 2", self, "W")
+			
+			try:
+				l = utf8ToLatin(text)
+				if len(l) > 0:
+					self.fd.write(l)
+					printl("Fallback succedded", self, "S")
+					return True
+			except Exception, ex:
+				printl("Exception: " + str(ex), self, "E")
+		
+		printl("Failed", self, "E")
+		return False
 
 	def read(self):
 		if self.fd is not None:
@@ -93,6 +154,6 @@ class Utf8():
 				rtv = self.fd.read()[:-1]
 				return rtv
 			except Exception, ex:
-				printl("Exception: " + str(ex), self)
+				printl("Exception: " + str(ex), self, "E")
 				return None
 		return None

@@ -14,7 +14,8 @@ try:
 	from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync as PluginProjectValerieSync
 	from Plugins.Extensions.ProjectValerieSync.plugin import autostart
 	gAvailable = True
-except:
+except Exception, ex:
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
 	gAvailable = False
 
 config.plugins.pvmc.plugins.sync = ConfigSubsection()

@@ -56,8 +56,8 @@ def checkCache(url):
 			rtv = f.read()
 			f.close()
 	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception (ef): " + str(ex), __name__, "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 	
 	return rtv
 
@@ -80,8 +80,8 @@ def removeFromCache(url):
 		if os.path.isfile(Utf8.utf8ToLatin(cacheFileName)):
 			os.remove(Utf8.utf8ToLatin(cacheFileName))
 	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception (ef): " + str(ex), __name__, "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 
 def addCache(url, text):
 	
@@ -106,31 +106,38 @@ def addCache(url, text):
 				os.remove(Utf8.utf8ToLatin(cacheFileName))
 			
 	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception (ef): " + str(ex), __name__, "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 
 def getXml(url, rawXml = None):
-	try:
-		if rawXml is None:
-			rawXml = getText(url) 
-		decodedXml = None
-		try:
-			if rawXml is not None:
-				try:
-					decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
-				except Exception, ex:
-					printl("minidom.parseString as utf-8 failed, retrieing as latin-1. Ex: " + str(ex), __name__)
-					decodedXml = minidom.parseString(rawXml)
-		except Exception, ex:
-			printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__)
-			printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__)
-			#printl("rawXml: <" + str(type(rawXml)) + "> " + str(rawXml), __name__)
-			printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__)
-	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+	if rawXml is None:
+		rawXml = getText(url)
 	
-	return decodedXml
+	if rawXml is None:
+		return None
+	
+	decodedXml = None
+	try:
+		decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+		return decodedXml
+	except Exception, ex:
+		printl("minidom.parseString as utf-8 failed, retrieing as latin-1. Ex: " + str(ex), __name__, "W")
+	
+	try:
+		decodedXml = minidom.parseString(Utf8.utf8ToLatin(rawXml))
+		return decodedXml
+	except Exception, ex:
+		printl("minidom.parseString as utf-8 failed, retrieing as utf-8. Ex: " + str(ex), __name__, "W")
+	
+	try:
+		decodedXml = minidom.parseString(rawXml)
+		return decodedXml
+	except Exception, ex:
+		printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__, "E")
+		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
+		printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
+	
+	return None
 
 def getHtml(url):
 	try:
@@ -139,8 +146,8 @@ def getHtml(url):
 		if rawHtml is not None:
 			decodedHtml = decode_htmlentities(rawHtml)
 	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception (ef): " + str(ex), __name__, "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 	
 	return decodedHtml
 

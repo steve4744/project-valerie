@@ -47,7 +47,14 @@ def printl2(string, parent=None, type="I"):
 		else:
 			classname = ""
 		out = str(classname) + str(sys._getframe(1).f_code.co_name) +" " + str(string)
-	print "[Valerie] " + str(type) + "  " + str(out)
+	if type == "E":
+		print '\033[1;41m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'
+	elif type == "W":
+		print '\033[1;33m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'
+	elif type == "S":
+		print '\033[1;32m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'
+	else:
+		print "[Valerie] " + str(type) + "  " + str(out)
 	now = datetime.datetime.now()
 	gLogFile.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "\n")
 	#gLogFileHtml.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "<br />")

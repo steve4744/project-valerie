@@ -24,8 +24,8 @@ def loadPlugins(dir, imp):
 				try:
 					m = __import__(imp + f)
 				except Exception, ex:
-					printl("Exception: " + str(ex), __name__)
-					printl("\tf: " + str(f), __name__)
+					printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
+					printl("\tf: " + str(f), __name__, "E")
 
 def registerPlugin(plugin):
 	#printl("name=" + str(plugin.name) + " where=" + str(plugin.where), __name__)

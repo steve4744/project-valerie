@@ -440,19 +440,25 @@ class Database(object):
 			self.dbFailed = pickle.load(fd)
 			fd.close()
 		
-		if os.path.isfile(self.MOVIESDB):
-			self.loadPickle(True, False) 
-		elif os.path.isfile(self.MOVIESTXD):
-			self.loadTxd(True, False) 
-		else:
-			self.loadTxt(True, False)
+		try:
+			if os.path.isfile(self.MOVIESDB):
+				self.loadPickle(True, False) 
+			elif os.path.isfile(self.MOVIESTXD):
+				self.loadTxd(True, False) 
+			else:
+				self.loadTxt(True, False)
+		except Exception, ex:
+			printl("Loading movie db failed! Ex: " + str(ex), __name__, "E")
 		
-		if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
-			self.loadPickle(False, True) 
-		elif os.path.isfile(self.TVSHOWSTXD):
-			self.loadTxd(False, True) 
-		else:
-			self.loadTxt(False, True)
+		try:
+			if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
+				self.loadPickle(False, True) 
+			elif os.path.isfile(self.TVSHOWSTXD):
+				self.loadTxd(False, True) 
+			else:
+				self.loadTxt(False, True)
+		except Exception, ex:
+			printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
 		
 		# FIX: GHOSTFILES
 		if self.dbEpisodes.has_key("0"):
