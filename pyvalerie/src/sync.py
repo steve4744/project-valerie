@@ -336,12 +336,15 @@ class pyvalerie(Thread):
 				if results is not None:
 					for result in results:
 						if db.add(result):
+							result.Title = self.encodeMe(result.Title)
 							if result.isMovie:
 								self.info(str(result.ImdbId) + "_poster.png", 
-									Utf8.utf8ToLatin(result.Title), result.Year)
+									result.Title, result.Year)
+								printl("my_title " + result.Title, self, "I")
 							else:
 								self.info(str(result.TheTvDbId) + "_poster.png", 
-									Utf8.utf8ToLatin(result.Title), result.Year)
+									result.Title, result.Year)
+								printl("my_title " + result.Title, self, "I")
 						else:
 							cause = db.getAddFailedCauseOf()
 							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
@@ -369,6 +372,26 @@ class pyvalerie(Thread):
 		self.output(_("Press Exit / Back"))
 		
 		self.finished(True)
+		
+	def encodeMe (self, text):
+		decodedText = None
+		try:
+			decodedText = text.encode( "utf-8", 'ignore' )
+			printl("encoded utf-8")
+			return decodedText
+		except UnicodeDecodeError:
+			try:
+				decodedText = text.encode( "iso8859-1", 'ignore' )
+				printl("encoded iso8859-1")
+				return decodedText
+			except UnicodeDecodeError:
+				try:
+					decodedText = text.decode("cp1252").encode("utf-8")
+					printl("encoded cp1252")
+					return decodedText
+				except UnicodeDecodeError:
+					printl("no enconding succeeded")
+		return None
 
 class Sync():
 	def syncWithId(self, elementInfo):
