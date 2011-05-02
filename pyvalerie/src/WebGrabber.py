@@ -118,25 +118,25 @@ def getXml(url, rawXml = None):
 	
 	decodedXml = None
 	try:
-		decodedXml = minidom.parseString(rawXml.encode( "utf-8" ))
+		decodedXml = minidom.parseString(rawXml.encode( "utf-8", 'ignore' ))
+		printl("encoded utf-8")
 		return decodedXml
-	except Exception, ex:
+	except UnicodeDecodeError:
 		printl("minidom.parseString as utf-8 failed, retrieing as latin-1. Ex: " + str(ex), __name__, "W")
-	
-	try:
-		decodedXml = minidom.parseString(Utf8.utf8ToLatin(rawXml))
-		return decodedXml
-	except Exception, ex:
-		printl("minidom.parseString as utf-8 failed, retrieing as utf-8. Ex: " + str(ex), __name__, "W")
-	
-	try:
-		decodedXml = minidom.parseString(rawXml)
-		return decodedXml
-	except Exception, ex:
-		printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__, "E")
-		printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
-		printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
-	
+		try:
+			decodedXml = minidom.parseString(rawXml.encode( "iso8859-1", 'ignore' ))
+			printl("encoded iso8859-1")
+			return decodedXml
+		except UnicodeDecodeError:
+			printl("minidom.parseString as utf-8 failed, retrieing as utf-8. Ex: " + str(ex), __name__, "W")
+			try:
+				decodedXml = minidom.parseString(rawXml.decode("cp1252").encode("utf-8"))
+				printl("encoded cp1252")
+				return decodedXml
+			except UnicodeDecodeError:
+				printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__, "E")
+				printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
+				printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
 	return None
 
 def getHtml(url):
