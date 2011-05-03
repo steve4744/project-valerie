@@ -379,17 +379,17 @@ class pyvalerie(Thread):
 			decodedText = text.encode( "utf-8", 'ignore' )
 			printl("encoded utf-8")
 			return decodedText
-		except UnicodeDecodeError:
+		except Exception, ex:
 			try:
 				decodedText = text.encode( "iso8859-1", 'ignore' )
 				printl("encoded iso8859-1")
 				return decodedText
-			except UnicodeDecodeError:
+			except Exception, ex:
 				try:
 					decodedText = text.decode("cp1252").encode("utf-8")
 					printl("encoded cp1252")
 					return decodedText
-				except UnicodeDecodeError:
+				except Exception, ex:
 					printl("no enconding succeeded")
 		return None
 
