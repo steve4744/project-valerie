@@ -33,6 +33,7 @@ config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
 config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 
 class Action(Resource):
+
 	def render_GET(self, request):
 		return self.action(request)
 
@@ -48,8 +49,47 @@ class Action(Resource):
 		# After a request has been processed we can display a request specific answer
 		# For example, after requesting alternatives for a move we should return them instead of the 
 		#  Refresh html page you see below as default answer
-		if request.args["type"][0] == "delete":
-			pass
+		if request.args["type"][0] == "add":
+			if request.args["what"][0] == "movies":
+				key_value_dict = {}
+				for key in request.args.keys():
+					key_value_dict[key] = request.args[key][0]
+				
+				primary_key = {}
+				primary_key["imdbid"] = request.args["imdbid"][0]
+				
+				manager = Manager()
+				manager.start()
+				manager.addByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
+				manager.finish()
+				return self.redirect("/static/test.html")
+			
+		elif request.args["type"][0] == "edit":
+			if request.args["what"][0] == "movies":
+				key_value_dict = {}
+				for key in request.args.keys():
+					key_value_dict[key] = request.args[key][0]
+				
+				primary_key = {}
+				primary_key["imdbid"] = request.args["imdbid"][0]
+				
+				manager = Manager()
+				manager.start()
+				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
+				manager.finish()
+				return self.redirect("/static/test.html")
+		
+		elif request.args["type"][0] == "delete":
+			if request.args["what"][0] == "movies":
+				primary_key = {}
+				primary_key["imdbid"] = request.args["imdbid"][0]
+				
+				manager = Manager()
+				manager.start()
+				manager.removeByUsingPrimaryKey(Manager.MOVIES, primary_key)
+				manager.finish()
+				return self.redirect("/static/test.html")
+
 		elif request.args["type"][0] == "alternatives":
 			pass
 		elif request.args["type"][0] == "get":
@@ -106,6 +146,16 @@ class Action(Resource):
 			
 			return utf8ToLatin(json)
 
+	def redirect(self, url):
+		return """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta HTTP-EQUIV="REFRESH" content="0; url=%s">
+</head>
+<body>
+</body>
+</html>""" % url
+
 class Index(Resource):
 	def render_GET(self, request):
 		f = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/index.html", "r")
@@ -151,32 +201,35 @@ class Database(Resource):
 		### <!-- REPLACE_THEAD -->
 		if self.type == "movies":
 			thead += """
-        <th>Name</th>
-        <th>Year</th>
-        <th>ImdbId</th>
+        <th width="65px">Poster</th>
+        <th class="sortfirstasc">Name</th>
+        <th width="40px">Year</th>
+        <th width="100px">ImdbId</th>
         <th>File</th>"""
 		elif self.type == "tvshows":
 			thead += """
-        <th>Name</th>
-        <th>Season</th>
-        <th>Episode</th>
-        <th>Year</th>
-        <th>ImdbId</th>
-        <th>TheTvDbId</th>
+        <th width="65px">Poster</th>
+        <th class="sortfirstasc">Name</th>
+        <th width="30px">Season</th>
+        <th width="30px">Episode</th>
+        <th width="40px">Year</th>
+        <th width="100px">ImdbId</th>
+        <th width="70px">TheTvDbId</th>
         <th>File</th>"""
 		elif self.type == "tvshowepisodes":
 			thead += """
-        <th>Name</th>
-        <th>Season</th>
-        <th>Episode</th>
-        <th>Year</th>
-        <th>ImdbId</th>
-        <th>TheTvDbId</th>
+        <th width="65px">Poster</th>
+        <th class="sortfirstasc">Name</th>
+        <th width="30px">Season</th>
+        <th width="30px">Episode</th>
+        <th width="40px">Year</th>
+        <th width="100px">ImdbId</th>
+        <th width="70px">TheTvDbId</th>
         <th>File</th>"""
 		elif self.type == "failed_all":
 			thead += """
-        <th>File</th>
-        <th>Cause</th>
+        <th class="sortfirstasc">File</th>
+        <th width="100px">Cause</th>
         <th>Description</th>"""
 		
 		### <!-- REPLACE_TBODY -->
@@ -187,14 +240,16 @@ class Database(Resource):
 				altString = ""
 			if self.type == "movies":
 				tbody += u"""      <tr %s>
+        <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
         <td>%s</td>
         <td>%d</td>
         <td>%s</td>
         <td>%s</td>
       </tr>
-""" % (altString, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension)
+""" % (altString, entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshows":
 				tbody += u"""      <tr id=%s>
+        <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
         <td>%s</td>
         <td>%d</td>
         <td>%d</td>
@@ -203,9 +258,10 @@ class Database(Resource):
         <td><a href=http://thetvdb.com/index.php?tab=series&id=%s target="_blank">%s</a></td>
         <td>%s</td>
       </tr>
-""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
+""" % (altString, entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshowepisodes":
 				tbody += u"""      <tr %s>
+        <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
         <td>%s</td>
         <td>%d</td>
         <td>%d</td>
@@ -214,7 +270,7 @@ class Database(Resource):
         <td>%s</td>
         <td>%s</td>
       </tr>
-""" % (altString, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
+""" % (altString, entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "failed_all":
 				tbody += u"""      <tr %s>
         <td>%s</td>
