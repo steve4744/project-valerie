@@ -210,8 +210,6 @@ class Database(Resource):
 			thead += """
         <th width="65px">Poster</th>
         <th class="sortfirstasc">Name</th>
-        <th width="30px">Season</th>
-        <th width="30px">Episode</th>
         <th width="40px">Year</th>
         <th width="100px">ImdbId</th>
         <th width="70px">TheTvDbId</th>
@@ -252,13 +250,11 @@ class Database(Resource):
         <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
         <td>%s</td>
         <td>%d</td>
-        <td>%d</td>
-        <td>%d</td>
         <td>%s</td>
         <td><a href=http://thetvdb.com/index.php?tab=series&id=%s target="_blank">%s</a></td>
         <td>%s</td>
       </tr>
-""" % (altString, entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
+""" % (altString, entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension)
 			elif self.type == "tvshowepisodes":
 				tbody += u"""      <tr %s>
         <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>

@@ -35,6 +35,10 @@ div .subheader {
 	padding-left: 10px;
 }
 
+td {
+	word-wrap: break-word;
+}
+
 #container {
     margin: 0 auto;
     text-align: left;
@@ -117,7 +121,7 @@ a:link,a:visited {
 
 #mainmenu
 a:hover,a:active {
-    background: none repeat scroll 0 0 #AAAAAA;
+	background: none repeat scroll 0 0 #AAAAAA;
 	border-radius: 5px 5px 5px 5px;
 }
 
