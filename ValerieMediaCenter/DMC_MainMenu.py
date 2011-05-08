@@ -26,11 +26,13 @@ from Screens.Screen import Screen
 from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
-from __plugin__ import getPlugins, Plugin, registerPlugin
 from DataElement import DataElement
-from DMC_Global import printl, getBoxtype, getAPILevel
+from DMC_Global import getBoxtype, getAPILevel
 from DMC_Movies import PVMC_Movies
 from DMC_Series import PVMC_Series
+
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
@@ -42,7 +44,7 @@ printl("Loading Font: " + font)
 try:
 	addFont(font, "Modern", 100, False)
 except Exception, ex: #probably just openpli
-	print ex
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), "DMC_MainMenu::", "W")
 	addFont(font, "Modern", 100, False, 0)
 
 def localeInit():
@@ -79,7 +81,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		Screen.__init__(self, session)
 		
 		self.APILevel = getAPILevel(self)
-		printl("APILevel=" + str(self.APILevel))
+		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
 		
@@ -106,7 +108,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		self.setTitle(_("Settings"))
 
 	def initConfigList(self, element=None):
-		print "[initConfigList]", element
+		printl("", self)
 		try:
 			self.list = []
 			self.list.append(getConfigListEntry(_("Show wizard on next start"), config.plugins.pvmc.showwizard))
@@ -128,11 +130,11 @@ class PVMC_Settings(Screen, ConfigListScreen):
 					self.list.append(getConfigListEntry("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
 
 			self["config"].setList(self.list)
-		except KeyError:
-			print "keyError"
+		except Exception, ex:
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 	def ok(self):
-		print "ok"
+		printl("", self)
 
 	def keySave(self):
 		ConfigListScreen.keySave(self)
@@ -176,7 +178,7 @@ class PVMC_Update(Screen):
 		
 		self["text"].setText(_("Updating ProjectValerie...\n\n\nStay tuned :-)"))
 		cmd = " install -force-overwrite " + str(self.url)
-		print bin, cmd
+		printl("bin=" + str(bin) + " cmd=" + str(cmd), self)
 		self.session.open(SConsole,"Excecuting command: " + bin, [bin + cmd] , self.finishupdate)
 
 	def finishupdate(self):
@@ -216,14 +218,14 @@ class PVMC_MainMenu(Screen):
 				self["showiframe"] = StillPicture(session)
 				self.ShowStillPicture = True
 			except Exception, ex:
-				printl(str(ex), self)
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel >= 2:
 			self.UseDreamScene = ""
 			try:
 				self.UseDreamScene = DataElement().getDataPreloading(self, "stillpicture_usedreamscene")
 			except Exception, ex:
-				printl(str(ex))
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 				self.UseDreamScene = ""
 			
 			printl("self.UseDreamScene=" + str(self.UseDreamScene), self)
@@ -339,7 +341,7 @@ class PVMC_MainMenu(Screen):
 			self["menu"].setIndex(2)
 		
 		if self.APILevel >= 2 and self.ShowStillPicture is True and len(self.UseDreamScene) > 0:
-			printl("Using DreamScene at " + self.UseDreamScene)
+			printl("Using DreamScene at " + str(self.UseDreamScene), self)
 			if os.access(self.UseDreamScene, os.F_OK) is True:
 				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
 
@@ -364,13 +366,13 @@ class PVMC_MainMenu(Screen):
 			os.system("chmod 777 /hdd/valerie/start.sh")
 			os.system("/bin/sh /hdd/valerie/start.sh")
 		except Exception, e:
-			printl("Exception: " + str(e),self)
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		plugins = getPlugins(where=Plugin.AUTOSTART)
 		for plugin in plugins:
 			plugin.fnc(self.session)
 		
-		printl("<-",self)
+		printl("<-", self)
 
 	def power(self):
 		import Screens.Standby
@@ -410,7 +412,7 @@ class PVMC_MainMenu(Screen):
 				return True
 		
 		except Exception, e:
-			printl("""Could not download HTTP Page (%s)""" % (e), self)
+			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
 		return False
 
 	def startUpdate(self, answer):
@@ -443,7 +445,7 @@ class PVMC_MainMenu(Screen):
 			selection = self["menu"].getCurrent()
 			printl("selection=" + str(selection), self)
 			if selection is not None:
-				print type(selection[1])
+				printl("type(selection[1])=" + str(type(selection[1])), self)
 				if selection[1] == "PVMC_Watch":
 					self["menuWatch"].setIndex(1)
 					self.Watch = True;
@@ -467,7 +469,7 @@ class PVMC_MainMenu(Screen):
 						isInstalled = True
 					except Exception, ex:
 						isInstalled = False
-						printl("Exception: " + str(ex), self)
+						printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 					if isInstalled:
 						self.session.openWithCallback(self.showStillPicture, ProjectValerieSync)
 					else:

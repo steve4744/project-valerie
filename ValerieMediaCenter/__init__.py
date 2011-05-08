@@ -19,7 +19,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from __plugin__ import loadPlugins
 #from WebInterface import WebInterface
 
-printl("Init")
+printl("Init", "__init__::")
 
 # the currentVersion should be renewed every major update
 currentVersion          = "r001"
@@ -29,8 +29,8 @@ defaultSkin             = "default"
 defaultURL              = "http://www.duckbox.info/valerie/"
 defaultUpdateXML        = "update.php"
 
-printl("defaultPluginFolderPath=" + defaultPluginFolderPath)
-printl("defaultSkinFolderPath=" + defaultSkinFolderPath)
+printl("defaultPluginFolderPath=" + defaultPluginFolderPath, "__init__::")
+printl("defaultSkinFolderPath=" + defaultSkinFolderPath, "__init__::")
 
 config.plugins.pvmc = ConfigSubsection()
 
@@ -46,11 +46,11 @@ config.plugins.pvmc.onpowerpress   = ConfigSelection(default="DeepStandby", choi
 config.plugins.pvmc.backdropquality   = ConfigSelection(default="High", choices = ["High", "Low", ])
 config.plugins.pvmc.uselocal          = ConfigYesNo(default = False)
 
-printl("language="       + str(config.plugins.pvmc.language.value))
-printl("showwizard="     + str(config.plugins.pvmc.showwizard.value))
-printl("autostart="      + str(config.plugins.pvmc.autostart.value))
-printl("checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value))
-printl("uselocal=" + str(config.plugins.pvmc.uselocal.value))
+printl("language="       + str(config.plugins.pvmc.language.value), "__init__::")
+printl("showwizard="     + str(config.plugins.pvmc.showwizard.value), "__init__::")
+printl("autostart="      + str(config.plugins.pvmc.autostart.value), "__init__::")
+printl("checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value), "__init__::")
+printl("uselocal=" + str(config.plugins.pvmc.uselocal.value), "__init__::")
 
 config.plugins.pvmc.version           = ConfigText(default = "r001")
 config.plugins.pvmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
@@ -61,8 +61,8 @@ try:
 	for skin in os.listdir(config.plugins.pvmc.skinfolderpath.value):
 		if os.path.isdir(os.path.join(config.plugins.pvmc.skinfolderpath.value, skin)) and skin != ".svn":
 			skins.append(skin)
-except Exception, e:
-	print e
+except Exception, ex:
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 	skins.append(defaultSkin)
 #config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
 config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
@@ -70,10 +70,6 @@ config.plugins.pvmc.url               = ConfigText(default = defaultURL)
 config.plugins.pvmc.updatexml         = ConfigText(default = defaultUpdateXML)
 
 config.plugins.pvmc.plugins = ConfigSubsection()
-
-#config.plugins.pvmc.trakt              = ConfigYesNo(default = False)
-#config.plugins.pvmc.traktuser          = ConfigText(default = "No Username")
-#config.plugins.pvmc.traktpass          = ConfigPassword(default = "No Password")
 
 # We updated to a newer version, so redisplay wizard
 if config.plugins.pvmc.version.value != currentVersion:
@@ -83,14 +79,13 @@ config.plugins.pvmc.version.value     = currentVersion
 
 dSize = getDesktop(0).size()
 
-
 # Load Skin, first try to find it, if not found reset to default skin
 skinLoaded = False
 try:
 	loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
 	skinLoaded = True
-except Exception, e:
-	print e
+except Exception, ex:
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 	skinLoaded = False
 	config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 	config.plugins.pvmc.skin.value           = defaultSkin
@@ -99,8 +94,8 @@ if skinLoaded == False:
 	try:
 		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
 		skinLoaded = True
-	except Exception, e:
-		print e
+	except Exception, ex:
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		skinLoaded = False
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin

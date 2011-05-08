@@ -1,19 +1,21 @@
+# -*- coding: utf-8 -*-
 
 from enigma import eWidget, eLabel, eCanvas, eRect, eServiceReference, iPlayableService, eTimer
 from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
 from DMC_Global import Showiframe
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 class eStillPicture(eWidget):
 	def __init__(self, parent):
-		#print "eStillPicture::__init__", parent
 		eWidget.__init__(self, parent)
 		self.setTransparent(True)
 
 	def setText(self,t):
-		#print "eStillPicture::setText", t
 		pass
 
 class StillPicture(Renderer, InfoBarBase):
@@ -34,8 +36,6 @@ class StillPicture(Renderer, InfoBarBase):
 		self.session = session
 		self.poll_timer = eTimer()
 		self.poll_timer.callback.append(self.poll)
-		
-		
 
 	def addEventTracker(self):
 		printl("", self)
@@ -93,9 +93,6 @@ class StillPicture(Renderer, InfoBarBase):
 			printl("ARGGHHHH!!! self.session is not None and self.session.nav is not None", self, "E")
 		#self.showStillPicture()
 
-	onClose = []
-
-
 	def elementExists(self):
 		return self.element
 
@@ -138,14 +135,14 @@ class StillPicture(Renderer, InfoBarBase):
 					self.showiframe.showStillpicture(self.getStillpicture())
 				elif self.isLoop is True:
 					if self.session is not None and self.session.nav is not None:
-						print "showStillPicture", "loop", self.getStillpicture()
+						printl("loop: " + str(self.getStillpicture()), self)
 						ServiceEventTracker.setActiveInfoBar(self, None, None)
 						self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()))
 						self.pollStart()
 					else:
 						printl("ARGGHHHH!!! self.session is not None and self.session.nav is not None", self, "E")
 			except Exception, ex:
-				print ex
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		#print "showStillPicture", "<--"
 
 	def finishStillPicture(self):
@@ -161,7 +158,7 @@ class StillPicture(Renderer, InfoBarBase):
 					else:
 						printl("ARGGHHHH!!! self.session is not None and self.session.nav is None", self, "E")
 			except Exception, ex:
-				print ex
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 	def onShow(self):
 		#print "ONSHOW"

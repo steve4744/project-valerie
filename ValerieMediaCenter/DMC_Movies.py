@@ -98,6 +98,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 			self["current"] = Label()
 		
 		self["key_red"] = StaticText(_("Sort"))
+		self["key_green"] = StaticText(_(" "))
+		self["key_yellow"] = StaticText(_(" "))
 		self["key_blue"] = StaticText(_("Categories"))
 		
 		try:
@@ -161,6 +163,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 	USE_DB_VERSION = DB_TXT
 
 	FAST_STILLPIC = False
+	
+	AvailableGenresList = []
 
 	def sortList(self,x, y):
 		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
@@ -172,12 +176,11 @@ class PVMC_Movies(Screen, HelpableScreen):
 
 	def loadMovies(self):
 		if self.USE_DB_VERSION == self.DB_TXT:
-			self.loadMoviesDB()
+			pass
 		elif self.USE_DB_VERSION == self.DB_TXD:
 			self.loadMoviesTxd()
 
 	def loadMoviesTxd(self):
-		list =[]
 		try:
 			self.serieslist=[]
 			db = open("/hdd/valerie/movies.txd").read()[:-1]
@@ -230,101 +233,39 @@ class PVMC_Movies(Screen, HelpableScreen):
 				d["Writers"]   = ""
 				d["OTitle"]    = ""
 				
-				if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
-					printl("Skipping " + str(d["Title"]), self)
-					continue
-				self.moviedb[d["ImdbId"]] = d
+				for genre in d["Genres"].split("|"):
+					if len(genre) > 0 and (_(genre), genre) not in self.AvailableGenresList:
+						self.AvailableGenresList.append((_(genre), genre))
+				self.AvailableGenresList.sort()
+				self.AvailableGenresList.insert(0,(_("All"), "all"))
 				
-				printl("Adding " + str(d["Title"]), self)
-				list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
+				#printl("Adding " + str(d["Title"]), self)
+				self.moviedb[d["ImdbId"]] = d
 		
 		except OSError, ex: 
 			printl("OSError: " + str(ex), self)
 		except IOError, ex: 
 			printl("IOError: " + str(ex), self)
 		
-		if self.Sort == "":
-			list.sort()
-		else:
-			list.sort(self.sortList,reverse=True)
-		self["listview"].setList(list)
-		if self.APILevel >= 2:
-			self["listview"].setIndex(0)
-		self.refresh()
+		self.reloadMovies()
 
-	def loadMoviesDB(self):
-		filter = []
-		list = []
-		filter.append("Tag")
-		filter.append("Plot")
-		filter.append("Directors")
-		filter.append("Writers")
-		filter.append("Genres")
-		filter.append("Year")
-		filter.append("Runtime")
-		filter.append("Popularity")
-		filter.append("ImdbId")
-		filter.append("Title")
-		filter.append("OTitle")
-		filter.append("Path")
-		
-		try:
-			db = open("/hdd/valerie/moviedb.txt").read()[:-1]
-			movies = db.split("\n----END----\n")
-			
-			
-			for movie in movies:
-				movie = movie.split("---BEGIN---\n")
-				if len(movie) == 2: 
-					d = {} 
-					lines = movie[1].split('\n')
-					for line in lines: 
-						#print "Line: ", line
-						if ":" in line: 
-							key, text = (s.strip() for s in line.split(":", 1)) 
-						
-						if key in filter: 
-							d[key] = text
-					
-					try:
-						d["Creation"] = os.stat(d["Path"]).st_mtime
-					except:
-						d["Creation"] = 0
-					
-					#print d
-					if self.genreFilter != "" and d["Genres"] != "" and not self.genreFilter in d["Genres"]:
-						printl("Skipping " + str(d["Title"]), self)
-						continue
-					self.moviedb[d["ImdbId"]] = d
-					
-					printl("Adding " + str(d["Title"]), self)
-					list.append(("  " + d["Title"], d["ImdbId"], "menu_globalsettings", "45"))
-		
-		except OSError, ex: 
-			printl("OSError: " + str(ex), self)
-		except IOError, ex: 
-			printl("IOError: " + str(ex), self)
+	def reloadMovies(self):
+		list =[]
+		for key in self.moviedb.keys():
+			if self.genreFilter == "" or self.genreFilter in self.moviedb[key]["Genres"]:
+				list.append(("  " + self.moviedb[key]["Title"], key, "", "45"))
 		
 		if self.Sort == "":
 			list.sort()
 		else:
-			list.sort(self.sortList, reverse=True)
+			list.sort(key=lambda x:self.moviedb[x[1]][self.Sort], reverse=True)
 		self["listview"].setList(list)
 		if self.APILevel >= 2:
 			self["listview"].setIndex(0)
 		self.refresh()
 
 	def getAvailGenres(self):
-		list = []
-		for movie in self.moviedb.values():
-			genres = movie["Genres"]
-			for genre in genres.split("|"):
-				if len(genre) > 0 and (_(genre), genre) not in list:
-					list.append((_(genre), genre))
-		
-		list.sort()
-		list.insert(0,(_("All"), "all"))
-		return list
+		return self.AvailableGenresList
 
 	def setText(self, name, value, ignore=False, what=None):
 		try:
@@ -540,7 +481,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 			self.genreFilter = ""
 		else:
 			self.genreFilter = choice[1]
-		self.loadMovies()
+		self.reloadMovies()
 
 	def KeySort(self):
 		menu = []
@@ -558,7 +499,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 			self.Sort = ""
 		else:
 			self.Sort = choice[1]
-		self.loadMovies()
+		self.reloadMovies()
 
 	def Exit(self):
 		if self.isVisible == False:

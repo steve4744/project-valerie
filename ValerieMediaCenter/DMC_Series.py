@@ -149,7 +149,7 @@ class PVMC_Series(Screen, HelpableScreen):
 			}, -2)
 		
 		if self.USE_DB_VERSION == self.DB_TXT:
-			self.loadSeriesDB()
+			pass
 		elif self.USE_DB_VERSION == self.DB_TXD:
 			self.loadSeriesTxd()
 		
@@ -305,97 +305,6 @@ class PVMC_Series(Screen, HelpableScreen):
 		elif self.inEpisode:
 			#list.sort()
 			list.sort(key=lambda x: x[1])
-			self["listview"].setList(list)
-		
-		if self.APILevel >= 2:
-			self["listview"].setIndex(0)
-		self.refresh()
-
-	def loadSeriesDB(self):
-		list =[]
-		filter = []
-		entrys =[]
-		if self.inSeries or self.inEpisode:
-			filter.append("Tag")
-			filter.append("Plot")
-			filter.append("Directors")
-			filter.append("Writers")
-			filter.append("Genres")
-			filter.append("Year")
-			filter.append("Runtime")
-			filter.append("Popularity")
-			filter.append("ImdbId")
-			filter.append("Title")
-			filter.append("OTitle")
-			filter.append("TheTvDb")
-			filter.append("Path")
-		if self.inSeasons or self.inEpisode:
-			filter.append("Season")
-			filter.append("Episode")
-		
-		try:
-			if self.inSeries:
-				self.serieslist = []
-				db = open("/hdd/valerie/seriesdb.txt").read()[:-1]
-			else:
-				self.seasonlist = []
-				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txt").read()[:-1]
-			
-			movies = db.split("\n----END----\n")
-			
-			for movie in movies:
-				movie = movie.split("---BEGIN---\n")
-				if len(movie) == 2: 
-					d = {} 
-					lines = movie[1].split('\n')
-					for line in lines: 
-						#print "Line: ", line
-						if ":" in line: 
-							key, text = (s.strip() for s in line.split(":", 1)) 
-						if key in filter: 
-							d[key] = text
-					
-					if "Season" in d:
-						d["Season"] = int(d["Season"])
-					
-					if "Episode" in d:
-						d["Episode"] = int(d["Episode"])
-					
-					if "Year" in d:
-						d["Year"] = int(d["Year"])
-					
-					#print d
-					if self.inSeries:
-						self.moviedb[d["TheTvDb"]] = d
-						if not d["Title"] in entrys:
-							entrys.append(d["Title"])
-							self.serieslist.append(("  " + d["Title"], d["TheTvDb"], "menu_globalsettings", "50"))
-					elif self.inSeasons:
-						self.episodesdb[d["Season"] * 1000 + d["Episode"]] = d
-						if not d["Season"] in entrys:
-							entrys.append(d["Season"])
-							list.append(("  " + "Season " + str(d["Season"]), str(d["Season"]), "menu_globalsettings", "50"))
-					else:
-						for episode in self.episodesdb:
-							d = self.episodesdb[episode]
-							if d["Season"] == self.selectedSeason:
-								if not d["Episode"] in entrys:
-									entrys.append(d["Episode"])
-									self.seasonlist.append(("  " + str(d["Season"])+"x"+("%02d" % d["Episode"]) + ": " + d["Title"], d["Season"] * 1000 + d["Episode"], "menu_globalsettings", "50"))
-		
-		except OSError, ex:
-			printl("OSError: " + str(ex), self)
-		except IOError, ex:
-			printl("IOError: " + str(ex), self)
-		
-		if self.inSeries:
-			self.serieslist.sort()
-			self["listview"].setList(self.serieslist)	
-		elif self.inSeasons:
-			self.seasonlist.sort()
-			self["listview"].setList(self.seasonlist)
-		elif self.inEpisode:
-			list.sort()
 			self["listview"].setList(list)
 		
 		if self.APILevel >= 2:
@@ -625,7 +534,7 @@ class PVMC_Series(Screen, HelpableScreen):
 						args["type"]    = "tvshow"
 						plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
 						for plugin in plugins:
-							print plugin.name
+							printl("plugin.name=" + str(plugin.name), self, "D")
 							plugin.fnc(args)
 						
 						isDVD = False

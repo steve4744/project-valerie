@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from os import makedirs, environ, popen, system
+from   os import makedirs, environ, popen, system
 import sys
 import traceback
 
 from Components.config import config
 
 from DataElement import DataElement
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
@@ -15,7 +17,7 @@ def getAPILevel(parent):
 	try:
 		APILevel = int(DataElement().getDataPreloading(parent, "API"))
 	except Exception, ex:
-		printl(str(ex))
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		APILevel = 1
 	return APILevel
 
@@ -86,30 +88,26 @@ def getBoxtype():
 		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
 		version = file.readline().strip()
 		file.close()
-		
+	
 	return (manu, model, arch, version)
 	
-#------------------------------------------------------------------------------------------
-
-#------------------------------------------------------------------------------------------
-
 #------------------------------------------------------------------------------------------
 
 class Showiframe():
 	def __init__(self):
 		try:
 			self.load()
-		except Exception, ctypeEx: 
-			printl("ARRRGH!! SHOWIFRAME FAILED " + str(ctypeEx), self)
-			
+		except Exception, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 	def load(self):
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
-		#printl("SYS.PATH=" + str(sys.path), self)
+		#printl("SYS.PATH=" + str(sys.path), self, "D")
 		try:
 			self.ctypes = __import__("_ctypes")
-		except Exception, e:
-			print "self.ctypes import failed", e
+		except Exception, ex:
+			printl("self.ctypes import failed", self, "E")
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 			self.ctypes = None
 			return False
 		
@@ -117,18 +115,20 @@ class Showiframe():
 		if getBoxtype()[0] == "Azbox":
 			libname = "libshowiframe.az.so.0.0.0"
 		
-		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self)
+		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self, "D")
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
-		except Exception, e: 
-			print "self.ctypes.dlsym - FAILED!!!", e
+		except Exception, ex: 
+			printl("self.ctypes.dlsym - FAILED!!!", self, "W")
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			try:
 				self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
 				self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
-			except Exception, e2: 
-				print "self.ctypes.dlsym - FAILED AGAIN !!!", e2
+			except Exception, ex2: 
+				printl("self.ctypes.dlsym - FAILED AGAIN !!!", self, "E")
+				printl("Exception(" + str(type(ex2)) + "): " + str(ex2), self, "E")
 				return False
 		return True
 
@@ -141,20 +141,6 @@ class Showiframe():
 			self.ctypes.call_function(self.finishShowSinglePic, ())
 			#dlclose(self.showiframe)
 
-def printl(string, parent=None):
-	if parent is None:
-		print "[Project Valerie] ", string
-	else:
-		classname = str(parent.__class__).rsplit(".", 1)
-		if len(classname) == 2:
-			classname = classname[1]
-			classname = classname.rstrip("\'>")
-			classname += "::"
-			
-		else:
-			classname = ""
-		print "[Project Valerie] " + classname + str(sys._getframe(1).f_code.co_name), string
-
 #------------------------------------------------------------------------------------------
 
 class E2Control():
@@ -163,38 +149,37 @@ class E2Control():
 		
 		try:
 			makedirs("/hdd/valerie")
-		except OSError, e: 
-			printl("OSError: " + str(e), self)
+		except OSError, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		try:
 			makedirs("/hdd/valerie/episodes")
-		except OSError, e: 
-			printl("OSError: " + str(e), self)
+		except OSError, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		try:
 			makedirs("/hdd/valerie/media")
-		except OSError, e: 
-			printl("OSError: " + str(e), self)
+		except OSError, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		
 		self.close()
 		
 		box = getBoxtype()
 		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"
-		printl(s, self)
+		printl(s, self, "D")
 		try:
 			system("chmod 777 " + s)
 			popen(s)
-		except OSError, e: 
-			printl("OSError: " + str(e), self)
+		except OSError, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		
 		printl("<-", self)
 
 	def close(self):
 		printl("->", self)
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control stop"
-		printl(s, self)
+		printl(s, self, "D")
 		try:
 			popen(s)
-		except OSError, e: 
-			printl("OSError: " + str(e), self)
+		except OSError, ex: 
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		printl("<-", self)
-

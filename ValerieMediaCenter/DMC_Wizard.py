@@ -1,12 +1,18 @@
-from Screens.Wizard import WizardSummary
-from Screens.WizardLanguage import WizardLanguage
-from Components.config import config
-from Components.Pixmap import Pixmap
-from Components.Label import Label
-from DMC_Global import printl
-from StillPicture import StillPicture
+# -*- coding: utf-8 -*-
 
 from os import environ
+
+from Components.config import config
+from Components.Label import Label
+from Components.Pixmap import Pixmap
+from Screens.Wizard import WizardSummary
+from Screens.WizardLanguage import WizardLanguage
+
+from StillPicture import StillPicture
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 class PVMC_Wizard(WizardLanguage):
 
@@ -34,7 +40,7 @@ class PVMC_Wizard(WizardLanguage):
 			config.plugins.pvmc.autostart.value = True
 		else:
 			config.plugins.pvmc.autostart.value = False
-		printl("config.plugins.pvmc.autostart -> " + str(config.plugins.pvmc.autostart.value))
+		printl("-> " + str(config.plugins.pvmc.autostart.value), self)
 
 	def checkforupdate(self, selection = None):
 		if selection is None:
@@ -43,7 +49,7 @@ class PVMC_Wizard(WizardLanguage):
 			config.plugins.pvmc.checkforupdate.value = True
 		else:
 			config.plugins.pvmc.checkforupdate.value = False
-		printl("config.plugins.pvmc.checkforupdate -> " + str(config.plugins.pvmc.checkforupdate.value))
+		printl(" -> " + str(config.plugins.pvmc.checkforupdate.value), self)
 
 	def uselocal(self, selection = None):
 		if selection is None:
@@ -52,14 +58,14 @@ class PVMC_Wizard(WizardLanguage):
 			config.plugins.pvmc.uselocal.value = True
 		else:
 			config.plugins.pvmc.uselocal.value = False
-		printl("config.plugins.pvmc.uselocal -> " + str(config.plugins.pvmc.uselocal.value))
+		printl("-> " + str(config.plugins.pvmc.uselocal.value), self)
 
 	def saveConfig(self):
-		printl("saveConfig")
+		printl("->", self)
 		config.plugins.pvmc.showwizard.value = False
 		config.save() 
-		printl("Saved !")
+		printl("<- Saved !", self)
 
 	def finishUp(self):
-		printl("finishUp")
+		printl("->", self)
 		self["showiframe"].finishStillPicture()

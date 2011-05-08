@@ -1,24 +1,26 @@
+# -*- coding: utf-8 -*-
+
+from enigma import eWidget, eCanvas, eRect
+import skin
 from Components.Renderer.Renderer import Renderer
 from Components.config import *
-from enigma import eWidget, eCanvas, eRect
-
-import skin
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
+#------------------------------------------------------------------------------------------
+
 class eDataElement(eWidget):
 	def __init__(self, parent):
-		#print "eDataElement::__init__", parent
 		eWidget.__init__(self, parent)
 		self.setTransparent(True)
-	
+
 	def setText(self,t):
-		#print "eDataElement::setText", t
 		pass
 
 class DataElement(Renderer):
 	GUI_WIDGET = eDataElement
 	data = ""
+
 	def __init__(self):
 		Renderer.__init__(self)
 
@@ -31,7 +33,6 @@ class DataElement(Renderer):
 		return
 
 	def postWidgetCreate(self, instance):
-		#print "postWidgetCreate", instance
 		self.sequence = None
 		
 		if self.skinAttributes is not None:
@@ -39,38 +40,35 @@ class DataElement(Renderer):
 				if attrib == "text":
 					self.setData(value)
 		else:
-			printl("self.skinAttributes is None!!!", self)
-
+			printl("self.skinAttributes is None!!!", self, "E")
 
 	def getDataPreloading(self, screen, name):
 		printl("screen=" + str(screen.skinName) + " name=" + str(name), self)
 		try:
 			for entry in skin.dom_skins:
-				print entry
-				print entry[0], " - ", config.plugins.pvmc.skinfolderpath.value
+				printl("entry=" + str(entry), self, "D")
+				printl("entry[0]=" + str(entry[0]) + " - " + str(config.plugins.pvmc.skinfolderpath.value), self, "D")
 				if entry[0] is None or entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
 					for element in entry[1]:
-						#print element
 						if 'name' in element.keys() and element.get('name') == screen.skinName:
-							#print element.get('name')
 							for child in element:
 								if 'name' in child.keys() and child.get('name') == name:
 									return child.get('text')
 		except Exception, ex:
-			printl(str(ex), self)
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			
 			#Maybe OpenPli
 			try:
 				myscreen, path = skin.dom_screens.get(screen.skinName, (None,None))
-				printl("myscreen=" + str(myscreen), self)
-				printl("path=" + str(path), self)
+				printl("myscreen=" + str(myscreen), self, "D")
+				printl("path=" + str(path), self, "D")
 				if myscreen is not None:
 					for child in myscreen:
-						printl("child=" + str(child), self)
-						printl("child.keys()=" + str(child.keys()), self)
+						printl("child=" + str(child), self, "D")
+						printl("child.keys()=" + str(child.keys()), self, "D")
 						if 'name' in child.keys() and child.get('name') == name:
 							return child.get('text')
 			except Exception, ex:
-				printl(str(ex), self)
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 				return ""
 		return ""

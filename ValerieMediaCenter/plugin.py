@@ -4,7 +4,7 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from __plugin__ import getPlugins, Plugin
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 
 #------------------------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ def menu(menuid, **kwargs):
 def Plugins(**kwargs):
 	list = []
 	list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_MENU, fnc = menu))
-  	list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main))
+	list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main))
 	if config.plugins.pvmc.showwizard.value == True:
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(58, PVMC_Wizard)))
 	if config.plugins.pvmc.autostart.value == True:

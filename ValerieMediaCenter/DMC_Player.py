@@ -32,6 +32,9 @@ localeInit()
 language.addCallback(localeInit)
 
 class PVMC_Player(MoviePlayer):
+
+	filter = None
+
 	def __init__(self, session, playlist, notifyNextEntry=None):
 		self.session = session
 		self.playlist = self.fixParts(playlist)
@@ -76,7 +79,7 @@ class PVMC_Player(MoviePlayer):
 
 	def leavePlayerConfirmed(self, answer):
 		if answer is not None and len(answer) >= 2: # I dont get how ChoiceBox can return None, but well this has happend in Issue 88
-			print "ANSWER:", answer[1]
+			printl("ANSWER=" + str(answer[1]), self, "D")
 			if answer[1] == "quit":
 				self.playing = False
 				self.close()
@@ -86,8 +89,6 @@ class PVMC_Player(MoviePlayer):
 					self.notifyNextEntry()
 			elif answer[1] == "continue":
 				return None
-
-	filter = None
 
 	def fixPartsReplacer(self, filename):
 		for f in self.filter:
@@ -183,9 +184,9 @@ class PVMC_Player(MoviePlayer):
 					percent = self.progressUpdateNextPercentMargin - self.progressUpdateNextPercentDistance
 				else:
 					percent = 0
-				printl("percent: " + str(percent) + " len: " + str(len) + " pos: " + str(pos), self)
-				printl("self.progressUpdateCounter: " + str(self.progressUpdateCounter), self)
-				printl("self.progressUpdateNextPercentMargin: " + str(self.progressUpdateNextPercentMargin), self)
+				#printl("percent: " + str(percent) + " len: " + str(len) + " pos: " + str(pos), self, "D")
+				#printl("self.progressUpdateCounter: " + str(self.progressUpdateCounter), self, "D")
+				#printl("self.progressUpdateNextPercentMargin: " + str(self.progressUpdateNextPercentMargin), self, "D")
 				if self.progressUpdateCounter >= self.progressUpdateCounterMargin:
 					self.progressUpdateCounter = 0
 					self. communicatelApiProgressAndDuration(percent, len)
