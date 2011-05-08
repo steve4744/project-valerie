@@ -62,7 +62,7 @@ try:
 		if os.path.isdir(os.path.join(config.plugins.pvmc.skinfolderpath.value, skin)) and skin != ".svn":
 			skins.append(skin)
 except Exception, ex:
-	printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), "", "W")
 	skins.append(defaultSkin)
 #config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
 config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
@@ -85,7 +85,7 @@ try:
 	loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
 	skinLoaded = True
 except Exception, ex:
-	printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), "", "W")
 	skinLoaded = False
 	config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 	config.plugins.pvmc.skin.value           = defaultSkin
@@ -95,7 +95,7 @@ if skinLoaded == False:
 		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
 		skinLoaded = True
 	except Exception, ex:
-		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "", "W")
 		skinLoaded = False
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin

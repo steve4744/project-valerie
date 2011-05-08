@@ -17,7 +17,7 @@ def getAPILevel(parent):
 	try:
 		APILevel = int(DataElement().getDataPreloading(parent, "API"))
 	except Exception, ex:
-		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
 		APILevel = 1
 	return APILevel
 

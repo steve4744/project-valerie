@@ -20,7 +20,7 @@ from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from DataElement import DataElement
-from DMC_Global import Showiframe
+from DMC_Global import Showiframe, getAPILevel
 from DMC_Player import PVMC_Player
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
@@ -511,16 +511,29 @@ class PVMC_Movies(Screen, HelpableScreen):
 		
 		self.close()
 
-	#class PVMC_MessageBoxInfo(MessageBox):
-	#	def __init__(self, session, title, plot):
-	#		text = _("Title:\n") + title + _("\n\nPlot:\n") + plot
-	#		MessageBox.__init__(self, session, text, type = MessageBox.TYPE_INFO)
+	class PVMC_MessageBoxInfo(MessageBox):
+		def __init__(self, session, title, plot):
+			text = _("Title: ") + title + _("\n\nPlot:\n") + plot
+			MessageBox.__init__(self, session, text, type = MessageBox.TYPE_INFO)
+			
+			self.APILevel = getAPILevel(self)
+			printl("APILevel=" + str(self.APILevel), self)
+			if self.APILevel >= 2:
+				self["API"] = DataElement()
+			
+			if self.APILevel == 1:
+				self.skinName = "MessageBox"
+			
+			self.onLayoutFinish.append(self.setCustomTitle)
+
+		def setCustomTitle(self):
+			self.setTitle(_("details"))
 
 	def KeyInfo(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			#self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]]["Title"], self.moviedb[selection[1]]["Plot"])
-			self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
+			self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]]["Title"], self.moviedb[selection[1]]["Plot"])
+			#self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
 	def KeyPlugins(self):
 		pluginList = []
