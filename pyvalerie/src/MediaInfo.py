@@ -63,49 +63,58 @@ class MediaInfo(object):
 	Banner   = u""
 
 	def __init__(self, path = None, filename = None, extension = None):
-		if path is not None and filename is not None and extension is not None:
-			self.Path      = path
-			self.Filename  = filename
-			self.Extension = extension
-			
-			self.Alternatives = {}
-			self.Directors    = []
-			self.Writers      = []
+		try:
+			if path is not None and filename is not None and extension is not None:
+				self.Path      = path
+				self.Filename  = filename
+				self.Extension = extension
+				
+				self.Alternatives = {}
+				self.Directors    = []
+				self.Writers      = []
+		except Exception, ex:
+			printls("Exception (ef): " + str(ex), self, "E")
 
 	def copy(self):
-		m = MediaInfo(self.Path, self.Filename, self.Extension)
-		
-		m.Alternatives = self.Alternatives
-		m.Directors    = self.Directors
-		m.Writers      = self.Writers
-		m.Genres       = self.Genres
-		m.Runtime      = self.Runtime
-		m.Tag          = self.Tag
-		m.Popularity   = self.Popularity
-		m.Plot         = self.Plot
-		
-		m.ImdbId       = self.ImdbId
-		m.TheTvDbId    = self.TheTvDbId
-		m.Title        = self.Title
-		m.Year         = self.Year
-		m.Month        = self.Month
-		m.Day          = self.Day
-		m.Resolution   = self.Resolution
-		m.Sound        = self.Sound
-		m.isMovie      = self.isMovie
-		m.isSerie      = self.isSerie
-		m.isEpisode    = self.isEpisode
-		m.Poster       = self.Poster
-		m.Backdrop     = self.Backdrop
-		m.Season       = self.Season
-		m.Episode      = self.Episode
-		m.SearchString = self.SearchString
+		try:
+			m = MediaInfo(self.Path, self.Filename, self.Extension)
+			
+			m.Alternatives = self.Alternatives
+			m.Directors    = self.Directors
+			m.Writers      = self.Writers
+			m.Genres       = self.Genres
+			m.Runtime      = self.Runtime
+			m.Tag          = self.Tag
+			m.Popularity   = self.Popularity
+			m.Plot         = self.Plot
+			
+			m.ImdbId       = self.ImdbId
+			m.TheTvDbId    = self.TheTvDbId
+			m.Title        = self.Title
+			m.Year         = self.Year
+			m.Month        = self.Month
+			m.Day          = self.Day
+			m.Resolution   = self.Resolution
+			m.Sound        = self.Sound
+			m.isMovie      = self.isMovie
+			m.isSerie      = self.isSerie
+			m.isEpisode    = self.isEpisode
+			m.Poster       = self.Poster
+			m.Backdrop     = self.Backdrop
+			m.Season       = self.Season
+			m.Episode      = self.Episode
+			m.SearchString = self.SearchString
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return m
 
 	def isEnigma2Recording(self, name):
-		printl("META: " + str(Utf8.utf8ToLatin(name + u".meta")), self)
-		if os.path.isfile(Utf8.utf8ToLatin(name + u".meta")):
-			return True
+		try:
+			printl("META: " + str(Utf8.utf8ToLatin(name + u".meta")), self)
+			if os.path.isfile(Utf8.utf8ToLatin(name + u".meta")):
+				return True
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return False
 
 	class Enimga2MetaInfo:
@@ -115,65 +124,82 @@ class MediaInfo(object):
 		IsEpisode = False
 		
 		def __init__(self, movieName, episodeName):
-			self.MovieName = movieName.strip()
-			self.EpisodeName = episodeName.strip()
-			
-			if self.MovieName == self.EpisodeName:
-				printl("IS Movie", self)
-				self.IsMovie = True
-				self.IsEpisode = False
-			else:
-				printl("IS Episode", self)
-				self.IsMovie = False
-				self.IsEpisode = True
+			try:
+				self.MovieName = movieName.strip()
+				self.EpisodeName = episodeName.strip()
+				
+				if self.MovieName == self.EpisodeName:
+					printl("IS Movie", self)
+					self.IsMovie = True
+					self.IsEpisode = False
+				else:
+					printl("IS Episode", self)
+					self.IsMovie = False
+					self.IsEpisode = True
+			except Exception, ex:
+				printl("Exception (ef): " + str(ex), self, "E")
 
 	def getEnigma2RecordingName(self, name):
-		e2info = None
-		f = Utf8.Utf8(name + u".meta", "r")
-		lines = f.read()
-		if lines is None:
-			f.close()
-			f = open(name + u".meta", "r")
+		try:
+			e2info = None
+			f = Utf8.Utf8(name + u".meta", "r")
 			lines = f.read()
-			lines = Utf8.stringToUtf8(lines)
-		if lines is not None:
-			lines = lines.split(u"\n")
-			if len(lines) > 2:
-				e2info = self.Enimga2MetaInfo(lines[1], lines[2])
-		f.close()
-		return e2info
+			if lines is None:
+				f.close()
+				f = open(name + u".meta", "r")
+				lines = f.read()
+				lines = Utf8.stringToUtf8(lines)
+			if lines is not None:
+				lines = lines.split(u"\n")
+				if len(lines) > 2:
+					e2info = self.Enimga2MetaInfo(lines[1], lines[2])
+			f.close()
+			return e2info
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
+			return None
+		return None
 
 	def isValerieInfoAvailable(self, path):
-		if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
-			return True
+		try:
+			if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
+				return True
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return False
 
 	def getValerieInfo(self, path):
-		f = Utf8.Utf8(path + u"/valerie.info", "r")
-		lines = f.read()
-		if lines is not None:
-			lines = lines.split(u"\n")
-			name = None
-			if len(lines) >= 1:
-				name = lines[0]
-		f.close()
+		try:
+			f = Utf8.Utf8(path + u"/valerie.info", "r")
+			lines = f.read()
+			if lines is not None:
+				lines = lines.split(u"\n")
+				name = None
+				if len(lines) >= 1:
+					name = lines[0]
+			f.close()
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return name
 
 	def getValerieInfoLastAccessTime(self, path):
 		time = 0
-		if os.path.isfile(Utf8.utf8ToLatin(path + u"/.access")):
-			f = Utf8.Utf8(path + u"/.access", "r")
-			lines = f.read()
-			if lines is not None:
-				lines = lines.split(u"\n")
-				if len(lines) >= 1:
-					try:
-						lines = lines[0].split(".")
-						time = int(lines[0])
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
-						printl("\t" + str(Utf8.utf8ToLatin(path + u"/.access")), self)
-			f.close()
+		try:
+			if os.path.isfile(Utf8.utf8ToLatin(path + u"/.access")):
+				f = Utf8.Utf8(path + u"/.access", "r")
+				lines = f.read()
+				if lines is not None:
+					lines = lines.split(u"\n")
+					if len(lines) >= 1:
+						try:
+							lines = lines[0].split(".")
+							time = int(lines[0])
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							printl("\t" + str(Utf8.utf8ToLatin(path + u"/.access")), self)
+				f.close()
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return time
 
 	def getValerieInfoAccessTime(self, path):
@@ -720,61 +746,63 @@ class MediaInfo(object):
 		self.Plot = re.sub("\n", " ", self.Plot).strip()
 		
 		stri = u''
-		if self.isMovie:
-			stri += self.ImdbId + u'\n'
-			stri += self.Title + u'\n'
-			stri += self.Tag + u'\n'
-			stri += unicode(self.Year) + u'\n'
-			if level >=3:
-				stri += unicode(self.Month) + u'\n'
-				stri += unicode(self.Day) + u'\n'
+		try:
+			if self.isMovie:
+				stri += self.ImdbId + u'\n'
+				stri += self.Title + u'\n'
+				stri += self.Tag + u'\n'
+				stri += unicode(self.Year) + u'\n'
+				if level >=3:
+					stri += unicode(self.Month) + u'\n'
+					stri += unicode(self.Day) + u'\n'
+				
+				stri += self.Path + u'\n'
+				stri += self.Filename + u'\n'
+				stri += self.Extension + u'\n'
+				
+				stri += self.Plot + u'\n'
+				stri += unicode(self.Runtime) + u'\n'
+				stri += unicode(self.Popularity) + u'\n'
+				
+				stri += self.Genres + u'\n'
 			
-			stri += self.Path + u'\n'
-			stri += self.Filename + u'\n'
-			stri += self.Extension + u'\n'
+			elif self.isSerie:
+				stri += self.ImdbId + u'\n'
+				stri += self.TheTvDbId + u'\n'
+				stri += self.Title + u'\n'
+				stri += self.Tag + u'\n'
+				stri += unicode(self.Year) + u'\n'
+				if level >=3:
+					stri += unicode(self.Month) + u'\n'
+					stri += unicode(self.Day) + u'\n'
+				
+				stri += self.Plot + u'\n'
+				stri += unicode(self.Runtime) + u'\n'
+				stri += unicode(self.Popularity) + u'\n'
+				
+				stri += self.Genres + u'\n'
 			
-			stri += self.Plot + u'\n'
-			stri += unicode(self.Runtime) + u'\n'
-			stri += unicode(self.Popularity) + u'\n'
-			
-			stri += self.Genres + u'\n'
-		
-		elif self.isSerie:
-			stri += self.ImdbId + u'\n'
-			stri += self.TheTvDbId + u'\n'
-			stri += self.Title + u'\n'
-			stri += self.Tag + u'\n'
-			stri += unicode(self.Year) + u'\n'
-			if level >=3:
-				stri += unicode(self.Month) + u'\n'
-				stri += unicode(self.Day) + u'\n'
-			
-			stri += self.Plot + u'\n'
-			stri += unicode(self.Runtime) + u'\n'
-			stri += unicode(self.Popularity) + u'\n'
-			
-			stri += self.Genres + u'\n'
-		
-		elif self.isEpisode:
-			stri += self.TheTvDbId + u'\n'
-			stri += self.Title + u'\n'
-			stri += unicode(self.Year) + u'\n'
-			if level >=3:
-				stri += unicode(self.Month) + u'\n'
-				stri += unicode(self.Day) + u'\n'
-			
-			stri += self.Path + u'\n'
-			stri += self.Filename + u'\n'
-			stri += self.Extension + u'\n'
-
-			stri += unicode(self.Season) + u'\n'
-			stri += unicode(self.Episode) + u'\n'
-
-			stri += self.Plot + u'\n'
-			stri += unicode(self.Runtime) + u'\n'
-			stri += unicode(self.Popularity) + u'\n'
-			
-			stri += self.Genres + u'\n'
-		
+			elif self.isEpisode:
+				stri += self.TheTvDbId + u'\n'
+				stri += self.Title + u'\n'
+				stri += unicode(self.Year) + u'\n'
+				if level >=3:
+					stri += unicode(self.Month) + u'\n'
+					stri += unicode(self.Day) + u'\n'
+				
+				stri += self.Path + u'\n'
+				stri += self.Filename + u'\n'
+				stri += self.Extension + u'\n'
+	
+				stri += unicode(self.Season) + u'\n'
+				stri += unicode(self.Episode) + u'\n'
+	
+				stri += self.Plot + u'\n'
+				stri += unicode(self.Runtime) + u'\n'
+				stri += unicode(self.Popularity) + u'\n'
+				
+				stri += self.Genres + u'\n'
+		except Exception, ex:
+			printl("Exception: " + str(ex), self, "E")
 		stri += u''
 		return stri

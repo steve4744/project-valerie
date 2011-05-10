@@ -5,6 +5,7 @@ import math
 import os
 from   os import environ
 
+from enigma import getDesktop
 from Components.ActionMap import ActionMap, HelpableActionMap
 from Components.config import *
 from Components.Label import Label
@@ -103,6 +104,11 @@ class PVMC_Series(Screen, HelpableScreen):
 			self["total"] = Label()
 			self["current"] = Label()
 		
+		self["key_red"] = StaticText(_(" "))
+		self["key_green"] = StaticText(_(" "))
+		self["key_yellow"] = StaticText(_(" "))
+		self["key_blue"] = StaticText(_(" "))
+		
 		try:
 			from StillPicture import StillPicture
 			self["backdrop"] = StillPicture(session)
@@ -112,6 +118,16 @@ class PVMC_Series(Screen, HelpableScreen):
 		
 		if self.APILevel >= 2:
 			self["listview_itemsperpage"] = DataElement()
+		
+		self.postersize = ""
+		if self.APILevel >= 3:
+			dSize = getDesktop(0).size()
+			if dSize.width() == 720 and dSize.height() == 576:
+				self.postersize = "_110x214"
+			elif dSize.width() == 1024 and dSize.height() == 576:
+				self.postersize = "_156x214"
+			elif dSize.width() == 1280 and dSize.height() == 720:
+				self.postersize = "_195x267"
 		
 		for i in range(10):
 			stars = "star" + str(i)
@@ -340,10 +356,10 @@ class PVMC_Series(Screen, HelpableScreen):
 							self["backdrop"].setStillPictureToDefault()
 				
 				if self["poster"].instance is not None:
-					if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
-						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+					if os.access("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
+						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png")
 					else:
-						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
+						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter" + self.postersize + ".png")
 				
 				self.setText("title", selection[0])
 				if self.APILevel == 1:

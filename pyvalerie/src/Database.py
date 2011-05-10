@@ -146,7 +146,7 @@ class Database(object):
 			if self.dbMovies[key].Path == path:
 				if self.dbMovies[key].Filename == filename:
 					if self.dbMovies[key].Extension == extension:
-						return True
+						return self.dbMovies[key]
 		
 		for key in self.dbSeries:
 			if key in self.dbEpisodes:
@@ -155,8 +155,9 @@ class Database(object):
 						if self.dbEpisodes[key][season][episode].Path == path:
 							if self.dbEpisodes[key][season][episode].Filename == filename:
 								if self.dbEpisodes[key][season][episode].Extension == extension:
-									return True
-		return False
+									return self.dbEpisodes[key][season][episode]
+		
+		return None
 
 	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
 		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
@@ -287,15 +288,17 @@ class Database(object):
 			printl("TO BE DELETED: " + str(ele), self)
 
 	def save(self):
+		# Always safe pickel as this increses fastsync a lot
+		#elif self.USE_DB_VERSION == self.DB_PICKLE:
+		self.savePickel()
+		
 		if self.USE_DB_VERSION == self.DB_TXT:
 			self.saveTxt()
 		elif self.USE_DB_VERSION == self.DB_TXD:
 			self.saveTxd()
 			self.rmTxt()
 		
-		# Always safe pickel as this increses fastsync a lot
-		#elif self.USE_DB_VERSION == self.DB_PICKLE:
-		self.savePickel()
+		
 
 	def saveTxt(self):
 		start_time = time.time()	

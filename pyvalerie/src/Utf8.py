@@ -38,8 +38,6 @@ def stringToUtf8(rawString):
 def utf8ToLatin(utfString):
 	latinString = None
 	if utfString is not None:
-		
-		
 		try:
 			latinString = utfString.encode('latin-1')
 			return latinString

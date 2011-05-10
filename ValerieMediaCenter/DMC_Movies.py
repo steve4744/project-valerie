@@ -5,6 +5,7 @@ import math
 import os
 from   os import environ
 
+from enigma import getDesktop
 from Components.ActionMap import ActionMap, HelpableActionMap
 from Components.config import *
 from Components.Label import Label
@@ -46,6 +47,11 @@ language.addCallback(localeInit)
 #------------------------------------------------------------------------------------------
 
 class PVMC_Movies(Screen, HelpableScreen):
+
+	# API Levels:
+	# 1 - Initial Level
+	# 2 - Big Changes which are introduced with the blueSky skin
+	# 3 - Introduces resolution dependend poster
 
 	ShowStillPicture = False
 
@@ -111,6 +117,16 @@ class PVMC_Movies(Screen, HelpableScreen):
 		
 		if self.APILevel >= 2:
 			self["listview_itemsperpage"] = DataElement()
+		
+		self.postersize = ""
+		if self.APILevel >= 3:
+			dSize = getDesktop(0).size()
+			if dSize.width() == 720 and dSize.height() == 576:
+				self.postersize = "_110x214"
+			elif dSize.width() == 1024 and dSize.height() == 576:
+				self.postersize = "_156x214"
+			elif dSize.width() == 1280 and dSize.height() == 720:
+				self.postersize = "_195x267"
 		
 		for i in range(10):
 			stars = "star" + str(i)
@@ -181,6 +197,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 			self.loadMoviesTxd()
 
 	def loadMoviesTxd(self):
+		printl("->", self)
 		try:
 			self.serieslist=[]
 			db = open("/hdd/valerie/movies.txd").read()[:-1]
@@ -248,8 +265,10 @@ class PVMC_Movies(Screen, HelpableScreen):
 			printl("IOError: " + str(ex), self)
 		
 		self.reloadMovies()
+		printl("<-", self)
 
 	def reloadMovies(self):
+		printl("->", self)
 		list =[]
 		for key in self.moviedb.keys():
 			if self.genreFilter == "" or self.genreFilter in self.moviedb[key]["Genres"]:
@@ -263,6 +282,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 		if self.APILevel >= 2:
 			self["listview"].setIndex(0)
 		self.refresh()
+		printl("<-", self)
 
 	def getAvailGenres(self):
 		return self.AvailableGenresList
@@ -296,10 +316,10 @@ class PVMC_Movies(Screen, HelpableScreen):
 						self["backdrop"].setStillPictureToDefault()
 			
 			if self["poster"].instance is not None:
-				if os.access("/hdd/valerie/media/" + selection[1] + "_poster.png", os.F_OK):
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster.png")
+				if os.access("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png")
 				else:
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter" + self.postersize + ".png")
 			
 			self.setText("title", selection[0])
 			if self.APILevel == 1:

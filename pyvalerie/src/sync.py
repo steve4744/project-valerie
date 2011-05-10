@@ -6,6 +6,7 @@ import sys
 from   threading import Thread
 import time
 
+from enigma import getDesktop
 from   Components.Language import language
 import gettext
 from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
@@ -101,9 +102,20 @@ def checkDefaults():
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "../media/defaultbackdrop.m1v")
+	
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 		printl("Check defaultposter.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "../media/defaultposter.png")
+	if os.access("/hdd/valerie/media/defaultposter_110x214.png", os.F_OK) is False:
+		printl("Check defaultposter_110x214.png - Missing -> Downloading", __name__)
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_110x214.png", "../media/defaultposter_110x214.png")
+	if os.access("/hdd/valerie/media/defaultposter_156x214.png", os.F_OK) is False:
+		printl("Check defaultposter_156x214.png - Missing -> Downloading", __name__)
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_156x214.png", "../media/defaultposter_156x214.png")
+	if os.access("/hdd/valerie/media/defaultposter_195x267.png", os.F_OK) is False:
+		printl("Check defaultposter_195x267.png - Missing -> Downloading", __name__)
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_195x267.png", "../media/defaultposter_195x267.png")
+	
 	try: 
 		printl("Check "+"/hdd/valerie/episodes", __name__)
 		os.makedirs("/hdd/valerie/episodes")
@@ -249,11 +261,20 @@ class pyvalerie(Thread):
 				
 				if os.path.isdir(path):
 					ds.setDirectory(Utf8.utf8ToLatin(path))
-					ds.listDirectory(filetypes, "(sample)|(VTS)", type)
+					ds.listDirectory(filetypes, "(sample)|(VTS)|(^\\.)", type)
 			elementList = ds.getFileList()
 		
 		elapsed_time = time.time() - start_time
 		printl("Searching for media files took: " + str(elapsed_time), self)
+		
+		dSize = getDesktop(0).size()
+		posterSize = Arts.posterResolution[0]
+		if dSize.width() == 720 and dSize.height() == 576:
+			posterSize = Arts.posterResolution[0]
+		elif dSize.width() == 1024 and dSize.height() == 576:
+			posterSize = Arts.posterResolution[1]
+		elif dSize.width() == 1280 and dSize.height() == 720:
+			posterSize = Arts.posterResolution[2]
 		
 		if elementList is None:
 			self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))
@@ -286,9 +307,29 @@ class pyvalerie(Thread):
 					printl("File blacklisted", self)
 					continue
 				
-				if db.checkDuplicate(path, filename, extension):
+				alreadyInDb = db.checkDuplicate(path, filename, extension)
+				if alreadyInDb is not None:
 					#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
 					#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
+					
+					if Arts().isMissing(alreadyInDb):
+						#self.output("Downloading missing poster")
+						tmp = None
+						if alreadyInDb.isMovie:
+							tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
+						elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
+							tmp = TheTvDbProvider().getArtByTheTvDbId(alreadyInDb)
+						
+						if tmp is not None:
+							Arts().download(tmp)
+							
+							if alreadyInDb.isMovie:
+								self.info(str(alreadyInDb.ImdbId) + "_poster_" + posterSize + ".png", 
+									"", "")
+							elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
+								self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
+									"", "")
+					
 					continue
 				
 				printl("#"*60, self)
@@ -338,11 +379,11 @@ class pyvalerie(Thread):
 						if db.add(result):
 							result.Title = self.encodeMe(result.Title)
 							if result.isMovie:
-								self.info(str(result.ImdbId) + "_poster.png", 
+								self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
 									result.Title, result.Year)
 								printl("my_title " + result.Title, self, "I")
 							else:
-								self.info(str(result.TheTvDbId) + "_poster.png", 
+								self.info(str(result.TheTvDbId) + "_poster_" + posterSize + ".png", 
 									result.Title, result.Year)
 								printl("my_title " + result.Title, self, "I")
 						else:
@@ -372,7 +413,7 @@ class pyvalerie(Thread):
 		self.output(_("Press Exit / Back"))
 		
 		self.finished(True)
-		
+
 	def encodeMe (self, text):
 		decodedText = None
 		try:
