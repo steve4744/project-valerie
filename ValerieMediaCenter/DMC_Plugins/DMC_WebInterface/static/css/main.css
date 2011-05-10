@@ -1,7 +1,7 @@
 html,body {
 	background: none repeat scroll 0 0 #555555;
 	font-family: Tahoma, Sans-Serif;
-	font-size: 14px;
+	font-size: 11px;
 	font-weight: bold;
 }
 
@@ -79,7 +79,7 @@ td {
     padding-bottom: 1px;
     padding-right: 3px;
     width: 1005px;
-    min-height: 308px;
+    min-height: 768px;
 }
 
 
