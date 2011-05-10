@@ -318,6 +318,9 @@ class PVMC_Movies(Screen, HelpableScreen):
 			if self["poster"].instance is not None:
 				if os.access("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
 					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png")
+				#Fallback for old skins
+				elif len(self.postersize) == 0 and os.access("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png", os.F_OK):
+					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png")
 				else:
 					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter" + self.postersize + ".png")
 			
