@@ -101,20 +101,20 @@ def checkDefaults():
 	printl("Check "+"/hdd/valerie/media/*", __name__)
 	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
 		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__)
-		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "../media/defaultbackdrop.m1v")
+		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
 	
 	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
 		printl("Check defaultposter.png - Missing -> Downloading", __name__)
-		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "../media/defaultposter.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
 	if os.access("/hdd/valerie/media/defaultposter_110x214.png", os.F_OK) is False:
 		printl("Check defaultposter_110x214.png - Missing -> Downloading", __name__)
-		WebGrabber.getFile(DEFAULTURL+"defaultposter_110x214.png", "../media/defaultposter_110x214.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_110x214.png", "defaultposter_110x214.png")
 	if os.access("/hdd/valerie/media/defaultposter_156x214.png", os.F_OK) is False:
 		printl("Check defaultposter_156x214.png - Missing -> Downloading", __name__)
-		WebGrabber.getFile(DEFAULTURL+"defaultposter_156x214.png", "../media/defaultposter_156x214.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_156x214.png", "defaultposter_156x214.png")
 	if os.access("/hdd/valerie/media/defaultposter_195x267.png", os.F_OK) is False:
 		printl("Check defaultposter_195x267.png - Missing -> Downloading", __name__)
-		WebGrabber.getFile(DEFAULTURL+"defaultposter_195x267.png", "../media/defaultposter_195x267.png")
+		WebGrabber.getFile(DEFAULTURL+"defaultposter_195x267.png", "defaultposter_195x267.png")
 	
 	try: 
 		printl("Check "+"/hdd/valerie/episodes", __name__)
@@ -130,7 +130,7 @@ def checkDefaults():
 		printl("Check "+"/hdd/valerie/valerie.conf", __name__)
 		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
 			printl("Check valerie.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"valerie.conf", "../valerie.conf")
+			WebGrabber.getFile(DEFAULTURL+"valerie.conf", "/hdd/valerie/valerie.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -141,7 +141,7 @@ def checkDefaults():
 		printl("Check "+"/hdd/valerie/pre.conf", __name__)
 		if os.path.isfile("/hdd/valerie/pre.conf") is False:
 			printl("Check pre.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"pre.conf", "../pre.conf")
+			WebGrabber.getFile(DEFAULTURL+"pre.conf", "/hdd/valerie/pre.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -152,7 +152,7 @@ def checkDefaults():
 		printl("Check "+"/hdd/valerie/post_movie.conf", __name__)
 		if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
 			printl("Check post_movie.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "../post_movie.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "/hdd/valerie/post_movie.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -163,7 +163,7 @@ def checkDefaults():
 		printl("Check "+"/hdd/valerie/post_tv.conf", __name__)
 		if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
 			printl("Check post_tv.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "../post_tv.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "/hdd/valerie/post_tv.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -174,7 +174,7 @@ def checkDefaults():
 		printl("Check "+"/hdd/valerie/paths.conf", __name__)
 		if os.path.isfile("/hdd/valerie/paths.conf") is False:
 			printl("Check paths.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"paths.conf", "../paths.conf")
+			WebGrabber.getFile(DEFAULTURL+"paths.conf", "/hdd/valerie/paths.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)

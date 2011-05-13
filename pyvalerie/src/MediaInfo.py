@@ -204,85 +204,104 @@ class MediaInfo(object):
 
 	def getValerieInfoAccessTime(self, path):
 		time = 0
-		if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
-			try:
-				time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
-			except Exception, ex:
-						printl("Exception: " + str(ex), self)
-						printl("\t" + str(Utf8.utf8ToLatin(path + u"/valerie.info")), self)
+		try:
+			if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
+				try:
+					time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
+				except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							printl("\t" + str(Utf8.utf8ToLatin(path + u"/valerie.info")), self)
+		
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return time
 
 	def setValerieInfoLastAccessTime(self, path):
-		if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
-			time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
-			f = Utf8.Utf8(path + u"/.access", "w")
-			time = f.write(str(time) + u"\n")
-			f.close()
-		elif os.path.isfile(Utf8.utf8ToLatin(path + u"/.access")):
-			os.remove(Utf8.utf8ToLatin(path + u"/.access"))
+		try:
+			if os.path.isfile(Utf8.utf8ToLatin(path + u"/valerie.info")):
+				time = int(os.path.getctime(Utf8.utf8ToLatin(path + u"/valerie.info")))
+				f = Utf8.Utf8(path + u"/.access", "w")
+				time = f.write(str(time) + u"\n")
+				f.close()
+			elif os.path.isfile(Utf8.utf8ToLatin(path + u"/.access")):
+				os.remove(Utf8.utf8ToLatin(path + u"/.access"))
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 
 	def isNfoAvailable(self, name):
-		if os.path.isfile(Utf8.utf8ToLatin(name + u".nfo")):
-			return True
+		try:
+			if os.path.isfile(Utf8.utf8ToLatin(name + u".nfo")):
+				return True
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return False
 
 	def parseNfo(self, name):
-		f = Utf8.Utf8(name + u".nfo", "r")
-		lines = f.read()
-		if lines is not None:
-			lines = lines.split(u"\n")
-			if len(lines) > 1:
-				lines[1] = lines[1].strip()
-				if lines[1] == "<movie>" or lines[1] == "<episodedetails>":
-					return self.parseNfoXbmc(lines)
-				else:
-					return self.getImdbIdFromNfo(lines)
-		f.close()
+		try:
+			f = Utf8.Utf8(name + u".nfo", "r")
+			lines = f.read()
+			if lines is not None:
+				lines = lines.split(u"\n")
+				if len(lines) > 1:
+					lines[1] = lines[1].strip()
+					if lines[1].startswith("<movie") or lines[1].startswith("<episodedetails>"):
+						return self.parseNfoXbmc(lines)
+					else:
+						return self.getImdbIdFromNfo(lines)
+			f.close()
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 
 	def parseNfoXbmc(self, lines):
 		printl("", self)
-		for line in lines:
-			line = line.strip()
-			if line.startswith("<id>"):
-				line = line.replace("id", "")
-				line = line.replace("<>", "")
-				line = line.replace("</>", "")
-				if lines[1] == "<movie>":
-					self.isMovie = True
-					self.isSerie = False
-					self.isEpisode = False
-					
-					self.ImdbId = line
-				elif lines[1] == "<episodedetails>":
-					self.isMovie = False
-					self.isSerie = True
-					self.isEpisode = False
-					
-					self.TheTvDbId = line
-			elif line.startswith("<season>"):
-				line = line.replace("season", "")
-				line = line.replace("<>", "")
-				line = line.replace("</>", "")
-				self.Season = int(line)
-			elif line.startswith("<episode>"):
-				line = line.replace("episode", "")
-				line = line.replace("<>", "")
-				line = line.replace("</>", "")
-				self.Episode = int(line)
-			elif line.startswith("<year>"):
-				line = line.replace("year", "")
-				line = line.replace("<>", "")
-				line = line.replace("</>", "")
-				self.Year = int(line)
+		try:
+			for line in lines:
+				line = line.strip()
+				if line.startswith("<id>"):
+					line = line.replace("id", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					if lines[1].startswith("<movie"):
+						self.isMovie = True
+						self.isSerie = False
+						self.isEpisode = False
+						
+						self.ImdbId = line
+					elif lines[1].startswith("<episodedetails>"):
+						self.isMovie = False
+						self.isSerie = True
+						self.isEpisode = False
+						
+						self.TheTvDbId = line
+				elif line.startswith("<season>"):
+					line = line.replace("season", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Season = int(line)
+				elif line.startswith("<episode>"):
+					line = line.replace("episode", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Episode = int(line)
+				elif line.startswith("<year>"):
+					line = line.replace("year", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Year = int(line)
+		
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return self
 
 	def getImdbIdFromNfo(self, lines):
 		printl("", self)
-		for line in lines:
-			m = re.search(r'(?P<imdbid>tt\d{7})', line)
-			if m and m.group("imdbid"):
-				f.close()
-				self.ImdbId = int(m.group("imdbid"))
+		try:
+			for line in lines:
+				m = re.search(r'(?P<imdbid>tt\d{7})', line)
+				if m and m.group("imdbid"):
+					self.ImdbId = m.group("imdbid")
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return None
 
 	def parse(self):
@@ -534,217 +553,226 @@ class MediaInfo(object):
 		return True
 
 	def __str__(self):
-		ustr = self.Path + u" / " + self.Filename + u" . " + self.Extension
-		#printl("type(ustr): " + str(type(ustr)), self)
-		ustr += u"\n\tImdbId:	   " + self.ImdbId
-		ustr += u"\n\tTheTvDbId:	" + self.TheTvDbId
-		ustr += u"\n\tTitle:		" + self.Title
-		ustr += u"\n\tSearchString: " + self.SearchString
-		ustr += u"\n\tYear:		 " + unicode(self.Year)
-		ustr += u"\n\tMonth:		" + unicode(self.Month)
-		ustr += u"\n\tDay:		  " + unicode(self.Day)
-		ustr += u"\n\tResolution:   " + self.Resolution
-		ustr += u"\n\tSound:		" + self.Sound
-		#ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
-		#ustr += "\n\tDirectors:	" + unicode(self.Directors)
-		#ustr += "\n\tWriters:	  " + unicode(self.Writers)
-		ustr += "\n\tRuntime:	  " + unicode(self.Runtime)
-		ustr += "\n\tGenres:	   " + unicode(self.Genres)
-		ustr += "\n\tTagLine:	  " + self.Tag
-		ustr += "\n\tPopularity:   " + unicode(self.Popularity)
-		ustr += "\n\tPlot:		 " + self.Plot
-		if self.isEpisode:
-			ustr += "\n\tSeason:	   " + unicode(self.Season)
-			ustr += "\n\tEpisode:	  " + unicode(self.Episode)
-		ustr += "\n\n"
-		#ustr += "\n\tPoster:	   " + unicode(self.Poster)
-		#ustr += "\n\tBackdrop:	 " + unicode(self.Backdrop)
-		#ustr += "\n\n"
-		#printl("type(ustr): " + str(type(ustr)), self)
+		ustr = u""
+		try:
+			ustr = self.Path + u" / " + self.Filename + u" . " + self.Extension
+			#printl("type(ustr): " + str(type(ustr)), self)
+			ustr += u"\n\tImdbId:	   " + self.ImdbId
+			ustr += u"\n\tTheTvDbId:	" + self.TheTvDbId
+			ustr += u"\n\tTitle:		" + self.Title
+			ustr += u"\n\tSearchString: " + self.SearchString
+			ustr += u"\n\tYear:		 " + unicode(self.Year)
+			ustr += u"\n\tMonth:		" + unicode(self.Month)
+			ustr += u"\n\tDay:		  " + unicode(self.Day)
+			ustr += u"\n\tResolution:   " + self.Resolution
+			ustr += u"\n\tSound:		" + self.Sound
+			#ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
+			#ustr += "\n\tDirectors:	" + unicode(self.Directors)
+			#ustr += "\n\tWriters:	  " + unicode(self.Writers)
+			ustr += "\n\tRuntime:	  " + unicode(self.Runtime)
+			ustr += "\n\tGenres:	   " + unicode(self.Genres)
+			ustr += "\n\tTagLine:	  " + self.Tag
+			ustr += "\n\tPopularity:   " + unicode(self.Popularity)
+			ustr += "\n\tPlot:		 " + self.Plot
+			if self.isEpisode:
+				ustr += "\n\tSeason:	   " + unicode(self.Season)
+				ustr += "\n\tEpisode:	  " + unicode(self.Episode)
+			ustr += "\n\n"
+			#ustr += "\n\tPoster:	   " + unicode(self.Poster)
+			#ustr += "\n\tBackdrop:	 " + unicode(self.Backdrop)
+			#ustr += "\n\n"
+			#printl("type(ustr): " + str(type(ustr)), self)
+		
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 		return Utf8.utf8ToLatin(ustr)
 
 	def importStr(self, string, isMovie=False, isSerie=False, isEpisode=False):
-		
-		self.isMovie = isMovie
-		self.isSerie = isSerie
-		self.isEpisode = isEpisode
-		
-		lines = string.split(u'\n')
-		for line in lines: 
-			#print "Line: ", line
-			if u":" in line: 
-				key, value = (s.strip() for s in line.split(u":", 1)) 
+		try:
+			self.isMovie = isMovie
+			self.isSerie = isSerie
+			self.isEpisode = isEpisode
 			
-			if key == u"ImdbId":
-				self.ImdbId = value
-			if key == u"TheTvDb":
-				self.TheTvDbId = value
-			
-			elif key == u"Title":
-				self.Title = value
-			
-			elif key == u"Year":
-				if len(value) > 0:
-					try:
-						self.Year = int(value)
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
+			lines = string.split(u'\n')
+			for line in lines: 
+				#print "Line: ", line
+				if u":" in line: 
+					key, value = (s.strip() for s in line.split(u":", 1)) 
+				
+				if key == u"ImdbId":
+					self.ImdbId = value
+				if key == u"TheTvDb":
+					self.TheTvDbId = value
+				
+				elif key == u"Title":
+					self.Title = value
+				
+				elif key == u"Year":
+					if len(value) > 0:
+						try:
+							self.Year = int(value)
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							self.Year = 0
+					else:
 						self.Year = 0
-				else:
-					self.Year = 0
-			
-			elif key == u"Path":
-				self.Path, self.Filename = value.rsplit(u"/", 1)
-				#print self.Filename
-				self.Filename, self.Extension = self.Filename.rsplit(u'.', 1)
-			
-			elif key == u"Plot":
-				self.Plot = value
-			elif key == u"Runtime":
-				if len(value) > 0:
-					value = value.replace(u"min", "").strip()
-					try:
-						self.Runtime = int(value)
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
+				
+				elif key == u"Path":
+					self.Path, self.Filename = value.rsplit(u"/", 1)
+					#print self.Filename
+					self.Filename, self.Extension = self.Filename.rsplit(u'.', 1)
+				
+				elif key == u"Plot":
+					self.Plot = value
+				elif key == u"Runtime":
+					if len(value) > 0:
+						value = value.replace(u"min", "").strip()
+						try:
+							self.Runtime = int(value)
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							self.Runtime = 0
+					else:
 						self.Runtime = 0
-				else:
-					self.Runtime = 0
-			elif key == u"Tag":
-				self.Tag = value  
-			elif key == u"Popularity":
-				if len(value) > 0:
-					try:
-						self.Popularity = int(value)
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
+				elif key == u"Tag":
+					self.Tag = value  
+				elif key == u"Popularity":
+					if len(value) > 0:
+						try:
+							self.Popularity = int(value)
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							self.Popularity = 0
+					else:
 						self.Popularity = 0
-				else:
-					self.Popularity = 0
-			elif key == u"Season":
-				if len(value) > 0:
-					try:
-						self.Season = int(value)
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
+				elif key == u"Season":
+					if len(value) > 0:
+						try:
+							self.Season = int(value)
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							self.Season = 0
+					else:
 						self.Season = 0
-				else:
-					self.Season = 0
-			elif key == u"Episode":
-				if len(value) > 0:
-					try:
-						self.Episode = int(value)
-					except Exception, ex:
-						printl("Exception: " + str(ex), self)
+				elif key == u"Episode":
+					if len(value) > 0:
+						try:
+							self.Episode = int(value)
+						except Exception, ex:
+							printl("Exception: " + str(ex), self)
+							self.Episode = 0
+					else:
 						self.Episode = 0
-				else:
-					self.Episode = 0
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 
 	def importDefined(self, lines, level, isMovie=False, isSerie=False, isEpisode=False):
-		
-		self.isMovie = isMovie
-		self.isSerie = isSerie
-		self.isEpisode = isEpisode
-		
-		if self.isMovie:
-			if level >=3:
-				self.ImdbId = lines[0]
-				self.Title  = lines[1]
-				self.Tag    = lines[2]
-				self.Year   = int(lines[3])
-				self.Month  = int(lines[4])
-				self.Day    = int(lines[5])
-				
-				self.Path      = lines[6]
-				self.Filename  = lines[7]
-				self.Extension = lines[8]
-				
-				self.Plot       = lines[9]
-				self.Runtime    = int(lines[10])
-				self.Popularity = int(lines[11])
-				
-				self.Genres = lines[12]
-			else:
-				self.ImdbId = lines[0]
-				self.Title  = lines[1]
-				self.Tag    = lines[2]
-				self.Year   = int(lines[3])
-				
-				self.Path      = lines[4]
-				self.Filename  = lines[5]
-				self.Extension = lines[6]
-				
-				self.Plot       = lines[7]
-				self.Runtime    = int(lines[8])
-				self.Popularity = int(lines[9])
-				
-				self.Genres = lines[10]
-		
-		elif self.isSerie:
-			if level >=3:
-				self.ImdbId    = lines[0]
-				self.TheTvDbId = lines[1]
-				self.Title     = lines[2]
-				self.Tag       = lines[3]
-				self.Year      = int(lines[4])
-				self.Month     = int(lines[5])
-				self.Day       = int(lines[6])
-				
-				self.Plot       = lines[7]
-				self.Runtime    = int(lines[8])
-				self.Popularity = int(lines[9])
-				
-				self.Genres = lines[10]
-			else:
-				self.ImdbId    = lines[0]
-				self.TheTvDbId = lines[1]
-				self.Title     = lines[2]
-				self.Tag       = lines[3]
-				self.Year      = int(lines[4])
-				
-				self.Plot       = lines[5]
-				self.Runtime    = int(lines[6])
-				self.Popularity = int(lines[7])
-				
-				self.Genres = lines[8]
-		
-		elif self.isEpisode:
-			if level >=3:
-				self.TheTvDbId = lines[0]
-				self.Title     = lines[1]
-				self.Year      = int(lines[2])
-				self.Month     = int(lines[3])
-				self.Day       = int(lines[4])
-				
-				self.Path      = lines[5]
-				self.Filename  = lines[6]
-				self.Extension = lines[7]
-				
-				self.Season    = int(lines[8])
-				self.Episode   = int(lines[9])
-				
-				self.Plot       = lines[10]
-				self.Runtime    = int(lines[11])
-				self.Popularity = int(lines[12])
-				
-				self.Genres = lines[13]
-			else:
-				self.TheTvDbId = lines[0]
-				self.Title     = lines[1]
-				self.Year      = int(lines[2])
-				
-				self.Path      = lines[3]
-				self.Filename  = lines[4]
-				self.Extension = lines[5]
-				
-				self.Season    = int(lines[6])
-				self.Episode   = int(lines[7])
-				
-				self.Plot       = lines[8]
-				self.Runtime    = int(lines[9])
-				self.Popularity = int(lines[10])
-				
-				self.Genres = lines[11]
+		try:
+			self.isMovie = isMovie
+			self.isSerie = isSerie
+			self.isEpisode = isEpisode
+			
+			if self.isMovie:
+				if level >=3:
+					self.ImdbId = lines[0]
+					self.Title  = lines[1]
+					self.Tag    = lines[2]
+					self.Year   = int(lines[3])
+					self.Month  = int(lines[4])
+					self.Day    = int(lines[5])
+					
+					self.Path      = lines[6]
+					self.Filename  = lines[7]
+					self.Extension = lines[8]
+					
+					self.Plot       = lines[9]
+					self.Runtime    = int(lines[10])
+					self.Popularity = int(lines[11])
+					
+					self.Genres = lines[12]
+				else:
+					self.ImdbId = lines[0]
+					self.Title  = lines[1]
+					self.Tag    = lines[2]
+					self.Year   = int(lines[3])
+					
+					self.Path      = lines[4]
+					self.Filename  = lines[5]
+					self.Extension = lines[6]
+					
+					self.Plot       = lines[7]
+					self.Runtime    = int(lines[8])
+					self.Popularity = int(lines[9])
+					
+					self.Genres = lines[10]
+			
+			elif self.isSerie:
+				if level >=3:
+					self.ImdbId    = lines[0]
+					self.TheTvDbId = lines[1]
+					self.Title     = lines[2]
+					self.Tag       = lines[3]
+					self.Year      = int(lines[4])
+					self.Month     = int(lines[5])
+					self.Day       = int(lines[6])
+					
+					self.Plot       = lines[7]
+					self.Runtime    = int(lines[8])
+					self.Popularity = int(lines[9])
+					
+					self.Genres = lines[10]
+				else:
+					self.ImdbId    = lines[0]
+					self.TheTvDbId = lines[1]
+					self.Title     = lines[2]
+					self.Tag       = lines[3]
+					self.Year      = int(lines[4])
+					
+					self.Plot       = lines[5]
+					self.Runtime    = int(lines[6])
+					self.Popularity = int(lines[7])
+					
+					self.Genres = lines[8]
+			
+			elif self.isEpisode:
+				if level >=3:
+					self.TheTvDbId = lines[0]
+					self.Title     = lines[1]
+					self.Year      = int(lines[2])
+					self.Month     = int(lines[3])
+					self.Day       = int(lines[4])
+					
+					self.Path      = lines[5]
+					self.Filename  = lines[6]
+					self.Extension = lines[7]
+					
+					self.Season    = int(lines[8])
+					self.Episode   = int(lines[9])
+					
+					self.Plot       = lines[10]
+					self.Runtime    = int(lines[11])
+					self.Popularity = int(lines[12])
+					
+					self.Genres = lines[13]
+				else:
+					self.TheTvDbId = lines[0]
+					self.Title     = lines[1]
+					self.Year      = int(lines[2])
+					
+					self.Path      = lines[3]
+					self.Filename  = lines[4]
+					self.Extension = lines[5]
+					
+					self.Season    = int(lines[6])
+					self.Episode   = int(lines[7])
+					
+					self.Plot       = lines[8]
+					self.Runtime    = int(lines[9])
+					self.Popularity = int(lines[10])
+					
+					self.Genres = lines[11]
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
 
 	def export(self):
 		stri = u'\n---BEGIN---'
