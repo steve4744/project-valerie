@@ -640,58 +640,111 @@ class MediaInfo(object):
 				else:
 					self.Episode = 0
 
-	def importDefined(self, lines, isMovie=False, isSerie=False, isEpisode=False):
+	def importDefined(self, lines, level, isMovie=False, isSerie=False, isEpisode=False):
 		
 		self.isMovie = isMovie
 		self.isSerie = isSerie
 		self.isEpisode = isEpisode
 		
 		if self.isMovie:
-			self.ImdbId = lines[0]
-			self.Title  = lines[1]
-			self.Tag	= lines[2]
-			self.Year   = int(lines[3])
-			
-			self.Path	  = lines[4]
-			self.Filename  = lines[5]
-			self.Extension = lines[6]
-			
-			self.Plot	   = lines[7]
-			self.Runtime	= int(lines[8])
-			self.Popularity = int(lines[9])
-			
-			self.Genres = lines[10]
-			
+			if level >=3:
+				self.ImdbId = lines[0]
+				self.Title  = lines[1]
+				self.Tag    = lines[2]
+				self.Year   = int(lines[3])
+				self.Month  = int(lines[4])
+				self.Day    = int(lines[5])
+				
+				self.Path      = lines[6]
+				self.Filename  = lines[7]
+				self.Extension = lines[8]
+				
+				self.Plot       = lines[9]
+				self.Runtime    = int(lines[10])
+				self.Popularity = int(lines[11])
+				
+				self.Genres = lines[12]
+			else:
+				self.ImdbId = lines[0]
+				self.Title  = lines[1]
+				self.Tag    = lines[2]
+				self.Year   = int(lines[3])
+				
+				self.Path      = lines[4]
+				self.Filename  = lines[5]
+				self.Extension = lines[6]
+				
+				self.Plot       = lines[7]
+				self.Runtime    = int(lines[8])
+				self.Popularity = int(lines[9])
+				
+				self.Genres = lines[10]
+		
 		elif self.isSerie:
-			self.ImdbId	= lines[0]
-			self.TheTvDbId = lines[1]
-			self.Title	 = lines[2]
-			self.Tag	   = lines[3]
-			self.Year	  = int(lines[4])
-			
-			self.Plot	   = lines[5]
-			self.Runtime	= int(lines[6])
-			self.Popularity = int(lines[7])
-			
-			self.Genres = lines[8]
-			
+			if level >=3:
+				self.ImdbId    = lines[0]
+				self.TheTvDbId = lines[1]
+				self.Title     = lines[2]
+				self.Tag       = lines[3]
+				self.Year      = int(lines[4])
+				self.Month     = int(lines[5])
+				self.Day       = int(lines[6])
+				
+				self.Plot       = lines[7]
+				self.Runtime    = int(lines[8])
+				self.Popularity = int(lines[9])
+				
+				self.Genres = lines[10]
+			else:
+				self.ImdbId    = lines[0]
+				self.TheTvDbId = lines[1]
+				self.Title     = lines[2]
+				self.Tag       = lines[3]
+				self.Year      = int(lines[4])
+				
+				self.Plot       = lines[5]
+				self.Runtime    = int(lines[6])
+				self.Popularity = int(lines[7])
+				
+				self.Genres = lines[8]
+		
 		elif self.isEpisode:
-			self.TheTvDbId = lines[0]
-			self.Title	 = lines[1]
-			self.Year	  = int(lines[2])
-			
-			self.Path	  = lines[3]
-			self.Filename  = lines[4]
-			self.Extension = lines[5]
-			
-			self.Season	= int(lines[6])
-			self.Episode   = int(lines[7])
-			
-			self.Plot	   = lines[8]
-			self.Runtime	= int(lines[9])
-			self.Popularity = int(lines[10])
-			
-			self.Genres = lines[11]
+			if level >=3:
+				self.TheTvDbId = lines[0]
+				self.Title     = lines[1]
+				self.Year      = int(lines[2])
+				self.Month     = int(lines[3])
+				self.Day       = int(lines[4])
+				
+				self.Path      = lines[5]
+				self.Filename  = lines[6]
+				self.Extension = lines[7]
+				
+				self.Season    = int(lines[8])
+				self.Episode   = int(lines[9])
+				
+				self.Plot       = lines[10]
+				self.Runtime    = int(lines[11])
+				self.Popularity = int(lines[12])
+				
+				self.Genres = lines[13]
+			else:
+				self.TheTvDbId = lines[0]
+				self.Title     = lines[1]
+				self.Year      = int(lines[2])
+				
+				self.Path      = lines[3]
+				self.Filename  = lines[4]
+				self.Extension = lines[5]
+				
+				self.Season    = int(lines[6])
+				self.Episode   = int(lines[7])
+				
+				self.Plot       = lines[8]
+				self.Runtime    = int(lines[9])
+				self.Popularity = int(lines[10])
+				
+				self.Genres = lines[11]
 
 	def export(self):
 		stri = u'\n---BEGIN---'

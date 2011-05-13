@@ -563,13 +563,20 @@ class Database(object):
 				db = Utf8.Utf8(self.MOVIESTXD, "r").read()
 				if db is not None:
 					lines = db.split("\n")
-					version = lines[0]
+					version = int(lines[0])
 					linesLen = len(lines)
-					for i in range(1, linesLen, 11):
+					
+					size = 11
+					if version >= 3:
+						size = 13
+					else:
+						size = 11
+					
+					for i in range(1, linesLen, size):
 						if lines[i] == "EOF":
 							break
 						m = MediaInfo()
-						m.importDefined(lines[i:i+11], True, False, False)
+						m.importDefined(lines[i:i+size], version, True, False, False)
 						self.add(m)
 			except Exception, ex:
 				print ex
@@ -587,13 +594,20 @@ class Database(object):
 				db = Utf8.Utf8(self.TVSHOWSTXD, "r").read()
 				if db is not None:
 					lines = db.split("\n")
-					version = lines[0]
+					version = int(lines[0])
 					linesLen = len(lines)
-					for i in range(1, linesLen, 9):
+					
+					size = 9
+					if version >= 3:
+						size = 11
+					else:
+						size = 9
+					
+					for i in range(1, linesLen, size):
 						if lines[i] == "EOF":
 							break
 						m = MediaInfo()
-						m.importDefined(lines[i:i+9], False, True, False)
+						m.importDefined(lines[i:i+size], version, False, True, False)
 						self.add(m)
 			except Exception, ex:
 				print ex
@@ -611,13 +625,20 @@ class Database(object):
 					db = Utf8.Utf8(u"/hdd/valerie/episodes/" + key + u".txd", "r").read()
 					if db is not None:
 						lines = db.split("\n")
-						version = lines[0]
+						version = int(lines[0])
 						linesLen = len(lines)
-						for i in range(1, linesLen, 12):
+						
+						size = 12
+						if version >= 3:
+							size = 14
+						else:
+							size = 12
+						
+						for i in range(1, linesLen, size):
 							if lines[i] == "EOF":
 								break
 							m = MediaInfo()
-							m.importDefined(lines[i:i+12], False, False, True)
+							m.importDefined(lines[i:i+size], version, False, False, True)
 							self.add(m)
 			except Exception, ex:
 				print ex
