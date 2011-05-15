@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Project Valerie</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/static/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/datatable.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/themeroller.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="/web-data/image/x-icon" href="/static/img/favicon.ico">
+</head>
+
+<body>
+<script src="/static/js/jquery.js" type="text/javascript"></script> 
+<script src="/static/js/jquery.dataTables.min.js" type="text/javascript"></script> 
+<script src="/static/js/jquery.themeRoller.min.js" type="text/javascript"></script> 
+
+<script>
+$(document).ready(function(){
+	
+	var params = document.URL.split('?')[1].split('&');
+	if (params[0] == "done") {
+		window.alert("Succesfully saved data. Please note that the changes are not visible until you refresh the site!");
+		window.close();
+		return;
+	} else {
+		/* parse values from URL */
+		var type = decodeURI(params[0]);
+		var imdbid = decodeURI(params[1]);
+		var thetvdbid = decodeURI(params[2]);
+		var title = decodeURI(params[3]);
+		var season = decodeURI(params[4]);
+		var episode = decodeURI(params[5]);
+		var plot = decodeURI(params[6]);
+		var runtime = decodeURI(params[7]);
+		var year = decodeURI(params[8]);
+		var genres = decodeURI(params[9]);
+		var tag = decodeURI(params[10]);
+		var popularity = decodeURI(params[11]);
+		var directors = decodeURI(params[12]);
+		var writers = decodeURI(params[13]);
+		var path = decodeURI(params[14]);
+		var filename = decodeURI(params[15]);
+		var extension = decodeURI(params[16]);
+		
+		/* fill complete structure with data */
+		document.getElementById('type').value = type;
+		document.getElementById('imdbid').value = imdbid;
+		document.getElementById('thetvdbid').value = thetvdbid;
+		document.getElementById('title').value = title;
+		document.getElementById('season').value = season;
+		document.getElementById('episode').value = episode;
+		document.getElementById('plot').value = plot;
+		document.getElementById('runtime').value = runtime;
+		document.getElementById('year').value = year;
+		document.getElementById('genres').value = genres;
+		document.getElementById('tag').value = tag;
+		document.getElementById('popularity').value = popularity;
+		document.getElementById('directors').value = directors;
+		document.getElementById('writers').value = writers;
+		document.getElementById('path').value = path;
+		document.getElementById('filename').value = filename;
+		document.getElementById('extension').value = extension;
+		
+		/* modify tables corresponding to the type */
+		if (type == "movies") {
+			$('#tr_season').remove();
+			$('#tr_episode').remove();
+			$('#tr_thetvdbid').remove();
+			$('#tr_tag').remove();
+			
+			$('[name=what]').val("movies");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + imdbid + ".png");
+			
+		} else if (type == "tvshows") {
+			$('#tr_tag').remove();
+			$('#tr_season').remove();
+			$('#tr_episode').remove();
+			$('#tr_popularity').remove();
+			$('#tr_directors').remove();
+			$('#tr_runtime').remove();
+			$('#tr_writers').remove();
+			$('#tr_path').remove();
+			$('#tr_filename').remove();
+			$('#tr_extension').remove();
+			
+			$('[name=what]').val("tvshows");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
+			
+		} else if (type == "tvshowepisodes") {
+			$('#tr_popularity').remove();
+			$('#tr_directors').remove();
+			$('#tr_writers').remove();
+			$('#tr_path').remove();
+			$('#tr_filename').remove();
+			$('#tr_extension').remove();
+			
+			$('[name=what]').val("tvshowepisodes");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
+		
+		}
+	}
+});
+</script>
+<div id="container">
+
+	<div id="mainmenu">
+		<div id="banner"><img alt="Dreambox Web" src="/static/img/dreamboxweb.png"></div>
+		<ul>
+			<li><a href="javascript:window.close()">Close</a></li>
+		</ul>
+	</div>
+	
+	<div id="content">
+	<table align="center" id="main_table" width="100%">
+		<tr>
+		<td valign="top" align="center" style="background-color:#AAAAAA;">
+			<img id="duck_img" src="" width="78" height="107" alt="n/a"></img></td>
+		<td>
+			<table align="center" id="details_table">
+				<form action="/action" method="get">
+					<input type="hidden" name="type" value="edit">
+					<input type="hidden" name="what" value="">
+					<tr><td></td></tr>
+					<tr id="tr_type">
+						<td>Type:</td><td><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
+					<tr id="tr_imdbid">
+						<td>ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10"></input></td>
+						<td>(e.g. tt9000000)</td></tr>
+					<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="TheTvDbId" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
+					<tr id="tr_title"><td>Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
+					<tr id="tr_tag"><td>Tag:</td><td><input id="tag" name="Tag" type="text" size="50"></input></td><td>(e.g.my tag)</td></tr>
+					<tr id="tr_season"><td>Season:</td><td><input id="season" name="Season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>
+					<tr id="tr_episode"><td>Episode:</td><td><input id="episode" name="Episode" type="text" size="3" maxlength="3"></input></td><td>(e.g. 01)</td></tr>
+					<tr id="tr_plot"><td>Plot:</td><td><textarea id="plot" name="Plot" cols="50" rows="15"></textarea></td><td>(e.g. story description)</td></tr>
+					<tr id="tr_runtime"><td>Runtime:</td><td><input id="runtime" name="Runtime" type="text" size="50"></input></td><td>(e.g. 90)</td></tr>
+					<tr id="tr_year"><td>Year:</td><td><input id="year" name="Year" type="text" size="4" maxlength="4"></td><td></input>(e.g. 2011)</td></tr>
+					<tr id="tr_genres"><td>Genres:</td><td><input id="genres" name="Genres" type="text" size="50"></input></td><td>(e.g. Action|Thriller)</td></tr>
+					<tr id="tr_popularity"><td>Popularity:</td><td><input id="popularity" name="Popularity" type="text" size="50"></input></td><td>(e.g. 9)</td></tr>
+					<tr id="tr_directors"><td>Directors:</td><td><input id="directors" name="Directors" type="text" size="50"></input></td><td>(e.g. Mr. X)</td></tr>
+					<tr id="tr_writers"><td>Writers:</td><td><input id="writers" name="Writers" type="text" size="50"></input></td><td>(e.g. Mr. Y)</td></tr>
+					<tr id="tr_path"><td>Path:</td><td><input id="path" name="Path" type="text" size="50"></td><td></input>(e.g. /some/where/on/my/box/)</td></tr>
+					<tr id="tr_filename"><td>Filename:</td><td><input id="filename" name="Filename" type="text" size="35"></td><td></input>(e.g. my filename)</td></tr>
+					<tr id="tr_extension"><td>Extension:</td><td><input id="extension" name="Extension" type="text" size="4" maxlength="3"></td><td></input>(without leading . => e.g. mkv)</td></tr>
+							
+					<tr><td><input type="submit" value="Save"></input></td></tr>
+				</form>
+			</table>
+		</td></tr>
+	</table>
+	</div>
+</div>
+</body>
+</html>
