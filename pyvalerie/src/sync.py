@@ -209,8 +209,8 @@ class pyvalerie(Thread):
 		self.output(_("Loading Database"))
 		printl("Loading Database", self)
 		start_time = time.time()
-		db = Database()
-		db.reload()
+		db = Database().getInstance()
+		#db.reload()
 		db.clearFailed()
 		if self.mode != self.FAST and Config.getBoolean("delete") is True:
 			db.deleteMissingFiles()

@@ -16,18 +16,21 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
+gDatabase = None
+
 class Database(object):
 
-	def __init__(self):
-		self.dbMovies = {}
-		self.dbSeries = {}
-		self.dbEpisodes = {}
+	def getInstance(self):
+		printl("", self, "D")
+		global gDatabase
+		if gDatabase is None:
+			self.reload()
+			gDatabase = self
 		
-		self.dbFailed = []
-		
-		self.duplicateDetector = []
+		return gDatabase
 
 	def reload(self):
+		printl("", self, "D")
 		self.dbMovies = {}
 		self.dbSeries = {}
 		self.dbEpisodes = {}
@@ -438,30 +441,32 @@ class Database(object):
 		printl("Took (episodes.db): " + str(elapsed_time), self)
 
 	def load(self):
-		if os.path.isfile(self.FAILEDDB):
+		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
 			fd = open(self.FAILEDDB, "rb")
 			self.dbFailed = pickle.load(fd)
 			fd.close()
 		
-		try:
-			if os.path.isfile(self.MOVIESDB):
-				self.loadPickle(True, False) 
-			elif os.path.isfile(self.MOVIESTXD):
-				self.loadTxd(True, False) 
-			else:
-				self.loadTxt(True, False)
-		except Exception, ex:
-			printl("Loading movie db failed! Ex: " + str(ex), __name__, "E")
+		if len(self.dbMovies) == 0:
+			try:
+				if os.path.isfile(self.MOVIESDB):
+					self.loadPickle(True, False) 
+				elif os.path.isfile(self.MOVIESTXD):
+					self.loadTxd(True, False) 
+				else:
+					self.loadTxt(True, False)
+			except Exception, ex:
+				printl("Loading movie db failed! Ex: " + str(ex), __name__, "E")
 		
-		try:
-			if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
-				self.loadPickle(False, True) 
-			elif os.path.isfile(self.TVSHOWSTXD):
-				self.loadTxd(False, True) 
-			else:
-				self.loadTxt(False, True)
-		except Exception, ex:
-			printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
+		if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
+			try:
+				if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
+					self.loadPickle(False, True) 
+				elif os.path.isfile(self.TVSHOWSTXD):
+					self.loadTxd(False, True) 
+				else:
+					self.loadTxt(False, True)
+			except Exception, ex:
+				printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
 		
 		# FIX: GHOSTFILES
 		if self.dbEpisodes.has_key("0"):

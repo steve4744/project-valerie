@@ -26,8 +26,8 @@ class Manager(object):
 	def start(self):
 		printl("", self)
 		Config.load()
-		self.db = Database()
-		self.db.reload()
+		self.db = Database().getInstance()
+		#self.db.reload()
 		
 		replace.load()
 
