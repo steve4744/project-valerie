@@ -213,6 +213,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 			else:
 				size = 11
 			
+			tmpGenres = [] # for speedup search
+			
 			for i in range(1, linesLen, size):
 				if lines[i+0] == "EOF":
 					break
@@ -251,13 +253,19 @@ class PVMC_Movies(Screen, HelpableScreen):
 				d["OTitle"]    = ""
 				
 				for genre in d["Genres"].split("|"):
-					if len(genre) > 0 and (_(genre), genre) not in self.AvailableGenresList:
-						self.AvailableGenresList.append((_(genre), genre))
-				self.AvailableGenresList.sort()
-				self.AvailableGenresList.insert(0,(_("All"), "all"))
+					if len(genre) > 0 and (genre) not in tmpGenres:
+						tmpGenres.append( genre )
 				
 				#printl("Adding " + str(d["Title"]), self)
 				self.moviedb[d["ImdbId"]] = d
+		
+			self.AvailableGenresList = []
+			printl("genre copy " , self)
+			for genre in tmpGenres:
+				self.AvailableGenresList.append((_(genre), genre))
+			printl("genre sorting " , self)
+			self.AvailableGenresList.sort()
+			self.AvailableGenresList.insert(0,(_("All"), "all"))
 		
 		except OSError, ex: 
 			printl("OSError: " + str(ex), self)
