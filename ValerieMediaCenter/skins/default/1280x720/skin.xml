@@ -144,13 +144,13 @@
     <widget name="year" transparent="1" zPosition="5" halign="left" position="700,140" size="520,32" font="Modern;22" foregroundColor="#8BCAF6"/>
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="700,140" size="520,32" font="Modern;22" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="700,170" size="520,32" font="Modern;22" foregroundColor="#8BCAF6"/>
-    <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="700,210" size="520,390" font="Modern;22" foregroundColor="#FFFFFF" backgroundColor="#FF000000"/>         
+    <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="700,210" size="520,390" font="Modern;22" foregroundColor="#FFFFFF" backgroundColor="#FF000000"/>
 </screen>
 <!-- ProjectValerieMessageBoxPlot -->
-  <screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-	<widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
+<screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
+    <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png"/>
-	<eLabel position="88,62" size="1102,595" zPosition="1" backgroundColor="#20404040" transparent="0" />
+    <eLabel position="88,62" size="1102,595" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,75" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
     <widget name="text" position="106,150" size="1066,495" zPosition="6" backgroundColor="#10303030" transparent="0" font="Modern;20" />
     <widget name="ErrorPixmap" zPosition="5" pixmap="skin_default/icons/input_error.png" position="1079,75" size="94,66" alphatest="on" />

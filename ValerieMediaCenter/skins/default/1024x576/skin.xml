@@ -145,9 +145,9 @@
     <widget name="runtime" transparent="1" zPosition="5" halign="right" position="460,140" size="504,30" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="genre" transparent="1" zPosition="5" halign="left" position="460,165" size="504,30" font="Modern;20" foregroundColor="#8BCAF6"/>
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="460,190" size="504,300" font="Modern;20" foregroundColor="#FFFFFF"/>      
-  </screen>
-  <!-- PVMC_MessageBoxInfo -->
-  <screen name="PVMC_MessageBoxInfo" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
+</screen>
+<!-- PVMC_MessageBoxInfo -->
+<screen name="PVMC_MessageBoxInfo" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <eLabel position="71,50" size="881,476" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1024,576" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png"/>
@@ -157,7 +157,7 @@
     <widget name="QuestionPixmap" zPosition="5" pixmap="skin_default/icons/input_question.png" position="863,60" size="75,53" alphatest="on" />
     <widget name="InfoPixmap" zPosition="5" pixmap="skin_default/icons/input_info.png" position="863,60" size="75,53" alphatest="on" />
     <widget name="list" position="85,120" size="853,396" zPosition="5" backgroundColor="#10303030" transparent="0" />
-  </screen>
+</screen>
 <!-- SYNC -->
 <!-- ProjectValerieSync -->
 <screen name="ProjectValerieSync" position="center,center" size="1024,576" title=" " flags="wfNoBorder">
