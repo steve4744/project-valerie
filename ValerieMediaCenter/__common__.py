@@ -56,7 +56,8 @@ def printl2(string, parent=None, type="I"):
 	else:
 		print "[Valerie] " + str(type) + "  " + str(out)
 	now = datetime.datetime.now()
-	gLogFile.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "\n")
+	gLogFile.write("%02d:%02d:%02d.%07d " % (now.hour, now.minute, now.second, now.microsecond) + str(out) + "\n")
+	#gLogFile.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "\n")
 	#gLogFileHtml.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "<br />")
 	gLogFile.flush()
 	#gLogFileHtml.flush()

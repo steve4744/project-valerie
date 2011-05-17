@@ -27,6 +27,7 @@ from DMC_Player import PVMC_Player
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
 
+from DatabaseLayer import databaseLayer
 #------------------------------------------------------------------------------------------
 
 def localeInit():
@@ -127,26 +128,26 @@ class PVMC_Movies(Screen, HelpableScreen):
 				self.postersize = "_156x214"
 			elif dSize.width() == 1280 and dSize.height() == 720:
 				self.postersize = "_195x267"
-		
+
 		for i in range(10):
 			stars = "star" + str(i)
-			printl("stars: " + stars, self)
+			#printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 			if self[stars].instance is not None:
 				self[stars].instance.hide()
 
 		for i in range(10):
 			stars = "nostar" + str(i)
-			printl("stars: " + stars, self)
+			#printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 		
 		self.backdropquality = ""
 		if config.plugins.pvmc.backdropquality.value == "Low":
 			self.backdropquality = "_low"
 		
-		if os.path.exists(u"/hdd/valerie/movies.txd"):
-				self.USE_DB_VERSION = self.DB_TXD
-		
+		#if os.path.exists(u"/hdd/valerie/movies.txd"):
+		#		self.USE_DB_VERSION = self.DB_TXD
+				
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
 			{
 				"ok": (self.KeyOk, "Play selected file"),
@@ -164,7 +165,13 @@ class PVMC_Movies(Screen, HelpableScreen):
 				"menu": (self.KeyPlugins, "show Plugins"),
 			}, -2)
 		
-		self.loadMovies()
+		# Create Database Layer
+		self.db = databaseLayer()
+		self.moviedb = self.db.loadMovies()
+		#for counter in range (0, len(self.moviedb)):
+		#	printl("moviedb rec " + str(counter))
+		
+		self.reloadMovies()
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.refresh)
@@ -172,16 +179,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 	def setCustomTitle(self):
 		self.setTitle(_("movies"))
 
-	DB_TXT = 1
-	DB_TXD = 2
-	DB_PICKLE = 3
-	DB_SQLITE= 4
-	USE_DB_VERSION = DB_TXT
-
 	FAST_STILLPIC = False
 	
-	AvailableGenresList = []
-
 	def sortList(self,x, y):
 		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
 			return 1
@@ -189,91 +188,6 @@ class PVMC_Movies(Screen, HelpableScreen):
 			return 0
 		else: # x<y
 			return -1
-
-	def loadMovies(self):
-		if self.USE_DB_VERSION == self.DB_TXT:
-			pass
-		elif self.USE_DB_VERSION == self.DB_TXD:
-			self.loadMoviesTxd()
-
-	def loadMoviesTxd(self):
-		printl("->", self)
-		try:
-			self.serieslist=[]
-			db = open("/hdd/valerie/movies.txd").read()[:-1]
-			
-			lines = db.split("\n")
-			version = lines[0]
-			linesLen = len(lines)
-			printl("Lines: " + str(linesLen), self)
-			
-			size = 11
-			if int(version) >= 3:
-				size = 13
-			else:
-				size = 11
-			
-			tmpGenres = [] # for speedup search
-			
-			for i in range(1, linesLen, size):
-				if lines[i+0] == "EOF":
-					break
-				d = {} 
-				if int(version) >=3:
-					d["ImdbId"]     = lines[i+0]
-					d["Title"]      = lines[i+1]
-					d["Tag"]        = lines[i+2]
-					d["Year"]       = int(lines[i+3])
-					d["Month"]      = int(lines[i+4])
-					d["Day"]        = int(lines[i+5])
-					d["Path"]       = lines[i+6] + "/" + lines[i+7] + "." + lines[i+8]
-					d["Plot"]       = lines[i+9]
-					d["Runtime"]    = lines[i+10]
-					d["Popularity"] = lines[i+11]
-					d["Genres"]     = lines[i+12]
-				else:
-					d["ImdbId"]    = lines[i+0]
-					d["Title"]     = lines[i+1]
-					d["Tag"]       = lines[i+2]
-					d["Year"]      = int(lines[i+3])
-					d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
-					d["Plot"]       = lines[i+7]
-					d["Runtime"]    = lines[i+8]
-					d["Popularity"] = lines[i+9]
-					d["Genres"] = lines[i+10]
-				
-				try:
-					d["Creation"] = os.stat(d["Path"]).st_mtime
-				except:
-					d["Creation"] = 0
-				
-				# deprecated
-				d["Directors"] = ""
-				d["Writers"]   = ""
-				d["OTitle"]    = ""
-				
-				for genre in d["Genres"].split("|"):
-					if len(genre) > 0 and (genre) not in tmpGenres:
-						tmpGenres.append( genre )
-				
-				#printl("Adding " + str(d["Title"]), self)
-				self.moviedb[d["ImdbId"]] = d
-		
-			self.AvailableGenresList = []
-			printl("genre copy " , self)
-			for genre in tmpGenres:
-				self.AvailableGenresList.append((_(genre), genre))
-			printl("genre sorting " , self)
-			self.AvailableGenresList.sort()
-			self.AvailableGenresList.insert(0,(_("All"), "all"))
-		
-		except OSError, ex: 
-			printl("OSError: " + str(ex), self)
-		except IOError, ex: 
-			printl("IOError: " + str(ex), self)
-		
-		self.reloadMovies()
-		printl("<-", self)
 
 	def reloadMovies(self):
 		printl("->", self)
@@ -292,8 +206,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 		self.refresh()
 		printl("<-", self)
 
-	def getAvailGenres(self):
-		return self.AvailableGenresList
+	#def getAvailGenres(self):
+	#	return self.AvailableGenresList
 
 	def setText(self, name, value, ignore=False, what=None):
 		try:
@@ -500,8 +414,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 		self.session.nav.playService(None) 
 		self.refresh()
 
-	def KeyGenres(self):
-		menu = self.getAvailGenres()
+	def KeyGenres(self):		
+		menu = self.db.getAvailGenres()
 		self.session.openWithCallback(self.genresCallback, ChoiceBox, title=_("Select Category"), list = menu)
 
 	def genresCallback(self, choice):
