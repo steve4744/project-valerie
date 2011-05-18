@@ -43,13 +43,13 @@ class Action(Resource):
 	def action(self, request):
 		printl("request: " + str(request), self)
 		printl("request.args: " + str(request.args), self)
-		printl("request.args[type]: " + str(request.args["type"]), self)
+		printl("request.args[method]: " + str(request.args["method"]), self)
 		
-		# Here we can react to different request
-		# After a request has been processed we can display a request specific answer
-		# For example, after requesting alternatives for a move we should return them instead of the 
-		#  Refresh html page you see below as default answer
-		if request.args["type"][0] == "add":
+		##
+		# add section	
+		##
+		if request.args["method"][0] == "add":
+			# add movies
 			if request.args["what"][0] == "movies":
 				key_value_dict = {}
 				for key in request.args.keys():
@@ -61,13 +61,42 @@ class Action(Resource):
 				manager = Manager()
 				manager.start()
 				manager.addByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
-				manager.finish()
-				return self.redirect("/static/test.html")
+				return self.redirect("/static/edit.html?done")
+			
+			# add tvshows
+			elif request.args["what"][0] == "tvshows":
+				key_value_dict = {}
+				for key in request.args.keys():
+					key_value_dict[key] = request.args[key][0]
+				
+				primary_key = {}
+				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
+				
+				manager = Manager()
+				manager.start()
+				manager.addByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
+				return self.redirect("/static/edit.html?done")	
+			
+			# add tvshowepisodes
+			elif request.args["what"][0] == "tvshowepisodes":
+				key_value_dict = {}
+				for key in request.args.keys():
+					key_value_dict[key] = request.args[key][0]
+				
+				primary_key = {}
+				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
+				primary_key["season"] = request.args["season"][0]
+				primary_key["episode"] = request.args["episode"][0]
+				
+				manager = Manager()
+				manager.start()
+				manager.addByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
+				return self.redirect("/static/edit.html?done")
 		
 		##
 		# edit section	
 		##
-		elif request.args["type"][0] == "edit":
+		elif request.args["method"][0] == "edit":
 			# edit movies
 			if request.args["what"][0] == "movies":
 				key_value_dict = {}
@@ -80,7 +109,6 @@ class Action(Resource):
 				manager = Manager()
 				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
-				manager.finish()
 				return self.redirect("/static/edit.html?done")
 			
 			# edit tvshows
@@ -90,12 +118,11 @@ class Action(Resource):
 					key_value_dict[key] = request.args[key][0]
 				
 				primary_key = {}
-				primary_key["imdbid"] = request.args["imdbid"][0]
+				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
 				
 				manager = Manager()
 				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
-				manager.finish()
 				return self.redirect("/static/edit.html?done")
 			
 			# edit tvshowepisodes
@@ -105,18 +132,19 @@ class Action(Resource):
 					key_value_dict[key] = request.args[key][0]
 				
 				primary_key = {}
-				primary_key["imdbid"] = request.args["imdbid"][0]
+				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
+				primary_key["season"] = request.args["season"][0]
+				primary_key["episode"] = request.args["episode"][0]
 				
 				manager = Manager()
 				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
-				manager.finish()
 				return self.redirect("/static/edit.html?done")
 		
 		##
 		# delete section
 		##
-		elif request.args["type"][0] == "delete":
+		elif request.args["method"][0] == "delete":
 			if request.args["what"][0] == "movies":
 				primary_key = {}
 				primary_key["imdbid"] = request.args["imdbid"][0]
@@ -124,25 +152,24 @@ class Action(Resource):
 				manager = Manager()
 				manager.start()
 				manager.removeByUsingPrimaryKey(Manager.MOVIES, primary_key)
-				manager.finish()
+				#manager.finish()
 				return self.redirect("/static/edit.html?done")
 		
-		##
-		# alternatives section
-		##
-		#elif request.args["type"][0] == "alternatives":
-			#if request.args["what"][0] == "searchstring":
-				#searchstring["SearchString"] = request.args["what"][0]
-				#result = MobileImdbComProvider().getAlternatives(searchstring) #array => info.Searchstring
-				#return self.redirect("/static/edit.html?" + result)
 		
 		##
 		# save to db
 		##	
-		elif request.args["type"][0] == "save_changes_to_db":
+		elif request.args["method"][0] == "save_changes_to_db":
 			manager = Manager()
+			manager.start()
 			manager.finish()
-			return self.redirect("/static/edit.html?saved")
+			
+			if request.args["return_to"][0] == "movies":
+				return self.redirect("/movies")
+			elif request.args["return_to"][0] == "tvshows":
+				return self.redirect("/tvshows")
+			elif request.args["return_to"][0] == "tvshowepisodes":
+				return self.redirect("/tvshowepisodes")
 		
 	def redirect(self, url):
 		return """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -243,28 +270,40 @@ class Database(Resource):
 			entry.Plot = self.clean_strings(entry.Plot)
 			entry.Tag = self.clean_strings(entry.Tag)
 			
-			### <!-- build datastring for submiting -->
-			onclick_event = "javascript:window.open('/static/edit.html?"
-			onclick_event += str(self.type) + "&"
-			onclick_event += str(entry.ImdbId) + "&"
-			onclick_event += str(entry.TheTvDbId) + "&"
-			onclick_event += str(entry.Title) + "&"
-			onclick_event += str(entry.Season) + "&"
-			onclick_event += str(entry.Episode) + "&"
-			onclick_event += str(entry.Plot) + "&"
-			onclick_event += str(entry.Runtime) + "&"
-			onclick_event += str(entry.Year) + "&"
-			onclick_event += str(entry.Genres) + "&"
-			onclick_event += str(entry.Tag) + "&"
-			onclick_event += str(entry.Popularity) + "&"
-			onclick_event += str(entry.Directors) + "&"
-			onclick_event += str(entry.Writers) + "&"
-			onclick_event += str(entry.Path) + "&"
-			onclick_event += str(entry.Filename) + "&"
-			onclick_event += str(entry.Extension)
-			onclick_event += "');"
+			### <!-- build edit string -->
+			onclick_edit  = "javascript:$('#sm_save').show();window.open('/static/edit.html?"
+			onclick_edit  += str(self.type) + "&"
+			onclick_edit  += str(entry.ImdbId) + "&"
+			onclick_edit  += str(entry.TheTvDbId) + "&"
+			onclick_edit  += str(entry.Title) + "&"
+			onclick_edit  += str(entry.Season) + "&"
+			onclick_edit  += str(entry.Episode) + "&"
+			onclick_edit  += str(entry.Plot) + "&"
+			onclick_edit  += str(entry.Runtime) + "&"
+			onclick_edit  += str(entry.Year) + "&"
+			onclick_edit  += str(entry.Genres) + "&"
+			onclick_edit  += str(entry.Tag) + "&"
+			onclick_edit  += str(entry.Popularity) + "&"
+			onclick_edit  += str(entry.Path) + "&"
+			onclick_edit  += str(entry.Filename) + "&"
+			onclick_edit  += str(entry.Extension)
+			onclick_edit  += "');"
 				
-			printl("onclick_event= " + onclick_event, self)
+			printl("onclick_edit= " + onclick_edit, self)
+			
+			### <!-- build delete string -->
+			onclick_delete = "javascript:$('#sm_save').show();window.open('/action?method=delete&what="
+			onclick_delete  += str(self.type) + "&"
+			
+			if (self.type == 'movies'):
+				onclick_delete  += "imdbid=" + str(entry.ImdbId) + "&"
+			elif (self.type == 'tvshows'):
+				onclick_delete  += "thetvdbid=" + str(entry.TheTvDbId) + "&"
+			elif (self.type == 'tvshowepisodes'):
+				onclick_delete  += "thetvdbid=" +str(entry.TheTvDbId) + "&"
+			onclick_delete  += "');"
+				
+			printl("onclick_delete= " + onclick_delete, self)
 			
 			if self.type == "movies":
 				tbody += u"""      <tr>
@@ -273,9 +312,12 @@ class Database(Resource):
         <td>%d</td>
         <td>%s</td>
         <td>%s</td>
-        <td><a href="#" onclick="%s">edit</a></td>
+        <td>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/edit-grey.png" alt="edit" title="edit" /></a>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/delete-grey.png" alt="delete" title="delete" /></a>
+        </td>
       </tr>
-""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension, onclick_event)
+""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension, onclick_edit, onclick_delete)
 			elif self.type == "tvshows":
 				tbody += u"""      <tr>
         <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
@@ -284,9 +326,12 @@ class Database(Resource):
         <td>%s</td>
         <td><a href=http://thetvdb.com/index.php?tab=series&id=%s target="_blank">%s</a></td>
         <td>%s</td>
-        <td><a href="#" onclick="%s">edit</a></td>
+		<td>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/edit-grey.png" alt="edit" title="edit" /></a>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/delete-grey.png" alt="delete" title="delete" /></a>
+		</td>
       </tr>
-""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, onclick_event)
+""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, onclick_edit, onclick_delete)
 			elif self.type == "tvshowepisodes":
 				tbody += u"""      <tr>
         <td><img src=\"http://val.duckbox.info/convertImg/poster/%s.png\" width="78" height="107" alt="n/a"></img></td>
@@ -297,9 +342,12 @@ class Database(Resource):
         <td>%s</td>
         <td>%s</td>
         <td>%s</td>
-        <td><a href="#" onclick="%s">edit</a></td>
+		<td>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/edit-grey.png" alt="edit" title="edit" /></a>
+			<a href="#" onclick="%s"><img class="action_img" src="/static/img/delete-grey.png" alt="delete" title="delete" /></a>
+		</td>
       </tr>
-""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, onclick_event)
+""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, onclick_edit, onclick_delete)
 			elif self.type == "failed_all":
 				tbody += u"""      <tr>
         <td>%s</td>

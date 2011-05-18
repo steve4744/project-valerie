@@ -1,11 +1,9 @@
-<!--<div id="submenu">
-	<table align="center">
-		<form action="/action" method="get">
-		<input type="hidden" name="type" value="save_changes_to_db" />
-		<tr><td><input type="submit" value="Save to Database"></input></td></tr>
-		</form>
-	</table>
-</div> -->
+<div id="submenu">
+	<ul>
+		<li><a href="/static/edit.html?new_record" target="_blank" onclick="javascript:$('#sm_save').show();">Add new Record</a></li>
+		<li><a class="sm_save" id="sm_save" href="/action?method=save_changes_to_db&return_to=movies">Save to Database</a></li>
+	</ul>
+</div>
 <div id="content">
 
   <table id="main_table">

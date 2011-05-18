@@ -19,9 +19,31 @@ $(document).ready(function(){
 	
 	var params = document.URL.split('?')[1].split('&');
 	if (params[0] == "done") {
-		window.alert("Succesfully saved data. Please note that the changes are not visible until you refresh the site!");
+		window.alert("Changes has been sended. Please note that you have to save to database after finishing your changes!");
 		window.close();
 		return;
+	} else if (params[0] == "new_record") {
+		$('#type').remove();
+		$('#td_type').append('<select id="select_type"><option value="empty">---</option><option value="movies">Movie</option><option value="tvshows">Serie</option><option value="tvshowepisodes">Episode</option></select>');
+		$('[name=method]').val("add");
+		$('#imdbid').removeAttr("disabled"); 
+		$('#thetvdbid').removeAttr("disabled"); 
+		$('#select_type').change(function(){
+			var selected_type = $(this).find('option:selected').val();
+			$('[name=what]').val(selected_type);
+			if (selected_type == 'movies' || selected_type == 'tvshows') {
+				document.getElementById('season').value = -1;
+				$('#season').attr("disabled", true); 
+				document.getElementById('episode').value = -1;
+				$('#episode').attr("disabled", true); 
+		
+			} else if (selected_type == 'tvshowepisodes') {
+				document.getElementById('season').value = "";
+				$('#season').removeAttr("disabled"); 
+				document.getElementById('episode').value = "";
+				$('#episode').removeAttr("disabled"); 
+			}
+		});
 	} else {
 		/* parse values from URL */
 		var type = decodeURI(params[0]);
@@ -36,11 +58,9 @@ $(document).ready(function(){
 		var genres = decodeURI(params[9]);
 		var tag = decodeURI(params[10]);
 		var popularity = decodeURI(params[11]);
-		var directors = decodeURI(params[12]);
-		var writers = decodeURI(params[13]);
-		var path = decodeURI(params[14]);
-		var filename = decodeURI(params[15]);
-		var extension = decodeURI(params[16]);
+		var path = decodeURI(params[12]);
+		var filename = decodeURI(params[13]);
+		var extension = decodeURI(params[14]);
 		
 		/* fill complete structure with data */
 		document.getElementById('type').value = type;
@@ -55,8 +75,6 @@ $(document).ready(function(){
 		document.getElementById('genres').value = genres;
 		document.getElementById('tag').value = tag;
 		document.getElementById('popularity').value = popularity;
-		document.getElementById('directors').value = directors;
-		document.getElementById('writers').value = writers;
 		document.getElementById('path').value = path;
 		document.getElementById('filename').value = filename;
 		document.getElementById('extension').value = extension;
@@ -76,9 +94,7 @@ $(document).ready(function(){
 			$('#tr_season').remove();
 			$('#tr_episode').remove();
 			$('#tr_popularity').remove();
-			$('#tr_directors').remove();
 			$('#tr_runtime').remove();
-			$('#tr_writers').remove();
 			$('#tr_path').remove();
 			$('#tr_filename').remove();
 			$('#tr_extension').remove();
@@ -88,8 +104,6 @@ $(document).ready(function(){
 			
 		} else if (type == "tvshowepisodes") {
 			$('#tr_popularity').remove();
-			$('#tr_directors').remove();
-			$('#tr_writers').remove();
 			$('#tr_path').remove();
 			$('#tr_filename').remove();
 			$('#tr_extension').remove();
@@ -118,29 +132,24 @@ $(document).ready(function(){
 		<td>
 			<table align="center" id="details_table">
 				<form action="/action" method="get">
-					<input type="hidden" name="type" value="edit">
+					<input type="hidden" name="method" value="edit">
 					<input type="hidden" name="what" value="">
 					<tr><td></td></tr>
-					<tr id="tr_type">
-						<td>Type:</td><td><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
-					<tr id="tr_imdbid">
-						<td>ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10"></input></td>
-						<td>(e.g. tt9000000)</td></tr>
-					<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="TheTvDbId" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
-					<tr id="tr_title"><td>Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
+					<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
+					<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10" disabled="disabled"></input></td><td>(e.g. tt9000000)</td></tr>
+					<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="thetvdbid" type="text" size="10" disabled="disabled"></input></td><td>(e.g. 999999)</td></tr>
+					<tr id="tr_title"><td>*Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
 					<tr id="tr_tag"><td>Tag:</td><td><input id="tag" name="Tag" type="text" size="50"></input></td><td>(e.g.my tag)</td></tr>
-					<tr id="tr_season"><td>Season:</td><td><input id="season" name="Season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>
-					<tr id="tr_episode"><td>Episode:</td><td><input id="episode" name="Episode" type="text" size="3" maxlength="3"></input></td><td>(e.g. 01)</td></tr>
+					<tr id="tr_season"><td>Season:</td><td><input id="season" name="season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>
+					<tr id="tr_episode"><td>Episode:</td><td><input id="episode" name="episode" type="text" size="3" maxlength="3"></input></td><td>(e.g. 01)</td></tr>
 					<tr id="tr_plot"><td>Plot:</td><td><textarea id="plot" name="Plot" cols="50" rows="15"></textarea></td><td>(e.g. story description)</td></tr>
-					<tr id="tr_runtime"><td>Runtime:</td><td><input id="runtime" name="Runtime" type="text" size="50"></input></td><td>(e.g. 90)</td></tr>
-					<tr id="tr_year"><td>Year:</td><td><input id="year" name="Year" type="text" size="4" maxlength="4"></td><td></input>(e.g. 2011)</td></tr>
+					<tr id="tr_runtime"><td>*Runtime:</td><td><input id="runtime" name="Runtime" type="text" size="50"></input></td><td>(e.g. 90)</td></tr>
+					<tr id="tr_year"><td>*Year:</td><td><input id="year" name="Year" type="text" size="4" maxlength="4"></td><td></input>(e.g. 2011)</td></tr>
 					<tr id="tr_genres"><td>Genres:</td><td><input id="genres" name="Genres" type="text" size="50"></input></td><td>(e.g. Action|Thriller)</td></tr>
-					<tr id="tr_popularity"><td>Popularity:</td><td><input id="popularity" name="Popularity" type="text" size="50"></input></td><td>(e.g. 9)</td></tr>
-					<tr id="tr_directors"><td>Directors:</td><td><input id="directors" name="Directors" type="text" size="50"></input></td><td>(e.g. Mr. X)</td></tr>
-					<tr id="tr_writers"><td>Writers:</td><td><input id="writers" name="Writers" type="text" size="50"></input></td><td>(e.g. Mr. Y)</td></tr>
-					<tr id="tr_path"><td>Path:</td><td><input id="path" name="Path" type="text" size="50"></td><td></input>(e.g. /some/where/on/my/box/)</td></tr>
-					<tr id="tr_filename"><td>Filename:</td><td><input id="filename" name="Filename" type="text" size="35"></td><td></input>(e.g. my filename)</td></tr>
-					<tr id="tr_extension"><td>Extension:</td><td><input id="extension" name="Extension" type="text" size="4" maxlength="3"></td><td></input>(without leading . => e.g. mkv)</td></tr>
+					<tr id="tr_popularity"><td>*Popularity:</td><td><input id="popularity" name="Popularity" type="text" size="50"></input></td><td>(e.g. 9)</td></tr>
+					<tr id="tr_path"><td>*Path:</td><td><input id="path" name="Path" type="text" size="50"></td><td></input>(e.g. /some/where/on/my/box/)</td></tr>
+					<tr id="tr_filename"><td>*Filename:</td><td><input id="filename" name="Filename" type="text" size="35"></td><td></input>(e.g. my filename)</td></tr>
+					<tr id="tr_extension"><td>*Extension:</td><td><input id="extension" name="Extension" type="text" size="4" maxlength="3"></td><td></input>(without leading . => e.g. mkv)</td></tr>
 							
 					<tr><td><input type="submit" value="Save"></input></td></tr>
 				</form>

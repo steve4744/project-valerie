@@ -76,14 +76,12 @@ td {
     border: 2px solid #000000;
     border-radius: 5px 5px 5px 5px;
     margin-bottom: 8px;
-    padding-bottom: 1px;
-    padding-right: 3px;
     width: 1005px;
     min-height: 768px;
 }
 
 
-#mainmenu 
+#mainmenu
 ul {
 	background: none repeat scroll 0 0 #000000;
 	margin: 0 auto;
@@ -125,7 +123,46 @@ a:hover,a:active {
 	border-radius: 5px 5px 5px 5px;
 }
 
+#submenu
+ul {
+	background: none repeat scroll 0 0 #000000;
+	margin: 0 auto;
+	overflow: hidden;
+	padding: 0;
+	text-align: center;
+	display: inline;
+	float: left;
+}
 
+#submenu
+li {
+    background: none repeat scroll 0 0 #485052;
+	border-radius: 5px 5px 5px 5px;
+	float: left;
+	list-style: none outside none;
+	margin-bottom: 0;
+	margin-left: 2px;
+	margin-top: 6px;
+	padding: 0;
+	width: 130px;
+}
+#submenu
+a:link,a:visited {
+	display: block;
+	width: 120px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #98bfimport cgi21;
+	text-align: center;
+	padding: 4px;
+	text-decoration: none;
+}
+
+#submenu
+a:hover,a:active {
+	background: none repeat scroll 0 0 #AAAAAA;
+	border-radius: 5px 5px 5px 5px;
+}
 #entries {
 	margin: 0px;
 	padding: 0px;
@@ -171,4 +208,10 @@ tr:hover {
 	padding-top: 7px;
 }
 
+.action_img {
+	padding: 5px;	
+}
 
+.sm_save {
+	background-color: red;	
+}
