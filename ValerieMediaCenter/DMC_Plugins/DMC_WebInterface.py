@@ -267,8 +267,10 @@ class Database(Resource):
 		for entry in entries:
 			
 			### <!-- string cleanup -->
-			entry.Plot = self.clean_strings(entry.Plot)
-			entry.Tag = self.clean_strings(entry.Tag)
+			if entry.Plot is not None:
+				entry.Plot = self.clean_strings(entry.Plot)
+			if entry.Tag is not None:
+				entry.Tag = self.clean_strings(entry.Tag)
 			
 			### <!-- build edit string -->
 			onclick_edit  = "javascript:$('#sm_save').show();window.open('/static/edit.html?"
