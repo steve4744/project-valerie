@@ -210,6 +210,7 @@ class pyvalerie(Thread):
 		printl("Loading Database", self)
 		start_time = time.time()
 		db = Database().getInstance()
+		self.output(_("Using Database Type: " + db.getDBTypeText() ))
 		#db.reload()
 		db.clearFailed()
 		if self.mode != self.FAST and Config.getBoolean("delete") is True:

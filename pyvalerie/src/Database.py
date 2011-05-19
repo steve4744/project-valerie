@@ -14,16 +14,77 @@ import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
+from DatabaseHandler import databaseHandler
 #------------------------------------------------------------------------------------------
 
 gDatabase = None
 
 class Database(object):
+	FAILEDDB = "/hdd/valerie/failed.db"
+
+	MOVIESDB = "/hdd/valerie/movies.db"
+	TVSHOWSDB = "/hdd/valerie/tvshows.db"
+	EPISODESDB = "/hdd/valerie/episodes.db"
+
+	MOVIESTXD = "/hdd/valerie/movies.txd"
+	TVSHOWSTXD = "/hdd/valerie/tvshows.txd"
+
+	MOVIESTXT = "/hdd/valerie/moviedb.txt"
+	TVSHOWSTXT = "/hdd/valerie/seriesdb.txt"
+	
+	DB_TXT = 1
+	DB_TXD = 2
+	DB_PICKLE = 3
+	DB_SQLITE= 4
+	USE_DB_VERSION = DB_TXD
+
+	TXD_VERSION = 3
+
+	USE_DB_TYPE    = DB_TXD
+	# New Const's
+	DB_PATH           = "/hdd/valerie/"
+	DB_PATH_EPISODES  = "/hdd/valerie/episodes/"
+	DB_TXT_FILENAME_M = "movies.txt"
+	DB_TXT_FILENAME_S = "tvshows.txt"
+	DB_TXD_FILENAME_M = "movies.txd"
+	DB_TXD_FILENAME_S = "tvshows.txd"
+
+	def __init__(self):
+		printl("->", self)
+		self.db = databaseHandler().getInstance()
+		
+		if self.db.DB_SQLITE_LOADED:
+			self.setDBType(self.DB_SQLITE)
+		
+		elif os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
+			self.setDBType(self.DB_TXD)
+		
+		elif os.path.exists(self.DB_PATH + self.DB_TXT_FILENAME_M):
+			self.setDBType(self.DB_TXT)
+			#self.setDBVersion(DB_TXD)
+		# No exception if exists movies.txd and no tvshows.txd
+
+	def setDBType(self, version):
+	        self.USE_DB_TYPE = version
+	        printl("DB Type set to " + str(version), self)
+
+	def getDBTypeText(self):
+		if self.USE_DB_TYPE == self.DB_TXT:
+			return "TXT"
+		elif self.USE_DB_TYPE == self.DB_TXD:
+			return "TXD"
+		elif self.USE_DB_TYPE == self.DB_PICKLE:
+			return "Pickle"
+		elif self.USE_DB_TYPE == self.DB_SQLITE:
+			return "SQLite"
+		else:
+			return "No DB Type defined"
 
 	def getInstance(self):
 		printl("", self, "D")
 		global gDatabase
 		if gDatabase is None:
+			printl("New Instance", self)
 			self.reload()
 			gDatabase = self
 		
@@ -251,26 +312,6 @@ class Database(object):
 				unicode(epcount)
 		return Utf8.utf8ToLatin(rtv)
 
-	FAILEDDB = "/hdd/valerie/failed.db"
-
-	MOVIESDB = "/hdd/valerie/movies.db"
-	TVSHOWSDB = "/hdd/valerie/tvshows.db"
-	EPISODESDB = "/hdd/valerie/episodes.db"
-
-	MOVIESTXD = "/hdd/valerie/movies.txd"
-	TVSHOWSTXD = "/hdd/valerie/tvshows.txd"
-
-	MOVIESTXT = "/hdd/valerie/moviedb.txt"
-	TVSHOWSTXT = "/hdd/valerie/seriesdb.txt"
-	
-	DB_TXT = 1
-	DB_TXD = 2
-	DB_PICKLE = 3
-	DB_SQLITE= 4
-	USE_DB_VERSION = DB_TXD
-
-	TXD_VERSION = 3
-
 	def rmTxt(self):
 		try:
 			os.remove(self.MOVIESTXT)
@@ -295,13 +336,14 @@ class Database(object):
 		#elif self.USE_DB_VERSION == self.DB_PICKLE:
 		self.savePickel()
 		
-		if self.USE_DB_VERSION == self.DB_TXT:
+		if self.USE_DB_TYPE == self.DB_TXT:
 			self.saveTxt()
-		elif self.USE_DB_VERSION == self.DB_TXD:
+		elif self.USE_DB_TYPE == self.DB_TXD:
 			self.saveTxd()
 			self.rmTxt()
-		
-		
+		elif self.USE_DB_TYPE == self.DB_SQLITE:
+			self.saveTxd()
+			self.saveSql() 
 
 	def saveTxt(self):
 		start_time = time.time()	
@@ -439,6 +481,22 @@ class Database(object):
 		fd.close()
 		elapsed_time = time.time() - start_time
 		printl("Took (episodes.db): " + str(elapsed_time), self)
+
+	def saveSql(self):
+		# for moviesdb
+		#	insert on media
+		# for seriesdb
+		#	insert on media
+		#	insert on episodes
+		#
+		start_time = time.time()
+		
+		#
+		#  Code Removed to avoid version problems 
+		#
+		
+		elapsed_time = time.time() - start_time
+		printl("Took (SQL): " + str(elapsed_time), self)
 
 	def load(self):
 		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
