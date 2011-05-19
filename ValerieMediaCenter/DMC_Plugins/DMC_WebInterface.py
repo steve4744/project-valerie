@@ -267,9 +267,8 @@ class Database(Resource):
 		for entry in entries:
 			
 			### <!-- string cleanup -->
-			if entry.Plot is not None:
+			if type(entry) == MediaInfo:
 				entry.Plot = self.clean_strings(entry.Plot)
-			if entry.Tag is not None:
 				entry.Tag = self.clean_strings(entry.Tag)
 			
 			### <!-- build edit string -->
