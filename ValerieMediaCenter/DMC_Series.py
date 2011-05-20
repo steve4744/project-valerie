@@ -187,6 +187,8 @@ class PVMC_Series(Screen, HelpableScreen):
 		list =[]
 		entrys =[]
 		try:
+			inDebug = os.path.exists("/hdd/valerie/debug")
+
 			if self.inSeries:
 				self.serieslist = []
 				db = open("/hdd/valerie/tvshows.txd").read()[:-1]
@@ -198,6 +200,8 @@ class PVMC_Series(Screen, HelpableScreen):
 				lines = db.split("\n")
 				version = lines[0]
 				linesLen = len(lines)
+				printl("Db Version: " + version + " Lines: " + str(linesLen), self)
+
 			
 			if self.inSeries:
 				#self.moviedb.clear()
@@ -223,6 +227,16 @@ class PVMC_Series(Screen, HelpableScreen):
 					#print lines[i+0]
 					if lines[i+0] == "EOF":
 						break
+					# debug
+					if inDebug:
+						printl ("### Serie  " + str(i), self)
+						printl (str(lines[i+0]), self)
+						printl (str(lines[i+1]), self)
+						printl (str(lines[i+2]), self)
+						printl (str(lines[i+3]), self)
+						printl (str(lines[i+4]), self)
+						printl (str(lines[i+5]), self)
+
 					d = {} 
 					if int(version) >=3:
 						d["ImdbId"]     = lines[i+0]
@@ -260,16 +274,36 @@ class PVMC_Series(Screen, HelpableScreen):
 			elif self.inSeasons:
 				self.episodesdb.clear()
 				
-				size = 12
 				if int(version) >= 3:
 					size = 14
 				else:
 					size = 12
 				
+				# Test for db errors
+				if  (linesLen-2) % size != 0:
+				    printl("#"*30, self)
+				    printl("# ALERT - TXD Bad format (Seasons)", self)
+				    printl("#"*30, self)
+				    for i in range(1, linesLen, size):
+					if lines[i][:2] != "tt":
+					    printl ("# Possible error at line: " + str(i), self)
+					    break                                      
+				else:
+				    printl("DB (Seasons) OK", self)
+
 				for i in range(1, linesLen, size):
 					if lines[i+0] == "EOF":
 						break
-					d = {} 
+					d = {}
+					if inDebug:
+						printl ("### Season  " + str(i), self)
+						printl (str(lines[i+0]), self)
+						printl (str(lines[i+1]), self)
+						printl (str(lines[i+2]), self)
+						printl (str(lines[i+3]), self)
+						printl (str(lines[i+4]), self)
+						printl (str(lines[i+5]), self)
+
 					if int(version) >=3:
 						d["TheTvDb"]    = lines[i+0]
 						d["Title"]      = lines[i+1]
