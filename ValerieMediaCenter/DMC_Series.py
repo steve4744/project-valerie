@@ -202,12 +202,23 @@ class PVMC_Series(Screen, HelpableScreen):
 			if self.inSeries:
 				#self.moviedb.clear()
 				
-				size = 9
 				if int(version) >= 3:
 					size = 11
 				else:
 					size = 9
 				
+				# Test for db errors
+				if  (linesLen-2) % size != 0:
+				    printl("#"*30, self)
+				    printl("# ALERT - TXD Bad format", self)
+				    printl("#"*30, self)
+				    for i in range(1, linesLen, size):
+					if lines[i][:2] != "tt":
+					    printl ("# Possible error at line: " + str(i), self)
+					    break                                      
+				else:
+				    printl("DB OK", self)
+
 				for i in range(1, linesLen, size):
 					#print lines[i+0]
 					if lines[i+0] == "EOF":

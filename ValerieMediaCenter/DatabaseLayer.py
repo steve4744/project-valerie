@@ -89,13 +89,25 @@ class databaseLayer(object):
             lines = db.split("\n")
             version = lines[0]
             linesLen = len(lines)
-            #printl("Lines: " + str(linesLen), self)
+            printl("Lines: " + str(linesLen), self)
             
-            size = 11
             if int(version) >= 3:
                     size = 13
             else:
                     size = 11
+                    
+            # Test for db errors
+            if  (linesLen-2) % size != 0:
+                printl("#"*30, self)
+                printl("# ALERT - TXD Bad format", self)
+                printl("#"*30, self)
+                for i in range(1, linesLen, size):
+                    if lines[i][:2] != "tt":
+                        printl ("# Possible error at line: " + str(i), self)
+                        break                                      
+            else:
+                printl("DB OK", self)
+
             
             tmpGenres = [] # for speedup search
             
