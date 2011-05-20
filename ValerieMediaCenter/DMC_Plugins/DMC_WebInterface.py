@@ -21,6 +21,7 @@ try:
 	from twisted.web.resource import Resource
 	
 	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+	from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
 	from Plugins.Extensions.ProjectValerieSync.Utf8 import *
 	
 	import cgi
@@ -290,7 +291,7 @@ class Database(Resource):
 			onclick_edit  += str(entry.Extension)
 			onclick_edit  += "');"
 				
-			printl("onclick_edit= " + onclick_edit, self)
+			#printl("onclick_edit= " + onclick_edit, self)
 			
 			### <!-- build delete string -->
 			onclick_delete = "javascript:$('#sm_save').show();window.open('/action?method=delete&what="
@@ -304,7 +305,7 @@ class Database(Resource):
 				onclick_delete  += "thetvdbid=" +str(entry.TheTvDbId) + "&"
 			onclick_delete  += "');"
 				
-			printl("onclick_delete= " + onclick_delete, self)
+			#printl("onclick_delete= " + onclick_delete, self)
 			
 			if self.type == "movies":
 				tbody += u"""      <tr>
