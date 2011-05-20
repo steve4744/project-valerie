@@ -14,12 +14,19 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 
 from enigma import getDesktop
 import os
+import sys
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from __plugin__ import loadPlugins
 #from WebInterface import WebInterface
 
 printl("Init", "__init__::")
+
+# On Dreamboxes the default encoding should already be uft8
+# But on other boxes it may be latin-1 so set it here, and hopefully this will
+# not crash anything for those boxes
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
 
 # the currentVersion should be renewed every major update
 currentVersion          = "r001"
