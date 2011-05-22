@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*-
+
 import os
+
+from Components.config import config
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
+#------------------------------------------------------------------------------------------
+
 DB_SQLITE_LOADED = False
-DB_PATH           = "/hdd/valerie/"
+DB_PATH          = config.plugins.pvmc.configfolderpath.value
 
 if os.path.exists(DB_PATH + "usesql"):	
 	printl("easter egg found :)))")
@@ -14,9 +20,7 @@ if os.path.exists(DB_PATH + "usesql"):
 	except:
 		printl("Exception: No SQLite installed ??? : ")
 else:
-    printl("NO easter egg found :(( ... create a file named 'usesql' on " + DB_PATH )
-
-#------------------------------------------------------------------------------------------
+	printl("NO easter egg found :(( ... create a file named 'usesql' on " + DB_PATH )
 
 gConnection = None
 gDatabaseHandler = None
@@ -26,14 +30,13 @@ class databaseHandler(object):
 	DB_SQLITE_ACTIVE  = False
 	DB_SQLITE_LOADED  = False
 	DB_SQL_FILENAME   = "valerie.db"
-	DB_PATH           = "/hdd/valerie/"
+	DB_PATH           = config.plugins.pvmc.configfolderpath.value
 
 	def __init__(self):
 		printl("->", self)
 		self.DB_SQLITE_LOADED = DB_SQLITE_LOADED 
 		printl("<-", self)
-				    
-				    
+
 	def getInstance(self):
 		printl("", self, "D")
 		global gDatabaseHandler
@@ -59,12 +62,12 @@ class databaseHandler(object):
 					printl("[Project Valerie] Error: database file needs to be writable, can not open %s for writing..." % connectstring)
 					gConnection.close()
 					return None
-							
+		
 		except Exception, ex:
 			printl("[Project Valerie] unable to open database file: %s" % connectstring)
 			printl(str(ex))
 			return None
-
+		
 		if not db_exists :
 			#connection.execute('BEGIN TRANSACTION;')
 			gConnection.execute('CREATE TABLE IF NOT EXISTS Media    (Media_id INTEGER NOT NULL, Imdb_Id TEXT, thetvdb_id TEXT, Title TEXT, Tag TEXT, Plot TEXT, Runtime INTEGER, Popularity INTEGER, genre_id INTEGER, Year INTEGER, Month INTEGER, Day INTEGER, Path TEXT, Filename TEXT, Extension TEXT, MediaType INTEGER, PRIMARY KEY(Media_id));')
@@ -72,9 +75,9 @@ class databaseHandler(object):
 			#connection.execute('CREATE TABLE IF NOT EXISTS Genre (Genre_id INTEGER NOT NULL, genre_text TEXT, PRIMARY KEY(Genre_id));')
 			#connection.execute('CREATE TABLE IF NOT EXISTS Genre_Loc (Genre_id INTEGER NOT NULL, location TEXT NOT NULL, genre_text TEXT, PRIMARY KEY(Genre_id, location));')
 			#connection.execute('COMMIT;')
-
-			printl("Database created")
 			
+			printl("Database created")
+		
 		return gConnection
 
 	## executes the given statement with substitution variables
@@ -96,7 +99,7 @@ class databaseHandler(object):
 			except sql.IntegrityError, ex:
 				printl(str(ex))
 				return False
-
+			
 			#connection.close()
 
 	## executes the given statement with substitution variables
@@ -113,5 +116,3 @@ class databaseHandler(object):
 				printl(str(ex))
 				return False
 			#connection.close()
-
-

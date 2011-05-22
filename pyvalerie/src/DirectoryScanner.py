@@ -4,6 +4,8 @@ import cPickle as pickle
 import os
 import re
 
+from Components.config import config
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
@@ -15,7 +17,7 @@ class DirectoryScanner():
 	
 	folderList = {}
 	
-	FASTCRAWL_FILE = "/hdd/valerie/fastcrawl.bin"
+	FASTCRAWL_FILE = config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin"
 	isFastCrawlFileAvailable = False
 
 	def __init__(self):

@@ -263,17 +263,17 @@ class PVMC_MainMenu(Screen):
 			list = []
 			plugins = getPlugins(where=Plugin.MENU_PICTURES)
 			if plugins is not None and len(plugins) == 1:
-				list.append((_("Pictures"), plugins[0], "", "50"))
+				list.append((_("Pictures"), plugins[0], "menu_pictures", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Pictures >"), plugins, "", "50"))
+				list.append((_("Pictures >"), plugins, "menu_pictures", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_MUSIC)
 			if plugins is not None and len(plugins) == 1:
-				list.append((_("Music"), plugins[0], "", "50"))
+				list.append((_("Music"), plugins[0], "menu_music", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Music >"), plugins, "", "50"))
+				list.append((_("Music >"), plugins, "menu_music", "50"))
 			
-			list.append((_("Live TV"),  "InfoBar", "", "50"))
+			list.append((_("Live TV"),  "InfoBar", "menu_tv", "50"))
 			
 			if config.plugins.pvmc.showmovieandtvinmainmenu.value is True:
 				list.append((_("Movies"),   "PVMC_Movies","", "50"))
@@ -281,21 +281,21 @@ class PVMC_MainMenu(Screen):
 			
 			plugins = getPlugins(where=Plugin.MENU_VIDEOS)
 			if plugins is not None and len(plugins) == 1:
-				list.append((_("Videos"), plugins[0], "", "50"))
+				list.append((_("Videos"), plugins[0], "menu_videos", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Videos >"), plugins, "", "50"))
+				list.append((_("Videos >"), plugins, "menu_videos", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
 			if plugins is not None and len(plugins) == 1:
-				list.append((_("Programs"), plugins[0], "", "50"))
+				list.append((_("Programs"), plugins[0], "menu_programs", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Programs >"), plugins, "", "50"))
+				list.append((_("Programs >"), plugins, "menu_programs", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_SYSTEM)
 			if plugins is not None and len(plugins) == 1:
-				list.append((_("System"), plugins[0], "", "50"))
+				list.append((_("System"), plugins[0], "menu_system", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("System >"), plugins, "", "50"))
+				list.append((_("System >"), plugins, "menu_system", "50"))
 			
 			self["menu"] = List(list, True)
 			
@@ -363,8 +363,8 @@ class PVMC_MainMenu(Screen):
 		printl("->", self)
 		try:
 			import os
-			os.system("chmod 777 /hdd/valerie/start.sh")
-			os.system("/bin/sh /hdd/valerie/start.sh")
+			os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "start.sh")
+			os.system("/bin/sh " + config.plugins.pvmc.configfolderpath.value + "valerie/start.sh")
 		except Exception, e:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		

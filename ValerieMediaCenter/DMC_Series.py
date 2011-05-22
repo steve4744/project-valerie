@@ -145,7 +145,7 @@ class PVMC_Series(Screen, HelpableScreen):
 		if config.plugins.pvmc.backdropquality.value == "Low":
 			self.backdropquality = "_low"
 		
-		if os.path.exists(u"/hdd/valerie/tvshows.txd"):
+		if os.path.exists(config.plugins.pvmc.configfolderpath.value + u"tvshows.txd"):
 				self.USE_DB_VERSION = self.DB_TXD
 		
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
@@ -187,14 +187,14 @@ class PVMC_Series(Screen, HelpableScreen):
 		list =[]
 		entrys =[]
 		try:
-			inDebug = os.path.exists("/hdd/valerie/debug")
+			inDebug = os.path.exists(config.plugins.pvmc.configfolderpath.value + "debug")
 
 			if self.inSeries:
 				self.serieslist = []
-				db = open("/hdd/valerie/tvshows.txd").read()[:-1]
+				db = open(config.plugins.pvmc.configfolderpath.value + "tvshows.txd").read()[:-1]
 			elif self.inSeasons:
 				self.seasonlist = []
-				db = open("/hdd/valerie/episodes/" + self.selectedSeries + ".txd").read()[:-1]
+				db = open(config.plugins.pvmc.configfolderpath.value + "episodes/" + self.selectedSeries + ".txd").read()[:-1]
 			
 			if not self.inEpisode:
 				lines = db.split("\n")
@@ -393,21 +393,21 @@ class PVMC_Series(Screen, HelpableScreen):
 			if self.inSeries is True:
 				if self.ShowStillPicture is True:
 					if changeBackdrop is True:
-						if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-							self["backdrop"].setStillPicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
-						elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
-							self["backdrop"].setStillPicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
+						if os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+							self["backdrop"].setStillPicture(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+						elif os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+							self["backdrop"].setStillPicture(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
 						else:
 							self["backdrop"].setStillPictureToDefault()
 				
 				if self["poster"].instance is not None:
-					if os.access("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
-						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png")
+					if os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
+						self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster" + self.postersize + ".png")
 					#Fallback for old skins
-					elif len(self.postersize) == 0 and os.access("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png", os.F_OK):
-						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png")
+					elif len(self.postersize) == 0 and os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster_156x214.png", os.F_OK):
+						self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster_156x214.png")
 					else:
-						self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter" + self.postersize + ".png")
+						self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + "defaultposter" + self.postersize + ".png")
 				
 				self.setText("title", selection[0])
 				if self.APILevel == 1:

@@ -145,7 +145,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 		if config.plugins.pvmc.backdropquality.value == "Low":
 			self.backdropquality = "_low"
 		
-		#if os.path.exists(u"/hdd/valerie/movies.txd"):
+		#if os.path.exists(config.plugins.pvmc.configfolderpath.value + u"movies.txd"):
 		#		self.USE_DB_VERSION = self.DB_TXD
 				
 		self["actions"] = HelpableActionMap(self, "PVMC_AudioPlayerActions", 
@@ -230,21 +230,21 @@ class PVMC_Movies(Screen, HelpableScreen):
 		if selection is not None and type(selection) != bool:
 			if changeBackdrop is True:
 				if self.ShowStillPicture is True:
-					if os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
-						self["backdrop"].setStillPicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
-					elif os.access("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
-						self["backdrop"].setStillPicture("/hdd/valerie/media/" + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
+					if os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".m1v", os.F_OK):
+						self["backdrop"].setStillPicture(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".m1v")
+					elif os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".mvi", os.F_OK):
+						self["backdrop"].setStillPicture(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_backdrop" + self.backdropquality + ".mvi")
 					else:
 						self["backdrop"].setStillPictureToDefault()
 			
 			if self["poster"].instance is not None:
-				if os.access("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster" + self.postersize + ".png")
+				if os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster" + self.postersize + ".png", os.F_OK):
+					self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster" + self.postersize + ".png")
 				#Fallback for old skins
-				elif len(self.postersize) == 0 and os.access("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png", os.F_OK):
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + selection[1] + "_poster_156x214.png")
+				elif len(self.postersize) == 0 and os.access(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster_156x214.png", os.F_OK):
+					self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + selection[1] + "_poster_156x214.png")
 				else:
-					self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter" + self.postersize + ".png")
+					self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + "defaultposter" + self.postersize + ".png")
 			
 			self.setText("title", selection[0])
 			if self.APILevel == 1:

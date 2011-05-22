@@ -5,7 +5,10 @@ from   datetime import date
 import os
 import time
 
+from Components.config import config
+
 import Config
+from DatabaseHandler import databaseHandler
 import DirectoryScanner
 from   FailedEntry       import FailedEntry
 import Genres
@@ -14,23 +17,22 @@ import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
-from DatabaseHandler import databaseHandler
 #------------------------------------------------------------------------------------------
 
 gDatabase = None
 
 class Database(object):
-	FAILEDDB = "/hdd/valerie/failed.db"
+	FAILEDDB = config.plugins.pvmc.configfolderpath.value + "failed.db"
 
-	MOVIESDB = "/hdd/valerie/movies.db"
-	TVSHOWSDB = "/hdd/valerie/tvshows.db"
-	EPISODESDB = "/hdd/valerie/episodes.db"
+	MOVIESDB   = config.plugins.pvmc.configfolderpath.value + "movies.db"
+	TVSHOWSDB  = config.plugins.pvmc.configfolderpath.value + "tvshows.db"
+	EPISODESDB = config.plugins.pvmc.configfolderpath.value + "episodes.db"
 
-	MOVIESTXD = "/hdd/valerie/movies.txd"
-	TVSHOWSTXD = "/hdd/valerie/tvshows.txd"
+	MOVIESTXD  = config.plugins.pvmc.configfolderpath.value + "movies.txd"
+	TVSHOWSTXD = config.plugins.pvmc.configfolderpath.value + "tvshows.txd"
 
-	MOVIESTXT = "/hdd/valerie/moviedb.txt"
-	TVSHOWSTXT = "/hdd/valerie/seriesdb.txt"
+	MOVIESTXT  = config.plugins.pvmc.configfolderpath.value + "moviedb.txt"
+	TVSHOWSTXT = config.plugins.pvmc.configfolderpath.value + "seriesdb.txt"
 	
 	DB_TXT = 1
 	DB_TXD = 2
@@ -42,8 +44,8 @@ class Database(object):
 
 	USE_DB_TYPE    = DB_TXD
 	# New Const's
-	DB_PATH           = "/hdd/valerie/"
-	DB_PATH_EPISODES  = "/hdd/valerie/episodes/"
+	DB_PATH           = config.plugins.pvmc.configfolderpath.value
+	DB_PATH_EPISODES  = config.plugins.pvmc.configfolderpath.value + "episodes/"
 	DB_TXT_FILENAME_M = "movies.txt"
 	DB_TXT_FILENAME_S = "tvshows.txt"
 	DB_TXD_FILENAME_M = "movies.txd"
@@ -324,7 +326,7 @@ class Database(object):
 			
 		ds = DirectoryScanner.DirectoryScanner()
 		ds.clear()
-		ds.setDirectory("/hdd/valerie/episodes")
+		ds.setDirectory(config.plugins.pvmc.configfolderpath.value + "episodes")
 		filetypes = []
 		filetypes.append("txt")
 		ds.listDirectory(filetypes, None, 0)
@@ -347,7 +349,7 @@ class Database(object):
 
 	def saveTxt(self):
 		start_time = time.time()	
-		f = Utf8.Utf8(u"/hdd/valerie/moviedb.txt", 'w')
+		f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"moviedb.txt", 'w')
 		f.write(unicode(date.today()))
 		for key in self.dbMovies:
 			f.write(self.dbMovies[key].export())
@@ -357,7 +359,7 @@ class Database(object):
 		printl("Took (moviedb.txt): " + str(elapsed_time), self)
 		
 		start_time = time.time()	
-		f = Utf8.Utf8(u"/hdd/valerie/seriesdb.txt", 'w')
+		f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"seriesdb.txt", 'w')
 		f.write(unicode(date.today()))
 		for key in self.dbSeries:
 			if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
@@ -368,7 +370,7 @@ class Database(object):
 		
 		start_time = time.time()  
 		for serie in self.dbEpisodes:
-			f = Utf8.Utf8(u"/hdd/valerie/episodes/" + serie + u".txt", 'w')
+			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txt", 'w')
 			f.write(unicode(date.today()))
 			for season in self.dbEpisodes[serie]:
 				for episode in self.dbEpisodes[serie][season]:
@@ -402,7 +404,7 @@ class Database(object):
 		
 		start_time = time.time()  
 		for serie in self.dbEpisodes:
-			f = Utf8.Utf8(u"/hdd/valerie/episodes/" + serie + u".txd", 'w')
+			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
 			f.write(unicode(self.TXD_VERSION) + u"\n")
 			for season in self.dbEpisodes[serie]:
 				for episode in self.dbEpisodes[serie][season].values():
@@ -469,7 +471,7 @@ class Database(object):
 		
 		#start_time = time.time()
 		#for serie in self.dbEpisodes:
-		#	fd = open(u"/hdd/valerie/episodes/" + serie + u".db", "wb")
+		#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".db", "wb")
 		#	pickle.dump(self.dbEpisodes[serie], fd, pickle.HIGHEST_PROTOCOL)
 		#	fd.close()
 		#elapsed_time = time.time() - start_time
@@ -546,7 +548,7 @@ class Database(object):
 		if loadMovie:
 			start_time = time.time()
 			try:
-				db = Utf8.Utf8(u"/hdd/valerie/moviedb.txt", "r").read()
+				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"moviedb.txt", "r").read()
 				if db is not None:
 					movies = db.split("\n----END----\n")
 					for movie in movies:
@@ -569,7 +571,7 @@ class Database(object):
 		if loadTVShow:
 			start_time = time.time()
 			try:
-				db = Utf8.Utf8(u"/hdd/valerie/seriesdb.txt", "r").read()
+				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"seriesdb.txt", "r").read()
 				if db is not None:
 					movies = db.split(u"\n----END----\n")
 					for movie in movies:
@@ -590,7 +592,7 @@ class Database(object):
 			start_time = time.time()
 			try:	
 				for key in self.dbSeries:
-					db = Utf8.Utf8(u"/hdd/valerie/episodes/" + key + u".txt", "r").read()
+					db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txt", "r").read()
 					if db is not None:
 						movies = db.split("\n----END----\n")
 						for movie in movies:
@@ -685,7 +687,7 @@ class Database(object):
 			start_time = time.time()
 			try:	
 				for key in self.dbSeries:
-					db = Utf8.Utf8(u"/hdd/valerie/episodes/" + key + u".txd", "r").read()
+					db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txd", "r").read()
 					if db is not None:
 						lines = db.split("\n")
 						version = int(lines[0])
@@ -739,7 +741,7 @@ class Database(object):
 			#self.dbEpisodes = {}
 			#for key in self.dbSeries:
 			#	episode = {}
-			#	fd = open(u"/hdd/valerie/episodes/" + key + u".db", "wb")
+			#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".db", "wb")
 			#	self.dbEpisodes[key] = pickle.load(fd)
 			#	fd.close()
 			#elapsed_time = time.time() - start_time

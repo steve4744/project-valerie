@@ -403,7 +403,7 @@ def autostart(session):
 		root.putChild("static", File(utf8ToLatin(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/static"), defaultType="text/plain"))
 		
 		#Folder Lists
-		root.putChild("vlog", File('/tmp/valerie/log', defaultType="text/plain"))
+		root.putChild("vlog", File(config.plugins.pvmc.mediafolderpath.value + 'log', defaultType="text/plain"))
 		root.putChild("elog", File('/hdd/', defaultType="text/plain"))
 		
 		#Action pages

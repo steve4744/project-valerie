@@ -6,8 +6,9 @@ import sys
 from   threading import Thread
 import time
 
-from enigma import getDesktop
+from   enigma import getDesktop
 from   Components.Language import language
+from   Components.config import config
 import gettext
 from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
@@ -50,47 +51,39 @@ language.addCallback(localeInit)
 def checkDefaults():
 	
 	try:
-		printl("Check "+"/tmp/valerie", __name__)
-		os.makedirs("/tmp/valerie") 
+		printl("Check " + config.plugins.pvmc.tmpfolderpath.value, __name__)
+		os.makedirs(config.plugins.pvmc.tmpfolderpath.value) 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
 		printl("\t- Created", __name__)
 	try: 
-		printl("Check "+"/tmp/valerie/cache", __name__)
-		os.makedirs("/tmp/valerie/cache") 
-	except OSError, e:
-		printl("\t- OK", __name__)
-	else:
-		printl("\t- Created", __name__)
-	
-	try: 
-		printl("Check "+"/hdd/valerie", __name__)
-		os.makedirs("/hdd/valerie") 
+		printl("Check " + config.plugins.pvmc.tmpfolderpath.value + "cache", __name__)
+		os.makedirs(config.plugins.pvmc.tmpfolderpath.value + "cache") 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
 		printl("\t- Created", __name__)
 	
 	try: 
-		printl("Check "+"/hdd/valerie/dreamscene", __name__)
-		os.makedirs("/hdd/valerie/dreamscene") 
+		printl("Check " + config.plugins.pvmc.configfolderpath.value, __name__)
+		os.makedirs(config.plugins.pvmc.configfolderpath.value) 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
 		printl("\t- Created", __name__)
 	
 	try: 
-		printl("Check "+"/tmp/valerie/cache", __name__)
-		os.makedirs("/tmp/valerie/cache") 
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "dreamscene", __name__)
+		os.makedirs(config.plugins.pvmc.configfolderpath.value + "dreamscene") 
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
 		printl("\t- Created", __name__)
 	
 	try: 
-		printl("Check "+"/hdd/valerie/media", __name__)
-		os.makedirs("/hdd/valerie/media")
+		printl("Check " + config.plugins.pvmc.mediafolderpath.value, __name__)
+		os.makedirs(config.plugins.pvmc.mediafolderpath.value)
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
@@ -98,27 +91,27 @@ def checkDefaults():
 	
 	DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
 	
-	printl("Check "+"/hdd/valerie/media/*", __name__)
-	if os.access("/hdd/valerie/media/defaultbackdrop.m1v", os.F_OK) is False:
+	printl("Check " + config.plugins.pvmc.mediafolderpath.value + "*", __name__)
+	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultbackdrop.m1v", os.F_OK) is False:
 		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
 	
-	if os.access("/hdd/valerie/media/defaultposter.png", os.F_OK) is False:
+	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter.png", os.F_OK) is False:
 		printl("Check defaultposter.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
-	if os.access("/hdd/valerie/media/defaultposter_110x214.png", os.F_OK) is False:
+	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_110x214.png", os.F_OK) is False:
 		printl("Check defaultposter_110x214.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_110x214.png", "defaultposter_110x214.png")
-	if os.access("/hdd/valerie/media/defaultposter_156x214.png", os.F_OK) is False:
+	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_156x214.png", os.F_OK) is False:
 		printl("Check defaultposter_156x214.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_156x214.png", "defaultposter_156x214.png")
-	if os.access("/hdd/valerie/media/defaultposter_195x267.png", os.F_OK) is False:
+	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_195x267.png", os.F_OK) is False:
 		printl("Check defaultposter_195x267.png - Missing -> Downloading", __name__)
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_195x267.png", "defaultposter_195x267.png")
 	
 	try: 
-		printl("Check "+"/hdd/valerie/episodes", __name__)
-		os.makedirs("/hdd/valerie/episodes")
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "episodes", __name__)
+		os.makedirs(config.plugins.pvmc.configfolderpath.value + "episodes")
 	except OSError, e:
 		printl("\t- OK", __name__)
 	else:
@@ -127,10 +120,10 @@ def checkDefaults():
 	###
 	
 	try:
-		printl("Check "+"/hdd/valerie/valerie.conf", __name__)
-		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "valerie.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "valerie.conf") is False:
 			printl("Check valerie.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"valerie.conf", "/hdd/valerie/valerie.conf")
+			WebGrabber.getFile(DEFAULTURL+"valerie.conf", config.plugins.pvmc.configfolderpath.value + "valerie.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -138,10 +131,10 @@ def checkDefaults():
 		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		printl("Check "+"/hdd/valerie/pre.conf", __name__)
-		if os.path.isfile("/hdd/valerie/pre.conf") is False:
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "pre.conf") is False:
 			printl("Check pre.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"pre.conf", "/hdd/valerie/pre.conf")
+			WebGrabber.getFile(DEFAULTURL+"pre.conf", config.plugins.pvmc.configfolderpath.value + "pre.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -149,10 +142,10 @@ def checkDefaults():
 		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		printl("Check "+"/hdd/valerie/post_movie.conf", __name__)
-		if os.path.isfile("/hdd/valerie/post_movie.conf") is False:
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_movie.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "post_movie.conf") is False:
 			printl("Check post_movie.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", "/hdd/valerie/post_movie.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -160,10 +153,10 @@ def checkDefaults():
 		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		printl("Check "+"/hdd/valerie/post_tv.conf", __name__)
-		if os.path.isfile("/hdd/valerie/post_tv.conf") is False:
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_tv.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "post_tv.conf") is False:
 			printl("Check post_tv.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", "/hdd/valerie/post_tv.conf")
+			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -171,10 +164,10 @@ def checkDefaults():
 		printl("Exception: " + str(ex), __name__)
 	
 	try:
-		printl("Check "+"/hdd/valerie/paths.conf", __name__)
-		if os.path.isfile("/hdd/valerie/paths.conf") is False:
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "paths.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "paths.conf") is False:
 			printl("Check paths.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"paths.conf", "/hdd/valerie/paths.conf")
+			WebGrabber.getFile(DEFAULTURL+"paths.conf", config.plugins.pvmc.configfolderpath.value + "paths.conf")
 			printl("\t- Created", __name__)
 		else:
 			printl("\t- OK", __name__)
@@ -237,7 +230,7 @@ class pyvalerie(Thread):
 		self.output(_("Searching for media files"))
 		printl("Searching for media files", self)
 		start_time = time.time()
-		fconf = Utf8.Utf8("/hdd/valerie/paths.conf", "r")
+		fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
 		lines = fconf.read().split(u"\n")
 		fconf.close()
 		

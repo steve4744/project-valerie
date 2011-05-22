@@ -4,16 +4,18 @@ import datetime
 import os
 import sys
 
+from   Components.config import config
+
 #------------------------------------------------------------------------------------------
 
 gLogFile = None
 #gLogFileHtml = None
-baseDir = "/tmp/valerie"
-logDir = baseDir + "/log"
 
 def openLogFile():
 	global gLogFile
-#	global gLogFileHtml
+	baseDir = config.plugins.pvmc.tmpfolderpath.value
+	logDir = baseDir + "/log"
+	
 	now = datetime.datetime.now()
 	
 	try: 

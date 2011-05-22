@@ -10,6 +10,8 @@ import urllib2
 import urlparse
 import xml.dom.minidom as minidom
 
+from   Components.config import config
+
 from   HtmlEncoding import decode_htmlentities
 import Utf8
 
@@ -17,9 +19,9 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
-baseDir = "/tmp/valerie"
+baseDir = config.plugins.pvmc.tmpfolderpath.value
 cacheDir = baseDir + "/cache"
-downloadDir = "/hdd/valerie/media"
+downloadDir = config.plugins.pvmc.mediafolderpath.value
 
 RETRIES = 5
 

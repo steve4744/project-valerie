@@ -170,7 +170,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			self.skin = self.skinDeprecated
 		
 		self.pathsList = []
-		fconf = open("/hdd/valerie/paths.conf", "r")
+		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
 		self.filetypes = fconf.readline().strip()
 		printl("self.filetypes: " + str(self.filetypes), self)
 		for path in fconf.readlines(): 
@@ -241,7 +241,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 
 	def save(self):
 		printl("", self)
-		fconf = open("/hdd/valerie/paths.conf", "w")
+		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "w")
 		fconf.write(self.filetypes + "\n")
 		for entry in self.pathsList:
 			fconf.write(entry[1] + "|" + entry[2] + "\n")
@@ -310,7 +310,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		try:
 			defaultLang = "en"
 			defaultDelete = False
-			fconf = open("/hdd/valerie/valerie.conf", "r")
+			fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "r")
 			for path in fconf.readlines(): 
 				path = path.strip()
 				p = path.split('=')
@@ -346,7 +346,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		printl("self.deleteIfNotFound.value: " + str(self.deleteIfNotFound.value), self)
 		
 		conf = []
-		fconf = open("/hdd/valerie/valerie.conf", "r")
+		fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "r")
 		for path in fconf.readlines(): 
 			path = path.strip()
 			p = path.split('=')
@@ -355,7 +355,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 				conf.append(path)
 		fconf.close()
 		
-		fconf = open("/hdd/valerie/valerie.conf", "w")
+		fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "w")
 		for entry in conf:
 			fconf.write(entry + "\n")
 		fconf.write("local=" + self.local.value + "\n")
@@ -426,23 +426,23 @@ class ProjectValerieSyncSettings(Screen):
 			elif returnValue == "confSettings":
 				self.session.open(ProjectValerieSyncSettingsConfSettings, self)
 			elif returnValue == "clearCache":
-				self.removeDir("/hdd/valerie/cache")
+				self.removeDir(config.plugins.pvmc.tmpfolderpath.value + "cache")
 			elif returnValue == "delArts":
-				self.removeDir("/hdd/valerie/media")
+				self.removeDir(config.plugins.pvmc.mediafolderpath.value)
 			elif returnValue == "delDb":
-				self.remove("/hdd/valerie/moviedb.txt")
-				self.remove("/hdd/valerie/movies.txd")
-				self.remove("/hdd/valerie/movies.db")
-				self.remove("/hdd/valerie/seriesdb.txt")
-				self.remove("/hdd/valerie/tvshows.txd")
-				self.remove("/hdd/valerie/tvshows.db")
-				self.removeDir("/hdd/valerie/episodes")
-				self.remove("/hdd/valerie/episodes.db")
-				self.remove("/hdd/valerie/fastcrawl.bin")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "moviedb.txt")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "movies.txd")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "movies.db")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "seriesdb.txt")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.txd")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.db")
+				self.removeDir(config.plugins.pvmc.configfolderpath.value + "episodes")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "episodes.db")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin")
 			elif returnValue == "resetFl":
-				self.remove("/hdd/valerie/pre.conf")
-				self.remove("/hdd/valerie/post_movie.conf")
-				self.remove("/hdd/valerie/post_tv.conf")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "pre.conf")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
+				self.remove(config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
 			elif returnValue == "exit":
 				self.cancel()
 
@@ -1170,10 +1170,10 @@ class ProjectValerieSync(Screen):
 		self["progress"].range = (0, value)
 
 	def setPoster(self, poster):
-		if poster is not None and len(poster) > 0 and os.access("/hdd/valerie/media/" + poster, os.F_OK) is True:
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/" + poster)
+		if poster is not None and len(poster) > 0 and os.access(config.plugins.pvmc.mediafolderpath.value + poster, os.F_OK) is True:
+			self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + poster)
 		else:
-			self["poster"].instance.setPixmapFromFile("/hdd/valerie/media/defaultposter.png")
+			self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + "defaultposter.png")
 
 	def setName(self, name):
 		if name is not None and len(name) > 0:

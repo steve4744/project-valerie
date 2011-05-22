@@ -2,6 +2,8 @@
 
 import os
 
+from Components.config import config
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
@@ -11,9 +13,9 @@ conf = {}
 def load():
 	# Check default config
 	try:
-		printl("Check "+"/hdd/valerie/valerie.conf", __name__)
-		if os.path.isfile("/hdd/valerie/valerie.conf") is False:
-			f = open("/hdd/valerie/valerie.conf", "w")
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "valerie.conf", __name__)
+		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "valerie.conf") is False:
+			f = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "w")
 			f.write("local=en\n")
 			f.write("delete=true\n")
 			f.close()
@@ -23,7 +25,7 @@ def load():
 	except Exception, ex:
 		printl("Exception: " + str(ex), __name__)
 	
-	f = open("/hdd/valerie/valerie.conf", "r")
+	f = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "r")
 	for line in f.readlines():
 		key,value = line.split("=")
 		conf[key] = value

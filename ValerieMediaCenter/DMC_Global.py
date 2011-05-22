@@ -148,15 +148,15 @@ class E2Control():
 		printl("->", self)
 		
 		try:
-			makedirs("/hdd/valerie")
+			makedirs(config.plugins.pvmc.configfolderpath.value)
 		except OSError, ex: 
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		try:
-			makedirs("/hdd/valerie/episodes")
+			makedirs(config.plugins.pvmc.configfolderpath.value + "episodes")
 		except OSError, ex: 
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		try:
-			makedirs("/hdd/valerie/media")
+			makedirs(config.plugins.pvmc.mediafolderpath.value)
 		except OSError, ex: 
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		

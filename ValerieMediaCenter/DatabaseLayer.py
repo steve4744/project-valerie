@@ -6,10 +6,14 @@
 import os
 import time
 
+from Components.config import config
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #from db_handler import db_handler
 #from sqlite3 import dbapi2 as sqlite 
+
+#------------------------------------------------------------------------------------------
 
 class databaseLayer(object):
     DB_TXT    = 1
@@ -20,7 +24,7 @@ class databaseLayer(object):
     USE_DB_TYPE    = DB_TXT
     #USE_DB_VERSION = 0
     
-    DB_PATH = "/hdd/valerie/"
+    DB_PATH = config.plugins.pvmc.configfolderpath.value
     DB_TXT_FILENAME_M = "movies.txt"
     DB_TXT_FILENAME_S = ".txt"
     DB_TXD_FILENAME_M = "movies.txd"
