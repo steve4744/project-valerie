@@ -17,7 +17,13 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 ## WORKAROUND
 
 class MediaInfo(object):
+	REC_NEW 	= 1
+	REC_UPDATED 	= 2 
+	REC_IN_DB	= 3
 
+	RecordStatus = REC_NEW  
+	
+	Id = None	# for Sql
 	isMovie   = False
 	isSerie   = False
 	isEpisode = False

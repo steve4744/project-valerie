@@ -8,7 +8,6 @@ import time
 from Components.config import config
 
 import Config
-from DatabaseHandler import databaseHandler
 import DirectoryScanner
 from   FailedEntry       import FailedEntry
 import Genres
@@ -53,12 +52,13 @@ class Database(object):
 
 	def __init__(self):
 		printl("->", self)
-		self.db = databaseHandler().getInstance()
+		#self.db = databaseHandler().getInstance()
 		
-		if self.db.DB_SQLITE_LOADED:
-			self.setDBType(self.DB_SQLITE)
+		#if self.db.DB_SQLITE_LOADED:
+		#	self.setDBType(self.DB_SQLITE)
 		
-		elif os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
+		#el
+                if os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
 			self.setDBType(self.DB_TXD)
 		
 		elif os.path.exists(self.DB_PATH + self.DB_TXT_FILENAME_M):
