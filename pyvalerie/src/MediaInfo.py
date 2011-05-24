@@ -18,12 +18,14 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 class MediaInfo(object):
 	REC_NEW 	= 1
-	REC_UPDATED 	= 2 
-	REC_IN_DB	= 3
+	REC_CHANGED 	= 2 
+	REC_FROM_DB	= 3
 
 	RecordStatus = REC_NEW  
 	
-	Id = None	# for Sql
+	Id = None	# for Sql - Primary Key
+			# in TXD initialized with:
+			#    dbMovies:ImdbID   dbSeries/dbEpisodes:TheTvdbId
 	isMovie   = False
 	isSerie   = False
 	isEpisode = False
@@ -94,6 +96,7 @@ class MediaInfo(object):
 			m.Popularity   = self.Popularity
 			m.Plot         = self.Plot
 			
+			m.Id           = self.Id
 			m.ImdbId       = self.ImdbId
 			m.TheTvDbId    = self.TheTvDbId
 			m.Title        = self.Title
@@ -680,6 +683,7 @@ class MediaInfo(object):
 			
 			if self.isMovie:
 				if level >=3:
+					self.Id     = lines[0]
 					self.ImdbId = lines[0]
 					self.Title  = lines[1]
 					self.Tag    = lines[2]
@@ -697,6 +701,7 @@ class MediaInfo(object):
 					
 					self.Genres = lines[12]
 				else:
+					self.Id     = lines[0]
 					self.ImdbId = lines[0]
 					self.Title  = lines[1]
 					self.Tag    = lines[2]
@@ -714,6 +719,7 @@ class MediaInfo(object):
 			
 			elif self.isSerie:
 				if level >=3:
+					self.Id        = lines[1]
 					self.ImdbId    = lines[0]
 					self.TheTvDbId = lines[1]
 					self.Title     = lines[2]
@@ -728,6 +734,7 @@ class MediaInfo(object):
 					
 					self.Genres = lines[10]
 				else:
+					self.Id        = lines[1]
 					self.ImdbId    = lines[0]
 					self.TheTvDbId = lines[1]
 					self.Title     = lines[2]
@@ -742,6 +749,7 @@ class MediaInfo(object):
 			
 			elif self.isEpisode:
 				if level >=3:
+					self.Id        = lines[0]
 					self.TheTvDbId = lines[0]
 					self.Title     = lines[1]
 					self.Year      = int(lines[2])
@@ -761,6 +769,7 @@ class MediaInfo(object):
 					
 					self.Genres = lines[13]
 				else:
+					self.Id        = lines[0]
 					self.TheTvDbId = lines[0]
 					self.Title     = lines[1]
 					self.Year      = int(lines[2])

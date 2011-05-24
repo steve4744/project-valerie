@@ -10,6 +10,7 @@ from   Components.config import config
 
 gLogFile = None
 #gLogFileHtml = None
+gInDebug = None
 
 def openLogFile():
 	global gLogFile
@@ -36,6 +37,15 @@ def printl2(string, parent=None, type="I"):
 	#global gLogFileHtml
 	if gLogFile is None:
 		openLogFile()
+	# Only register message of type "D" if debug active
+	global gInDebug 
+	if gInDebug is None:
+		#gInDebug = os.path.exists(config.plugins.pvmc.configfolderpath.value + "debug")
+		gInDebug = True
+		
+	if type == "D" and not gInDebug:
+		return
+
 	out = ""
 	if parent is None:
 		out = str(string)

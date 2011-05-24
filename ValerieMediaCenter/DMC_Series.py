@@ -187,8 +187,6 @@ class PVMC_Series(Screen, HelpableScreen):
 		list =[]
 		entrys =[]
 		try:
-			inDebug = os.path.exists(config.plugins.pvmc.configfolderpath.value + "debug")
-
 			if self.inSeries:
 				self.serieslist = []
 				db = open(config.plugins.pvmc.configfolderpath.value + "tvshows.txd").read()[:-1]
@@ -228,14 +226,12 @@ class PVMC_Series(Screen, HelpableScreen):
 					if lines[i+0] == "EOF":
 						break
 					# debug
-					if inDebug:
-						printl ("### Serie  " + str(i), self)
-						printl (str(lines[i+0]), self)
-						printl (str(lines[i+1]), self)
-						printl (str(lines[i+2]), self)
-						printl (str(lines[i+3]), self)
-						printl (str(lines[i+4]), self)
-						printl (str(lines[i+5]), self)
+					printl ("### Serie  " + str(i), self, "D")
+					printl (str(lines[i+0]), self, "D")
+					printl (str(lines[i+1]), self, "D")
+					printl (str(lines[i+2]), self, "D")
+					printl (str(lines[i+3]), self, "D")
+					printl (str(lines[i+4]), self, "D")
 
 					d = {} 
 					if int(version) >=3:
@@ -295,14 +291,13 @@ class PVMC_Series(Screen, HelpableScreen):
 					if lines[i+0] == "EOF":
 						break
 					d = {}
-					if inDebug:
-						printl ("### Season  " + str(i), self)
-						printl (str(lines[i+0]), self)
-						printl (str(lines[i+1]), self)
-						printl (str(lines[i+2]), self)
-						printl (str(lines[i+3]), self)
-						printl (str(lines[i+4]), self)
-						printl (str(lines[i+5]), self)
+
+					printl ("### Season  " + str(i), self, "D")
+					printl (str(lines[i+0]), self, "D")
+					printl (str(lines[i+1]), self, "D")
+					printl (str(lines[i+2]), self, "D")
+					printl (str(lines[i+3]), self, "D")
+					printl (str(lines[i+4]), self, "D")
 
 					if int(version) >=3:
 						d["TheTvDb"]    = lines[i+0]

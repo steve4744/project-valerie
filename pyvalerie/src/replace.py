@@ -69,7 +69,7 @@ def load():
 				if len(keys) == 2:
 					keys[0] = keys[0].strip().strip('[\'\"]')
 					keys[1] = keys[1].strip().strip('[\'\"]')
-					printl("[" + str(rf) + "] " + str(keys[0]) + " --> " + str(keys[1]), __name__)
+					printl("[" + str(rf) + "] " + str(keys[0]) + " --> " + str(keys[1]), __name__, "D")
 					replacementsList[rf].append([re.compile(keys[0]),keys[1]])
 					#replacementsList[rf].append([keys[0],keys[1]])
 			f.flush()
