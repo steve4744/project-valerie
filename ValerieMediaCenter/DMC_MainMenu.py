@@ -364,7 +364,7 @@ class PVMC_MainMenu(Screen):
 		try:
 			import os
 			os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "start.sh")
-			os.system("/bin/sh " + config.plugins.pvmc.configfolderpath.value + "valerie/start.sh")
+			os.system("/bin/sh " + config.plugins.pvmc.configfolderpath.value + "start.sh")
 		except Exception, e:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
