@@ -103,10 +103,6 @@ $(document).ready(function(){
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
 			
 		} else if (type == "tvshowepisodes") {
-			$('#tr_popularity').remove();
-			$('#tr_path').remove();
-			$('#tr_filename').remove();
-			$('#tr_extension').remove();
 			
 			$('[name=what]').val("tvshowepisodes");
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
@@ -136,8 +132,8 @@ $(document).ready(function(){
 					<input type="hidden" name="what" value="">
 					<tr><td></td></tr>
 					<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
-					<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10" disabled="disabled"></input></td><td>(e.g. tt9000000)</td></tr>
-					<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="thetvdbid" type="text" size="10" disabled="disabled"></input></td><td>(e.g. 999999)</td></tr>
+					<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
+					<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="thetvdbid" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
 					<tr id="tr_title"><td>*Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
 					<tr id="tr_tag"><td>Tag:</td><td><input id="tag" name="Tag" type="text" size="50"></input></td><td>(e.g.my tag)</td></tr>
 					<tr id="tr_season"><td>Season:</td><td><input id="season" name="season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>

@@ -386,6 +386,7 @@ class Database(Resource):
 	def clean_strings(self, string):
 		string = string.replace("'","")
 		string = string.replace('"','')
+		string = string.replace('?','')
 		return string
 
 def autostart(session):
