@@ -10,6 +10,8 @@ from   sync import Sync
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
+import os
+#from PVS_DatabaseLayer import DatabaseLayer as databaseLayer 
 #------------------------------------------------------------------------------------------
 
 class Manager(object):
@@ -26,7 +28,15 @@ class Manager(object):
 	def start(self):
 		printl("", self)
 		Config.load()
+		
+		# temporary - to use another unit if SQL in use
+		#if os.path.exists("/hdd/valerie/"+ "usesql"):	
+		#	self.db = databaseLayer().getInstance()			
+		#	self.db.clearMemory()
+		#	self.db.load()
+		#else:
 		self.db = Database().getInstance()
+
 		#self.db.reload()
 		
 		replace.load()
@@ -45,8 +55,9 @@ class Manager(object):
 			list = []
 			if param is not None:
 				serie = param
-				for season in self.db.dbEpisodes[serie]:
-					list += self.db.dbEpisodes[serie][season].values()
+				if self.db.dbEpisodes.has_key(serie):
+					for season in self.db.dbEpisodes[serie]:
+						list += self.db.dbEpisodes[serie][season].values()
 			else:
 				for serie in self.db.dbEpisodes:
 					for season in self.db.dbEpisodes[serie]:

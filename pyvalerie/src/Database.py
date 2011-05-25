@@ -228,24 +228,28 @@ class Database(object):
 	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
 		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
 		if media.isMovie or isMovie:
-			if self.dbMovies.has_key(media.ImdbId) is True:
-				del(self.dbMovies[media.ImdbId])
+			movieKey = media.Id	# media.ImdbId
+			if self.dbMovies.has_key(movieKey) is True:
+				del(self.dbMovies[movieKey])
 				return True
 		if media.isSerie or isSerie:
-			if self.dbSeries.has_key(media.TheTvDbId) is True:
-				del(self.dbSeries[media.TheTvDbId])
+			serieKey = media.Id	# media.TheTvDbId
+			if self.dbSeries.has_key(serieKey) is True:
+				del(self.dbSeries[serieKey])
 				return True
 		if media.isEpisode or isEpisode:
-			if self.dbEpisodes.has_key(media.TheTvDbId) is True:
-				if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is True:
-					if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is True:
-						del(self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode])
-						if len(self.dbEpisodes[media.TheTvDbId][media.Season]) == 0:
+			episodeKey = media.Id	# media.TheTvDbId
+			serieKey   = media.Id	# media.TheTvDbId
+			if self.dbEpisodes.has_key(episodeKey) is True:
+				if self.dbEpisodes[episodeKey].has_key(media.Season) is True:
+					if self.dbEpisodes[episodeKey][media.Season].has_key(media.Episode) is True:
+						del(self.dbEpisodes[episodeKey][media.Season][media.Episode])
+						if len(self.dbEpisodes[episodeKey][media.Season]) == 0:
 							del(self.dbEpisodes[media.TheTvDbId][media.Season])
-						if len(self.dbEpisodes[media.TheTvDbId]) == 0:
-							del(self.dbEpisodes[media.TheTvDbId])
-							if self.dbSeries.has_key(media.TheTvDbId) is True:
-								del(self.dbSeries[media.TheTvDbId])
+						if len(self.dbEpisodes[episodeKey]) == 0:
+							del(self.dbEpisodes[episodeKey])
+							if self.dbSeries.has_key(serieKey) is True:
+								del(self.dbSeries[serieKey])
 						return True
 		return False
 
@@ -263,8 +267,9 @@ class Database(object):
 	def add(self, media):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isSerie:
-			if self.dbSeries.has_key(media.TheTvDbId) is False:
-				self.dbSeries[media.TheTvDbId] = media
+			serieKey = media.Id	# media.TheTvDbId
+			if self.dbSeries.has_key(serieKey) is False:
+				self.dbSeries[serieKey] = media
 				return True
 			else:
 				#self._addFailedCauseOf = self.dbSeries[media.TheTvDbId]
@@ -282,22 +287,24 @@ class Database(object):
 		self.duplicateDetector.append(pth)
 		
 		if media.isMovie:
-			if self.dbMovies.has_key(media.ImdbId) is False:
-				self.dbMovies[media.ImdbId] = media
+			movieKey = media.Id 	# media.ImdbId
+			if self.dbMovies.has_key(movieKey) is False:
+				self.dbMovies[movieKey] = media
 			else: 
 				self._addFailedCauseOf = self.dbMovies[media.ImdbId]
 				return False
 		elif media.isEpisode:
-			if self.dbEpisodes.has_key(media.TheTvDbId) is False:
-				self.dbEpisodes[media.TheTvDbId] = {}
+			episodeKey = media.Id	# media.TheTvDbId			 
+			if self.dbEpisodes.has_key(episodeKey) is False:
+				self.dbEpisodes[episodeKey] = {}
 			
-			if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is False:
-				self.dbEpisodes[media.TheTvDbId][media.Season] = {}
+			if self.dbEpisodes[episodeKey].has_key(media.Season) is False:
+				self.dbEpisodes[episodeKey][media.Season] = {}
 			
-			if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is False:
-				self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
+			if self.dbEpisodes[episodeKey][media.Season].has_key(media.Episode) is False:
+				self.dbEpisodes[episodeKey][media.Season][media.Episode] = media
 			else:
-				self._addFailedCauseOf = self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode]
+				self._addFailedCauseOf = self.dbEpisodes[episodeKey][media.Season][media.Episode]
 				return False
 		return True
 
@@ -528,15 +535,16 @@ class Database(object):
 			except Exception, ex:
 				printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
 		
-		# FIX: GHOSTFILES
-		if self.dbEpisodes.has_key("0"):
-			ghost = self.dbEpisodes["0"].values()
-			for season in ghost:
-				for episode in season.values():
-					self.remove(episode)
-			if self.dbEpisodes.has_key("0"):
-				del self.dbEpisodes["0"]
-		
+		# FIX: GHOSTFILES ... let's keep ghost's, they will be cleaned on sql
+		#if self.dbEpisodes.has_key("0"):
+		#	ghost = self.dbEpisodes["0"].values()
+		#	for season in ghost:
+		#		for episode in season.values():
+		#			self.remove(episode)
+		#
+		#	if self.dbEpisodes.has_key("0"):
+		#		del self.dbEpisodes["0"]
+
 		for tvshow in self.dbEpisodes.values():
 			for season in tvshow.values():
 				for episode in season.values():
@@ -631,7 +639,6 @@ class Database(object):
 					version = int(lines[0])
 					linesLen = len(lines)
 					
-					size = 11
 					if version >= 3:
 						size = 13
 					else:
@@ -662,7 +669,6 @@ class Database(object):
 					version = int(lines[0])
 					linesLen = len(lines)
 					
-					size = 9
 					if version >= 3:
 						size = 11
 					else:
@@ -693,7 +699,6 @@ class Database(object):
 						version = int(lines[0])
 						linesLen = len(lines)
 						
-						size = 12
 						if version >= 3:
 							size = 14
 						else:
