@@ -102,7 +102,6 @@ class Showiframe():
 
 	def load(self):
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
-		#printl("SYS.PATH=" + str(sys.path), self, "D")
 		try:
 			self.ctypes = __import__("_ctypes")
 		except Exception, ex:

@@ -41,7 +41,7 @@ defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultConfigFolderPath = "/hdd/valerie/"
 defaultMediaFolderPath  = defaultConfigFolderPath + "media/"
 defaultTmpFolderPath    = "/tmp/valerie/"
-defaultSkin             = "default"
+defaultSkin             = "blackSwan"
 defaultURL              = "http://www.duckbox.info/valerie/"
 defaultUpdateXML        = "update.php"
 
@@ -68,6 +68,8 @@ config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderP
 config.plugins.pvmc.save()
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+print "__init__:: version="        + str(config.plugins.pvmc.version.value)
+printl("__init__:: version="        + str(config.plugins.pvmc.version.value))
 printl("__init__:: language="       + str(config.plugins.pvmc.language.value))
 printl("__init__:: showwizard="     + str(config.plugins.pvmc.showwizard.value))
 printl("__init__:: autostart="      + str(config.plugins.pvmc.autostart.value))

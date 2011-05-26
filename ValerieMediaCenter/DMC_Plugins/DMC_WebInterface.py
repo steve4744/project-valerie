@@ -414,7 +414,7 @@ def autostart(session):
 		port = config.plugins.pvmc.plugins.webinterface.port.value
 		reactor.listenTCP(port, site, interface="0.0.0.0")
 	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
+		printl("Exception(Can be ignored): " + str(ex), __name__, "W")
 
 def settings():
 	s = []
