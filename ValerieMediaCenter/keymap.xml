@@ -85,6 +85,7 @@
 	<map context="DMC_View">
 		<key id="KEY_OK" mapto="ok" flags="m" />
 		<key id="KEY_MENU" mapto="menu" flags="m" />
+		<key id="KEY_EXIT" mapto="cancel" flags="m" />
 		<key id="KEY_HOME" mapto="cancel" flags="m" />
 		<key id="KEY_UP" mapto="up_quick" flags="mr" />
 		<key id="KEY_UP" mapto="up" flags="b" />
