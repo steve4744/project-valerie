@@ -28,6 +28,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
 
 from DatabaseLayer import databaseLayer
+
 #------------------------------------------------------------------------------------------
 
 def localeInit():
@@ -182,24 +183,28 @@ class PVMC_Movies(Screen, HelpableScreen):
 	FAST_STILLPIC = False
 	
 	def sortList(self,x, y):
-		if self.moviedb[x[1]][self.Sort]>self.moviedb[y[1]][self.Sort]:
+		mx = self.moviedb[x[1]]
+		my = self.moviedb[y[1]]
+		if mx.self.Sort>my.self.Sort:
 			return 1
-		elif self.moviedb[x[1]][self.Sort]==self.moviedb[y[1]][self.Sort]:
+		elif mx.self.Sort==my.self.Sort:
 			return 0
 		else: # x<y
 			return -1
 
 	def reloadMovies(self):
 		printl("->", self)
+		printl("dbMovies Count: "+str(len(self.moviedb)))
 		list =[]
 		for key in self.moviedb.keys():
-			if self.genreFilter == "" or self.genreFilter in self.moviedb[key]["Genres"]:
-				list.append(("  " + self.moviedb[key]["Title"], key, "", "45"))
+			if self.genreFilter == "" or self.genreFilter in self.moviedb[key].Genres:
+				list.append(("  " + self.moviedb[key].Title, key, "", "45"))
 		
 		if self.Sort == "":
 			list.sort()
 		else:
-			list.sort(key=lambda x:self.moviedb[x[1]][self.Sort], reverse=True)
+			mx = self.moviedb[x[1]]
+			list.sort(key=lambda x:mx.self.Sort, reverse=True)
 		self["listview"].setList(list)
 		if self.APILevel >= 2:
 			self["listview"].setIndex(0)
@@ -250,23 +255,23 @@ class PVMC_Movies(Screen, HelpableScreen):
 			if self.APILevel == 1:
 				self.setText("otitle", "---")
 			
-			self.setText("tag", self.moviedb[selection[1]]["Tag"], True)
-			self.setText("shortDescription", self.moviedb[selection[1]]["Plot"], what=_("Overview"))
+			self.setText("tag", self.moviedb[selection[1]].Tag, True)
+			self.setText("shortDescription", self.moviedb[selection[1]].Plot, what=_("Overview"))
 			
 			if self.APILevel == 1:
 				if self.moviedb[selection[1]].has_key("Directors"):
-					self.setText("director", self.moviedb[selection[1]]["Directors"])
+					self.setText("director", self.moviedb[selection[1]].Directors)
 				if self.moviedb[selection[1]].has_key("Writers"):
-					self.setText("writer", self.moviedb[selection[1]]["Writers"])
+					self.setText("writer", self.moviedb[selection[1]].Writers)
 			
-			self.setText("genre", self.moviedb[selection[1]]["Genres"].replace('|', ", "), what=_("Genre"))
+			self.setText("genre", self.moviedb[selection[1]].Genres.replace('|', ", "), what=_("Genre"))
 			sele = self.moviedb[selection[1]]
-			date = str(sele["Year"])
-			if sele.has_key("Month") and sele.has_key("Day"):
-				if sele["Month"] > 0 and sele["Day"] > 0:
-					date = "%04d-%02d-%02d" % (sele["Year"], sele["Month"], sele["Day"], )
+			date = str(sele.Year)
+			#if sele.has_key("Month") and sele.has_key("Day"):
+			if sele.Month > 0 and sele.Day > 0:
+				date = "%04d-%02d-%02d" % (sele.Year, sele.Month, sele.Day, )
 			self.setText("year", date)
-			self.setText("runtime", self.moviedb[selection[1]]["Runtime"] + ' ' + _("min"))
+			self.setText("runtime", str(self.moviedb[selection[1]].Runtime) + ' ' + _("min"))
 			
 			if self.APILevel >= 2:
 				itemsPerPage = int(self["listview_itemsperpage"].getData())
@@ -277,11 +282,11 @@ class PVMC_Movies(Screen, HelpableScreen):
 				self.setText("total", _("Total movies:") + ' ' + str(itemsTotal))
 				self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 			
-			for i in range(int(self.moviedb[selection[1]]["Popularity"])):
+			for i in range(int(self.moviedb[selection[1]].Popularity)):
 				if self["star" + str(i)].instance is not None:
 					self["star" + str(i)].instance.show()
 			
-			for i in range(10 - int(self.moviedb[selection[1]]["Popularity"])):
+			for i in range(10 - int(self.moviedb[selection[1]].Popularity)):
 				if self["star" + str(9 - i)].instance is not None:
 					self["star" + str(9 - i)].instance.hide()
 
@@ -361,14 +366,18 @@ class PVMC_Movies(Screen, HelpableScreen):
 		
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			playbackPath = self.moviedb[selection[1]]["Path"]
+			m = self.moviedb[selection[1]]
+			path      = m.Path.replace("\\", "/")
+			filename  = m.Filename
+			extension = m.Extension
+			playbackPath = path + "/" + filename + "." + extension
 			if os.path.isfile(playbackPath):
 				self.showiframe.finishStillPicture()
 				
 				args = {}
-				args["title"] = self.moviedb[selection[1]]["Title"]
-				args["year"] = self.moviedb[selection[1]]["Year"]
-				args["imdbid"] = self.moviedb[selection[1]]["ImdbId"]
+				args["title"] = self.moviedb[selection[1]].Title
+				args["year"] = self.moviedb[selection[1]].Year
+				args["imdbid"] = self.moviedb[selection[1]].ImdbId
 				args["status"] = "playing"
 				args["type"] = "movie"
 				plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
@@ -379,12 +388,12 @@ class PVMC_Movies(Screen, HelpableScreen):
 				dvdFilelist = [ ]
 				dvdDevice = None
 				
-				if self.moviedb[selection[1]]["Path"].lower().endswith(u"ifo"): # DVD
+				if playbackPath.lower().endswith(u"ifo"): # DVD
 					isDVD = True
-					dvdFilelist.append(str(self.moviedb[selection[1]]["Path"].replace(u"/VIDEO_TS.IFO", "").strip()))
-				elif self.moviedb[selection[1]]["Path"].lower().endswith(u"iso"): # DVD
+					dvdFilelist.append(str(playbackPath.replace(u"/VIDEO_TS.IFO", "").strip()))
+				elif playbackPath.lower().endswith(u"iso"): # DVD
 					isDVD = True
-					dvdFilelist.append(self.moviedb[selection[1]]["Path"])
+					dvdFilelist.append(playbackPath)
 				
 				if isDVD:
 					try:
@@ -395,13 +404,13 @@ class PVMC_Movies(Screen, HelpableScreen):
 						printl("Exception: " + str(ex), self)
 				else:
 					playbackList = []
-					playbackList.append( (self.moviedb[selection[1]]["Path"], self.moviedb[selection[1]]["Title"]), )
+					playbackList.append( (playbackPath, self.moviedb[selection[1]].Title), )
 					
 					printl("playbackList: " + str(playbackList), self)
 					
 					self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
 			else:
-				self.session.open(MessageBox, "Not found!\n" + self.moviedb[selection[1]]["Path"] + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
+				self.session.open(MessageBox, "Not found!\n" + playbackPath + "\n\nPlease make sure that your drive is connected/mounted.", type = MessageBox.TYPE_ERROR)
 		
 
 	def leaveMoviePlayer(self):
@@ -477,7 +486,7 @@ class PVMC_Movies(Screen, HelpableScreen):
 	def KeyInfo(self):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]]["Title"], self.moviedb[selection[1]]["Plot"])
+			self.session.open(self.PVMC_MessageBoxInfo, self.moviedb[selection[1]].Title, self.moviedb[selection[1]].Plot)
 			#self.session.open(MessageBox, _("Title:\n") + self.moviedb[selection[1]]["Title"] + _("\n\nPlot:\n") + self.moviedb[selection[1]]["Plot"], type = MessageBox.TYPE_INFO)
 
 	def KeyPlugins(self):

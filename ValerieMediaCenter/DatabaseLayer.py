@@ -13,6 +13,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 #from db_handler import db_handler
 #from sqlite3 import dbapi2 as sqlite 
 
+from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
 #------------------------------------------------------------------------------------------
 
 class databaseLayer(object):
@@ -51,10 +52,7 @@ class databaseLayer(object):
     def setDBType(self, version):
         self.USE_DB_TYPE = version
         printl("DB Type set to " + str(version))
-    
-    def getDBType():
-        return self.USE_DB_TYPE
-    
+      
     def getAvailGenres(self):
         return self.AvailableGenresList
 
@@ -118,45 +116,48 @@ class databaseLayer(object):
             for i in range(1, linesLen, size):
                 if lines[i+0] == "EOF":
                         break
-                d = {} 
-                if int(version) >=3:
-                        d["ImdbId"]     = lines[i+0]
-                        d["Title"]      = lines[i+1]
-                        d["Tag"]        = lines[i+2]
-                        d["Year"]       = int(lines[i+3])
-                        d["Month"]      = int(lines[i+4])
-                        d["Day"]        = int(lines[i+5])
-                        d["Path"]       = lines[i+6] + "/" + lines[i+7] + "." + lines[i+8]
-                        d["Plot"]       = lines[i+9]
-                        d["Runtime"]    = lines[i+10]
-                        d["Popularity"] = lines[i+11]
-                        d["Genres"]     = lines[i+12]
-                else:
-                        d["ImdbId"]    = lines[i+0]
-                        d["Title"]     = lines[i+1]
-                        d["Tag"]       = lines[i+2]
-                        d["Year"]      = int(lines[i+3])
-                        d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
-                        d["Plot"]       = lines[i+7]
-                        d["Runtime"]    = lines[i+8]
-                        d["Popularity"] = lines[i+9]
-                        d["Genres"] = lines[i+10]
+		m = MediaInfo()
+		m.importDefined(lines[i:i+size], version, True, False, False)
+                self.add(m)
+                #d = {} 
+                #if int(version) >=3:
+                #        d["ImdbId"]     = lines[i+0]
+                #        d["Title"]      = lines[i+1]
+                #        d["Tag"]        = lines[i+2]
+                #        d["Year"]       = int(lines[i+3])
+                #        d["Month"]      = int(lines[i+4])
+                #        d["Day"]        = int(lines[i+5])
+                #        d["Path"]       = lines[i+6] + "/" + lines[i+7] + "." + lines[i+8]
+                #        d["Plot"]       = lines[i+9]
+                #        d["Runtime"]    = lines[i+10]
+                #        d["Popularity"] = lines[i+11]
+                #        d["Genres"]     = lines[i+12]
+                #else:
+                #        d["ImdbId"]    = lines[i+0]
+                #        d["Title"]     = lines[i+1]
+                #        d["Tag"]       = lines[i+2]
+                #        d["Year"]      = int(lines[i+3])
+                #        d["Path"] = lines[i+4] + "/" + lines[i+5] + "." + lines[i+6]
+                #        d["Plot"]       = lines[i+7]
+                #        d["Runtime"]    = lines[i+8]
+                #        d["Popularity"] = lines[i+9]
+                #        d["Genres"] = lines[i+10]
+                #
+                #try:
+                #        d["Creation"] = os.stat(d["Path"]).st_mtime
+                #except:
+                #        d["Creation"] = 0
+                #
+                ## deprecated
+                #d["Directors"] = ""
+                #d["Writers"]   = ""
+                #d["OTitle"]    = ""
                 
-                try:
-                        d["Creation"] = os.stat(d["Path"]).st_mtime
-                except:
-                        d["Creation"] = 0
-                
-                # deprecated
-                d["Directors"] = ""
-                d["Writers"]   = ""
-                d["OTitle"]    = ""
-                
-                for genre in d["Genres"].split("|"):
+                for genre in m.Genres.split("|"):
                         if len(genre) > 0 and (genre) not in tmpGenres:
                                 tmpGenres.append( genre )
                 
-                self.moviedb[d["ImdbId"]] = d
+                #self.moviedb[d["ImdbId"]] = d
     
             self.AvailableGenresList = []
             for genre in tmpGenres:
@@ -189,7 +190,60 @@ class databaseLayer(object):
         printl("<- Took " + str(elapsed_time), self)
         return (self.moviedb)
 
-    ###########################################################################
-    ##  SAVE  -  To use on ValeriaSync or on future options here
-    ###########################################################################
-    
+#################### FROM  SYNC
+	##
+	# Adds media files to the db-Memory
+	# @param media: The media file
+	# @return: False if file is already in db or movie already in db, else True 
+    def add(self, media):
+            # Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
+            #if media.isSerie:
+            #        if media.RecordStatus == MediaInfo.REC_FROM_DB:
+            #                serieKey = media.Id
+            #        else:
+            #                serieKey = media.TheTvDbId
+            #        if self.dbSeries.has_key(serieKey) is False:
+            #                self.dbSeries[serieKey] = media
+            #                return True
+            #        else:
+            #                #self._addFailedCauseOf = self.dbSeries[media.TheTvDbId]
+            #                #return False
+            #                return True # We return true here cause this is not a failure but simply means that the tvshow already exists in the db
+            #
+            #media.Path = media.Path.replace("\\", "/")
+            # Checks if the file is already in db
+            #if self.checkDuplicate(media.Path, media.Filename, media.Extension):
+                    # This should never happen, this means that the same file is already in the db
+                    # But is a failure describtion here necessary ?
+            #       return False
+            
+            #Not IS USE pth = media.Path + "/" + media.Filename + "." + media.Extension
+            #self.duplicateDetector.append(pth)
+            
+            if media.isMovie:
+                    if media.RecordStatus == MediaInfo.REC_FROM_DB:
+                            movieKey = media.Id
+                    else:
+                            movieKey = media.ImdbId
+                    if self.moviedb.has_key(movieKey) is False:
+                            self.moviedb[movieKey] = media
+                    else: 
+                            self._addFailedCauseOf = self.moviedb[movieKey]
+                            return False
+            #elif media.isEpisode:
+            #        if media.RecordStatus == MediaInfo.REC_FROM_DB:
+            #                episodeKey = media.Id
+            #        else:
+            #                episodeKey = media.TheTvDbId			 
+            #        if self.dbEpisodes.has_key(episodeKey) is False:
+            #                self.dbEpisodes[episodeKey] = {}
+            #        
+            #        if self.dbEpisodes[episodeKey].has_key(media.Season) is False:
+            #                self.dbEpisodes[episodeKey][media.Season] = {}
+            #        
+            #        if self.dbEpisodes[episodeKey][media.Season].has_key(media.Episode) is False:
+            #                self.dbEpisodes[episodeKey][media.Season][media.Episode] = media
+            #        else:
+            #                self._addFailedCauseOf = self.dbEpisodes[episodeKey][media.Season][media.Episode]
+            #                return False
+            #return True
