@@ -411,13 +411,16 @@ class Database(object):
 		
 		start_time = time.time()  
 		for serie in self.dbEpisodes:
-			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
-			f.write(unicode(self.TXD_VERSION) + u"\n")
-			for season in self.dbEpisodes[serie]:
-				for episode in self.dbEpisodes[serie][season].values():
-					f.write(episode.exportDefined(self.TXD_VERSION))
-			f.write("EOF\n")
-			f.close()
+			try:
+				f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
+				f.write(unicode(self.TXD_VERSION) + u"\n")
+				for season in self.dbEpisodes[serie]:
+					for episode in self.dbEpisodes[serie][season].values():
+						f.write(episode.exportDefined(self.TXD_VERSION))
+				f.write("EOF\n")
+				f.close()
+			except Exception, ex: 
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		elapsed_time = time.time() - start_time
 		printl("Took (episodes/*.txd): " + str(elapsed_time), self)
 
