@@ -143,6 +143,10 @@ class DMC_ListView(DMC_View):
 			self.setText("total", _("Total:") + ' ' + str(itemsTotal))
 			self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 
+	def close(self, arg=None):
+		self.showiframe.finishStillPicture()
+		super(DMC_ListView, self).close(arg)
+
 	def playEntry(self, entry):
 		self.showiframe.finishStillPicture()
 		super(DMC_ListView, self).playEntry(entry)

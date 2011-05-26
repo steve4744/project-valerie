@@ -101,6 +101,10 @@ class DMC_PosterView(DMC_View):
 				self[posterName].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + \
 					"defaultposter" + self.postersize + ".png")
 
+	def close(self, arg=None):
+		self.showiframe.finishStillPicture()
+		super(DMC_PosterView, self).close(arg)
+
 	def playEntry(self, entry):
 		self.showiframe.finishStillPicture()
 		super(DMC_PosterView, self).playEntry(entry)

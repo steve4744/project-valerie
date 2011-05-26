@@ -344,6 +344,8 @@ class PVMC_MainMenu(Screen):
 			printl("Using DreamScene at " + str(self.UseDreamScene), self)
 			if os.access(self.UseDreamScene, os.F_OK) is True:
 				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
+			else:
+				printl("Using DreamScene failed", self, "W")
 
 	def onExecStartScript(self):
 		printl("->", self)
