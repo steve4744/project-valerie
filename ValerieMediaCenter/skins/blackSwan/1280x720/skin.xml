@@ -156,6 +156,44 @@
     <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
   </screen>
+  <!-- PVMC PosterView -->
+  <screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
+    <widget name="API" text="4" position="0,0" zPosition="0" size="1,1" />
+    <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
+    <widget name="listview_itemsperpage" text="3" position="0,0" zPosition="0" size="1,1" />
+    <widget source="listview" render="Listbox" zPosition="3" position="-17,0" size="1,1" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">
+      <convert type="TemplatedMultiContent">
+            {"template": [ MultiContentEntryText(pos = (0,0), size = (1,1), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0) ],
+            "fonts": [gFont("Modern", 20)],
+            "itemHeight": 32,
+            "scrollbarMode": "showNever"
+            }
+        </convert>
+    </widget>
+    <eLabel position="88,213" size="1102,443" zPosition="1" backgroundColor="#20404040" transparent="0" />
+    <!--eLabel position="88,213" size="1102,118" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
+    <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,226" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
+    <widget name="title" transparent="1" zPosition="5" halign="left" position="106,276" size="1066,47" font="Modern;37" foregroundColor="#ffffff" />
+
+    <eLabel position="524,325" size="231,292" zPosition="4" backgroundColor="#6ca4c5" transparent="0" />
+    <widget name="poster_-3" transparent="0" zPosition="5" position="-94,337" size="195,267" alphatest="blend" />
+    <widget name="poster_-2" transparent="0" zPosition="5" position="112,337"  size="195,267" alphatest="blend" />
+    <widget name="poster_-1" transparent="0" zPosition="5" position="318,337" size="195,267" alphatest="blend" />
+    <widget name="poster_0"  transparent="0" zPosition="5" position="542,337" size="195,267" alphatest="blend" />
+    <widget name="poster_+1" transparent="0" zPosition="5" position="766,337" size="195,267" alphatest="blend" />
+    <widget name="poster_+2" transparent="0" zPosition="5" position="972,337" size="195,267" alphatest="blend" />
+    <widget name="poster_+3" transparent="0" zPosition="5" position="1178,337" size="195,267" alphatest="blend" />
+
+    <!--eLabel position="88,610" size="1102,47" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
+    <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="5" position="106,623" size="26,20" alphatest="blend" />
+    <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="5" position="373,623" size="26,20" alphatest="blend" />
+    <ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="5" position="640,623" size="26,20" alphatest="blend" />
+    <ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="5" position="906,623" size="26,20" alphatest="blend" />
+    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+  </screen>
   <!-- PVMC_MessageBoxInfo -->
   <screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />

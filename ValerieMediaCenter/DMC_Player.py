@@ -86,7 +86,10 @@ class PVMC_Player(MoviePlayer):
 			elif answer[1] == "next":
 				self.nextPlaylistEntry()
 				if self.notifyNextEntry is not None:
-					self.notifyNextEntry()
+					if len(self.playlist[self.current]) == 2:
+						self.notifyNextEntry()
+					else:
+						self.notifyNextEntry(self.playlist[self.current][2])
 			elif answer[1] == "continue":
 				return None
 
@@ -109,7 +112,10 @@ class PVMC_Player(MoviePlayer):
 		
 		if isinstance(playlist, list):
 			for i in range(0, len(playlist)):
-				playlist[i] = (self.fixPartsReplacer(playlist[i][0]), playlist[i][1])
+				if len(playlist[i]) == 2:
+					playlist[i] = (self.fixPartsReplacer(playlist[i][0]), playlist[i][1])
+				else:
+					playlist[i] = (self.fixPartsReplacer(playlist[i][0]), playlist[i][1], playlist[i][2])
 		else:
 			playlist[0] = self.fixPartsReplacer(playlist[0])
 		return playlist
@@ -166,7 +172,7 @@ class PVMC_Player(MoviePlayer):
 	progressUpdateCounter = 0
 	progressUpdateCounterMargin = 10*60 #10min
 	progressUpdateNextPercentMargin = 0
-	progressUpdateNextPercentDistance = 5
+	progressUpdateNextPercentDistance = 10
 
 	def progressUpdate(self):
 		self.progressUpdateCounter += 1
@@ -229,3 +235,4 @@ class PVMC_Player(MoviePlayer):
 			if (self.current + 1) < len(self.playlist):
 				return True
 		return False
+

@@ -81,4 +81,23 @@
 		<key id="KEY_LEFT" mapto="left" flags="m" />
 		<key id="KEY_RIGHT" mapto="right" flags="m" />
 	</map>
+
+	<map context="DMC_View">
+		<key id="KEY_OK" mapto="ok" flags="m" />
+		<key id="KEY_MENU" mapto="menu" flags="m" />
+		<key id="KEY_HOME" mapto="cancel" flags="m" />
+		<key id="KEY_UP" mapto="up_quick" flags="mr" />
+		<key id="KEY_UP" mapto="up" flags="b" />
+		<key id="KEY_DOWN" mapto="down_quick" flags="mr" />
+		<key id="KEY_DOWN" mapto="down" flags="b" />
+		<key id="KEY_LEFT" mapto="left_quick" flags="mr" />
+		<key id="KEY_LEFT" mapto="left" flags="b" />
+		<key id="KEY_RIGHT" mapto="right_quick" flags="mr" />
+		<key id="KEY_RIGHT" mapto="right" flags="b" />
+		<key id="KEY_INFO" mapto="info" flags="m" />
+		<key id="KEY_RED" mapto="red" flags="m" />
+		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
+		<key id="KEY_GREEN" mapto="green" flags="m" />
+		<key id="KEY_BLUE" mapto="blue" flags="m" />
+	</map>
 </keymap>
