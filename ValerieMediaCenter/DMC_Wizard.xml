@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <wizard>
 	<step id="welcome" nextstep="autostart">
 		<text value="Welcome to the Project Valerie experiment" />
