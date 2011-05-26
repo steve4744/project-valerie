@@ -410,7 +410,9 @@ class PVMC_MainMenu(Screen):
 			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
-				self.session.openWithCallback(self.startUpdate, MessageBox,_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, MessageBox.TYPE_YESNO, timeout=120)
+				self.session.openWithCallback(self.startUpdate, MessageBox, \
+					_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, \
+					MessageBox.TYPE_YESNO, timeout=120, close_on_any_key=False, default=False)
 				return True
 		
 		except Exception, e:
