@@ -940,7 +940,6 @@ class ProjectValerieSyncManager(Screen):
 		self.setTitle(_("Synchronize Manager Overview"))
 
 	def onLoad(self):
-		self.manager.start()
 		self.loadFailed()
 
 	inFailed = False

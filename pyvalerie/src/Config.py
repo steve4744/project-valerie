@@ -11,6 +11,9 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 conf = {}
 
 def load():
+	if len(conf) > 0:
+		return
+	
 	# Check default config
 	try:
 		printl("Check " + config.plugins.pvmc.configfolderpath.value + "valerie.conf", __name__)

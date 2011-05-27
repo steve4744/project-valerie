@@ -3,6 +3,7 @@
 import cPickle   as pickle
 from   datetime import date
 import os
+from threading import Lock
 import time
 
 from Components.config import config
@@ -19,6 +20,8 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 #------------------------------------------------------------------------------------------
 
 gDatabase = None
+gDatabaseMutex = Lock()
+
 
 class Database(object):
 	FAILEDDB = config.plugins.pvmc.configfolderpath.value + "failed.db"
@@ -93,7 +96,9 @@ class Database(object):
 		return gDatabase
 
 	def reload(self):
+		global gDatabaseMutex
 		printl("", self, "D")
+		gDatabaseMutex.acquire()
 		self.dbMovies = {}
 		self.dbSeries = {}
 		self.dbEpisodes = {}
@@ -102,7 +107,8 @@ class Database(object):
 		
 		self.duplicateDetector = []
 		
-		self.load()
+		self._load()
+		gDatabaseMutex.release()
 
 	def transformGenres(self):
 		for key in self.dbMovies:
@@ -334,6 +340,8 @@ class Database(object):
 			printl("TO BE DELETED: " + str(ele), self)
 
 	def save(self):
+		global gDatabaseMutex
+		gDatabaseMutex.acquire()
 		# Always safe pickel as this increses fastsync a lot
 		#elif self.USE_DB_VERSION == self.DB_PICKLE:
 		self.savePickel()
@@ -345,7 +353,8 @@ class Database(object):
 			self.rmTxt()
 		elif self.USE_DB_TYPE == self.DB_SQLITE:
 			self.saveTxd()
-			self.saveSql() 
+			self.saveSql()
+		gDatabaseMutex.release()
 
 	def saveTxt(self):
 		start_time = time.time()	
@@ -503,7 +512,7 @@ class Database(object):
 		elapsed_time = time.time() - start_time
 		printl("Took (SQL): " + str(elapsed_time), self)
 
-	def load(self):
+	def _load(self):
 		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
 			fd = open(self.FAILEDDB, "rb")
 			self.dbFailed = pickle.load(fd)

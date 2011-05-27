@@ -23,9 +23,6 @@ class Manager(object):
 	FAILED_ALL = 4
 	
 	def __init__(self):
-		pass
-
-	def start(self):
 		printl("", self)
 		Config.load()
 		
@@ -73,7 +70,7 @@ class Manager(object):
 
 	def searchAlternatives(self, oldElement):
 		element = MediaInfo(oldElement.Path, oldElement.Filename, oldElement.Extension)
-		if type(oldElement) is MediaInfo:	
+		if type(oldElement) is MediaInfo:
 			element.isMovie = oldElement.isMovie
 			element.isSerie = oldElement.isSerie
 		element.parse()

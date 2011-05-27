@@ -60,7 +60,6 @@ class Action(Resource):
 				primary_key["imdbid"] = request.args["imdbid"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.addByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")
 			
@@ -74,7 +73,6 @@ class Action(Resource):
 				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.addByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")	
 			
@@ -90,7 +88,6 @@ class Action(Resource):
 				primary_key["episode"] = request.args["episode"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.addByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")
 		
@@ -108,7 +105,6 @@ class Action(Resource):
 				primary_key["imdbid"] = request.args["imdbid"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")
 			
@@ -122,7 +118,6 @@ class Action(Resource):
 				primary_key["thetvdbid"] = request.args["thetvdbid"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")
 			
@@ -138,7 +133,6 @@ class Action(Resource):
 				primary_key["episode"] = request.args["episode"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
 				return self.redirect("/static/edit.html?done")
 		
@@ -151,7 +145,6 @@ class Action(Resource):
 				primary_key["imdbid"] = request.args["imdbid"][0]
 				
 				manager = Manager()
-				manager.start()
 				manager.removeByUsingPrimaryKey(Manager.MOVIES, primary_key)
 				#manager.finish()
 				return self.redirect("/static/edit.html?done")
@@ -162,7 +155,6 @@ class Action(Resource):
 		##	
 		elif request.args["method"][0] == "save_changes_to_db":
 			manager = Manager()
-			manager.start()
 			manager.finish()
 			
 			if request.args["return_to"][0] == "movies":
@@ -210,7 +202,6 @@ class Database(Resource):
 
 		#TODO: We should cache these
 		manager = Manager()
-		manager.start()
 		
 		thead = u""
 		tbody = u""

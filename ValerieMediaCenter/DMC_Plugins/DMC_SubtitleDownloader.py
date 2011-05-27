@@ -9,6 +9,8 @@ from Components.config import ConfigSelection
 from Components.config import ConfigSubsection
 from Screens.ChoiceBox import ChoiceBox
 
+from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
@@ -73,7 +75,10 @@ class DMC_SubtitleDownloader(ChoiceBox):
 		if args.has_key("Season"):
 			season = str(args["Season"])
 			episode = str(args["Episode"])
-			tvshow = title
+			
+			tvshowEntry = Manager().getElementByUsingPrimaryKey(Manager.TVSHOWS, \
+				dict({'thetvdbid': args["TheTvDbId"]}))
+			tvshow = tvshowEntry.Title
 		else:
 			season = ""
 			episode = ""

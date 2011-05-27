@@ -11,7 +11,6 @@ class DMC_MovieLibrary(DMC_Library):
 
     def __init__(self, session):
         self.manager = Manager()
-        self.manager.start()
         DMC_Library.__init__(self, session, "movies")
 
     ###
