@@ -87,7 +87,8 @@ $(document).ready(function(){
 			$('#tr_tag').remove();
 			
 			$('[name=what]').val("movies");
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + imdbid + ".png");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + imdbid + "_195x267.png");
+			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + imdbid + "_320x180.png");
 			
 		} else if (type == "tvshows") {
 			$('#tr_tag').remove();
@@ -100,12 +101,14 @@ $(document).ready(function(){
 			$('#tr_extension').remove();
 			
 			$('[name=what]').val("tvshows");
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
+			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
 			
 		} else if (type == "tvshowepisodes") {
 			
 			$('[name=what]').val("tvshowepisodes");
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg/poster/" + thetvdbid + ".png");
+			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
+			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
 		
 		}
 	}
@@ -124,7 +127,11 @@ $(document).ready(function(){
 	<table align="center" id="main_table" width="100%">
 		<tr>
 		<td valign="top" align="center" style="background-color:#AAAAAA;">
-			<img id="duck_img" src="" width="78" height="107" alt="n/a"></img></td>
+			<br />
+			<img id="duck_img" src="" width="78" height="107" alt="n/a"></img>
+			<br /><br />
+			<img id="duck_backdrop_img" src="" width="160" height="90" alt="n/a"></img>
+		</td>
 		<td>
 			<table align="center" id="details_table">
 				<form action="/action" method="get">

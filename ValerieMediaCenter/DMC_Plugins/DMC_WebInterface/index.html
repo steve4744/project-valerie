@@ -16,7 +16,9 @@
 <script>
 $(document).ready(function(){
 	$('#main_table').dataTable( {
-		"sScrollY": 768,
+		"aaSorting": [[ 1, "asc" ]],
+		"bScrollInfinite": true,
+		"bPaginate": false,
 		"bJQueryUI": true,
 		"sPaginationType": "full_numbers"
 	} );
