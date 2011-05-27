@@ -150,6 +150,7 @@ class Manager(object):
 				Blacklist.save()
 
 	def getElementByUsingPrimaryKey(self, type, primary_key):
+		printl("", self)
 		element = None
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			imdbid = primary_key["imdbid"]
@@ -161,14 +162,20 @@ class Manager(object):
 				element = self.db.dbSeries[thetvdbid]
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
 			thetvdbid = primary_key["thetvdbid"]
-			season = primary_key["season"]
-			episode = primary_key["episode"]
+			season = int(primary_key["season"])
+			episode = int(primary_key["episode"])
+			printl("Looking up episode", self, "D")
+			print self.db.dbEpisodes.has_key(thetvdbid)
+			print self.db.dbEpisodes[thetvdbid]
+			print self.db.dbEpisodes[thetvdbid].has_key(season)
+			print self.db.dbEpisodes[thetvdbid][season].has_key(episode)
 			if self.db.dbEpisodes.has_key(thetvdbid) and self.db.dbEpisodes[thetvdbid].has_key(season) and self.db.dbEpisodes[thetvdbid][season].has_key(episode):
 				element = self.db.dbEpisodes[thetvdbid][season][episode]
 		
 		return element
 
 	def removeByUsingPrimaryKey(self, type, primary_key):
+		printl("", self)
 		element = self.getElementByUsingPrimaryKey(type, primary_key)
 		if element is not None:
 			self.remove(element, False)
@@ -176,6 +183,7 @@ class Manager(object):
 		return False
 
 	def fillElement(self, newElement, key_value_dict):
+		printl("", self)
 		for key in key_value_dict.keys():
 			if key == "Title":
 				newElement.Title = key_value_dict[key]
@@ -217,6 +225,7 @@ class Manager(object):
 		return newElement
 
 	def replaceByUsingPrimaryKey(self, type, primary_key, key_value_dict):
+		printl("", self)
 		element = self.getElementByUsingPrimaryKey(type, primary_key)
 		if element is not None:
 			newElement = element
@@ -226,6 +235,7 @@ class Manager(object):
 		return None
 
 	def addByUsingPrimaryKey(self, type, primary_key, key_value_dict):
+		printl("", self)
 		newElement = MediaInfo()
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			newElement.ImdbId = primary_key["imdbid"]
