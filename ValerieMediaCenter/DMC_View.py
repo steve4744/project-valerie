@@ -58,11 +58,12 @@ class DMC_View(Screen, HelpableScreen):
 
 	FAST_STILLPIC = False
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View"):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None):
 		self.skinName = skinName
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		self.skinName = skinName
+		self.select = select
 		
 		self.libraryName = libraryName
 		self.loadLibrary = loadLibrary
@@ -121,8 +122,24 @@ class DMC_View(Screen, HelpableScreen):
 		self.setTitle(_(self.libraryName))
 
 	def onFirstExec(self):
-		self._load()
-		self.refresh()
+		if self.select is None:
+			self._load()
+			self.refresh()
+		else:
+			print self.select #(None, {'ImdbId': 'tt1190080'})
+			self._load(self.select[0])
+			keys = self.select[1].keys()
+			for i in range(len(self.listViewList)):
+				entry = self.listViewList[i]
+				found = True
+				for key in keys:
+					if entry[1][key] != self.select[1][key]:
+						found = False
+						break
+				if found:
+					self["listview"].setIndex(i)
+					break
+			self.refresh()
 
 	def onKeyOk(self):
 		self.onEnter()
@@ -168,7 +185,19 @@ class DMC_View(Screen, HelpableScreen):
 		self.onToggleView()
 
 	def onToggleView(self):
-		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, ))
+		# These allow us to get the correct list
+		#self.currentKeyValuePair
+		# But we also need the selected element
+		select = None
+		selection = self["listview"].getCurrent()
+		if selection is not None:
+			primaryKeyValuePair = {}
+			print self.onEnterPrimaryKeys
+			for key in self.onEnterPrimaryKeys:
+				if key != "play":
+					primaryKeyValuePair[key] = selection[1][key]
+			select = (self.currentKeyValuePair, primaryKeyValuePair)
+		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select))
 
 	def onNextEntry(self):
 		printl("", self)

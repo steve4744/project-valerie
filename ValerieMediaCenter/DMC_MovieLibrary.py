@@ -41,7 +41,7 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Genres"]  = movie.Genres
                 
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
-            return (parsedLibrary, ("play"), None, None)
+            return (parsedLibrary, ("play", "ImdbId", ), None, None)
         return None
 
     def buildInfoPlaybackArgs(self, entry):

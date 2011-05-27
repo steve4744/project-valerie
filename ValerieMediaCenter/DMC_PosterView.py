@@ -24,11 +24,11 @@ def getViewClass():
 
 class DMC_PosterView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView")
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView", select)
 		
 		self["poster_-3"] = Pixmap()
 		self["poster_-2"] = Pixmap()

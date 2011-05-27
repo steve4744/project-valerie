@@ -75,7 +75,7 @@ class DMC_TvShowLibrary(DMC_Library):
                     d["Genres"]  = episode.Genres
                     
                     parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50"))
-            return (parsedLibrary, ("play"), dict({ \
+            return (parsedLibrary, ("play", "TheTvDbId", "Season", "Episode", ), dict({ \
                 'TheTvDbId': episode.TheTvDbId, \
                 }), primaryKeyValuePair)
         
@@ -109,7 +109,7 @@ class DMC_TvShowLibrary(DMC_Library):
                     s["Title"]  = "  Season %2d" % (season, )
                     s["Season"] = season
                     parsedLibrary.append((s["Title"], s, season, "50"))
-            return (parsedLibrary, ("TheTvDbId", "Season"), None, primaryKeyValuePair)
+            return (parsedLibrary, ("TheTvDbId", "Season", ), None, primaryKeyValuePair)
         return None
 
     def getPlaybackList(self, entry):
