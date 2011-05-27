@@ -24,10 +24,13 @@ try:
 	from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
 	from Plugins.Extensions.ProjectValerieSync.Utf8 import *
 	
-	import cgi
+	# Do we need this?
+	#import cgi
 	
 	gAvailable = True
-except:
+except Exception, ex:
+	printl("DMC_WebInterface::isAvailable Is not available", None, "E")
+	printl("DMC_WebInterface::isAvailable Exception: " + str(ex), None, "E")
 	gAvailable = False
 
 config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
