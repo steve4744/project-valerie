@@ -507,7 +507,7 @@ class ProjectValerieSyncInfo():
 				self.setRange(self.range)
 				self.setProgress(self.progress)
 				self.setInfo(self.poster, self.name, self.year)
-					
+				
 				self.outputInstance.clearLog()
 				
 				if len(self.log) > 0:

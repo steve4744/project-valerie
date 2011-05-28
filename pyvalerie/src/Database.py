@@ -22,7 +22,6 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 gDatabase = None
 gDatabaseMutex = Lock()
 
-
 class Database(object):
 	FAILEDDB = config.plugins.pvmc.configfolderpath.value + "failed.db"
 
@@ -88,17 +87,25 @@ class Database(object):
 	def getInstance(self):
 		printl("", self, "D")
 		global gDatabase
+		global gDatabaseMutex
+		
+		printl("Acquiring Mutex", self, "D")
+		gDatabaseMutex.acquire()
+		printl("Acquired Mutex", self, "D")
+		
 		if gDatabase is None:
-			printl("New Instance", self)
+			printl("Creating new Database instance", self)
 			self.reload()
 			gDatabase = self
+		
+		printl("Releasing Mutex", self, "D")
+		gDatabaseMutex.release()
+		printl("Released Mutex", self, "D")
 		
 		return gDatabase
 
 	def reload(self):
-		global gDatabaseMutex
 		printl("", self, "D")
-		gDatabaseMutex.acquire()
 		self.dbMovies = {}
 		self.dbSeries = {}
 		self.dbEpisodes = {}
@@ -108,7 +115,6 @@ class Database(object):
 		self.duplicateDetector = []
 		
 		self._load()
-		gDatabaseMutex.release()
 
 	def transformGenres(self):
 		for key in self.dbMovies:
