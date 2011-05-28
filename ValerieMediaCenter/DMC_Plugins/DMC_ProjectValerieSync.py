@@ -11,8 +11,12 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 gAvailable = False
 try:
-	from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync as PluginProjectValerieSync
-	from Plugins.Extensions.ProjectValerieSync.plugin import autostart
+	try:
+		from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync as PluginProjectValerieSync
+		from Plugins.Extensions.ProjectValerieSync.plugin import autostart
+	except:
+		from ..ProjectValerieSync.plugin import ProjectValerieSync as PluginProjectValerieSync
+		from ..ProjectValerieSync.plugin import autostart
 	gAvailable = True
 except Exception, ex:
 	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")

@@ -19,13 +19,14 @@ try:
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	
-	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-	from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-	from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	
-	# Do we need this?
-	#import cgi
+	try:
+		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
+		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
+	except:
+		from ..ProjectValerieSync.Manager import Manager
+		from ..ProjectValerieSync.MediaInfo import *
+		from ..ProjectValerieSync.Utf8 import *
 	
 	gAvailable = True
 except Exception, ex:

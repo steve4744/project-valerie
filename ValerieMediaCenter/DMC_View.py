@@ -185,11 +185,11 @@ class DMC_View(Screen, HelpableScreen):
 		self.onNextEntryQuick()
 
 	def onKeyRed(self):
+		self.onToggleSort()
 		pass
 
 	def onKeyGreen(self):
-		self.onToggleSort()
-
+		pass
 	def onKeyYellow(self):
 		pass
 

@@ -3,11 +3,16 @@
 import os
 
 from DMC_Library import DMC_Library
-from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+try:
+	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+	from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+except:
+	from ..ProjectValerieSync.Manager import Manager
+	from ..ProjectValerieSync.Utf8    import utf8ToLatin
+
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 

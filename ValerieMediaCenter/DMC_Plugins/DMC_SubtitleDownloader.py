@@ -9,8 +9,6 @@ from Components.config import ConfigSelection
 from Components.config import ConfigSubsection
 from Screens.ChoiceBox import ChoiceBox
 
-from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
@@ -25,7 +23,13 @@ except:
 
 gAvailable = False
 try:
-	from Plugins.Extensions.ProjectValerieSync.Utf8 import *
+	try:
+		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
+	except:
+		from ..ProjectValerieSync.Manager import Manager
+		from ..ProjectValerieSync.Utf8 import *
+	
 	from DMC_SubtitleDownloaderExtras.utilities import *
 	sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "DMC_Plugins/DMC_SubtitleDownloaderExtras")
 	gAvailable = True

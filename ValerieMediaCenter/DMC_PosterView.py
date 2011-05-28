@@ -40,8 +40,8 @@ class DMC_PosterView(DMC_View):
 		
 		self["title"] = Label()
 		
-		self["key_red"] = StaticText(_(" "))
-		self["key_green"] = StaticText(_("Sort: ") + _("Default"))
+		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
+		self["key_green"] = StaticText(_(" "))
 		self["key_yellow"] = StaticText(_(" "))
 		self["key_blue"] = StaticText(_("View: ") + _("Poster-Flow")) #TODO: Name should be more dynamic
 		
@@ -111,7 +111,7 @@ class DMC_PosterView(DMC_View):
 		super(DMC_PosterView, self).playEntry(entry)
 
 	def sort(self):
-		self["key_green"].setText(_("Sort: ") + _(self.activeSort[0]))
+		self["key_red"].setText(_("Sort: ") + _(self.activeSort[0]))
 		super(DMC_PosterView, self).sort()
 
 	def onKeyLeft(self):

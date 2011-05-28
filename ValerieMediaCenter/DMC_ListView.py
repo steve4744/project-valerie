@@ -48,8 +48,8 @@ class DMC_ListView(DMC_View):
 			self["total"] = Label()
 			self["current"] = Label()
 		
-		self["key_red"] = StaticText(_(" "))
-		self["key_green"] = StaticText(_("Sort: ") + _("Default"))
+		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
+		self["key_green"] = StaticText(_(" "))
 		self["key_yellow"] = StaticText(_(" "))
 		self["key_blue"] = StaticText(_("View: ") + _("List")) #TODO: Name should be more dynamic
 		
@@ -153,7 +153,7 @@ class DMC_ListView(DMC_View):
 		super(DMC_ListView, self).playEntry(entry)
 
 	def sort(self):
-		self["key_green"].setText(_("Sort: ") + _(self.activeSort[0]))
+		self["key_red"].setText(_("Sort: ") + _(self.activeSort[0]))
 		super(DMC_ListView, self).sort()
 
 	def onKeyUp(self):
