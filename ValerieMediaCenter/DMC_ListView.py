@@ -25,11 +25,11 @@ def getViewClass():
 
 class DMC_ListView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_Series", select)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_Series", select, sort)
 		
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
@@ -49,9 +49,9 @@ class DMC_ListView(DMC_View):
 			self["current"] = Label()
 		
 		self["key_red"] = StaticText(_(" "))
-		self["key_green"] = StaticText(_(" "))
+		self["key_green"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_yellow"] = StaticText(_(" "))
-		self["key_blue"] = StaticText(_("Toggle view"))
+		self["key_blue"] = StaticText(_("View: ") + _("List")) #TODO: Name should be more dynamic
 		
 		try:
 			from StillPicture import StillPicture
@@ -150,6 +150,10 @@ class DMC_ListView(DMC_View):
 	def playEntry(self, entry):
 		self.showiframe.finishStillPicture()
 		super(DMC_ListView, self).playEntry(entry)
+
+	def sort(self):
+		self["key_green"].setText(_("Sort: ") + _(self.activeSort[0]))
+		super(DMC_ListView, self).sort()
 
 	def onKeyUp(self):
 		self.onPreviousEntry()

@@ -24,11 +24,11 @@ def getViewClass():
 
 class DMC_PosterView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView", select)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView", select, sort)
 		
 		self["poster_-3"] = Pixmap()
 		self["poster_-2"] = Pixmap()
@@ -41,9 +41,9 @@ class DMC_PosterView(DMC_View):
 		self["title"] = Label()
 		
 		self["key_red"] = StaticText(_(" "))
-		self["key_green"] = StaticText(_(" "))
+		self["key_green"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_yellow"] = StaticText(_(" "))
-		self["key_blue"] = StaticText(_("Toogle view"))
+		self["key_blue"] = StaticText(_("View: ") + _("Poster-Flow")) #TODO: Name should be more dynamic
 		
 		try:
 			from StillPicture import StillPicture
@@ -108,6 +108,10 @@ class DMC_PosterView(DMC_View):
 	def playEntry(self, entry):
 		self.showiframe.finishStillPicture()
 		super(DMC_PosterView, self).playEntry(entry)
+
+	def sort(self):
+		self["key_green"].setText(_("Sort: ") + _(self.activeSort[0]))
+		super(DMC_PosterView, self).sort()
 
 	def onKeyLeft(self):
 		self.onPreviousEntry()

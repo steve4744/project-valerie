@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 from DMC_Library import DMC_Library
 from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
@@ -33,14 +37,27 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Year"]    = movie.Year
                 d["Month"]   = movie.Month
                 d["Day"]     = movie.Day
+                # Yeah its a bit supersufficial as date is already in it
+                # But will allow the view to sort the list
+                d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
+                if self.checkFileCreationDate:
+                    try:
+                        d["Creation"] = os.stat(d["Path"]).st_mtime
+                    except Exception, ex:
+                        printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+                        d["Creation"] = 0
                 d["Plot"]    = utf8ToLatin(movie.Plot)
                 d["Runtime"] = movie.Runtime
                 d["Popularity"] = movie.Popularity
-                d["Genres"]  = movie.Genres
+                d["Genres"]  = utf8ToLatin(movie.Genres)
                 
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
-            return (parsedLibrary, ("play", "ImdbId", ), None, None)
+            sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
+            if self.checkFileCreationDate:
+                sort.append(("File Creation", "Creation", True))
+            return (parsedLibrary, ("play", "ImdbId", ), None, None, sort)
+        
         return None
 
     def buildInfoPlaybackArgs(self, entry):

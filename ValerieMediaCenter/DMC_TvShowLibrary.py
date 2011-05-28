@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 from DMC_Library import DMC_Library
 from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
 
@@ -38,10 +42,11 @@ class DMC_TvShowLibrary(DMC_Library):
                 d["Plot"]    = utf8ToLatin(tvshow.Plot)
                 d["Runtime"] = tvshow.Runtime
                 d["Popularity"] = tvshow.Popularity
-                d["Genres"]  = tvshow.Genres
+                d["Genres"]  = utf8ToLatin(tvshow.Genres)
                 
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
-            return (parsedLibrary, ("TheTvDbId", ), None, None)
+            sort = (("Title", None, False), ("Popularity", "Popularity", True), )
+            return (parsedLibrary, ("TheTvDbId", ), None, None, sort)
         
         # Display the Episodes Menu
         elif primaryKeyValuePair.has_key("TheTvDbId") and primaryKeyValuePair.has_key("Season"):
@@ -66,17 +71,26 @@ class DMC_TvShowLibrary(DMC_Library):
                     d["Month"]   = episode.Month
                     d["Day"]     = episode.Day
                     d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
+                    if self.checkFileCreationDate:
+                        try:
+                            d["Creation"] = os.stat(d["Path"]).st_mtime
+                        except Exception, ex:
+                            printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+                            d["Creation"] = 0
                     d["Season"]  = episode.Season
                     d["Episode"] = episode.Episode
                     d["Plot"]    = utf8ToLatin(episode.Plot)
                     d["Runtime"] = episode.Runtime
                     d["Popularity"] = episode.Popularity
-                    d["Genres"]  = episode.Genres
+                    d["Genres"]  = utf8ToLatin(episode.Genres)
                     
                     parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50"))
+            sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
+            if self.checkFileCreationDate:
+                sort.append(("File Creation", "Creation", True))
             return (parsedLibrary, ("play", "TheTvDbId", "Season", "Episode", ), dict({ \
                 'TheTvDbId': episode.TheTvDbId, \
-                }), primaryKeyValuePair)
+                }), primaryKeyValuePair, sort)
         
         # Display the Seasons Menu
         elif primaryKeyValuePair.has_key("TheTvDbId"):
@@ -96,7 +110,7 @@ class DMC_TvShowLibrary(DMC_Library):
             d["Plot"]    = utf8ToLatin(tvshow.Plot)
             d["Runtime"] = tvshow.Runtime
             d["Popularity"] = tvshow.Popularity
-            d["Genres"]  = tvshow.Genres
+            d["Genres"]  = utf8ToLatin(tvshow.Genres)
             library = self.manager.getAll(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
             
             seasons = []
@@ -108,7 +122,8 @@ class DMC_TvShowLibrary(DMC_Library):
                     s["Title"]  = "  Season %2d" % (season, )
                     s["Season"] = season
                     parsedLibrary.append((s["Title"], s, season, "50"))
-            return (parsedLibrary, ("TheTvDbId", "Season", ), None, primaryKeyValuePair)
+            sort = (("Title", None, False), )
+            return (parsedLibrary, ("TheTvDbId", "Season", ), None, primaryKeyValuePair, sort)
         return None
 
     def getPlaybackList(self, entry):

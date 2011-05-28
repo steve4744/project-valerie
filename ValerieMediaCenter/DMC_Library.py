@@ -13,6 +13,9 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 #------------------------------------------------------------------------------------------
 
 class DMC_Library(Screen):
+
+    checkFileCreationDate = True
+
     def __init__(self, session, libraryName):
         printl("", self, "D")
         Screen.__init__(self, session)
@@ -25,12 +28,12 @@ class DMC_Library(Screen):
         self.onFirstExecBegin.append(self.showView)
 
     # Displays the selected View
-    def showView(self, selection=None):
+    def showView(self, selection=None, sort=None):
         printl("", self, "D")
         m = __import__(self._views[self.currentViewIndex], globals(), locals(), [], -1)
         print m
         print m.getViewClass()
-        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, select=selection)
+        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, select=selection, sort=sort)
 
     # Called if View has closed, react on cause for example change to different view
     def onViewClosed(self, cause=None):
@@ -38,13 +41,16 @@ class DMC_Library(Screen):
         if cause is not None:
             if cause[0] == DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
                 selection = None
+                sort = None
                 self.currentViewIndex += 1
                 if len(self._views) <= self.currentViewIndex:
                     self.currentViewIndex = 0
                 if len(cause) >= 2 and cause[1] is not None:
                     #self.currentViewIndex = cause[1]
                     selection = cause[1]
-                self.showView(selection)
+                if len(cause) >= 3 and cause[2] is not None:
+                    sort = cause[2]
+                self.showView(selection, sort)
             else:
                 self.close()
         else:
@@ -52,6 +58,7 @@ class DMC_Library(Screen):
 
     # prototype for library loading, is called by the view
     def loadLibrary(self, primaryKeyValuePair=None):
+        #dict({'root': None})
         return []
 
     # starts playback, is called by the view

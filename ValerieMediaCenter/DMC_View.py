@@ -58,12 +58,13 @@ class DMC_View(Screen, HelpableScreen):
 
 	FAST_STILLPIC = False
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None, sort=None):
 		self.skinName = skinName
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		self.skinName = skinName
 		self.select = select
+		self.onFirstExecSort = sort
 		
 		self.libraryName = libraryName
 		self.loadLibrary = loadLibrary
@@ -109,8 +110,8 @@ class DMC_View(Screen, HelpableScreen):
 			"menu":       (self.onKeyMenu, ""),
 
 			"red":        (self.onKeyRed, ""),
-			"yellow":     (self.onKeyYellow, ""),
 			"green":      (self.onKeyGreen, ""),
+			"yellow":     (self.onKeyYellow, ""),
 			"blue":       (self.onKeyBlue, ""),
 
 		}, -2)
@@ -122,12 +123,20 @@ class DMC_View(Screen, HelpableScreen):
 		self.setTitle(_(self.libraryName))
 
 	def onFirstExec(self):
-		if self.select is None:
-			self._load()
+		if self.select is None: # Initial Start of View, select first entry in list
+			if self.onFirstExecSort is not None:
+				self.activeSort = self.onFirstExecSort
+				self._load(ignoreSort=True)
+			else:
+				self._load(ignoreSort=False)
 			self.refresh()
-		else:
+		else: # changed views, reselect selected entry
 			print self.select #(None, {'ImdbId': 'tt1190080'})
-			self._load(self.select[0])
+			if self.onFirstExecSort is not None:
+				self.activeSort = self.onFirstExecSort
+				self._load(self.select[0], ignoreSort=True)
+			else:
+				self._load(self.select[0], ignoreSort=False)
 			keys = self.select[1].keys()
 			for i in range(len(self.listViewList)):
 				entry = self.listViewList[i]
@@ -177,12 +186,28 @@ class DMC_View(Screen, HelpableScreen):
 
 	def onKeyRed(self):
 		pass
+
+	def onKeyGreen(self):
+		self.onToggleSort()
+
 	def onKeyYellow(self):
 		pass
-	def onKeyGreen(self):
-		pass
+
 	def onKeyBlue(self):
 		self.onToggleView()
+
+	activeSort = ("Default", None, False)
+	def onToggleSort(self):
+		for i in range(len(self.onSortKeyValuePair)):
+			if self.activeSort[1] == self.onSortKeyValuePair[i][1]:
+				if (i+1) < len(self.onSortKeyValuePair):
+					self.activeSort = self.onSortKeyValuePair[i + 1]
+				else:
+					self.activeSort = self.onSortKeyValuePair[0]
+				break
+		
+		self.sort()
+		self.refresh()
 
 	def onToggleView(self):
 		# These allow us to get the correct list
@@ -197,7 +222,7 @@ class DMC_View(Screen, HelpableScreen):
 				if key != "play":
 					primaryKeyValuePair[key] = selection[1][key]
 			select = (self.currentKeyValuePair, primaryKeyValuePair)
-		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select))
+		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort))
 
 	def onNextEntry(self):
 		printl("", self)
@@ -304,7 +329,7 @@ class DMC_View(Screen, HelpableScreen):
 				break
 		self.refresh()
 
-	def _load(self, primaryKeys=None):
+	def _load(self, primaryKeys=None, ignoreSort=False):
 		print "primaryKeys", primaryKeys
 		self.currentKeyValuePair = primaryKeys
 		library = self.loadLibrary(primaryKeys)
@@ -313,12 +338,25 @@ class DMC_View(Screen, HelpableScreen):
 		self.onEnterPrimaryKeys = library[1]
 		self.onLeavePrimaryKeyValuePair = library[2]
 		self.onLeaveSelectKeyValuePair = library[3]
+		self.onSortKeyValuePair = library[4]
 		
 		print "onEnterPrimaryKeys", self.onEnterPrimaryKeys
 		print "onLeavePrimaryKeyValuePair", self.onLeavePrimaryKeyValuePair
 		print "onLeaveSelectKeyValuePair", self.onLeaveSelectKeyValuePair
 		
-		self.listViewList.sort(key=lambda x: x[2])
+		if ignoreSort is False:
+			# After changing the lsit always return to the default sort
+			self.activeSort = self.onSortKeyValuePair[0]
+		self.sort()
+
+	def sort(self):
+		self._sort()
+
+	def _sort(self):
+		if self.activeSort[1] is None:
+			self.listViewList.sort(key=lambda x: x[2], reverse=self.activeSort[2])
+		else:
+			self.listViewList.sort(key=lambda x: x[1][self.activeSort[1]], reverse=self.activeSort[2])
 		self["listview"].setList(self.listViewList)
 		self["listview"].setIndex(0)
 
