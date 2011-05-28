@@ -3,7 +3,7 @@
     <resolution xres="1280" yres="720" bpp="32"/>
 </output>
 <!-- PVMC Wizard -->
-<screen name="PVMC_Wizard" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000" >
+<screen name="PVMC_Wizard" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000" >
     <widget name="showiframe" position="0,0" zPosition="0" size="1280,720" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background.m1v"/>
     <eLabel text="Project Valerie" transparent="1" zPosition="1" halign="center" valign="top" position="106,60" size="1066,43" font="Regular;40"/>
     <widget name="text" transparent="1" zPosition="1" halign="center" valign="top" position="106,120" size="1066,68" font="Regular;30"/>
@@ -33,9 +33,8 @@
     </widget>
 </screen>
 <!-- PVMC_Settings -->
-<screen name="PVMC_Settings" position="0,0" size="1280,720" title=" " flags="wfNoBorder">
+<screen name="PVMC_Settings" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,56" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="497,645" size="26,20" alphatest="blend"/>
@@ -44,7 +43,7 @@
     <widget name="config" zPosition="1" position="106,125" size="1066,500" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
 </screen>
 <!-- PVMC Series -->
-<screen name="PVMC_Series" position="0,0" size="1280,720" title=" " flags="wfNoBorder">
+<screen name="PVMC_Series" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="4" position="0,0" zPosition="0" size="1,1"/>
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/>
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_overlay-fs8.png"/>
@@ -92,7 +91,7 @@
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="711,250" size="551,387" font="Modern;22" foregroundColor="#FFFFFF"/>
 </screen>
 <!-- PVMC Movies -->
-<screen name="PVMC_Movies" position="0,0" size="1280,720" title="Media Center - Movies" flags="wfNoBorder">
+<screen name="PVMC_Movies" position="0,0" size="1280,720" title="Media Center - Movies" flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="4" position="0,0" zPosition="0" size="1,1"/>
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v"/>
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_list_overlay-fs8.png"/>
@@ -140,7 +139,7 @@
     <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="711,250" size="551,387" font="Modern;22" foregroundColor="#FFFFFF"/>
 </screen>
 <!-- PVMC PosterView -->
-<screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
+<screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="4" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_poster_overlay-fs8.png"/>
@@ -174,7 +173,7 @@
     <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
 </screen>
 <!-- PVMC_MessageBoxInfo -->
-<screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
+<screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <eLabel position="88,62" size="1102,595" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/1280x720/images/fanart_overlay-fs8.png"/>
@@ -187,9 +186,8 @@
 </screen>
 <!-- SYNC -->
 <!-- ProjectValerieSync -->
-<screen name="ProjectValerieSync" position="center,center" size="1280,720" title=" " flags="wfNoBorder">
+<screen name="ProjectValerieSync" position="center,center" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,37" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="302,645" size="26,20" alphatest="blend"/>
@@ -212,9 +210,8 @@
     <widget name="name" zPosition="1" position="835,512" size="302,75" font="Modern;25" transparent="1"/>
 </screen>
 <!-- ProjectValerieSyncManager -->
-<screen name="ProjectValerieSyncManager" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncManager" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="3" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,56" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="408,645" size="26,20" alphatest="blend"/>
@@ -235,9 +232,8 @@
     </widget>
 </screen>
 <!-- ProjectValerieSyncManagerInfo -->
-<screen name="ProjectValerieSyncManagerInfo" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncManagerInfo" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,37" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="355,645" size="26,20" alphatest="blend"/>
@@ -261,9 +257,8 @@
     <widget name="episode" zPosition="1" position="302,337" size="853,37" font="Modern;25" halign="left" valign="top" transparent="1"/>
 </screen>
 <!-- ProjectValerieSyncSettings -->
-<screen name="ProjectValerieSyncSettings" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncSettings" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,56" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="373,645" size="26,20" alphatest="blend"/>
@@ -272,9 +267,8 @@
     <widget name="settingsMenu" zPosition="1" position="106,125" size="1066,425" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
 </screen>"
 <!-- ProjectValerieSyncSettingsConfSettings -->
-<screen name="ProjectValerieSyncSettingsConfSettings" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncSettingsConfSettings" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,37" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="355,645" size="26,20" alphatest="blend"/>
@@ -287,9 +281,8 @@
     <widget name="config" position="106,125" size="1066,425" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
 </screen>
 <!-- ProjectValerieSyncSettingsConfPaths -->
-<screen name="ProjectValerieSyncSettingsConfPaths" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncSettingsConfPaths" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,56" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" position="373,645" size="26,20" alphatest="blend"/>
@@ -302,9 +295,8 @@
     <widget name="pathsList" zPosition="1" position="106,175" size="1066,450" scrollbarMode="showOnDemand" transparent="1" enableWrapAround="1"/>
 </screen>
 <!-- ProjectValerieSyncSettingsConfPathsAdd -->
-<screen name="ProjectValerieSyncSettingsConfPathsAdd" position="center,center" size="1280,720" title=" ">
+<screen name="ProjectValerieSyncSettingsConfPathsAdd" position="center,center" size="1280,720" title=" " backgroundColor="#FF000000">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1"/>
-    <ePixmap position="0,0" zPosition="-10" size="1280,720" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/background720.png"/>
     <widget source="Title" render="Label" transparent="1" zPosition="1" halign="center" valign="center" position="106,37" size="1066,56" font="Modern;37" foregroundColor="#006CA4C5"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" position="106,645" size="26,20" alphatest="blend"/>
     <ePixmap pixmap="skin_default/buttons/button_green.png" position="373,645" size="26,20" alphatest="blend"/>
