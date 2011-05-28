@@ -14,7 +14,7 @@ import os
 #from PVS_DatabaseLayer import DatabaseLayer as databaseLayer 
 #------------------------------------------------------------------------------------------
 
-class Manager(object):
+class Manager():
 
 	MOVIES = 0
 	TVSHOWS = 1
