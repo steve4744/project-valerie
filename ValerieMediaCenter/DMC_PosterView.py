@@ -102,7 +102,8 @@ class DMC_PosterView(DMC_View):
 					"defaultposter" + self.postersize + ".png")
 
 	def close(self, arg=None):
-		self.showiframe.finishStillPicture()
+		if arg is None or arg[0] != DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
+			self.showiframe.finishStillPicture()
 		super(DMC_PosterView, self).close(arg)
 
 	def playEntry(self, entry):

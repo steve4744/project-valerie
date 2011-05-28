@@ -144,7 +144,8 @@ class DMC_ListView(DMC_View):
 			self.setText("current", _("Pages:") + ' ' + str(pageCurrent) + "/" + str(pageTotal))
 
 	def close(self, arg=None):
-		self.showiframe.finishStillPicture()
+		if arg is None or arg[0] != DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
+			self.showiframe.finishStillPicture()
 		super(DMC_ListView, self).close(arg)
 
 	def playEntry(self, entry):
