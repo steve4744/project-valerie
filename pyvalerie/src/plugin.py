@@ -430,7 +430,7 @@ class ProjectValerieSyncSettings(Screen):
 			#Most probably "File not found" => Log issue, but don't propagate exception
 			printl("Warning: IOError: " + str(ex), self)
 		except:
-			printl("Error while deleting file:\n %s" % sys.exc_info()[0])
+			printl("Error while deleting file:\n %s" % sys.exc_info()[0],  self)
 			raise
 
 
