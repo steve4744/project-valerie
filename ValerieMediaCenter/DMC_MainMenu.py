@@ -37,7 +37,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 #------------------------------------------------------------------------------------------
 
 #dSize = getDesktop(0).size()
-font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/default/mayatypeuitvg.ttf"
+font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/mayatypeuitvg.ttf"
 #if dSize.width() == 720 and dSize.height() == 576:
 #	font = "/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/mayatypeuitvg_4.3.ttf"
 printl("Loading Font: " + font)
@@ -165,32 +165,40 @@ class PVMC_Update(Screen):
 		
 		self.url = remoteurl
 		
-		self.onFirstExecBegin.append(self.initupdate)
+		self.onFirstExecBegin.append(self.update)
 
-	def checkIpkg(self, result, retval, extra_args):
-		if retval == 1:
-			self.initupdate("ipkg")
-		else:
-			self.initupdate("opkg")
-
-	def initupdate(self, bin="test"):
-		
-		if bin == "test":
-			cmd = "ipkg"
-			self.Console.ePopen(cmd, self.checkIpkg)
-			return
-		
+	# RTV = 0 opkg install successfull
+	# RTV = 1 bianry found but no cmdline given
+	# RTV = 127 Binary not found
+	# RTV = 255 ERROR
+	def update(self):
 		self["text"].setText(_("Updating ProjectValerie...\n\n\nStay tuned :-)"))
-		cmd = " install -force-overwrite " + str(self.url)
-		printl("bin=" + str(bin) + " cmd=" + str(cmd), self)
-		self.session.open(SConsole,"Excecuting command: " + bin, [bin + cmd] , self.finishupdate)
+		cmd = """
+BIN=""
+ipkg > /dev/null 2>/dev/null
+if [ $? == "1" ]; then
+ BIN="ipkg"
+else
+ opkg > /dev/null 2>/dev/null
+ if [ $? == "1" ]; then
+  BIN="opkg"
+ fi
+fi
+echo "Binary: $BIN"
+
+if [ $BIN != "" ]; then
+ $BIN remove project-valerie
+ echo "Cleaning up"
+ rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie*
+ $BIN install %s
+fi""" % str(self.url)
+		
+		printl("cmd=" + str(cmd), self, "D")
+		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
 
 	def finishupdate(self):
 		time.sleep(2)
 		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
-		#self.session.open(MessageBox,_("Enigma2 will now restart!"),  MessageBox.TYPE_INFO)
-		#time.sleep(4)
-		#quitMainloop(3)
 
 	def e2restart(self, answer):
 		if answer is True:
