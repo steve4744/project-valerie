@@ -29,7 +29,7 @@ class DMC_ListView(DMC_View):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_Series", select, sort)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_ListView", select, sort)
 		
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
@@ -47,6 +47,10 @@ class DMC_ListView(DMC_View):
 		if self.APILevel >= 2:
 			self["total"] = Label()
 			self["current"] = Label()
+		
+		if self.APILevel >= 5:
+			self["quality"] = Label()
+			self["sound"] = Label()
 		
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText(_(" "))
@@ -82,7 +86,7 @@ class DMC_ListView(DMC_View):
 			printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 		
-		self.skinName = "PVMC_Series"
+		self.skinName = "PVMC_ListView"
 
 	def _refresh(self, selection, changeBackdrop):
 		element = selection[1]
@@ -116,6 +120,23 @@ class DMC_ListView(DMC_View):
 				self.setText("director", element["Directors"])
 			if selection[1].has_key("Writers"):
 				self.setText("writer", element["Writers"])
+		
+		if self.APILevel >= 5:
+			res = "576i"
+			if selection[1].has_key("Resolution"):
+				res = selection[1]["Resolution"]
+			if res != "576" and res != "576i":
+				self["quality"].setText(res)
+			else:
+				self["quality"].setText(" ")
+			
+			snd = "STEREO"
+			if selection[1].has_key("Sound"):
+				snd = selection[1]["Sound"].upper()
+			if snd != "STEREO":
+				self["sound"].setText(snd)
+			else:
+				self["sound"].setText(" ")
 		
 		self.setText("genre", element["Genres"].replace('|', " / "), what=_("Genre"))
 		#self.setText("year", str(element["Year"]))

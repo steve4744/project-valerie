@@ -55,6 +55,8 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Runtime"] = movie.Runtime
                 d["Popularity"] = movie.Popularity
                 d["Genres"]  = utf8ToLatin(movie.Genres)
+                d["Resolution"]  = utf8ToLatin(movie.Resolution)
+                d["Sound"]  = utf8ToLatin(movie.Sound)
                 
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]

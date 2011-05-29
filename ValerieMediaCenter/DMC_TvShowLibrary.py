@@ -88,6 +88,8 @@ class DMC_TvShowLibrary(DMC_Library):
                     d["Runtime"] = episode.Runtime
                     d["Popularity"] = episode.Popularity
                     d["Genres"]  = utf8ToLatin(episode.Genres)
+                    d["Resolution"]  = utf8ToLatin(episode.Resolution)
+                    d["Sound"]  = utf8ToLatin(episode.Sound)
                     
                     parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50"))
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
