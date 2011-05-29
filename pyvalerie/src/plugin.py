@@ -157,6 +157,10 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			<widget name="pathsList" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
 		</screen>"""
 
+	colorButtons = {}
+	
+	colorButtonsIndex = 0
+
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
 		self.session = session
@@ -177,33 +181,70 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			path = path.strip()
 			p = path.split('|')
 			path = p[0]
+			
+			folderType = u"MOVIE_AND_TV"
 			if len(p) > 1:
-				type = p[1]
-			else:
-				type = "MOVIE_AND_TV"
+				folderType = p[1]
+			
+			useFolder = "FILENAME"
+			if len(p) > 2 and p[2] == u"FOLDERNAME":
+				useFolder = "FOLDERNAME"
 			
 			if len(path) > 0 and path[0] != '#':
-				self.pathsList.append((path + " [" + type + "]", path, type))
+				self.pathsList.append((path + " [" + folderType + "][USE_" + useFolder + "]", path, folderType, useFolder))
 		fconf.close()
 		
-		self["key_red"] = StaticText(_("Remove"))
-		self["key_green"] = StaticText(_("Add"))
-		self["key_yellow"] = StaticText(_("Toggle Type"))
-		self["key_blue"] = StaticText(_("Save"))
+		self.colorButtons[0] = {}
+		self.colorButtons[0]["key_red"]    = (_("Remove"), self.remove, )
+		self.colorButtons[0]["key_green"]  = (_("Add"),       self.add, )
+		self.colorButtons[0]["key_yellow"] = (_("Save"),         self.save, )
+		self.colorButtons[0]["key_blue"]   = (_("More"),         self.more, )
+		self.colorButtons[1] = {}
+		self.colorButtons[1]["key_red"]    = (_("Toggle Type"),      self.toggleType, )
+		self.colorButtons[1]["key_green"]  = (_("Toggle useFolder"),       self.toggleUseFolder, )
+		self.colorButtons[1]["key_yellow"] = (_("Save"),         self.save, )
+		self.colorButtons[1]["key_blue"]   = (_("More"),         self.more, )
+		
+		self["key_red"]    = StaticText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
+		self["key_green"]  = StaticText(self.colorButtons[self.colorButtonsIndex]["key_green"][0])
+		self["key_yellow"] = StaticText(self.colorButtons[self.colorButtonsIndex]["key_yellow"][0])
+		self["key_blue"]   = StaticText(self.colorButtons[self.colorButtonsIndex]["key_blue"][0])
+		
 		self["pathsList"] = MenuList(self.pathsList)
 		
 		self["ProjectValerieSyncSettingsConfPathsActionMap"] = ActionMap(["OkCancelActions", "ColorActions", "DirectionActions"],
 		{
 			"cancel": self.exit,
-			"red": self.remove,
-			"green": self.add,
-			"yellow": self.toggleType,
-			"blue": self.save,
+			"red": self.key_red,
+			"green": self.key_green,
+			"yellow": self.key_yellow,
+			"blue": self.key_blue,
 		}, -1)
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
 		self.setTitle(_("Synchronize Manager Searchpaths"))
+
+	def key_red(self):
+		self.colorButtons[self.colorButtonsIndex]["key_red"][1]()
+
+	def key_green(self):
+		self.colorButtons[self.colorButtonsIndex]["key_green"][1]()
+
+	def key_yellow(self):
+		self.colorButtons[self.colorButtonsIndex]["key_yellow"][1]()
+
+	def key_blue(self):
+		self.colorButtons[self.colorButtonsIndex]["key_blue"][1]()
+
+	def more(self):
+		self.colorButtonsIndex = self.colorButtonsIndex + 1
+		if self.colorButtons.has_key(self.colorButtonsIndex) is False:
+			self.colorButtonsIndex = 0
+		self["key_red"].setText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
+		self["key_green"].setText(self.colorButtons[self.colorButtonsIndex]["key_green"][0])
+		self["key_yellow"].setText(self.colorButtons[self.colorButtonsIndex]["key_yellow"][0])
+		self["key_blue"].setText(self.colorButtons[self.colorButtonsIndex]["key_blue"][0])
 
 	def remove(self):
 		entry = self["pathsList"].l.getCurrentSelection()
@@ -220,8 +261,9 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		if path is not None:
 			printl("path: " + str(path), self)
 			if path not in self.pathsList:
-				type = "MOVIE_AND_TV"
-				self.pathsList.append((path + " [" + type + "]", path, type))
+				folderType = "MOVIE_AND_TV"
+				useFolder = "FILENAME"
+				self.pathsList.append((path + " [" + type + "][" + useFolder + "]", path, folderType, useFolder))
 				self["pathsList"].l.setList(self.pathsList)
 
 	def toggleType(self):
@@ -230,11 +272,24 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		index = self.pathsList.index(entry)
 		printl("index: " + str(index), self)
 		if entry[2] == "MOVIE_AND_TV":
-			entry = (entry[1] + " [MOVIE]", entry[1], "MOVIE")
+			entry = (entry[1] + " [MOVIE][" + entry[3] + "]", entry[1], "MOVIE", entry[3])
 		elif entry[2] == "MOVIE":
-			entry = (entry[1] + " [TV]", entry[1], "TV")
+			entry = (entry[1] + " [TV][" + entry[3] + "]", entry[1], "TV", entry[3])
 		elif entry[2] == "TV":
-			entry = (entry[1] + " [MOVIE_AND_TV]", entry[1], "MOVIE_AND_TV")
+			entry = (entry[1] + " [MOVIE_AND_TV][" + entry[3] + "]", entry[1], "MOVIE_AND_TV", entry[3])
+		printl("entryDst: " + str(entry), self)
+		self.pathsList[index] = entry
+		self["pathsList"].l.setList(self.pathsList)
+
+	def toggleUseFolder(self):
+		entry = self["pathsList"].l.getCurrentSelection()
+		printl("entrySrc: " + str(entry), self)
+		index = self.pathsList.index(entry)
+		printl("index: " + str(index), self)
+		if entry[3] == "FILENAME":
+			entry = (entry[1] + " [" + entry[2] + "][USE_FOLDERNAME]", entry[1], entry[2], "FOLDERNAME")
+		elif entry[3] == "FOLDERNAME":
+			entry = (entry[1] + " [" + entry[2] + "][USE_FILENAME]", entry[1], entry[2], "FILENAME")
 		printl("entryDst: " + str(entry), self)
 		self.pathsList[index] = entry
 		self["pathsList"].l.setList(self.pathsList)
@@ -244,7 +299,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "w")
 		fconf.write(self.filetypes + "\n")
 		for entry in self.pathsList:
-			fconf.write(entry[1] + "|" + entry[2] + "\n")
+			fconf.write(entry[1] + "|" + entry[2] + "|" + entry[3] + "\n")
 		fconf.close()
 		
 		self.exit()

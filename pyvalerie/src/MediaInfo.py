@@ -313,7 +313,7 @@ class MediaInfo(object):
 			printl("Exception (ef): " + str(ex), self, "E")
 		return None
 
-	def parse(self):
+	def parse(self, useParentFoldernameAsSearchstring=False):
 		absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
 		name = self.Filename.lower()
 		self.SearchString = name
@@ -555,6 +555,13 @@ class MediaInfo(object):
 		for replacement in replace.replacements(post):
 			#print "[" + post + "] ", replacement[0], " --> ", replacement[1]
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
+		
+		if useParentFoldernameAsSearchstring:
+			try:
+				folders = self.Path.split("/")
+				self.SearchString = folders[len(folders) - 1]
+			except Exception, ex:
+				printl("Exception: " + str(ex), self, "E")
 		
 		self.SearchString = self.SearchString.strip()
 		printl("eof: " + str(Utf8.utf8ToLatin(self.SearchString)), self)

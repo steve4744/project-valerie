@@ -46,24 +46,25 @@ class DirectoryScanner():
 		fd.close()
 
 	def setDirectory(self, directory):
+		self.clear()
 		self.directory = directory
 
 	def getDirectory(self):
 		return self.directory
 
 	def getFileList(self):
-		return self.fileList
+		return list(self.fileList)
 
-	def listDirectory(self, fileExtList, fileIgnoreRegex, type):	 
+	def listDirectory(self, fileExtList, fileIgnoreRegex, unused=None):
 		if self.directory not in self.folderList:
 			self.folderList[self.directory] = {}
 		
 		if self.isFastCrawlFileAvailable is True and len(self.folderList[self.directory]) > 0:
-			self._updateDirectory(self.directory, fileExtList, fileIgnoreRegex, type)
+			self._updateDirectory(self.directory, fileExtList, fileIgnoreRegex)
 		else:
-			self._listDirectory(self.directory, fileExtList, fileIgnoreRegex, type)
+			self._listDirectory(self.directory, fileExtList, fileIgnoreRegex)
 
-	def _updateDirectory(self, directory, fileExtList, fileIgnoreRegex, type):
+	def _updateDirectory(self, directory, fileExtList, fileIgnoreRegex):
 		printl("directory=" + str(directory), self)
 		allFolderKeys = self.folderList[directory].keys()
 		for folderKey in allFolderKeys:
@@ -72,13 +73,13 @@ class DirectoryScanner():
 				# Also enter if is mounted directoy as these often have the wrong time
 				if self.directory == folderKey or self.folderList[self.directory][folderKey] != mtime:
 					printl("folderKey=" + str(folderKey) + " " + str(self.folderList[self.directory][folderKey]) + " " + str(mtime), self)
-					self._directoryHasChanged(folderKey, fileExtList, fileIgnoreRegex, type)
+					self._directoryHasChanged(folderKey, fileExtList, fileIgnoreRegex)
 					self.folderList[self.directory][folderKey] = mtime
 			except Exception, ex:
 				printl("Exception: " + str(ex), self)
 				#del(self.folderList[directory][folderKey])
 
-	def _directoryHasChanged(self, directory, fileExtList, fileIgnoreRegex, type):
+	def _directoryHasChanged(self, directory, fileExtList, fileIgnoreRegex):
 		printl("directory=" + str(directory), self)
 		try:
 			for f in os.listdir(directory):
@@ -88,7 +89,7 @@ class DirectoryScanner():
 					(shortname, extension) = self.filenameToTulpe(f)
 					printl("shortname=" + str(shortname) + " extension=" + str(extension), self)
 					if extension.lower() in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
-						self.fileList.append([directory, shortname, extension, type])
+						self.fileList.append([directory, shortname, extension])
 				
 				elif os.path.isdir(file):
 					# Check if this is a new folder
@@ -96,12 +97,12 @@ class DirectoryScanner():
 					#print self.folderList[self.directory].keys()
 					if file not in self.folderList[self.directory].keys():
 						self.folderList[self.directory][file] = os.path.getmtime(file)
-						self._listDirectory(file, fileExtList, fileIgnoreRegex, type)
+						self._listDirectory(file, fileExtList, fileIgnoreRegex)
 					
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 		
-	def _listDirectory(self, directory, fileExtList, fileIgnoreRegex, type, recursive=True):
+	def _listDirectory(self, directory, fileExtList, fileIgnoreRegex, recursive=True):
 		"get list of file info objects for files of particular extensions" 
 		printl("directory=" + str(directory), self)
 
@@ -115,11 +116,11 @@ class DirectoryScanner():
 					# File is f and path is directory
 					(shortname, extension) = self.filenameToTulpe(f)
 					if extension.lower() in fileExtList and fileIgnoreRegex is not None and re.search(fileIgnoreRegex, shortname) is None:
-						self.fileList.append([directory, shortname, extension, type])
+						self.fileList.append([directory, shortname, extension])
 				
 				elif recursive is True and os.path.isdir(file):
 					self.folderList[self.directory][directory] = os.path.getmtime(directory)
-					self._listDirectory(file, fileExtList, fileIgnoreRegex, type)
+					self._listDirectory(file, fileExtList, fileIgnoreRegex)
 		except Exception, ex:
 			#import sys, traceback
 			printl("Exception: " + str(ex), self)

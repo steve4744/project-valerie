@@ -246,7 +246,8 @@ class pyvalerie(Thread):
 		lines = fconf.read().split(u"\n")
 		fconf.close()
 		
-		elementList = None
+		folderList = []
+		elementListFileCounter = 0
 		
 		if len(lines) > 1:
 			filetypes = lines[0].strip().split('|')
@@ -259,16 +260,24 @@ class pyvalerie(Thread):
 				path = path.strip()
 				
 				p = path.split(u'|')
+				print "p", p
 				path = p[0]
+				
+				folderType = u"MOVIE_AND_TV"
 				if len(p) > 1:
-					type = p[1]
-				else:
-					type = u"MOVIE_AND_TV"
+					folderType = p[1]
+				
+				useFolder = False
+				if len(p) > 2 and p[2] == u"FOLDERNAME":
+					useFolder = True
 				
 				if os.path.isdir(path):
 					ds.setDirectory(Utf8.utf8ToLatin(path))
-					ds.listDirectory(filetypes, "(sample)|(VTS)|(^\\.)", type)
-			elementList = ds.getFileList()
+					ds.listDirectory(filetypes, "(sample)|(VTS)|(^\\.)")
+				
+				filelist = ds.getFileList()
+				elementListFileCounter += len(filelist)
+				folderList.append((filelist, folderType, useFolder, ))
 		
 		elapsed_time = time.time() - start_time
 		printl("Searching for media files took: " + str(elapsed_time), self)
@@ -282,125 +291,129 @@ class pyvalerie(Thread):
 		elif dSize.width() == 1280 and dSize.height() == 720:
 			posterSize = Arts.posterResolution[2]
 		
-		if elementList is None:
+		if elementListFileCounter == 0:
 			self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))
 			printl("Found 0 media files", self)
 		else:
-			self.output(_("Found") + ' ' + str(len(elementList)) + ' ' + _("media files"))
-			printl("Found " + str(len(elementList)) + " media files", self)
+			self.output(_("Found") + ' ' + str(elementListFileCounter) + ' ' + _("media files"))
+			printl("Found " + str(elementListFileCounter) + " media files", self)
 			
-			self.range(len(elementList))
+			self.range(elementListFileCounter)
 			
 			i = 0
-			for element in elementList:
-				i = i + 1
-				self.progress(i)
+			for folder in folderList:
+				print "folder", folder
+				elementList = folder[0]
+				folderType  = folder[1]
+				useFolder   = folder[2]
 				
-				path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
-				filename  = Utf8.stringToUtf8(element[1])
-				extension = Utf8.stringToUtf8(element[2])
-				type      = element[3]
-				if path is None or filename is None or extension is None:
-					continue
-				
-				if "RECYCLE.BIN" in path:
-					continue
-				
-				if ".AppleDouble" in path:
-					continue
-				
-				if (filename + u"." + extension) in Blacklist.get():
-					printl("File blacklisted", self)
-					continue
-				
-				alreadyInDb = db.checkDuplicate(path, filename, extension)
-				if alreadyInDb is not None:
-					#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
-					#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
+				for element in elementList:
+					i += 1
+					self.progress(i)
 					
-					if Arts().isMissing(alreadyInDb):
-						#self.output("Downloading missing poster")
-						tmp = None
-						if alreadyInDb.isMovie:
-							tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
-						elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
-							tmp = TheTvDbProvider().getArtByTheTvDbId(alreadyInDb)
+					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
+					filename  = Utf8.stringToUtf8(element[1])
+					extension = Utf8.stringToUtf8(element[2])
+					
+					if path is None or filename is None or extension is None:
+						continue
+					
+					if "RECYCLE.BIN" in path or ".AppleDouble" in path:
+						continue
+					
+					if (filename + u"." + extension) in Blacklist.get():
+						printl("File blacklisted", self)
+						continue
+					
+					alreadyInDb = db.checkDuplicate(path, filename, extension)
+					if alreadyInDb is not None:
+						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
+						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
 						
-						if tmp is not None:
-							Arts().download(tmp)
-							
+						if Arts().isMissing(alreadyInDb):
+							#self.output("Downloading missing poster")
+							tmp = None
 							if alreadyInDb.isMovie:
-								self.info(str(alreadyInDb.ImdbId) + "_poster_" + posterSize + ".png", 
-									"", "")
+								tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
 							elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
-								self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
-									"", "")
+								tmp = TheTvDbProvider().getArtByTheTvDbId(alreadyInDb)
+							
+							if tmp is not None:
+								Arts().download(tmp)
+								
+								if alreadyInDb.isMovie:
+									self.info(str(alreadyInDb.ImdbId) + "_poster_" + posterSize + ".png", 
+										"", "")
+								elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
+									self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
+										"", "")
+						
+						continue
 					
-					continue
-				
-				printl("#"*60, self)
-				self.output("(" + str(i) + "/" + str(len(elementList))  + ")")
-				printl("(" + str(i) + "/" + str(len(elementList))  + ")", self)
-				printl("#"*6, self)
-				self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
-				printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
-				
-				elementInfo = MediaInfo.MediaInfo(path, filename, extension)
-				
-				printl("TYPE: " + str(type), self)
-				
-				if type == u"MOVIE":
-					elementInfo.isMovie = True
-					elementInfo.isSerie = False
-				elif type == u"TV":
-					elementInfo.isMovie = False
-					elementInfo.isSerie = True
-				
-				result = elementInfo.parse()
-				
-				if result == False:
-					continue
-				
-				if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
-					tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
-					if tmp[0] is True and tmp[1] is None:
-						# seems to be no tvshows so lets parse as movie
+					printl("#"*60, self)
+					self.output("(" + str(i) + "/" + str(elementListFileCounter)  + ")")
+					printl("(" + str(i) + "/" + str(elementListFileCounter)  + ")", self)
+					printl("#"*6, self)
+					self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
+					printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
+					
+					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
+					
+					printl("TYPE: " + str(folderType), self)
+					printl("USEFOLDER: " + str(useFolder), self)
+					
+					if useFolder == u"MOVIE":
 						elementInfo.isMovie = True
 						elementInfo.isSerie = False
-					elif tmp[0] is True:
-						elementInfo = tmp
-					searchStringSplitted = elementInfo.SearchString.split("::")
-					if len(searchStringSplitted) >= 2:
-						elementInfo.SearchString = searchStringSplitted[0];
-				
-				tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
-				if tmp is None:
-					db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
-					continue
-				elementInfo = tmp
-				
-				results = Sync().syncWithId(elementInfo)
-				if results is not None:
-					for result in results:
-						if db.add(result):
-							result.Title = self.encodeMe(result.Title)
-							if result.isMovie:
-								self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
-									result.Title, result.Year)
-								printl("my_title " + result.Title, self, "I")
+					elif useFolder == u"TV":
+						elementInfo.isMovie = False
+						elementInfo.isSerie = True
+					
+					result = elementInfo.parse(useFolder)
+					
+					if result == False:
+						continue
+					
+					if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
+						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
+						if tmp[0] is True and tmp[1] is None:
+							# seems to be no tvshows so lets parse as movie
+							elementInfo.isMovie = True
+							elementInfo.isSerie = False
+						elif tmp[0] is True:
+							elementInfo = tmp
+						searchStringSplitted = elementInfo.SearchString.split("::")
+						if len(searchStringSplitted) >= 2:
+							elementInfo.SearchString = searchStringSplitted[0];
+					
+					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
+					if tmp is None:
+						db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
+						continue
+					elementInfo = tmp
+					
+					results = Sync().syncWithId(elementInfo)
+					if results is not None:
+						for result in results:
+							if db.add(result):
+								result.Title = self.encodeMe(result.Title)
+								if result.isMovie:
+									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
+										result.Title, result.Year)
+									printl("my_title " + result.Title, self, "I")
+								else:
+									self.info(str(result.TheTvDbId) + "_poster_" + posterSize + ".png", 
+										result.Title, result.Year)
+									printl("my_title " + result.Title, self, "I")
 							else:
-								self.info(str(result.TheTvDbId) + "_poster_" + posterSize + ".png", 
-									result.Title, result.Year)
-								printl("my_title " + result.Title, self, "I")
-						else:
-							cause = db.getAddFailedCauseOf()
-							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
-								cause))
-							printl("Title already in db", self, "W")
-			
-			self.output("(" + str(i) + "/" + str(len(elementList)) + ")")
-			printl("(" + str(i) + "/" + str(len(elementList)) + ")", self)
-			self.progress(i)
+								cause = db.getAddFailedCauseOf()
+								db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
+									cause))
+								printl("Title already in db", self, "W")
+					
+					self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
+					printl("(" + str(i) + "/" + str(elementListFileCounter) + ")", self)
+					self.progress(i)
 		
 		self.output(_("Saving database"))
 		printl("Saving database", self)
