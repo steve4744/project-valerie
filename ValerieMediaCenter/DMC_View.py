@@ -5,6 +5,7 @@ from Components.MenuList import MenuList
 from Components.Sources.List import List
 from Screens.ChoiceBox import ChoiceBox
 from Screens.HelpMenu import HelpableScreen
+from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
 from DataElement import DataElement

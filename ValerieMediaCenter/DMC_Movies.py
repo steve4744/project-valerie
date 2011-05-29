@@ -259,10 +259,8 @@ class PVMC_Movies(Screen, HelpableScreen):
 			self.setText("shortDescription", self.moviedb[selection[1]].Plot, what=_("Overview"))
 			
 			if self.APILevel == 1:
-				if self.moviedb[selection[1]].has_key("Directors"):
-					self.setText("director", self.moviedb[selection[1]].Directors)
-				if self.moviedb[selection[1]].has_key("Writers"):
-					self.setText("writer", self.moviedb[selection[1]].Writers)
+				self.setText("director", " ")
+				self.setText("writer", " ")
 			
 			self.setText("genre", self.moviedb[selection[1]].Genres.replace('|', ", "), what=_("Genre"))
 			sele = self.moviedb[selection[1]]
