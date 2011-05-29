@@ -413,9 +413,26 @@ class ProjectValerieSyncSettings(Screen):
 
 	def remove(self, file):
 		try:
-			os.remove(file)
-		except os.error, ex:
-			printl("os.error: " + str(ex), self)
+			#Check if file to be deleted exists...
+			fdel = open(file,  'r')
+			try:
+				#OK, try to delete it
+				fdel.close()
+				os.remove(file)
+			except os.error, ex:
+				#Something went wrong - log issue and propagate exception
+				printl("os.error: " + str(ex), self)
+				raise
+		except os.error:
+			#Propagate exception
+			raise
+		except IOError,  ex:
+			#Most probably "File not found" => Log issue, but don't propagate exception
+			printl("Warning: IOError: " + str(ex), self)
+		except:
+			printl("Error while deleting file:\n %s" % sys.exc_info()[0])
+			raise
+
 
 	def ok(self):
 		returnValue = self["settingsMenu"].l.getCurrentSelection()[1]
@@ -426,23 +443,39 @@ class ProjectValerieSyncSettings(Screen):
 			elif returnValue == "confSettings":
 				self.session.open(ProjectValerieSyncSettingsConfSettings, self)
 			elif returnValue == "clearCache":
-				self.removeDir(config.plugins.pvmc.tmpfolderpath.value + "cache")
+				try:
+					self.removeDir(config.plugins.pvmc.tmpfolderpath.value + "cache")
+					self.session.open(MessageBox,_("Cache successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)  
+				except:
+					self.session.open(MessageBox,_("Error while deleting cache:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
 			elif returnValue == "delArts":
-				self.removeDir(config.plugins.pvmc.mediafolderpath.value)
+				try:
+					self.removeDir(config.plugins.pvmc.mediafolderpath.value)
+					self.session.open(MessageBox,_("Arts successfully deleted..."), MessageBox.TYPE_INFO, timeout=3) 
+				except:
+					self.session.open(MessageBox,_("Error while deleting arts:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR) 
 			elif returnValue == "delDb":
-				self.remove(config.plugins.pvmc.configfolderpath.value + "moviedb.txt")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "movies.txd")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "movies.db")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "seriesdb.txt")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.txd")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.db")
-				self.removeDir(config.plugins.pvmc.configfolderpath.value + "episodes")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "episodes.db")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin")
+				try:
+					self.remove(config.plugins.pvmc.configfolderpath.value + "movies.txd")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "movies.db")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.txd")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "tvshows.db")
+					self.removeDir(config.plugins.pvmc.configfolderpath.value + "episodes")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "episodes.db")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin")
+					# Delete also failed.db...
+					self.remove(config.plugins.pvmc.configfolderpath.value + "failed.db") 
+					self.session.open(MessageBox,_("Database successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)
+				except:
+					self.session.open(MessageBox,_("Error while deleting database:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
 			elif returnValue == "resetFl":
-				self.remove(config.plugins.pvmc.configfolderpath.value + "pre.conf")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
-				self.remove(config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
+				try:
+					self.remove(config.plugins.pvmc.configfolderpath.value + "pre.conf")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
+					self.remove(config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
+					self.session.open(MessageBox,_("Filter successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)
+				except:
+					self.session.open(MessageBox,_("Error while deleting filter:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
 			elif returnValue == "exit":
 				self.cancel()
 
@@ -459,6 +492,8 @@ class ProjectValerieSyncSettings(Screen):
 					os.rmdir(os.path.join(root, name))
 				except os.error, ex:
 					printl("os.error: " + str(ex), self)
+					#Propagate exception
+					raise
 
 def autostart(session):
 	global gSyncInfo
