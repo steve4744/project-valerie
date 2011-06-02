@@ -6,7 +6,7 @@
 </div>
 <div id="content">
 
-  <table id="main_table">
+  <table id="main_table" width="100%">
     <thead>
       <tr>
 <!-- REPLACE_THEAD -->
