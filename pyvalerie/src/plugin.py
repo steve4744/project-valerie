@@ -35,6 +35,7 @@ from   MediaInfo import MediaInfo
 from   sync import pyvalerie
 from   sync import checkDefaults as SyncCheckDefaults
 import Utf8
+import WebGrabber
 
 # Hack as long as these plugins are seperated
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
@@ -525,12 +526,28 @@ class ProjectValerieSyncSettings(Screen):
 					self.session.open(MessageBox,_("Error while deleting database:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
 			elif returnValue == "resetFl":
 				try:
-					self.remove(config.plugins.pvmc.configfolderpath.value + "pre.conf")
-					self.remove(config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
-					self.remove(config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
-					self.session.open(MessageBox,_("Filter successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)
+					DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
+					try:
+						printl("Reset " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__)
+						self.remove(config.plugins.pvmc.configfolderpath.value + "pre.conf")
+						WebGrabber.getFile(DEFAULTURL + "pre.conf", config.plugins.pvmc.configfolderpath.value + "pre.conf")
+						printl("\t- Done...", __name__)
+						
+						printl("Reset " + config.plugins.pvmc.configfolderpath.value + "post_movie.conf", __name__)
+						self.remove(config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
+						WebGrabber.getFile(DEFAULTURL + "post_movie.conf", config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
+						printl("\t- Done...", __name__)
+						
+						printl("Reset " + config.plugins.pvmc.configfolderpath.value + "post_tv.conf", __name__)
+						self.remove(config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
+						WebGrabber.getFile(DEFAULTURL + "post_tv.conf", config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
+						printl("\t- Done...", __name__)
+					except Exception, ex:
+						printl("Exception: " + str(ex), __name__)
+						raise
+					self.session.open(MessageBox,_("Filter successfully resetted..."), MessageBox.TYPE_INFO, timeout=3)
 				except:
-					self.session.open(MessageBox,_("Error while deleting filter:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
+					self.session.open(MessageBox,_("Error while resetting filter:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
 			elif returnValue == "exit":
 				self.cancel()
 
