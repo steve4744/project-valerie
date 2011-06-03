@@ -167,5 +167,5 @@ class DMC_TvShowLibrary(DMC_Library):
         args["type"]    = "tvshow"
         return args
 
-registerPlugin(Plugin(name=_("TV Shows (test)"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS))
+registerPlugin(Plugin(name=_("TV Shows"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS))
 

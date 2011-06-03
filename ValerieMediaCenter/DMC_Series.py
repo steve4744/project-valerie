@@ -714,4 +714,4 @@ class PVMC_Series(Screen, HelpableScreen):
 			episode["Title"] = self.moviedb[episode["TheTvDb"]]["Title"]
 			self.session.open(choice[1], episode)
 
-registerPlugin(Plugin(name=_("TV Shows"), start=PVMC_Series, where=Plugin.MENU_VIDEOS))
+#registerPlugin(Plugin(name=_("TV Shows"), start=PVMC_Series, where=Plugin.MENU_VIDEOS))

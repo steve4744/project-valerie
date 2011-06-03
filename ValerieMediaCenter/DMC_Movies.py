@@ -506,4 +506,4 @@ class PVMC_Movies(Screen, HelpableScreen):
 		if selection is not None and type(selection) != bool:
 			self.session.open(choice[1], self.moviedb[selection[1]])
 
-registerPlugin(Plugin(name=_("Movies"), start=PVMC_Movies, where=Plugin.MENU_VIDEOS))
+#registerPlugin(Plugin(name=_("Movies"), start=PVMC_Movies, where=Plugin.MENU_VIDEOS))

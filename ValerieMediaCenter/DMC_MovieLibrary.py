@@ -74,5 +74,5 @@ class DMC_MovieLibrary(DMC_Library):
         args["type"]    = "movie"
         return args
 
-registerPlugin(Plugin(name=_("Movies (test)"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
+registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
 
