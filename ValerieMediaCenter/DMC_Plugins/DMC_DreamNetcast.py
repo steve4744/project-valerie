@@ -15,4 +15,4 @@ except Exception, ex:
 	gAvailable = False
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("Dreamnetcast"), start=dreamnetstart, where=Plugin.MENU_MUSIC))
+	registerPlugin(Plugin(name=_("Dreamnetcast"), fnc=dreamnetstart, where=Plugin.MENU_MUSIC))
