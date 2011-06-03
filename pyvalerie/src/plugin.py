@@ -264,7 +264,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			if path not in self.pathsList:
 				folderType = "MOVIE_AND_TV"
 				useFolder = "FILENAME"
-				self.pathsList.append((path + " [" + type + "][" + useFolder + "]", path, folderType, useFolder))
+				self.pathsList.append((path + " [" + folderType + "][" + useFolder + "]", path, folderType, useFolder))
 				self["pathsList"].l.setList(self.pathsList)
 
 	def toggleType(self):
