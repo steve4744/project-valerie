@@ -6,9 +6,9 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 gAvailable = False
 try:
 	try:
-		from Plugins.Bp.geminidreamnetcast.geminidreamnetcast import dreamnetstart
+		from Plugins.Bp.geminidreamnetcast.plugin import dreamnetstart
 	except:
-		from Plugins.Bp.geminidreamnetcast import dreamnetstart
+		from Plugins.Bp.geminidreamnetcast.geminidreamnetcast.plugin import dreamnetstart
 	gAvailable = True
 except Exception, ex:
 	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
