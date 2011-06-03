@@ -6,13 +6,13 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 gAvailable = False
 try:
 	try:
-		from Plugins.Bp.geminidreamnetcast.geminidreamnetcast import geminidreamnetcast
+		from Plugins.Bp.geminidreamnetcast.geminidreamnetcast import dreamnetstart
 	except:
-		from Plugins.Bp.geminidreamnetcast import geminidreamnetcast
+		from Plugins.Bp.geminidreamnetcast import dreamnetstart
 	gAvailable = True
 except Exception, ex:
 	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
 	gAvailable = False
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("Dreamnetcast"), start=geminidreamnetcast, where=Plugin.MENU_MUSIC))
+	registerPlugin(Plugin(name=_("Dreamnetcast"), start=dreamnetstart, where=Plugin.MENU_MUSIC))
