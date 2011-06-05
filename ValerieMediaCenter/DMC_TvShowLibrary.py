@@ -3,22 +3,32 @@
 import os
 
 from DMC_Library import DMC_Library
-try:
-	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-	from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-except:
-	from ..ProjectValerieSync.Manager import Manager
-	from ..ProjectValerieSync.Utf8    import utf8ToLatin
-
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
+gAvailable = False
+gLateImport = False
+try:
+	try:
+		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+	except:
+		from ..ProjectValerieSync.Manager import Manager
+		from ..ProjectValerieSync.Utf8    import utf8ToLatin
+	gAvailable = True
+except Exception, ex:
+	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
+	gAvailable = False
+
 class DMC_TvShowLibrary(DMC_Library):
 
     def __init__(self, session):
+        global gLateImport
+        if gLateImport:
+            from Plugins.Extensions.ProjectValerieSync.Manager import Manager
         self.manager = Manager()
         DMC_Library.__init__(self, session, "tv shows")
 
@@ -26,6 +36,10 @@ class DMC_TvShowLibrary(DMC_Library):
     # Return Value is expected to be:
     # (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
     def loadLibrary(self, primaryKeyValuePair):
+        global gLateImport
+        if gLateImport:
+            from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+            from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
         
         # Diplay all TVShows
         if primaryKeyValuePair is None:
@@ -167,5 +181,10 @@ class DMC_TvShowLibrary(DMC_Library):
         args["type"]    = "tvshow"
         return args
 
-registerPlugin(Plugin(name=_("TV Shows"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS))
+if gAvailable is False:
+	printl("WORKAROUND: Force displaying of this plugin!", __name__, "W")
+	gAvailable = True
+	gLateImport = True
 
+if gAvailable is True:
+	registerPlugin(Plugin(name=_("TV Shows"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS))
