@@ -42,6 +42,10 @@ class Manager():
 		printl("", self)
 		self.db.save()
 
+	def reload(self):
+		printl("", self)
+		self.db.reload()
+
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)
 		if type == self.MOVIES:
