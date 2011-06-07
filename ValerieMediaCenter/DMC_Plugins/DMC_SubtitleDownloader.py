@@ -21,15 +21,13 @@ except:
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+Manager = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.Utf8 import *
-	
 	from DMC_SubtitleDownloaderExtras.utilities import *
 	sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "DMC_Plugins/DMC_SubtitleDownloaderExtras")
 	gAvailable = True
@@ -68,6 +66,12 @@ class DMC_SubtitleDownloader(ChoiceBox):
 	service = "OpenSubtitles"
 
 	def __init__(self, session, args):
+		global Manager
+		global utf8ToLatin
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		self.session = session
 		self.service = config.plugins.pvmc.plugins.subdown.provider.value
 		self.language_1 = config.plugins.pvmc.plugins.subdown.language1.value

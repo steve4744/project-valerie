@@ -13,21 +13,19 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+Manager = None
+MediaInfo = None
+Utf8 = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
 	from twisted.web.server import Site
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.MediaInfo import *
-		from ..ProjectValerieSync.Utf8 import *
-	
 	gAvailable = True
 except Exception, ex:
 	printl("DMC_WebInterface::isAvailable Is not available", None, "E")
@@ -46,6 +44,13 @@ class Action(Resource):
 		return self.action(request)
 
 	def action(self, request):
+		global Manager
+		global MediaInfo
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		
 		printl("request: " + str(request), self)
 		printl("request.args: " + str(request.args), self)
 		printl("request.args[method]: " + str(request.args["method"]), self)
@@ -180,6 +185,13 @@ class Action(Resource):
 
 class Index(Resource):
 	def render_GET(self, request):
+		global Utf8
+		global utf8ToLatin
+		if Utf8 is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import Utf8
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		
 		f = Utf8(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterface/index.html", "r")
 		html = f.read()
 		f.close()
@@ -203,7 +215,19 @@ class Database(Resource):
 		self.type = type
 
 	def render_GET(self, request):
-
+		global Manager
+		global MediaInfo
+		global Utf8
+		global utf8ToLatin
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		if Utf8 is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import Utf8
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		
 		#TODO: We should cache these
 		manager = Manager()
 		
@@ -385,6 +409,10 @@ class Database(Resource):
 		return string
 
 def autostart(session):
+	global utf8ToLatin
+	if utf8ToLatin is None:
+		from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+	
 	try:
 		root = Resource()
 		

@@ -31,6 +31,9 @@ from DMC_Global import getBoxtype, getAPILevel
 from DMC_Movies import PVMC_Movies
 from DMC_Series import PVMC_Series
 
+from DMC_MovieLibrary import DMC_MovieLibrary
+from DMC_TvShowLibrary import DMC_TvShowLibrary
+
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
@@ -450,12 +453,8 @@ class PVMC_MainMenu(Screen):
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
 				if selection[1] == "PVMC_Movies":
-					if self.APILevel >= 2 and self.ShowStillPicture is True:
-						self["showiframe"].finishStillPicture()
 					self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
 				elif selection[1] == "PVMC_Series":
-					if self.APILevel >= 2 and self.ShowStillPicture is True:
-						self["showiframe"].finishStillPicture()
 					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
 		else:
 			selection = self["menu"].getCurrent()
@@ -468,11 +467,11 @@ class PVMC_MainMenu(Screen):
 				elif selection[1] == "PVMC_Movies":
 					if self.APILevel >= 2 and self.ShowStillPicture is True:
 						self["showiframe"].finishStillPicture()
-					self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
+					self.session.openWithCallback(self.showStillPicture, DMC_MovieLibrary)
 				elif selection[1] == "PVMC_Series":
 					if self.APILevel >= 2 and self.ShowStillPicture is True:
 						self["showiframe"].finishStillPicture()
-					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
+					self.session.openWithCallback(self.showStillPicture, DMC_TvShowLibrary)
 				elif selection[1] == "PVMC_AudioPlayer":
 					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
 					#self.session.open(MC_AudioPlayer)

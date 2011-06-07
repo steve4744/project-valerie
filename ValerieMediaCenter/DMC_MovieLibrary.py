@@ -9,26 +9,20 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
-gAvailable = False
-gLateImport = False
-try:
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.Utf8    import utf8ToLatin
-	gAvailable = True
-except Exception, ex:
-	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
-	gAvailable = False
+# +++ LAZY IMPORTS +++
+Manager = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
+gAvailable = True
 
 class DMC_MovieLibrary(DMC_Library):
 
     def __init__(self, session):
-        global gLateImport
-        if gLateImport:
+        global Manager
+        if Manager is None:
             from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+        
         self.manager = Manager()
         DMC_Library.__init__(self, session, "movies")
 
@@ -36,9 +30,9 @@ class DMC_MovieLibrary(DMC_Library):
     # Return Value is expected to be:
     # (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
     def loadLibrary(self, primaryKeyValuePair):
-        global gLateImport
-        if gLateImport:
-            from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+        global Manager
+        global utf8ToLatin
+        if utf8ToLatin is None:
             from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
         
         # Diplay all TVShows
@@ -90,11 +84,5 @@ class DMC_MovieLibrary(DMC_Library):
         args["type"]    = "movie"
         return args
 
-if gAvailable is False:
-	printl("WORKAROUND: Force displaying of this plugin!", __name__, "W")
-	gAvailable = True
-	gLateImport = True
-
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
-
