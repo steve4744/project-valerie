@@ -272,7 +272,7 @@ class Enigma (Resource):
 class Extras (Resource):
 	def render_GET(self, request):
 		
-		finalOutput = WebData().getHtmlCore("Extras", True)
+		finalOutput = WebData().getHtmlCore("Extras")
 	
 		return utf8ToLatin(finalOutput)
 ##
