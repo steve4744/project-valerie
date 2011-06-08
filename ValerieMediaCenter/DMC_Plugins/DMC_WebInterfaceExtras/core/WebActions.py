@@ -72,7 +72,7 @@ class WebActions(Resource):
 			outputStream = open(filename, '/hdd/test.zip')
 			outputStream.write(request.args['myFile'])
 			outputStream.close()
-			pass
+			
 		
 		##
 		# add section	

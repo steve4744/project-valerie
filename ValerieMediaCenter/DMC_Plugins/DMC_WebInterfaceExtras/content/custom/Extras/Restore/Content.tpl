@@ -8,8 +8,8 @@
 		write me :-)
 	</div>
 	
-	<form enctype="multipart/form-data" action="save_file.py" method="post">
-		<p>File: <input type="file" name="file"></p>
+	<form enctype="multipart/form-data" action="/action?method=restore" method="post">
+		<p>File: <input type="file" name="myFile"></p>
 		<p><input type="submit" value="start Restore ..."></p>
 	</form>
 <br>
