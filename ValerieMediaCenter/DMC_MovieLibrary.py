@@ -40,6 +40,7 @@ class DMC_MovieLibrary(DMC_Library):
             parsedLibrary = []
             library = self.manager.getAll(Manager.MOVIES)
             
+            tmpGenres = []
             for movie in library:
                 d = {}
                 
@@ -64,7 +65,10 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Plot"]    = utf8ToLatin(movie.Plot)
                 d["Runtime"] = movie.Runtime
                 d["Popularity"] = movie.Popularity
-                d["Genres"]  = utf8ToLatin(movie.Genres)
+                d["Genres"]  = utf8ToLatin(movie.Genres).split("|")
+                for genre in d["Genres"]:
+                    if genre not in tmpGenres:
+                        tmpGenres.append(genre)
                 d["Resolution"]  = utf8ToLatin(movie.Resolution)
                 d["Sound"]  = utf8ToLatin(movie.Sound)
                 
@@ -72,7 +76,13 @@ class DMC_MovieLibrary(DMC_Library):
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))
-            return (parsedLibrary, ("play", "ImdbId", ), None, None, sort)
+            
+            filter = [("All", (None, False), ("", )), ]
+            if len(tmpGenres) > 0:
+                tmpGenres.sort()
+                filter.append(("Genre", ("Genres", True), tmpGenres))
+            
+            return (parsedLibrary, ("play", "ImdbId", ), None, None, sort, filter)
         
         return None
 

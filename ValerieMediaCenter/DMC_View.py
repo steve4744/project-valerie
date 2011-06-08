@@ -59,13 +59,14 @@ class DMC_View(Screen, HelpableScreen):
 
 	FAST_STILLPIC = False
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None, sort=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None, sort=None, filter=None):
 		self.skinName = skinName
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
 		self.skinName = skinName
 		self.select = select
 		self.onFirstExecSort = sort
+		self.onFirstExecFilter = filter
 		
 		self.libraryName = libraryName
 		self.loadLibrary = loadLibrary
@@ -114,7 +115,6 @@ class DMC_View(Screen, HelpableScreen):
 			"green":      (self.onKeyGreen, ""),
 			"yellow":     (self.onKeyYellow, ""),
 			"blue":       (self.onKeyBlue, ""),
-
 		}, -2)
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
@@ -124,23 +124,36 @@ class DMC_View(Screen, HelpableScreen):
 		self.setTitle(_(self.libraryName))
 
 	def onFirstExec(self):
+		
+		
 		if self.select is None: # Initial Start of View, select first entry in list
+			sort = False
 			if self.onFirstExecSort is not None:
 				self.activeSort = self.onFirstExecSort
-				self._load(ignoreSort=True)
-			else:
-				self._load(ignoreSort=False)
+				sort = True
+			filter = False
+			if self.onFirstExecFilter is not None:
+				self.activeFilter = self.onFirstExecFilter
+				filter = True
+			
+			self._load(ignoreSort=sort, ignoreFilter=filter)
 			self.refresh()
 		else: # changed views, reselect selected entry
 			print self.select #(None, {'ImdbId': 'tt1190080'})
+			sort = False
 			if self.onFirstExecSort is not None:
 				self.activeSort = self.onFirstExecSort
-				self._load(self.select[0], ignoreSort=True)
-			else:
-				self._load(self.select[0], ignoreSort=False)
+				sort = True
+			filter = False
+			if self.onFirstExecFilter is not None:
+				self.activeFilter = self.onFirstExecFilter
+				filter = True
+			
+			self._load(self.select[0], ignoreSort=sort, ignoreFilter=filter)
 			keys = self.select[1].keys()
-			for i in range(len(self.listViewList)):
-				entry = self.listViewList[i]
+			listViewList = self["listview"].list
+			for i in range(len(listViewList)):
+				entry = listViewList[i]
 				found = True
 				for key in keys:
 					if entry[1][key] != self.select[1][key]:
@@ -187,10 +200,10 @@ class DMC_View(Screen, HelpableScreen):
 
 	def onKeyRed(self):
 		self.onToggleSort()
-		pass
 
 	def onKeyGreen(self):
-		pass
+		self.onToggleFilter()
+
 	def onKeyYellow(self):
 		pass
 
@@ -208,6 +221,44 @@ class DMC_View(Screen, HelpableScreen):
 				break
 		
 		self.sort()
+		self.filter()
+		
+		self.refresh()
+
+	activeFilter = ("All", (None, False), "")
+	def onToggleFilter(self):
+		for i in range(len(self.onFilterKeyValuePair)):
+			if self.activeFilter[1][0] == self.onFilterKeyValuePair[i][1][0]:
+				# Genres == Genres
+				
+				# Try to select the next genres subelement
+				found = False
+				subelements = self.onFilterKeyValuePair[i][2]
+				for j in range(len(subelements)):
+					#print "if self.activeFilter[2] == subelements[j]:", self.activeFilter[2], subelements[j]
+					if self.activeFilter[2] == subelements[j]:
+						# Action == Action
+						if (j+1) < len(subelements):
+							y = subelements[j + 1]
+							found = True
+							break
+				
+				if found is True:
+					x = self.onFilterKeyValuePair[i]
+					self.activeFilter = (x[0], x[1], y, )
+				else:
+					# If we are at the end of all genres subelements select the next one
+					if (i+1) < len(self.onFilterKeyValuePair):
+						x = self.onFilterKeyValuePair[i + 1]
+					else:
+						x = self.onFilterKeyValuePair[0]
+					self.activeFilter = (x[0], x[1], x[2][0], )
+				
+				break
+		
+		self.sort()
+		self.filter()
+		
 		self.refresh()
 
 	def onToggleView(self):
@@ -223,7 +274,7 @@ class DMC_View(Screen, HelpableScreen):
 				if key != "play":
 					primaryKeyValuePair[key] = selection[1][key]
 			select = (self.currentKeyValuePair, primaryKeyValuePair)
-		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort))
+		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort, self.activeFilter))
 
 	def onNextEntry(self):
 		printl("", self)
@@ -330,7 +381,7 @@ class DMC_View(Screen, HelpableScreen):
 				break
 		self.refresh()
 
-	def _load(self, primaryKeys=None, ignoreSort=False):
+	def _load(self, primaryKeys=None, ignoreSort=False, ignoreFilter=False):
 		print "primaryKeys", primaryKeys
 		self.currentKeyValuePair = primaryKeys
 		library = self.loadLibrary(primaryKeys)
@@ -340,6 +391,7 @@ class DMC_View(Screen, HelpableScreen):
 		self.onLeavePrimaryKeyValuePair = library[2]
 		self.onLeaveSelectKeyValuePair = library[3]
 		self.onSortKeyValuePair = library[4]
+		self.onFilterKeyValuePair = library[5]
 		
 		print "onEnterPrimaryKeys", self.onEnterPrimaryKeys
 		print "onLeavePrimaryKeyValuePair", self.onLeavePrimaryKeyValuePair
@@ -348,7 +400,14 @@ class DMC_View(Screen, HelpableScreen):
 		if ignoreSort is False:
 			# After changing the lsit always return to the default sort
 			self.activeSort = self.onSortKeyValuePair[0]
+		
+		if ignoreFilter is False:
+			# After changing the lsit always return to the default filter
+			x = self.onFilterKeyValuePair[0]
+			self.activeFilter = (x[0], x[1], x[2][0], )
+		
 		self.sort()
+		self.filter()
 
 	def sort(self):
 		self._sort()
@@ -358,7 +417,23 @@ class DMC_View(Screen, HelpableScreen):
 			self.listViewList.sort(key=lambda x: x[2], reverse=self.activeSort[2])
 		else:
 			self.listViewList.sort(key=lambda x: x[1][self.activeSort[1]], reverse=self.activeSort[2])
-		self["listview"].setList(self.listViewList)
+
+	def filter(self):
+		self._filter()
+
+	def _filter(self):
+		print self.activeFilter
+		listViewList = []
+		if self.activeFilter[1][0] is None:
+			listViewList = self.listViewList
+		else:
+			
+			if self.activeFilter[1][1]:
+				listViewList = [x for x in self.listViewList if self.activeFilter[2] in x[1][self.activeFilter[1][0]]]
+			else:
+				listViewList = [x for x in self.listViewList if x[1][self.activeFilter[1][0]]  == self.activeFilter[2]]
+		
+		self["listview"].setList(listViewList)
 		self["listview"].setIndex(0)
 
 	def setText(self, name, value, ignore=False, what=None):
@@ -410,4 +485,5 @@ class DMC_View(Screen, HelpableScreen):
 		if selection is not None:
 			self.session.open(choice[1], selection[1])
 
-
+#registerPlugin(Plugin(name=_("Set view as default"), fnc=setViewAsDefault, where=Plugin.MENU_MOVIES_PLUGINS))
+#registerPlugin(Plugin(name=_("Bookmark view"), fnc=bookmarkView, where=Plugin.MENU_MOVIES_PLUGINS))

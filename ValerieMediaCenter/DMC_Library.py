@@ -28,12 +28,12 @@ class DMC_Library(Screen):
         self.onFirstExecBegin.append(self.showView)
 
     # Displays the selected View
-    def showView(self, selection=None, sort=None):
+    def showView(self, selection=None, sort=None, filter=None):
         printl("", self, "D")
         m = __import__(self._views[self.currentViewIndex], globals(), locals(), [], -1)
         print m
         print m.getViewClass()
-        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, select=selection, sort=sort)
+        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, select=selection, sort=sort, filter=filter)
 
     # Called if View has closed, react on cause for example change to different view
     def onViewClosed(self, cause=None):
@@ -42,6 +42,7 @@ class DMC_Library(Screen):
             if cause[0] == DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
                 selection = None
                 sort = None
+                filter = None
                 self.currentViewIndex += 1
                 if len(self._views) <= self.currentViewIndex:
                     self.currentViewIndex = 0
@@ -50,7 +51,9 @@ class DMC_Library(Screen):
                     selection = cause[1]
                 if len(cause) >= 3 and cause[2] is not None:
                     sort = cause[2]
-                self.showView(selection, sort)
+                if len(cause) >= 4 and cause[3] is not None:
+                    filter = cause[3]
+                self.showView(selection, sort, filter)
             else:
                 self.close()
         else:

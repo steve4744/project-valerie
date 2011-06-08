@@ -40,6 +40,7 @@ class DMC_TvShowLibrary(DMC_Library):
             parsedLibrary = []
             library = self.manager.getAll(Manager.TVSHOWS)
             
+            tmpGenres = []
             for tvshow in library:
                 d = {}
                 
@@ -55,11 +56,20 @@ class DMC_TvShowLibrary(DMC_Library):
                 d["Plot"]    = utf8ToLatin(tvshow.Plot)
                 d["Runtime"] = tvshow.Runtime
                 d["Popularity"] = tvshow.Popularity
-                d["Genres"]  = utf8ToLatin(tvshow.Genres)
+                d["Genres"]  = utf8ToLatin(tvshow.Genres).split("|")
+                for genre in d["Genres"]:
+                    if genre not in tmpGenres:
+                        tmpGenres.append(genre)
                 
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
             sort = (("Title", None, False), ("Popularity", "Popularity", True), )
-            return (parsedLibrary, ("TheTvDbId", ), None, None, sort)
+            
+            filter = [("All", (None, False), ("", )), ]
+            if len(tmpGenres) > 0:
+                tmpGenres.sort()
+                filter.append(("Genre", ("Genres", True), tmpGenres))
+            
+            return (parsedLibrary, ("TheTvDbId", ), None, None, sort, filter)
         
         # Display the Episodes Menu
         elif primaryKeyValuePair.has_key("TheTvDbId") and primaryKeyValuePair.has_key("Season"):
@@ -103,9 +113,12 @@ class DMC_TvShowLibrary(DMC_Library):
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))
+            
+            filter = [("All", (None, False), ("", )), ]
+            
             return (parsedLibrary, ("play", "TheTvDbId", "Season", "Episode", ), dict({ \
                 'TheTvDbId': episode.TheTvDbId, \
-                }), primaryKeyValuePair, sort)
+                }), primaryKeyValuePair, sort, filter)
         
         # Display the Seasons Menu
         elif primaryKeyValuePair.has_key("TheTvDbId"):
@@ -138,7 +151,10 @@ class DMC_TvShowLibrary(DMC_Library):
                     s["Season"] = season
                     parsedLibrary.append((s["Title"], s, season, "50"))
             sort = (("Title", None, False), )
-            return (parsedLibrary, ("TheTvDbId", "Season", ), None, primaryKeyValuePair, sort)
+            
+            filter = [("All", (None, False), ("", )), ]
+            
+            return (parsedLibrary, ("TheTvDbId", "Season", ), None, primaryKeyValuePair, sort, filter)
         return None
 
     def getPlaybackList(self, entry):

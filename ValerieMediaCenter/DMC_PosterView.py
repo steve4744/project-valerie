@@ -24,11 +24,11 @@ def getViewClass():
 
 class DMC_PosterView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None, filter=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView", select, sort)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_PosterView", select, sort, filter)
 		
 		self["poster_-3"] = Pixmap()
 		self["poster_-2"] = Pixmap()
@@ -78,14 +78,15 @@ class DMC_PosterView(DMC_View):
 		
 		if self.APILevel >= 2:
 			currentIndex = self["listview"].getIndex()
-			count = len(self.listViewList)
+			listViewList = self["listview"].list
+			count = len(listViewList)
 			for i in range(1,4): # 1, 2, 3
 				if currentIndex >= i:
-					self.setPoster("poster_-" + str(i), self.listViewList[currentIndex - i][1]["ArtId"])
+					self.setPoster("poster_-" + str(i), listViewList[currentIndex - i][1]["ArtId"])
 				else:
 					self["poster_-" + str(i)].hide()
 				if currentIndex + i < count:
-					self.setPoster("poster_+" + str(i), self.listViewList[currentIndex + i][1]["ArtId"])
+					self.setPoster("poster_+" + str(i), listViewList[currentIndex + i][1]["ArtId"])
 				else:
 					self["poster_+" + str(i)].hide()
 		
@@ -113,6 +114,16 @@ class DMC_PosterView(DMC_View):
 	def sort(self):
 		self["key_red"].setText(_("Sort: ") + _(self.activeSort[0]))
 		super(DMC_PosterView, self).sort()
+
+	def filter(self):
+		if len(self.activeFilter[2]) > 0:
+			#text = _("Filter: ") + _(self.activeFilter[0]) + "[" + self.activeFilter[2] + "]"
+			text = _("Filter: ") + self.activeFilter[2]
+		else:
+			text = _("Filter: ") + _(self.activeFilter[0])
+		#print text
+		self["key_green"].setText(text)
+		super(DMC_PosterView, self).filter()
 
 	def onKeyLeft(self):
 		self.onPreviousEntry()

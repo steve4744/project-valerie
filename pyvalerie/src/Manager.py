@@ -18,6 +18,7 @@ class Manager():
 
 	MOVIES = 0
 	TVSHOWS = 1
+	TVSHOWSSEASONS = 5
 	TVSHOWSEPISODES = 2
 	FAILED = 3
 	FAILED_ALL = 4
@@ -67,6 +68,22 @@ class Manager():
 						#	if self.db.dbEpisodes[serie][season][episode].TheTvDbId == "79488":
 						#		print self.db.dbEpisodes[serie][season][episode].Filename, serie, season, episode
 			return list
+		
+		elif type == self.TVSHOWSSEASONS: 
+			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, )
+			if param is not None and len(param) == 1:
+				serie = param[0]
+				if self.db.dbEpisodes.has_key(serie):
+					return self.db.dbEpisodes[serie].keys()
+			
+			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
+			elif param is not None and len(param) == 2:
+				serie = param[0]
+				season = param[1]
+				if self.db.dbEpisodes.has_key(serie):
+					if self.db.dbEpisodes[serie].has_key(season):
+						return self.db.dbEpisodes[serie][season].values()
+		
 		elif type == self.FAILED or type == self.FAILED_ALL:
 			return self.db.dbFailed
 		else:

@@ -25,11 +25,11 @@ def getViewClass():
 
 class DMC_ListView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None, filter=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_ListView", select, sort)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_ListView", select, sort, filter)
 		
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
@@ -53,7 +53,7 @@ class DMC_ListView(DMC_View):
 			self["sound"] = Label()
 		
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
-		self["key_green"] = StaticText(_(" "))
+		self["key_green"] = StaticText(_("Filter: ") + _("None"))
 		self["key_yellow"] = StaticText(_(" "))
 		self["key_blue"] = StaticText(_("View: ") + _("List")) #TODO: Name should be more dynamic
 		
@@ -138,7 +138,11 @@ class DMC_ListView(DMC_View):
 			else:
 				self["sound"].setText(" ")
 		
-		self.setText("genre", element["Genres"].replace('|', " / "), what=_("Genre"))
+		genres = ""
+		for genre in element["Genres"]:
+			genres += genre + " "
+		genres = genres.strip()
+		self.setText("genre", genres.replace(" ", " / "), what=_("Genre"))
 		#self.setText("year", str(element["Year"]))
 		date = str(element["Year"])
 		if element.has_key("Month") and element.has_key("Day"):
@@ -176,6 +180,16 @@ class DMC_ListView(DMC_View):
 	def sort(self):
 		self["key_red"].setText(_("Sort: ") + _(self.activeSort[0]))
 		super(DMC_ListView, self).sort()
+
+	def filter(self):
+		if len(self.activeFilter[2]) > 0:
+			#text = _("Filter: ") + _(self.activeFilter[0]) + "[" + self.activeFilter[2] + "]"
+			text = _("Filter: ") + self.activeFilter[2]
+		else:
+			text = _("Filter: ") + _(self.activeFilter[0])
+		#print text
+		self["key_green"].setText(text)
+		super(DMC_ListView, self).filter()
 
 	def onKeyUp(self):
 		self.onPreviousEntry()
