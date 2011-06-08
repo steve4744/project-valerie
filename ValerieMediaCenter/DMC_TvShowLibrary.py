@@ -105,7 +105,7 @@ class DMC_TvShowLibrary(DMC_Library):
                     d["Plot"]    = utf8ToLatin(episode.Plot)
                     d["Runtime"] = episode.Runtime
                     d["Popularity"] = episode.Popularity
-                    d["Genres"]  = utf8ToLatin(episode.Genres)
+                    d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
                     d["Resolution"]  = utf8ToLatin(episode.Resolution)
                     d["Sound"]  = utf8ToLatin(episode.Sound)
                     
@@ -138,7 +138,7 @@ class DMC_TvShowLibrary(DMC_Library):
             d["Plot"]    = utf8ToLatin(tvshow.Plot)
             d["Runtime"] = tvshow.Runtime
             d["Popularity"] = tvshow.Popularity
-            d["Genres"]  = utf8ToLatin(tvshow.Genres)
+            d["Genres"]  = utf8ToLatin(tvshow.Genres).split("|")
             library = self.manager.getAll(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
             
             seasons = []
