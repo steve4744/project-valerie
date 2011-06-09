@@ -13,20 +13,19 @@ from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.W
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+Manager = None
+MediaInfo = None
+Utf8 = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
 	from twisted.web.server import Site
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.MediaInfo import *
-		from ..ProjectValerieSync.Utf8 import *
 	
 	gAvailable = True
 except Exception, ex:
@@ -41,6 +40,9 @@ config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, li
 ##
 class Home(Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Home")
 
@@ -51,6 +53,13 @@ class Home(Resource):
 ##		
 class Movies(Resource):
 	def render_GET(self, request):
+		global MediaInfo
+		global utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
 		finalOutput = WebData().getHtmlCore("Movies", True)
 			
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Movies/Header.tpl")
@@ -93,6 +102,13 @@ class Movies(Resource):
 ##
 class TvShows(Resource):
 	def render_GET(self, request):
+		global MediaInfo
+		global utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+	
 		finalOutput = WebData().getHtmlCore("TvShows", True)
 			
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/TvShows/Header.tpl")
@@ -138,6 +154,13 @@ class TvShows(Resource):
 ##
 class Episodes(Resource):
 	def render_GET(self, request):
+		global MediaInfo
+		global utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		
 		finalOutput = WebData().getHtmlCore("Episodes", True)
 		
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Episodes/Header.tpl")
@@ -186,6 +209,13 @@ class Episodes(Resource):
 ##
 class Failed(Resource):
 	def render_GET(self, request):
+		global MediaInfo
+		global utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
 		finalOutput = WebData().getHtmlCore("Failed", True)
 
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Failed/Header.tpl")
@@ -219,7 +249,10 @@ class Failed(Resource):
 ##
 class MediaInfo(Resource):
 	def render_GET(self, request):
-		
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
 		finalOutput = WebData().getHtmlCore("MediaInfo", True)
 	
 		return utf8ToLatin(finalOutput)
@@ -231,6 +264,9 @@ class MediaInfo(Resource):
 ##		
 class Options (Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Options", True)
 	
@@ -241,6 +277,9 @@ class Options (Resource):
 ##		
 class Logs (Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Logs")
 	
@@ -251,6 +290,9 @@ class Logs (Resource):
 ##		
 class Valerie (Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Logs" , False, "Valerie")
 	
@@ -261,7 +303,10 @@ class Valerie (Resource):
 ##		
 class Enigma (Resource):
 	def render_GET(self, request):
-		
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
 		finalOutput = WebData().getHtmlCore("Logs" , False, "Enigma")
 	
 		return utf8ToLatin(finalOutput)		
@@ -271,6 +316,9 @@ class Enigma (Resource):
 ##		
 class Extras (Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Extras")
 	
@@ -280,7 +328,10 @@ class Extras (Resource):
 ##		
 class Backup (Resource):
 	def render_GET(self, request):
-		
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
 		finalOutput = WebData().getHtmlCore("Extras" , True, "Backup")
 	
 		return utf8ToLatin(finalOutput)	
@@ -290,6 +341,9 @@ class Backup (Resource):
 ##		
 class Restore (Resource):
 	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Extras" , True, "Restore")
 	

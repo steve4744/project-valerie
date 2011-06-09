@@ -15,21 +15,20 @@ from urllib import urlencode
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+Manager = None
+MediaInfo = None
+Utf8 = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
 	from twisted.web.server import Site
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.MediaInfo import *
-		from ..ProjectValerieSync.Utf8 import *
-	
+
 	gAvailable = True
 except Exception, ex:
 	printl("DMC_WebInterfaceExtras::isAvailable Is not available", None, "E")
@@ -43,6 +42,9 @@ config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, li
 ##	
 class WebData():
 	def getData(self, type, param=None):
+		global Manager
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 		
 		manager = Manager()
 		
@@ -64,6 +66,9 @@ class WebData():
 	# values = None 
 	##
 	def getHtmlCore (self, webResource, functions = False, submenu = None ):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 				
 		htmlCore = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/index.html")
 		
@@ -90,13 +95,6 @@ class WebData():
 		
 		return utf8ToLatin(finalOutput)
 	
-	def cleanStrings(self, string):
-		string = string.replace("'","")
-		string = string.replace('"','')
-		string = string.replace('?','')
-		
-		return string
-		
 	def getEpisodesOfTvShow (self, tvdbid):
 		onclick = "javascript:window.open('/episodes?tvdbid=" + tvdbid + "');"
 		

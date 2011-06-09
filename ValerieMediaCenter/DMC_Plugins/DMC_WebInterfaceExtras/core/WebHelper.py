@@ -10,20 +10,19 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+Manager = None
+MediaInfo = None
+Utf8 = None
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
 	from twisted.web.server import Site
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.MediaInfo import *
-		from ..ProjectValerieSync.Utf8 import *
 	
 	gAvailable = True
 except Exception, ex:
@@ -41,6 +40,13 @@ class WebHelper():
 	#
 	##
 	def readFileContent(self, target):
+		global Utf8
+		global utf8ToLatin
+		if Utf8 is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import Utf8
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin	
+
 		c = Utf8(config.plugins.pvmc.pluginfolderpath.value + target, "r")
 		content = c.read()
 		c.close()
