@@ -12,24 +12,13 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 #------------------------------------------------------------------------------------------
 
 gAvailable = False
-gLateImport = False
-try:
-	from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-	
-	gAvailable = True
-except Exception, ex:
-	printl("DMC_BackgroundDbLoader::isAvailable Is not available", None, "E")
-	printl("DMC_BackgroundDbLoader::isAvailable Exception: " + str(ex), None, "E")
-	gAvailable = False
 
 config.plugins.pvmc.plugins.backgrounddbloader = ConfigSubsection()
 config.plugins.pvmc.plugins.backgrounddbloader.autoload = ConfigYesNo(default = True)
 
 class BackgroundDbLoader(Thread):
 	def run(self):
-		global gLateImport
-		if gLateImport:
-			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 		m = Manager()
 
 def autostart(session):
@@ -43,11 +32,6 @@ def settings():
 	s = []
 	s.append((_("Autoload Database on start"), config.plugins.pvmc.plugins.backgrounddbloader.autoload, ))
 	return s
-
-if gAvailable is False:
-	printl("WORKAROUND: Force displaying of this plugin!", __name__, "W")
-	gAvailable = True
-	gLateImport = True
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("BackgroundDbLoader"), fnc=settings, where=Plugin.SETTINGS))

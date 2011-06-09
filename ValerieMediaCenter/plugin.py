@@ -8,12 +8,12 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 
 #------------------------------------------------------------------------------------------
 
-gE2Control = None
+#gE2Control = None
 gSessionPV = None
 gReasonPV = -1
 
 def autostart(reason, **kwargs):
-	global gE2Control
+	#global gE2Control
 	global gSessionPV
 	
 	if kwargs.has_key("session"):
@@ -21,12 +21,12 @@ def autostart(reason, **kwargs):
 	printl("Reason: " + str(reason), __name__, "I")
 	gReasonPV = reason
 	
-	from DMC_Global import E2Control
-	if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
-		gE2Control = E2Control()
-	elif gReasonPV == 1 and gE2Control != None:
+	#from DMC_Global import E2Control
+	#if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
+	#	gE2Control = E2Control()
+	#elif gReasonPV == 1 and gE2Control != None:
 #		gE2Control.stop()
-		gE2Control = None
+	#	gE2Control = None
 	
 	plugins = getPlugins(where=Plugin.AUTOSTART_E2)
 	for plugin in plugins:
