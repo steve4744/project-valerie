@@ -11,8 +11,6 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
-Manager = None
-MediaInfo = None
 Utf8 = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---

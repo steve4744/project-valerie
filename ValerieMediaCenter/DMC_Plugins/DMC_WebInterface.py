@@ -13,20 +13,16 @@ from DMC_WebInterfaceExtras.core import WebResources
 
 #------------------------------------------------------------------------------------------
 
+# +++ LAZY IMPORTS +++
+utf8ToLatin = None
+# --- LAZY IMPORTS ---
+
 gAvailable = False
 try:
 	from twisted.web.server import Site
 	from twisted.web.static import File
 	from twisted.internet   import reactor, threads
 	from twisted.web.resource import Resource
-	try:
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		from Plugins.Extensions.ProjectValerieSync.MediaInfo import *
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import *
-	except:
-		from ..ProjectValerieSync.Manager import Manager
-		from ..ProjectValerieSync.MediaInfo import *
-		from ..ProjectValerieSync.Utf8 import *
 	
 	gAvailable = True
 except Exception, ex:
@@ -41,6 +37,10 @@ config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, li
 #
 ##
 def autostart(session):
+	global utf8ToLatin
+	if utf8ToLatin is None:
+		from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+	
 	try:
 		root = Resource()
 		

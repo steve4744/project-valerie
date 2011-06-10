@@ -14,9 +14,7 @@ from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.W
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
-Manager = None
 MediaInfo = None
-Utf8 = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 

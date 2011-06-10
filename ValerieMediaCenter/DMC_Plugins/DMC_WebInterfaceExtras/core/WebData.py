@@ -17,8 +17,6 @@ from urllib import urlencode
 
 # +++ LAZY IMPORTS +++
 Manager = None
-MediaInfo = None
-Utf8 = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 

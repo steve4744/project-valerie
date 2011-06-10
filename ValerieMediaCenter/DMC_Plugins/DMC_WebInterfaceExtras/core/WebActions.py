@@ -16,8 +16,6 @@ from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.W
 
 # +++ LAZY IMPORTS +++
 Manager = None
-MediaInfo = None
-Utf8 = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 
@@ -50,9 +48,9 @@ class WebActions(Resource):
 
 	def action(self, request):
 		global Manager
+		global utf8ToLatin
 		if Manager is None:
 			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		global utf8ToLatin
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
