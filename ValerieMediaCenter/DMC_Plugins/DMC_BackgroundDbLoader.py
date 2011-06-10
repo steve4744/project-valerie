@@ -11,7 +11,7 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
-gAvailable = False
+gAvailable = True
 
 config.plugins.pvmc.plugins.backgrounddbloader = ConfigSubsection()
 config.plugins.pvmc.plugins.backgrounddbloader.autoload = ConfigYesNo(default = True)
