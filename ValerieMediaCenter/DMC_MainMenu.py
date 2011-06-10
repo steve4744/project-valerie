@@ -115,7 +115,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("Show wizard on next start"), config.plugins.pvmc.showwizard))
 			self.list.append(getConfigListEntry(_("Start Valerie on e2 start"), config.plugins.pvmc.autostart))
 			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate))
-			self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
+			#self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
 			self.list.append(getConfigListEntry(_("Skin"), config.plugins.pvmc.skin))
 			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
 			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
