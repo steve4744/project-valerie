@@ -28,8 +28,6 @@ from Tools.Directories import resolveFilename, fileExists, pathExists, createDir
 
 from DataElement import DataElement
 from DMC_Global import getBoxtype, getAPILevel
-from DMC_Movies import PVMC_Movies
-from DMC_Series import PVMC_Series
 
 from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
@@ -452,10 +450,12 @@ class PVMC_MainMenu(Screen):
 		if self.APILevel == 1 and self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
 			if selection is not None:
-				if selection[1] == "PVMC_Movies":
-					self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
-				elif selection[1] == "PVMC_Series":
-					self.session.openWithCallback(self.showStillPicture, PVMC_Series)
+				#REMOVED: They had enough time to update skin to higher API Level!
+				#if selection[1] == "PVMC_Movies":
+				#	self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
+				#elif selection[1] == "PVMC_Series":
+				#	self.session.openWithCallback(self.showStillPicture, PVMC_Series)
+				pass
 		else:
 			selection = self["menu"].getCurrent()
 			printl("selection=" + str(selection), self)

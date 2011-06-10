@@ -31,24 +31,19 @@ class Database(object):
 
 	MOVIESTXD  = config.plugins.pvmc.configfolderpath.value + "movies.txd"
 	TVSHOWSTXD = config.plugins.pvmc.configfolderpath.value + "tvshows.txd"
-
-	MOVIESTXT  = config.plugins.pvmc.configfolderpath.value + "moviedb.txt"
-	TVSHOWSTXT = config.plugins.pvmc.configfolderpath.value + "seriesdb.txt"
 	
-	DB_TXT = 1
+	DB_NONE = 0
 	DB_TXD = 2
 	DB_PICKLE = 3
 	DB_SQLITE= 4
-	USE_DB_VERSION = DB_TXD
 
+	USE_DB_TYPE    = DB_NONE
+	
 	TXD_VERSION = 3
-
-	USE_DB_TYPE    = DB_TXD
+	
 	# New Const's
 	DB_PATH           = config.plugins.pvmc.configfolderpath.value
 	DB_PATH_EPISODES  = config.plugins.pvmc.configfolderpath.value + "episodes/"
-	DB_TXT_FILENAME_M = "movies.txt"
-	DB_TXT_FILENAME_S = "tvshows.txt"
 	DB_TXD_FILENAME_M = "movies.txd"
 	DB_TXD_FILENAME_S = "tvshows.txd"
 
@@ -60,22 +55,22 @@ class Database(object):
 		#	self.setDBType(self.DB_SQLITE)
 		
 		#el
-                if os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
-			self.setDBType(self.DB_TXD)
 		
-		elif os.path.exists(self.DB_PATH + self.DB_TXT_FILENAME_M):
-			self.setDBType(self.DB_TXT)
+		# Deactivate usage of txd files
+		#if os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
+		#	self.setDBType(self.DB_TXD)
+		#
+		#elif os.path.exists(self.DB_PATH + self.DB_TXT_FILENAME_M):
+		#	self.setDBType(self.DB_TXT)
 			#self.setDBVersion(DB_TXD)
 		# No exception if exists movies.txd and no tvshows.txd
 
 	def setDBType(self, version):
-	        self.USE_DB_TYPE = version
-	        printl("DB Type set to " + str(version), self)
+		self.USE_DB_TYPE = version
+		printl("DB Type set to " + str(version), self)
 
 	def getDBTypeText(self):
-		if self.USE_DB_TYPE == self.DB_TXT:
-			return "TXT"
-		elif self.USE_DB_TYPE == self.DB_TXD:
+		if self.USE_DB_TYPE == self.DB_TXD:
 			return "TXD"
 		elif self.USE_DB_TYPE == self.DB_PICKLE:
 			return "Pickle"
@@ -164,7 +159,6 @@ class Database(object):
 	def clearFailed(self):
 		try:
 			del self.dbFailed[:]
-			#self.dbFailed = []
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
@@ -326,74 +320,18 @@ class Database(object):
 				unicode(epcount)
 		return Utf8.utf8ToLatin(rtv)
 
-	def rmTxt(self):
-		try:
-			os.remove(self.MOVIESTXT)
-		except Exception, ex:
-			printl("Exception: " + str(ex), self)
-		try:
-			os.remove(self.TVSHOWSTXT)
-		except Exception, ex:
-			printl("Exception: " + str(ex), self)
-			
-		ds = DirectoryScanner.DirectoryScanner()
-		ds.clear()
-		ds.setDirectory(config.plugins.pvmc.configfolderpath.value + "episodes")
-		filetypes = []
-		filetypes.append("txt")
-		ds.listDirectory(filetypes, None, 0)
-		for ele in ds.getFileList():
-			printl("TO BE DELETED: " + str(ele), self)
-
 	def save(self):
 		global gDatabaseMutex
 		gDatabaseMutex.acquire()
 		# Always safe pickel as this increses fastsync a lot
-		#elif self.USE_DB_VERSION == self.DB_PICKLE:
+		#if self.USE_DB_TYPE == self.DB_PICKLE:
 		self.savePickel()
 		
-		if self.USE_DB_TYPE == self.DB_TXT:
-			self.saveTxt()
-		elif self.USE_DB_TYPE == self.DB_TXD:
+		if self.USE_DB_TYPE == self.DB_TXD:
 			self.saveTxd()
-			self.rmTxt()
 		elif self.USE_DB_TYPE == self.DB_SQLITE:
-			self.saveTxd()
 			self.saveSql()
 		gDatabaseMutex.release()
-
-	def saveTxt(self):
-		start_time = time.time()	
-		f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"moviedb.txt", 'w')
-		f.write(unicode(date.today()))
-		for key in self.dbMovies:
-			f.write(self.dbMovies[key].export())
-			self.dbMovies[key].setValerieInfoLastAccessTime(self.dbMovies[key].Path)
-		f.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (moviedb.txt): " + str(elapsed_time), self)
-		
-		start_time = time.time()	
-		f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"seriesdb.txt", 'w')
-		f.write(unicode(date.today()))
-		for key in self.dbSeries:
-			if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
-				f.write(self.dbSeries[key].export())
-		f.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (seriesdb.txt): " + str(elapsed_time), self)
-		
-		start_time = time.time()  
-		for serie in self.dbEpisodes:
-			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txt", 'w')
-			f.write(unicode(date.today()))
-			for season in self.dbEpisodes[serie]:
-				for episode in self.dbEpisodes[serie][season]:
-					f.write(self.dbEpisodes[serie][season][episode].export())
-					self.dbEpisodes[serie][season][episode].setValerieInfoLastAccessTime(self.dbEpisodes[serie][season][episode].Path)
-			f.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (episodes/*.txt): " + str(elapsed_time), self)
 
 	def saveTxd(self):
 		start_time = time.time()	
@@ -530,8 +468,6 @@ class Database(object):
 					self.loadPickle(True, False) 
 				elif os.path.isfile(self.MOVIESTXD):
 					self.loadTxd(True, False) 
-				else:
-					self.loadTxt(True, False)
 			except Exception, ex:
 				printl("Loading movie db failed! Ex: " + str(ex), __name__, "E")
 		
@@ -541,8 +477,6 @@ class Database(object):
 					self.loadPickle(False, True) 
 				elif os.path.isfile(self.TVSHOWSTXD):
 					self.loadTxd(False, True) 
-				else:
-					self.loadTxt(False, True)
 			except Exception, ex:
 				printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
 		
@@ -561,83 +495,6 @@ class Database(object):
 					if episode.isEpisode is False:
 						b = self.remove(episode, isEpisode=True)
 						printl("RM: " + str(b), self)
-
-	def loadTxt(self, loadMovie, loadTVShow):
-		if loadMovie:
-			start_time = time.time()
-			try:
-				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"moviedb.txt", "r").read()
-				if db is not None:
-					movies = db.split("\n----END----\n")
-					for movie in movies:
-						movie = movie.split("---BEGIN---\n")
-						if len(movie) == 2: 
-							m = MediaInfo("","","")
-							m.importStr(movie[1], True, False, False)
-							path = m.Path + u"/" + m.Filename + u"." + m.Extension
-							printl("Not found: " + Utf8.utf8ToLatin(path), self)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			
-			elapsed_time = time.time() - start_time
-			printl("Took (moviedb.txt): " + str(elapsed_time), self)
-		
-		if loadTVShow:
-			start_time = time.time()
-			try:
-				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"seriesdb.txt", "r").read()
-				if db is not None:
-					movies = db.split(u"\n----END----\n")
-					for movie in movies:
-						movie = movie.split(u"---BEGIN---\n")
-						if len(movie) == 2: 
-							m = MediaInfo("","","")
-							m.importStr(movie[1], False, True, False)
-							self.add(m)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			elapsed_time = time.time() - start_time
-			printl("Took (seriesdb.txt): " + str(elapsed_time), self)
-			
-			start_time = time.time()
-			try:	
-				for key in self.dbSeries:
-					db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txt", "r").read()
-					if db is not None:
-						movies = db.split("\n----END----\n")
-						for movie in movies:
-							movie = movie.split("---BEGIN---\n")
-							if len(movie) == 2: 
-								m = MediaInfo("","","")
-								m.importStr(movie[1], False, False, True)
-								path = m.Path + u"/" + m.Filename + u"." + m.Extension
-								if Config.getBoolean("delete") is False or os.path.isfile(Utf8.utf8ToLatin(path)):
-									if m.isValerieInfoAvailable(m.Path):
-										if m.getValerieInfoAccessTime(m.Path) == m.getValerieInfoLastAccessTime(m.Path):
-											self.add(m)
-									else:
-										self.add(m)
-								else:
-									printl("Not found: " + Utf8.utf8ToLatin(path), self)
-									printl(str(os.path.isfile(Utf8.utf8ToLatin(path))), self)
-									printl(str(m.getValerieInfoAccessTime(m.Path)), self)
-									printl(str(m.getValerieInfoLastAccessTime(m.Path)), self)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			elapsed_time = time.time() - start_time
-			printl("Took (episodes/*.txt): " + str(elapsed_time), self)
 
 	def loadTxd(self, loadMovie, loadTVShow):
 		if loadMovie:
