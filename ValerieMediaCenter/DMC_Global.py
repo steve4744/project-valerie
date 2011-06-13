@@ -3,6 +3,8 @@
 from   os import makedirs, environ, popen, system
 import sys
 import traceback
+import urllib2
+from twisted.web.microdom import parseString
 
 from Components.config import config
 
@@ -182,3 +184,49 @@ class E2Control():
 		except OSError, ex: 
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		printl("<-", self)
+
+##
+#
+##
+class Update():
+	##
+	#
+	##
+	def __init__(self):
+		pass
+	
+	##
+	#
+	##
+	def checkForUpdate(self):
+		box = getBoxtype()
+		printl("box=" + str(box), self)
+		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
+		printl("Checking URL: " + str(self.url), self) 
+		try:
+			opener = urllib2.build_opener()
+			box = getBoxtype()
+			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
+			f = opener.open(self.url)
+			#f = urllib2.urlopen(self.url)
+			html = f.read()
+			dom = parseString(html)
+			update = dom.getElementsByTagName("update")[0]
+			stb = update.getElementsByTagName("stb")[0]
+			version = stb.getElementsByTagName("version")[0]
+			remoteversion = version.childNodes[0].data
+			urls = stb.getElementsByTagName("url")
+			self.remoteurl = ""
+			for url in urls:
+				if url.getAttribute("arch") == box[2]:
+					if url.getAttribute("version") is None or url.getAttribute("version") == box[3]:
+						self.remoteurl = url.childNodes[0].data
+			
+			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
+			
+			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
+				return remoteversion
+		
+		except Exception, e:
+			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
+		return False	

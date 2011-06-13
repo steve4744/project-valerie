@@ -11,6 +11,7 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebData import WebData
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebHelper import WebHelper
 
+from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
@@ -43,7 +44,19 @@ class Home(Resource):
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Home")
-
+		
+		currentVersion = config.plugins.pvmc.version.value
+				
+		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
+		
+		updateNeeded = Update().checkForUpdate();
+		
+		if (updateNeeded == False):
+			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", " (no Update needed)")
+		else:
+			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", "(found new version " + updateNeeded + ")")
+		
+		
 		return utf8ToLatin(finalOutput)
 
 ##

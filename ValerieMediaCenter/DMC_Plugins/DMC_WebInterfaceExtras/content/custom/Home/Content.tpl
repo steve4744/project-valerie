@@ -1,6 +1,14 @@
 <div class="textheader">Home</div>	
 	
 	<div class="subheader">
+		Version
+	</div>
+	
+	<div class="text">
+		<!-- CURRENT_VERSION --> <!-- LATEST_VERSION -->
+	</div>
+	
+	<div class="subheader">
 		Authors
 	</div>
 	
