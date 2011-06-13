@@ -38,6 +38,13 @@ def stringToUtf8(rawString):
 def utf8ToLatin(utfString):
 	latinString = None
 	if utfString is not None:
+		# Issue #151, efo => try default encoding, which should be UTF8
+		try:
+			byteString = utfString.encode()
+			return byteString
+		except Exception, ex:
+			printl("Conversion to UTF8 failed 1! Ex: " + str(ex), __name__, "W")
+		
 		try:
 			latinString = utfString.encode('latin-1')
 			return latinString
@@ -56,7 +63,7 @@ def utf8ToLatin(utfString):
 		
 		printl("Retrying 2", __name__, "W")
 		printl("Retrying 3", __name__, "W")
-		# If we do it like this an ä will be transformed to an a ...
+		# If we do it like this an Ã¤ will be transformed to an a ...
 		# We should this as an fallback
 		try:
 			latinString = unicodedata.normalize('NFKD', 
@@ -93,7 +100,8 @@ class Utf8():
 		
 	def open(self, file, arg):
 		try:
-			self.fd = codecs.open(file, arg, "utf-8")
+			# Issue #151, efo => use bytestring for file name 
+			self.fd = codecs.open(file.encode(), arg, "utf-8")
 			return True
 		except Exception, ex:
 			printl("Exception: " + str(ex), self, "W")
