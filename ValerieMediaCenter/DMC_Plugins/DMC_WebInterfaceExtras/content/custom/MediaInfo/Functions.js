@@ -4,7 +4,17 @@ $(document).ready(function(){
 	
 	if (params["mode"] == "done") {
 		window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
-		window.close();
+		if (params["target"] == "movies") {
+			window.open('/movies?showSave=true', '_self');
+		} else if (params["target"] == "tvshows") {
+			window.open('/tvshows?showSave=true', '_self');
+		} else if (params["target"] == "episodes") {
+			window.open('/episodes?showSave=true', '_self');
+		} else if (params["target"] == "failed") {
+			window.open('/failed?showSave=true', '_self');
+		} else {
+			window.open('/', '_self');
+		}
 		return;
 	} else if (params["mode"] == "new_record") {
 		$('#type').remove();

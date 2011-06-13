@@ -18,5 +18,7 @@ $(document).ready(function(){
 			"sPaginationType": "full_numbers"
 		} );
 	}
+	if (params["showSave"] != "true") {
 	$('#sm_save').hide();
+	}
 });

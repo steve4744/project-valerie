@@ -98,13 +98,13 @@ class WebData():
 		return utf8ToLatin(finalOutput)
 	
 	def getEpisodesOfTvShow (self, tvdbid):
-		onclick = "javascript:window.open('/episodes?tvdbid=" + tvdbid + "');"
+		onclick = "javascript:window.open('/episodes?tvdbid=" + tvdbid + "', '_self');"
 		
 		return onclick
 	
 	def getEditString (self, entry, type):
 		### <!-- build edit string -->
-		onclick  = "javascript:$('#sm_save').show();window.open('/mediainfo?"
+		onclick  = "javascript:window.open('/mediainfo?"
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
@@ -120,13 +120,13 @@ class WebData():
 		onclick  += urlencode({'Path':entry.Path}) + "&"
 		onclick  += urlencode({'Filename':entry.Filename}) + "&"
 		onclick  += urlencode({'Extension':entry.Extension})
-		onclick  += "');"
+		onclick  += "', '_self');"
 		
 		return onclick
 	
 	def getDeleteString (self, entry, type):
 		### <!-- build delete string -->
-		onclick = "javascript:$('#sm_save').show();window.open('/action?method=delete&what="
+		onclick = "javascript:window.open('/action?method=delete&what="
 		onclick  += str(type) + "&"
 		
 		if (type == 'isMovie'):
@@ -135,6 +135,6 @@ class WebData():
 			onclick  += "thetvdbid=" + str(entry.TheTvDbId) + "&"
 		elif (type == 'isEpisode'):
 			onclick  += "thetvdbid=" +str(entry.TheTvDbId) + "&"
-		onclick  += "');"
+		onclick  += "', '_self');"
 		
 		return onclick

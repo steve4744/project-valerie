@@ -93,7 +93,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.addByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 			
 			# add tvshows
 			elif request.args["what"][0] == "tvshows":
@@ -106,7 +106,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.addByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")	
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")	
 			
 			# add tvshowepisodes
 			elif request.args["what"][0] == "tvshowepisodes":
@@ -121,7 +121,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.addByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes")
 		
 		##
 		# edit section	
@@ -138,7 +138,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 			
 			# edit tvshows
 			elif request.args["what"][0] == "tvshows":
@@ -151,7 +151,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
 			
 			# edit tvshowepisodes
 			elif request.args["what"][0] == "tvshowepisodes":
@@ -166,7 +166,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.replaceByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes")
 		
 		##
 		# delete section
@@ -179,7 +179,7 @@ class WebActions(Resource):
 				manager = Manager()
 				manager.removeByUsingPrimaryKey(Manager.MOVIES, primary_key)
 				#manager.finish()
-				return WebHelper().redirectMeTo("/mediainfo?mode=done")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 		
 		
 		##
