@@ -94,14 +94,14 @@ class Movies(Resource):
 							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%d</td>
-							<td>%s</td>
+							<td><a href=http://www.imdb.com/title/%s/ target="_blank">%s</a></td>
 							<td>%s</td>
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)

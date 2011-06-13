@@ -70,7 +70,11 @@ class WebData():
 				
 		htmlCore = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/index.html")
 		
-		mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenu.tpl")
+		if (config.plugins.pvwebif.usepagination.value == True):
+			mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenu.tpl")
+		else:
+			mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenuNoPagination.tpl")
+			
 		customSubMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/SubMenu.tpl")
 		
 		if (submenu == None):
