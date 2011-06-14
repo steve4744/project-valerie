@@ -176,10 +176,10 @@ class Episodes(Resource):
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Episodes/Header.tpl")
 		tableBody = u""
 		
-		tvdbid = request.args["tvdbid"][0]
-		printl("tvdbid: " + tvdbid, "I")
+		TheTvDbId = request.args["TheTvDbId"][0]
+		printl("TheTvDbId: " + TheTvDbId, "I")
 		
-		entries = WebData().getData("episodes", tvdbid)
+		entries = WebData().getData("episodes", TheTvDbId)
 		
 		for entry in entries:
 			##

@@ -97,8 +97,8 @@ class WebData():
 		
 		return utf8ToLatin(finalOutput)
 	
-	def getEpisodesOfTvShow (self, tvdbid):
-		onclick = "javascript:window.open('/episodes?tvdbid=" + tvdbid + "', '_self');"
+	def getEpisodesOfTvShow (self, TheTvDbId):
+		onclick = "javascript:window.open('/episodes?TheTvDbId=" + TheTvDbId + "', '_self');"
 		
 		return onclick
 	
@@ -130,11 +130,11 @@ class WebData():
 		onclick  += str(type) + "&"
 		
 		if (type == 'isMovie'):
-			onclick  += "imdbid=" + str(entry.ImdbId) + "&"
+			onclick  += "ImdbId=" + str(entry.ImdbId)
 		elif (type == 'isTvShow'):
-			onclick  += "thetvdbid=" + str(entry.TheTvDbId) + "&"
+			onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
 		elif (type == 'isEpisode'):
-			onclick  += "thetvdbid=" +str(entry.TheTvDbId) + "&"
+			onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
 		onclick  += "', '_self');"
 		
 		return onclick

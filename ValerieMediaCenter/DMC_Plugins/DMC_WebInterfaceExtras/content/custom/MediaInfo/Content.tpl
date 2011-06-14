@@ -13,12 +13,12 @@
 				<input type="hidden" name="what" value="">
 				<tr><td></td></tr>
 				<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
-				<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="imdbid" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
-				<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="thetvdbid" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
+				<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="ImdbId" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
+				<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="TheTvDbId" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
 				<tr id="tr_title"><td>*Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
 				<tr id="tr_tag"><td>Tag:</td><td><input id="tag" name="Tag" type="text" size="50"></input></td><td>(e.g.my tag)</td></tr>
-				<tr id="tr_season"><td>Season:</td><td><input id="season" name="season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>
-				<tr id="tr_episode"><td>Episode:</td><td><input id="episode" name="episode" type="text" size="3" maxlength="3"></input></td><td>(e.g. 01)</td></tr>
+				<tr id="tr_season"><td>Season:</td><td><input id="season" name="Season" type="text" size="2" maxlength="2"></input></td><td>(e.g. 01)</td></tr>
+				<tr id="tr_episode"><td>Episode:</td><td><input id="episode" name="Episode" type="text" size="3" maxlength="3"></input></td><td>(e.g. 01)</td></tr>
 				<tr id="tr_plot"><td>Plot:</td><td><textarea id="plot" name="Plot" cols="50" rows="15"></textarea></td><td>(e.g. story description)</td></tr>
 				<tr id="tr_runtime"><td>*Runtime:</td><td><input id="runtime" name="Runtime" type="text" size="50"></input></td><td>(e.g. 90)</td></tr>
 				<tr id="tr_year"><td>*Year:</td><td><input id="year" name="Year" type="text" size="4" maxlength="4"></td><td></input>(e.g. 2011)</td></tr>

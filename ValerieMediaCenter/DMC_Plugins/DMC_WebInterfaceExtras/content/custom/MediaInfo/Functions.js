@@ -1,109 +1,91 @@
 $(document).ready(function(){
 	
+	/* parse values from URL */	
 	var params = get_params();
+	var mode = params["mode"];
+	var target = params["target"];
+	var type = params["type"];
+	var imdbid = params["ImdbId"];
+	var thetvdbid = params["TheTvDbId"];
 	
-	if (params["mode"] == "done") {
+	//DONE SECTION
+	if (mode == "done") {
 		window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
-		if (params["target"] == "movies") {
-			window.open('/movies?showSave=true', '_self');
-		} else if (params["target"] == "tvshows") {
-			window.open('/tvshows?showSave=true', '_self');
-		} else if (params["target"] == "episodes") {
-			window.open('/episodes?showSave=true', '_self');
-		} else if (params["target"] == "failed") {
-			window.open('/failed?showSave=true', '_self');
+		alert(typeof(thetvdbid));
+		if (typeof(thetvdbid)=='string') {
+			alert(thetvdbid);
+			window.open('/' + target + '?showSave=true&TheTvDbId=' + thetvdbid, '_self');			
 		} else {
-			window.open('/', '_self');
+
+			window.open('/' + target + '?showSave=true', '_self');
 		}
 		return;
-	} else if (params["mode"] == "new_record") {
+	
+	//NEW RECORD SECTION
+	} else if (mode == "new_record") {
 		$('#type').remove();
-		$('#td_type').append('<select id="select_type"><option value="empty">---</option><option value="movies">Movie</option><option value="tvshows">Serie</option><option value="tvshowepisodes">Episode</option></select>');
 		$('[name=method]').val("add");
-		$('#imdbid').removeAttr("disabled"); 
-		$('#thetvdbid').removeAttr("disabled"); 
-		$('#select_type').change(function(){
-			var selected_type = $(this).find('option:selected').val();
-			$('[name=what]').val(selected_type);
-			if (selected_type == 'movies' || selected_type == 'tvshows') {
-				document.getElementById('season').value = -1;
-				$('#season').attr("disabled", true); 
-				document.getElementById('episode').value = -1;
-				$('#episode').attr("disabled", true); 
-		
-			} else if (selected_type == 'tvshowepisodes') {
-				document.getElementById('season').value = "";
-				$('#season').removeAttr("disabled"); 
-				document.getElementById('episode').value = "";
-				$('#episode').removeAttr("disabled"); 
-			}
-		});
+		$('[name=what]').val(type);
+		changeTable(type);
+	
+	//EDIT SECTION
 	} else {
-		/* parse values from URL */
-		var type = params["type"];
-		var imdbid = params["ImdbId"];
-		var thetvdbid = params["TheTvDbId"];
-		var title = params["Title"];
-		var season = params["Season"];
-		var episode = params["Episode"];
-		var plot = params["Plot"];
-		var runtime = params["Runtime"];
-		var year = params["Year"];
-		var genres = params["Genres"];
-		var tag = params["Tag"];
-		var popularity = params["Popularity"];
-		var path = params["Path"];
-		var filename = params["Filename"];
-		var extension = params["Extension"];
-		
 		/* fill complete structure with data */
 		document.getElementById('type').value = type;
 		document.getElementById('imdbid').value = imdbid;
 		document.getElementById('thetvdbid').value = thetvdbid;
-		document.getElementById('title').value = title;
-		document.getElementById('season').value = season;
-		document.getElementById('episode').value = episode;
-		document.getElementById('plot').value = plot;
-		document.getElementById('runtime').value = runtime;
-		document.getElementById('year').value = year;
-		document.getElementById('genres').value = genres;
-		document.getElementById('tag').value = tag;
-		document.getElementById('popularity').value = popularity;
-		document.getElementById('path').value = path;
-		document.getElementById('filename').value = filename;
-		document.getElementById('extension').value = extension;
+		document.getElementById('title').value = params["Title"];
+		document.getElementById('season').value = params["Season"];
+		document.getElementById('episode').value = params["Episode"];
+		document.getElementById('plot').value = params["Plot"];
+		document.getElementById('runtime').value = params["Runtime"];
+		document.getElementById('year').value = params["Year"];
+		document.getElementById('genres').value = params["Genres"];
+		document.getElementById('tag').value = params["Tag"];
+		document.getElementById('popularity').value = params["Popularity"];
+		document.getElementById('path').value = params["Path"];
+		document.getElementById('filename').value = params["Filename"];
+		document.getElementById('extension').value = params["Extension"];
 		
 		/* modify tables corresponding to the type */
+		
+		$('[name=what]').val(type);
+		changeTable(type);
+		
 		if (type == "isMovie") {
-			$('#tr_season').remove();
-			$('#tr_episode').remove();
-			$('#tr_thetvdbid').remove();
-			$('#tr_tag').remove();
-			
-			$('[name=what]').val("movies");
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + imdbid + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + imdbid + "_320x180.png");
 			
 		} else if (type == "isTvShow") {
-			$('#tr_tag').remove();
-			$('#tr_season').remove();
-			$('#tr_episode').remove();
-			$('#tr_popularity').remove();
-			$('#tr_runtime').remove();
-			$('#tr_path').remove();
-			$('#tr_filename').remove();
-			$('#tr_extension').remove();
-			
-			$('[name=what]').val("tvshows");
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
 			
 		} else if (type == "isEpisode") {
-			
-			$('[name=what]').val("tvshowepisodes");
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
-		
 		}
 	}
 });
+
+
+function changeTable(table_type) {
+	if (table_type == "isMovie") {
+		$('#tr_season').remove();
+		$('#tr_episode').remove();
+		$('#tr_thetvdbid').remove();
+		$('#tr_tag').remove();
+	} else if (table_type == "isTvShow") {
+		$('#tr_tag').remove();
+		$('#tr_season').remove();
+		$('#tr_episode').remove();
+		$('#tr_popularity').remove();
+		$('#tr_runtime').remove();
+		$('#tr_path').remove();
+		$('#tr_filename').remove();
+		$('#tr_extension').remove();
+	} else if (table_type == "isEpisode") {
+		//for now nothing
+	} else {
+		alert("Error - no type found");
+	}
+}
