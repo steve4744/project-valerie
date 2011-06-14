@@ -25,8 +25,8 @@ def startPlugin(session):
 	from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
 	session.open(ProjectValerieSync)
 
-registerPlugin(Plugin(name=_("Syncronize"), fnc=settings, where=Plugin.SETTINGS))
-registerPlugin(Plugin(name=_("Syncronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
+registerPlugin(Plugin(name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
+registerPlugin(Plugin(name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
 if config.plugins.pvmc.plugins.sync.fastsynconautostart.value is True:
-	registerPlugin(Plugin(name=_("Syncronize"), fnc=autostartPlugin, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(name=_("Synchronize"), fnc=autostartPlugin, where=Plugin.AUTOSTART))
 
