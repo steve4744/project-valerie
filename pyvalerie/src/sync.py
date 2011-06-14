@@ -378,10 +378,12 @@ class pyvalerie(Thread):
 						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
 						if tmp[0] is True and tmp[1] is None:
 							# seems to be no tvshows so lets parse as movie
+							printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
 							elementInfo.isMovie = True
 							elementInfo.isSerie = False
 						elif tmp[0] is True:
-							elementInfo = tmp
+							# Issue #205, efo => use tmp[1] instead of tmp...
+							elementInfo = tmp[1]
 						searchStringSplitted = elementInfo.SearchString.split("::")
 						if len(searchStringSplitted) >= 2:
 							elementInfo.SearchString = searchStringSplitted[0];

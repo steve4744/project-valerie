@@ -11,9 +11,10 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 class GoogleProvider():
 
 	URL = u"http://www.google.com/"
-	apiSearch = URL + u"search?q=<search>"	
+	apiSearch = URL + u"search?q=<search>"
 	
-	DIV_RESULT_START = u"<li class=g>"
+	# Issue #205, efo => don't use start tag
+	# DIV_RESULT_START = u"<div id=\"search\">"
 	DIV_RESULT_FLAG = u"<h3 class=\"r\">"
 
 	def searchForSeasonAndEpisode(self, info, result):
@@ -54,11 +55,21 @@ class GoogleProvider():
 		s = 0
 		e = 0
 		
-		htmlSplitted = html.split(self.DIV_RESULT_START)
+		# Issue #205, efo => use only result tag
+		# htmlSplitted = html.split(self.DIV_RESULT_START)
+		htmlSplitted = html.split(self.DIV_RESULT_FLAG)
+		lobSkipEntry = True
 		for htmlSplitter in htmlSplitted:
-			htmlSplitter = htmlSplitter.strip()
-			if htmlSplitter.startswith(self.DIV_RESULT_FLAG) is False:
+			# Skip first entry, since this mostly contain script stuff...
+			if lobSkipEntry == True:
+				lobSkipEntry = False
 				continue
+			
+			htmlSplitter = htmlSplitter.strip()
+			
+			# Issue #205, efo => don't split again, since we now already have a single line which can be checked...
+			#if htmlSplitter.startswith(self.DIV_RESULT_FLAG) is False:
+			#	continue
 			
 			#pos = htmlSplitter.find(self.DIV_RESULT_END)
 			#if pos < 0:
@@ -71,7 +82,7 @@ class GoogleProvider():
 				if s == 0 or e == 0:
 					s = info.Season
 					e = info.Episode
-				
+
 				if s == info.Season and e == info.Episode:
 					count = count + 1
 					if count == 2:

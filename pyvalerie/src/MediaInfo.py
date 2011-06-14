@@ -511,7 +511,8 @@ class MediaInfo(object):
 					self.isMovie = True
 					self.isSerie = False
 				elif e2info.IsEpisode:
-					self.SearchString = e2info.MovieName + ":: " + e2info.EpisodeName
+					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
+					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
 					self.isMovie = False
 					self.isSerie = True
 					
