@@ -135,7 +135,7 @@ class WebData():
 	
 	def getDeleteString (self, entry, type):
 		### <!-- build delete string -->
-		onclick = "javascript:window.open('/action?method=delete&what="
+		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?method=delete&what="
 		onclick  += str(type) + "&"
 		
 		if (type == 'isMovie'):
@@ -144,6 +144,6 @@ class WebData():
 			onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
 		elif (type == 'isEpisode'):
 			onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
-		onclick  += "', '_self');"
+		onclick  += "', '_self')} else { return};"
 		
 		return onclick
