@@ -1,24 +1,14 @@
 $(document).ready(function(){
 	var params = get_params();
-	if (params["usePagination"] == "true") {
-		$('#main_table').dataTable( {
-			"sScrollY": 768,
-			"aaSorting": [[ 1, "asc" ]],
-			"bScrollInfinite": true,
-			"bPaginate": false,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers"
-		} );
-	} else {
-		$('#main_table').dataTable( {
-			"aaSorting": [[ 1, "asc" ]],
-			"bScrollInfinite": true,
-			"bPaginate": false,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers"
-		} );
-	}
+	$('#main_table').dataTable( {
+		"sScrollY": 768,
+		"aaSorting": [[ 1, "asc" ]],
+		<!-- PAGINATION_FLAG -->
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers"
+	} );
+
 	if (params["showSave"] != "true") {
-	$('#sm_save').hide();
+		$('#sm_save').hide();
 	}
 });

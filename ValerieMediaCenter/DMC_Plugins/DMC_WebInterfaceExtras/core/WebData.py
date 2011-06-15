@@ -70,10 +70,7 @@ class WebData():
 				
 		htmlCore = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/index.html")
 		
-		if (config.plugins.pvwebif.usepagination.value == True):
-			mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenu.tpl")
-		else:
-			mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenuNoPagination.tpl")
+		mainMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/global/tpl/mainMenu.tpl")
 			
 		customSubMenu = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/SubMenu.tpl")
 		
@@ -90,8 +87,20 @@ class WebData():
 		if (functions == True):
 			if (submenu == None):
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/Functions.js")
+				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
+					if (config.plugins.pvwebif.usepagination.value == True):
+						Pagination = '"bPaginate": true,'
+					else:
+						Pagination = '"bPaginate": false,'
+					customJS = customJS.replace("<!-- PAGINATION_FLAG -->", Pagination)	
 			else:
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/" + submenu + "/Functions.js")
+				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
+					if (config.plugins.pvwebif.usepagination.value == True):
+						Pagination = '"bPaginate": true,'
+					else:
+						Pagination = '"bPaginate": false,'
+					customJS = customJS.replace("<!-- PAGINATION_FLAG -->", Pagination)	
 			
 			finalOutput = finalOutput.replace("<!-- CUSTOM_JAVASCRIPT -->", customJS)
 		
