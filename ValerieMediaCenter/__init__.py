@@ -65,15 +65,7 @@ config.plugins.pvmc.configfolderpath    = ConfigText(default = defaultConfigFold
 config.plugins.pvmc.mediafolderpath     = ConfigText(default = defaultMediaFolderPath)
 config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderPath)
 
-config.plugins.pvmc.usepaginationinwebif = ConfigYesNo(default = False)
-
 config.plugins.pvmc.save()
-
-config.plugins.pvwebif = ConfigSubsection()
-
-config.plugins.pvwebif.usepagination = ConfigYesNo(default = True)
-
-config.plugins.pvwebif.save()
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 print "__init__:: version="        + str(config.plugins.pvmc.version.value)

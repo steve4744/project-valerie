@@ -129,7 +129,6 @@ class PVMC_Settings(Screen, ConfigListScreen):
 				pluginSettingsList = plugin.fnc()
 				for pluginSetting in pluginSettingsList:
 					self.list.append(getConfigListEntry("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
-			self.list.append(getConfigListEntry(_("Use Pagination in WebIF"), config.plugins.pvwebif.usepagination))
 			
 			self.list.append(getConfigListEntry(_("[EXPERT] Valerie Config folder (Database, ...)"), config.plugins.pvmc.configfolderpath))
 			self.list.append(getConfigListEntry(_("[EXPERT] Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath))

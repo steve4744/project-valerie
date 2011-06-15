@@ -4,6 +4,7 @@ from threading import Thread
 from Components.config import config
 from Components.config import ConfigInteger
 from Components.config import ConfigSubsection
+from Components.config import ConfigYesNo
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
@@ -32,6 +33,7 @@ except Exception, ex:
 
 config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
 config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
+config.plugins.pvmc.plugins.webinterface.usepagination = ConfigYesNo(default = True)
 
 ##
 #
@@ -82,6 +84,7 @@ def autostart(session):
 def settings():
 	s = []
 	s.append((_("Port"), config.plugins.pvmc.plugins.webinterface.port, ))
+	s.append((_("use Pagination"), config.plugins.pvmc.plugins.webinterface.usepagination, ))
 	return s
 
 if gAvailable is True:

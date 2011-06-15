@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
-from threading import Thread
-
-from Components.config import config
-from Components.config import ConfigInteger
-from Components.config import ConfigSubsection
-
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
-
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebHelper import WebHelper
-
-import sys
+from Components.config import config
 from urllib import urlencode
 
+import sys
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
@@ -20,21 +11,6 @@ Manager = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 
-gAvailable = False
-try:
-	from twisted.web.server import Site
-	from twisted.web.static import File
-	from twisted.internet   import reactor, threads
-	from twisted.web.resource import Resource
-
-	gAvailable = True
-except Exception, ex:
-	printl("DMC_WebInterfaceExtras::isAvailable Is not available", None, "E")
-	printl("DMC_WebInterfaceExtras::isAvailable Exception: " + str(ex), None, "E")
-	gAvailable = False
-
-config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
-config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 ##
 #
 ##	
@@ -88,7 +64,7 @@ class WebData():
 			if (submenu == None):
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/Functions.js")
 				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
-					if (config.plugins.pvwebif.usepagination.value == True):
+					if (config.plugins.pvmc.plugins.webinterface.usepagination.value == True):
 						Pagination = '"bPaginate": true,'
 					else:
 						Pagination = '"bPaginate": false,'
@@ -96,7 +72,7 @@ class WebData():
 			else:
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/" + submenu + "/Functions.js")
 				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
-					if (config.plugins.pvwebif.usepagination.value == True):
+					if (config.plugins.pvmc.plugins.webinterface.usepagination.value == True):
 						Pagination = '"bPaginate": true,'
 					else:
 						Pagination = '"bPaginate": false,'
