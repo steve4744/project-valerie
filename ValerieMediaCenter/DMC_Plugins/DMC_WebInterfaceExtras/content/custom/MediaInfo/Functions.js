@@ -11,12 +11,9 @@ $(document).ready(function(){
 	//DONE SECTION
 	if (mode == "done") {
 		window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
-		alert(typeof(thetvdbid));
-		if (typeof(thetvdbid)=='string') {
-			alert(thetvdbid);
+		if (typeof(thetvdbid) != 'undefined') {
 			window.open('/' + target + '?showSave=true&TheTvDbId=' + thetvdbid, '_self');			
 		} else {
-
 			window.open('/' + target + '?showSave=true', '_self');
 		}
 		return;
@@ -31,6 +28,7 @@ $(document).ready(function(){
 	//EDIT SECTION
 	} else {
 		/* fill complete structure with data */
+		alert(params["Title"]);
 		document.getElementById('type').value = type;
 		document.getElementById('imdbid').value = imdbid;
 		document.getElementById('thetvdbid').value = thetvdbid;
@@ -56,11 +54,7 @@ $(document).ready(function(){
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + imdbid + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + imdbid + "_320x180.png");
 			
-		} else if (type == "isTvShow") {
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
-			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
-			
-		} else if (type == "isEpisode") {
+		} else if (type == "isTvShow" || type == "isEpisode") {
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + thetvdbid + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + thetvdbid + "_320x180.png");
 		}

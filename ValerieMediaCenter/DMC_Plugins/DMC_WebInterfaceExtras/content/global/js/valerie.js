@@ -1,5 +1,5 @@
 function get_params(){
-	var searchString = decode(document.location.search);
+	var searchString = document.location.search;
 
 	searchString = searchString.substring(1);
 
@@ -7,7 +7,7 @@ function get_params(){
 	var result = new Array();
 	for (var i = 0; i < nvPairs.length; i++){
 		 var nvPair = nvPairs[i].split("=");
-		 result[decode_utf8(nvPair[0])] = decode_utf8(nvPair[1]);
+		 result[decode_utf8(decode(nvPair[0]))] = decode_utf8(decode(nvPair[1]));
 	}
 	return result;
 }
