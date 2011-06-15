@@ -121,7 +121,7 @@ class WebActions(Resource):
 				
 				manager = Manager()
 				manager.addByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes")
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
 		
 		##
 		# edit section	
