@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
-from threading import Thread
-
 from Components.config import config
-from Components.config import ConfigInteger
-from Components.config import ConfigSubsection
+
+from twisted.web.resource import Resource
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
-
+from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebData import WebData
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebHelper import WebHelper
-
-from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
@@ -19,21 +13,6 @@ MediaInfo = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 
-gAvailable = False
-try:
-	from twisted.web.server import Site
-	from twisted.web.static import File
-	from twisted.internet   import reactor, threads
-	from twisted.web.resource import Resource
-	
-	gAvailable = True
-except Exception, ex:
-	printl("DMC_WebInterfaceExtras::isAvailable Is not available", None, "E")
-	printl("DMC_WebInterfaceExtras::isAvailable Exception: " + str(ex), None, "E")
-	gAvailable = False
-
-config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
-config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 ##
 #
 ##
