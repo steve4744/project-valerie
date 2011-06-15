@@ -7,12 +7,14 @@ function get_params(){
 	var result = new Array();
 	for (var i = 0; i < nvPairs.length; i++){
 		 var nvPair = nvPairs[i].split("=");
-		 result[decode_utf8(decode(nvPair[0]))] = decode_utf8(decode(nvPair[1]));
+		 if (typeof(nvPair[1]) != "undefined") {
+			result[decode_utf8(unescapeMe(nvPair[0]))] = decode_utf8(unescapeMe(nvPair[1]));
+		 }
 	}
 	return result;
 }
 
-function decode(str) {
+function unescapeMe(str) {
      return unescape(str.replace(/\+/g, " "));
 }
 

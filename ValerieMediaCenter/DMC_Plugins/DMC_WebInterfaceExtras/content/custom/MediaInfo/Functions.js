@@ -28,7 +28,6 @@ $(document).ready(function(){
 	//EDIT SECTION
 	} else {
 		/* fill complete structure with data */
-		alert(params["Title"]);
 		document.getElementById('type').value = type;
 		document.getElementById('imdbid').value = imdbid;
 		document.getElementById('thetvdbid').value = thetvdbid;
