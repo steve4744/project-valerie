@@ -32,6 +32,8 @@ class MediaInfo(object):
 	
 	isEnigma2MetaRecording = False
 	
+	isXbmcNfo = False
+	
 	LanguageOfPlot = u"en"
 	
 	Path         = u""
@@ -151,6 +153,7 @@ class MediaInfo(object):
 	def getEnigma2RecordingName(self, name):
 		try:
 			e2info = None
+			printl("Read from '" + name + u".meta" + "'", self, "I")
 			f = Utf8.Utf8(name + u".meta", "r")
 			lines = f.read()
 			if lines is None:
@@ -161,6 +164,7 @@ class MediaInfo(object):
 			if lines is not None:
 				lines = lines.split(u"\n")
 				if len(lines) > 2:
+					printl("MovieName = '" + lines[1] + "' - EpisodeName = '" + lines[2] + "'", self, "I")
 					e2info = self.Enimga2MetaInfo(lines[1], lines[2])
 			f.close()
 			return e2info
@@ -239,6 +243,7 @@ class MediaInfo(object):
 
 	def isNfoAvailable(self, name):
 		try:
+			printl("Check presence of nfo file: " + Utf8.utf8ToLatin(name + u".nfo"), self, "I")
 			if os.path.isfile(Utf8.utf8ToLatin(name + u".nfo")):
 				return True
 		except Exception, ex:
@@ -247,15 +252,20 @@ class MediaInfo(object):
 
 	def parseNfo(self, name):
 		try:
+			printl("About to read from nfo-file: " + name + u".nfo", self, "I")
 			f = Utf8.Utf8(name + u".nfo", "r")
 			lines = f.read()
 			if lines is not None:
+				printl("Checking type of file...", self, "I")
 				lines = lines.split(u"\n")
 				if len(lines) > 1:
 					lines[1] = lines[1].strip()
 					if lines[1].startswith("<movie") or lines[1].startswith("<episodedetails>"):
+						printl("Found xbmc-style nfo...", self, "I")
+						self.isXbmcNfo = True
 						return self.parseNfoXbmc(lines)
 					else:
+						printl("Might be IMDb-ID nfo...", self, "I")
 						return self.getImdbIdFromNfo(lines)
 			f.close()
 		except Exception, ex:
@@ -297,6 +307,11 @@ class MediaInfo(object):
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
 					self.Year = int(line)
+				elif line.startswith("<plot>"):
+					line = line.replace("plot", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Plot = line
 		
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
@@ -309,6 +324,7 @@ class MediaInfo(object):
 				m = re.search(r'(?P<imdbid>tt\d{7})', line)
 				if m and m.group("imdbid"):
 					self.ImdbId = m.group("imdbid")
+					printl("Found IMDb-ID = " + str(self.ImdbId), self, "I")
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 		return None
@@ -340,13 +356,17 @@ class MediaInfo(object):
 		printl(":-1: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
 		###
+		printl("Check for IMDb-ID in filename '" + name + "'", self, "I")
 		m = re.search(r'(?P<imdbid>tt\d{7})', name)
 		if m and m.group("imdbid"):
 			self.ImdbId = m.group("imdbid")
+			printl(" => found IMDb-ID = " + str(self.ImdbId), self, "I")
 		
 		if self.isNfoAvailable(self.Path + u"/" + self.Filename):
+			printl("nfo File present - now parsing: " + self.Path + u"/" + self.Filename, self, "I")
 			result = self.parseNfo(self.Path + u"/" + self.Filename)
 			if result is not None:
+				printl(" => nfo File successfully parsed!", self, "I")
 				self.isMovie = result.isMovie
 				self.isEpisode = result.isEpisode
 				self.isSerie = result.isSerie
@@ -357,6 +377,8 @@ class MediaInfo(object):
 				self.Episode = result.Episode
 				
 				self.Year = result.Year
+			else:
+				printl("Something went wrong while reading from nfo :-(", self, "I")
 		
 		###  
 		if self.Year == -1:
@@ -401,6 +423,7 @@ class MediaInfo(object):
 		#nameConverted = name
 		
 		if self.isMovie is False:
+			printl("(isMovie is False) => assuming TV show - trying to get season and episode from SearchString: " + self.SearchString, self, "I")
 			#####
 			#####  s03e05
 			#####
@@ -503,28 +526,33 @@ class MediaInfo(object):
 		printl(":2: " + str(Utf8.utf8ToLatin(self.SearchString)) + " " + str(self.Season) + " " + str(self.Episode) + " " + str(self.Year), self)
 		
 		if self.Extension == u"ts" and self.isEnigma2Recording(absFilename) is True:
+			printl("Extension == 'ts' and E2 meta file found => retrieving name from '" + absFilename + "'", self, "I")
 			e2info = self.getEnigma2RecordingName(absFilename)
 			if e2info is not None:
 				printl("e2info: "+ str(Utf8.utf8ToLatin(e2info.MovieName)) + " - " + str(Utf8.utf8ToLatin(e2info.EpisodeName) + "," + str(e2info.IsMovie) + "," + str(e2info.IsEpisode)), self)
 				if e2info.IsMovie:
+					printl("Assuming Movie...", self, "I")
 					self.SearchString = e2info.MovieName
 					self.isMovie = True
 					self.isSerie = False
 				elif e2info.IsEpisode:
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
+					printl("Assuming TV-Show", self, "I")
 					self.isMovie = False
 					self.isSerie = True
 					
 				self.isEnigma2MetaRecording = True
-				printl("e2info:: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
+				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 				return True
 		
 		if self.isValerieInfoAvailable(self.Path) is True:
 			self.SearchString = self.getValerieInfo(self.Path).strip()
-			printl("valerieinfo: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
+			printl("Found valerie.info containing: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 			if self.SearchString == u"ignore":
+				printl("=> found 'ignore'... Returning to sync process and skipping!", self, "I")
 				return False
+			printl("Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 			return True
 		
 		if self.isSerie == False:
@@ -534,9 +562,11 @@ class MediaInfo(object):
 		# now we can delete everything after the year
 		# but only if the year is not the first word in the string
 		if self.Year != -1:
+			printl("Adapt SearchString due to year...", self, "I")
 			pos = self.SearchString.find(str(self.Year))
 			if pos > 0:
 				self.SearchString = self.SearchString[:pos]
+				printl(" => SearchString now set to '" + self.SearchString + "'", self, "I")
 		
 		#print ":1: ", self.SearchString
 		### Replacements POST
@@ -558,6 +588,7 @@ class MediaInfo(object):
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
 		
 		if useParentFoldernameAsSearchstring:
+			printl("Building search string from parent folder names...", self, "I")
 			try:
 				folders = self.Path.split("/")
 				self.SearchString = folders[len(folders) - 1]

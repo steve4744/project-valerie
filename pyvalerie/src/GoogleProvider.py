@@ -41,6 +41,7 @@ class GoogleProvider():
 		
 		url = self.apiSearch
 		url = re.sub("<search>", info.SearchString, url)
+		printl("Google-query: " + info.SearchString, self, "I")
 		html = WebGrabber.getHtml(url)
 		
 		if html is None:

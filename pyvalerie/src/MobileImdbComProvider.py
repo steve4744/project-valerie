@@ -317,8 +317,10 @@ class MobileImdbComProvider():
 
 	def getMoviesByTitle(self, info):
 		if info.ImdbId != info.ImdbIdNull:
+			printl("IMDb-ID already set to '" + str(info.ImdbId) + "' - get movie by ID instead... ", self, "I")
 			info2 = self.getMoviesByImdbID(info)
 			if info2 is not None:
+				printl("Get movie by ID succeeded. ", self, "I")
 				return info2
 		
 		url = self.apiSearch
@@ -346,9 +348,11 @@ class MobileImdbComProvider():
 		for result in results:
 			if info.isEpisode or info.isSerie:
 				if not result.IsTVSeries:
+					printl("Searched media is a TV-show - but result seems to be a movie => skip...", self, "I")
 					continue
 			else: # isMovie
 				if result.IsTVSeries:
+					printl("Searched media is a movie - but result seems to be a TV-show => skip...", self, "I")
 					continue
 			
 			# We check if year +-1, cause sometimes the year is wrong by one year
@@ -357,9 +361,11 @@ class MobileImdbComProvider():
 				info.Title = result.Title
 				info.Year = result.Year
 				
+				printl("Get movie by ID '" + str(info.ImdbId) + "'", self, "I")
 				tmp = self.getMoviesByImdbID(info)
 				if tmp is not None:
 					info = tmp
+					printl("Get movie by ID succeeded: " + str(info.ImdbId) + "'", self, "I")
 					return info
 		
 

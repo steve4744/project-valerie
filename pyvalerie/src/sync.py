@@ -359,7 +359,7 @@ class pyvalerie(Thread):
 					
 					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
 					
-					printl("TYPE: " + str(folderType), self)
+					printl("FOLDERTYPE: " + str(folderType), self)
 					printl("USEFOLDER: " + str(useFolder), self)
 					
 					if useFolder == u"MOVIE":
@@ -375,6 +375,7 @@ class pyvalerie(Thread):
 						continue
 					
 					if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
+						printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
 						tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
 						if tmp[0] is True and tmp[1] is None:
 							# seems to be no tvshows so lets parse as movie
@@ -384,16 +385,21 @@ class pyvalerie(Thread):
 						elif tmp[0] is True:
 							# Issue #205, efo => use tmp[1] instead of tmp...
 							elementInfo = tmp[1]
+							printl("Result from google => Season=" + str(elementInfo.Season) + " / Episode=" + str(elementInfo.Episode), self, "I")
 						searchStringSplitted = elementInfo.SearchString.split("::")
 						if len(searchStringSplitted) >= 2:
-							elementInfo.SearchString = searchStringSplitted[0];
+							elementInfo.SearchString = searchStringSplitted[0]
+							printl("New searchString after split: " + elementInfo.SearchString, self, "I")
 					
+					printl("Get IMDb ID from title using searchString: " + elementInfo.SearchString, self, "I")
 					tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 					if tmp is None:
+						printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
 						db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
 						continue
 					elementInfo = tmp
 					
+					printl("Finally about to sync element... ", self, "I")
 					results = Sync().syncWithId(elementInfo)
 					if results is not None:
 						for result in results:
