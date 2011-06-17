@@ -263,11 +263,17 @@ class MediaInfo(object):
 					if lines[1].startswith("<movie") or lines[1].startswith("<episodedetails>"):
 						printl("Found xbmc-style nfo...", self, "I")
 						self.isXbmcNfo = True
+						f.close()
 						return self.parseNfoXbmc(lines)
 					else:
 						printl("Might be IMDb-ID nfo...", self, "I")
+						f.close()
 						return self.getImdbIdFromNfo(lines)
+				else:
+					f.close()
+					return None
 			f.close()
+			return None
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 
@@ -325,6 +331,9 @@ class MediaInfo(object):
 				if m and m.group("imdbid"):
 					self.ImdbId = m.group("imdbid")
 					printl("Found IMDb-ID = " + str(self.ImdbId), self, "I")
+					return self
+				else:
+					return None
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 		return None
