@@ -69,6 +69,8 @@ def autostart(session):
 		root.putChild("action", WebActions.WebActions())
 		root.putChild("mediainfo", WebResources.MediaInfo())
 		root.putChild("episodes", WebResources.Episodes())
+		root.putChild("addrecord", WebResources.AddRecord())
+		root.putChild("alternatives", WebResources.Alternatives())
 		
 		#Action pages in SubMenu
 		root.putChild("backup", WebResources.Backup())

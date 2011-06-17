@@ -36,8 +36,8 @@ class WebData():
 		
 		return dataRows
 	##
-	# param submenu
-	# values = None 
+	# 
+	# 
 	##
 	def getHtmlCore (self, webResource, functions = False, submenu = None ):
 		global utf8ToLatin
@@ -82,15 +82,24 @@ class WebData():
 		
 		return utf8ToLatin(finalOutput)
 	
+	##
+	#
+	#
+	##
 	def getEpisodesOfTvShow (self, TheTvDbId):
 		onclick = "javascript:window.open('/episodes?TheTvDbId=" + TheTvDbId + "', '_self');"
 		
 		return onclick
 	
+	##
+	#
+	#
+	##
 	def getEditString (self, entry, type):
 		### <!-- build edit string -->
 		onclick  = "javascript:window.open('/mediainfo?"
 		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'usePath':"true"}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
 		onclick  += urlencode({'Title':entry.Title}) + "&"
@@ -123,3 +132,42 @@ class WebData():
 		onclick  += "', '_self')} else { return};"
 		
 		return onclick
+	
+	##
+	#
+	#
+	##
+	def getAlternativesString (self, entry, type):
+		### <!-- build alternatives string -->
+		onclick  = "javascript:window.open('/alternatives?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'modus':"existing"}) + "&"
+		onclick  += urlencode({'by':"Title"}) + "&"
+		onclick  += urlencode({'Title':entry.Title}) + "&"
+		onclick  += urlencode({'Path':entry.Path}) + "&"
+		onclick  += urlencode({'Filename':entry.Filename}) + "&"
+		onclick  += urlencode({'Extension':entry.Extension})
+		onclick  += "', '_self');"
+		
+		return onclick
+
+	##
+	#
+	#
+	##
+	def getApplyString (self, entry, existing):
+		### <!-- build apply string -->
+		onclick  = "javascript:window.open('/addrecord?"
+		onclick  += urlencode({'type':entry.type}) + "&"
+		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
+		if existing == "true":
+			onclick  += urlencode({'usePath':"true"}) + "&"
+			onclick  += urlencode({'Path':entry.Path}) + "&"
+			onclick  += urlencode({'Filename':entry.Filename}) + "&"
+			onclick  += urlencode({'Extension':entry.Extension})
+		else:
+			onclick  += urlencode({'usePath':"false"})
+		onclick  += "', '_self');"
+		
+		return onclick
+				

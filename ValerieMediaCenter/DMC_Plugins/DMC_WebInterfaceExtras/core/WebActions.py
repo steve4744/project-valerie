@@ -1,39 +1,20 @@
-# -*- coding: utf-8 -*-
-from threading import Thread
-
 from Components.config import config
-from Components.config import ConfigInteger
-from Components.config import ConfigSubsection
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebData import WebData
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebHelper import WebHelper
+from twisted.web.resource import Resource
 
-
+import urllib
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
 Manager = None
 utf8ToLatin = None
+MobileImdbComProvider = None
+MediaInfo = None
 # --- LAZY IMPORTS ---
-
-gAvailable = False
-try:
-	from twisted.web.server import Site
-	from twisted.web.static import File
-	from twisted.internet   import reactor, threads
-	from twisted.web.resource import Resource
-	
-	gAvailable = True
-except Exception, ex:
-	printl("DMC_WebInterfaceExtras::isAvailable Is not available", None, "E")
-	printl("DMC_WebInterfaceExtras::isAvailable Exception: " + str(ex), None, "E")
-	gAvailable = False
-
-config.plugins.pvmc.plugins.webinterface = ConfigSubsection()
-config.plugins.pvmc.plugins.webinterface.port = ConfigInteger(default = 8888, limits=(1, 65535) )
 
 ##
 #
@@ -49,10 +30,13 @@ class WebActions(Resource):
 	def action(self, request):
 		global Manager
 		global utf8ToLatin
+		global MediaInfo
 		if Manager is None:
 			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
 		
 		printl("request: " + str(request), self)
 		printl("request.args: " + str(request.args), self)
@@ -196,6 +180,71 @@ class WebActions(Resource):
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
 		
 		##
+		# collecting data
+		##	
+		elif request.args["method"][0] == "collectData":
+			if request.args["usePath"][0] == "true":
+				path = request.args["Path"][0]
+				filename = request.args["Filename"][0]
+				extension = request.args["Extension"][0]
+			else:
+				path = "/PATH/TO/FILE/"
+				filename = "FILENAME"
+				extension = "EXT"
+			
+			mediainfo = MediaInfo()
+			mediainfo.ImdbId = "";
+			mediainfo.SearchString = "";
+			
+			if request.args["type"][0] == "isMovie":
+				if request.args["by"][0] == "ImdbId":
+					mediainfo.ImdbId = request.args["ImdbId"][0]
+					syncData = Manager().syncElement(path, filename, extension, mediainfo.ImdbId, request.args["type"][0])
+					result = syncData[0]
+				
+				elif request.args["by"][0] == "Title":
+					mediainfo.SearchString = request.args["Title"][0]
+					results = Manager().searchAlternatives(mediainfo)
+					
+				else:
+					pass
+				
+			
+			elif request.args["type"][0] == "isTvShow":
+				mediainfo.ImdbId = request.args["ImdbId"][0]			
+			
+			elif request.args["type"][0] == "TheTvDbId":
+				mediainfo.ImdbId = request.args["ImdbId"][0]
+			
+			else:
+				pass
+			
+			
+			redirectString = "mediainfo?"
+			redirectString += "mode=new_record&"
+			redirectString += "useData=true&"
+			redirectString += "usePath=" + request.args["usePath"][0] + "&"
+			redirectString += "type=" + request.args["type"][0] + "&"
+			redirectString += "ImdbId=" + urllib.quote(str(mediainfo.ImdbId)) + "&"
+			redirectString += "TheTvDbId=" + urllib.quote(str(result.TheTvDbId)) + "&"
+			redirectString += "Title=" + urllib.quote(str(result.Title)) + "&"
+			redirectString += "Season= " + urllib.quote(str(result.Season)) + "&"
+			redirectString += "Episode=" + urllib.quote(str(result.Episode)) + "&"
+			redirectString += "Plot=" + urllib.quote(str(result.Plot))+ "&"
+			redirectString += "Runtime=" + urllib.quote(str(result.Runtime)) + "&"
+			redirectString += "Year=" + urllib.quote(str(result.Year)) + "&"
+			redirectString += "Genres=" + urllib.quote(str(result.Genres)) + "&"
+			redirectString += "Tag=" + urllib.quote(str(result.Tag)) + "&"
+			redirectString += "Popularity=" + urllib.quote(str(result.Popularity)) + "&"
+			if request.args["usePath"][0] == "true":
+				redirectString += "Path=" + urllib.quote(str(path)) + "&"
+				redirectString += "Filename=" + urllib.quote(str(filename)) + "&"
+				redirectString += "Extension=" + urllib.quote(str(extension))
+			
+			
+			return WebHelper().redirectMeTo(redirectString)
+		
+		##
 		# save to db
 		##	
 		elif request.args["method"][0] == "save_changes_to_db":
@@ -207,5 +256,5 @@ class WebActions(Resource):
 			elif request.args["return_to"][0] == "tvshows":
 				return WebHelper().redirectMeTo("/tvshows")
 			elif request.args["return_to"][0] == "episodes":
-				return WebHelper().redirectMeTo("/episodes")
-		
+				return WebHelper().redirectMeTo("/episodes")					
+				
