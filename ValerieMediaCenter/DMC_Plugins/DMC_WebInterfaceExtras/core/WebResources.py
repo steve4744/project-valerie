@@ -313,8 +313,9 @@ class Options (Resource):
 		entries = WebData().getData("options")
 		
 		for entry in entries:
-			print entry
+			
 			print entry[1].value
+			
 			configType = "text"
 			configValue = "value=\"%s\"" % entry[1].value
 			tag = "input"
@@ -322,9 +323,9 @@ class Options (Resource):
 			if type(entry[1].value) is bool:
 				configType = "checkbox"
 				if entry[1].value is True:
-					configValue = "checked=\"checked\" value=\"true\""
+					configValue = "checked=\"checked\""
 				else:
-					configValue = "checked=\"unchecked\" value=\"false\""
+					configValue = ""
 			elif type(entry[1]) is ConfigSelection:
 				choices = entry[1].choices
 				configType = "select"

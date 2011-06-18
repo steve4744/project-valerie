@@ -191,17 +191,21 @@ class WebActions(Resource):
 					value = "unchecked"
 				valueType = request.args["type"][0]
 				
+				printl("name=\"%s\" value=\"%s\" type=\"%s\"" % (name, value, valueType), self, "D")
+				
 				entries = WebData().getData("options")
 				
 				for entry in entries:
 					if entry[0] == name:
 						if valueType == "text" or valueType == "select":
+							printl("Setting \"%s\" to \"%s\"" % (name, value), self, "I")
 							entry[1].value = value
 						elif valueType == "checkbox":
 							if value == "checked":
 								value = True
 							else:
 								value = False
+							printl("Setting \"%s\" to \"%s\"" % (name, value), self, "I")
 							entry[1].value = value
 						entry[1].save()
 				
