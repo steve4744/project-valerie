@@ -180,6 +180,35 @@ class WebActions(Resource):
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
 		
 		##
+		# option section
+		##
+		elif request.args["method"][0] == "options.saveconfig":
+			if request.args["what"][0] == "settings_e2":
+				name = request.args["name"][0]
+				if request.args.has_key("value"):
+					value = request.args["value"][0]
+				else:
+					value = "unchecked"
+				valueType = request.args["type"][0]
+				
+				entries = WebData().getData("options")
+				
+				for entry in entries:
+					if entry[0] == name:
+						if valueType == "text" or valueType == "select":
+							entry[1].value = value
+						elif valueType == "checkbox":
+							if value == "checked":
+								value = True
+							else:
+								value = False
+							entry[1].value = value
+						entry[1].save()
+				
+				return WebHelper().redirectMeTo("/options")
+		
+		
+		##
 		# collecting data
 		##	
 		elif request.args["method"][0] == "collectData":

@@ -1,4 +1,5 @@
 from Components.config import config
+from Components.config import ConfigSelection
 
 from twisted.web.resource import Resource
 
@@ -306,8 +307,59 @@ class Options (Resource):
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Options", True)
-	
-		return utf8ToLatin(finalOutput)		
+		
+		tableBody = u""
+		
+		entries = WebData().getData("options")
+		
+		for entry in entries:
+			print entry
+			print entry[1].value
+			configType = "text"
+			configValue = "value=\"%s\"" % entry[1].value
+			tag = "input"
+			
+			if type(entry[1].value) is bool:
+				configType = "checkbox"
+				if entry[1].value is True:
+					configValue = "checked=\"checked\" value=\"true\""
+				else:
+					configValue = "checked=\"unchecked\" value=\"false\""
+			elif type(entry[1]) is ConfigSelection:
+				choices = entry[1].choices
+				configType = "select"
+				tag = "select"
+				configValue = entry[1].value
+			
+			if tag == "input":
+				tag = """<input id="value" name="value" type="%s" size="50" %s></input>""" % (configType, configValue)
+			elif tag == "select":
+				tag = u"""<select id="value" name="value">"""
+				for choice in choices:
+					if choice == configValue:
+						tag += u"""<option value="%s" size="50" selected>%s</option>""" % (choice, choice)
+					else:
+						tag += u"""<option value="%s" size="50">%s</option>""" % (choice, choice)
+				
+				tag += u"""</select>"""
+			
+			tableBody += u"""
+							<form id="saveSetting" action="/action" method="get">
+								<input type="hidden" name="method" value="options.saveconfig"></input>
+								<input type="hidden" name="what" value="settings_e2"></input>
+								<input type="hidden" name="type" value="%s"></input>
+								<tr id="tr_entry">
+									<td width="300px">%s:</td>
+									<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
+									<td width="200px">%s</td>
+									<td width="70px"><input type="submit" value="save"></input></td>
+								</tr>
+							</form>
+					""" % (configType, entry[0], entry[0], tag)
+		
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_E2 -->", tableBody)
+		
+		return utf8ToLatin(finalOutput)
 
 ##
 #
