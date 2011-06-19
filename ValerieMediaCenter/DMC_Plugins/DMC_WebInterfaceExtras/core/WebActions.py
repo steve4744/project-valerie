@@ -193,7 +193,7 @@ class WebActions(Resource):
 				
 				printl("name=\"%s\" value=\"%s\" type=\"%s\"" % (name, value, valueType), self, "D")
 				
-				entries = WebData().getData("options")
+				entries = WebData().getData("options.global")
 				for entry in entries:
 					if entry[0] == name:
 						if valueType == "text" or valueType == "select":
