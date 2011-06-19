@@ -89,12 +89,17 @@ class Manager():
 		else:
 			return None
 
-	def searchAlternatives(self, oldElement):
+	def searchAlternatives(self, oldElement, searchstring=None):
 		element = MediaInfo(oldElement.Path, oldElement.Filename, oldElement.Extension)
 		if type(oldElement) is MediaInfo:
 			element.isMovie = oldElement.isMovie
 			element.isSerie = oldElement.isSerie
+		
+		if searchstring is not None:
+			element.SearchString = searchstring
+			
 		element.parse()
+		
 		printl("SEARCH=" + str(element.SearchString), self)
 		return MobileImdbComProvider().getAlternatives(element)
 

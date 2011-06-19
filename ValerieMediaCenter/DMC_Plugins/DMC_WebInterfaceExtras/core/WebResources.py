@@ -276,7 +276,7 @@ class Alternatives(Resource):
 									<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/apply.png" alt="apply" title="apply" /></a>
 								</td>
 								</tr>
-						""" % (entry.Year, entry.ImdbId, entry.ImdbId, entry.Title, entry.IsTVSeries, evtApply)
+						""" % (entry.Year, entry.ImdbId, entry.ImdbId, utf8ToLatin(entry.Title), entry.IsTVSeries, evtApply)
 			
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
@@ -308,46 +308,66 @@ class Options (Resource):
 		
 		finalOutput = WebData().getHtmlCore("Options", True)
 		
-		tableBody = u""
+		tableBody = self.buildTableGlobal("options.global")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_GLOBAL -->", tableBody)
 		
-		entries = WebData().getData("options")
+		tableBody = self.buildTableSync("options.sync")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC -->", tableBody)
 		
-		for entry in entries:
-			
-			print entry[1].value
-			
-			configType = "text"
-			configValue = "value=\"%s\"" % entry[1].value
-			tag = "input"
-			
-			if type(entry[1].value) is bool:
-				configType = "checkbox"
-				if entry[1].value is True:
-					configValue = "checked=\"checked\""
+		return utf8ToLatin(finalOutput)
+
+	def prepareTable(self, value, entry, name="value"):
+		
+		#print type(value), value
+		
+		
+		tag = "input"
+		configType = "text"
+		
+		if type(value) is bool:
+			configType = "checkbox"
+			if value is True:
+				configValue = "checked=\"checked\""
+			else:
+				configValue = ""
+		elif type(value) is list or type(value) is tuple:
+			choices = value[1]
+			configType = "select"
+			tag = "select"
+			configValue = value[0]
+		elif type(entry) is ConfigSelection:
+			choices = entry.choices
+			configType = "select"
+			tag = "select"
+			configValue = value
+		else:
+			configValue = "value=\"%s\"" % value
+		
+		if tag == "input":
+			tag = """<input id="value" name="%s" type="%s" size="50" %s></input>""" % (name, configType, configValue)
+		elif tag == "select":
+			tag = u"""<select id="value" name="%s">""" % name
+			for choice in choices:
+				if choice == configValue:
+					tag += u"""<option value="%s" size="50" selected>%s</option>""" % (choice, choice)
 				else:
-					configValue = ""
-			elif type(entry[1]) is ConfigSelection:
-				choices = entry[1].choices
-				configType = "select"
-				tag = "select"
-				configValue = entry[1].value
+					tag += u"""<option value="%s" size="50">%s</option>""" % (choice, choice)
 			
-			if tag == "input":
-				tag = """<input id="value" name="value" type="%s" size="50" %s></input>""" % (configType, configValue)
-			elif tag == "select":
-				tag = u"""<select id="value" name="value">"""
-				for choice in choices:
-					if choice == configValue:
-						tag += u"""<option value="%s" size="50" selected>%s</option>""" % (choice, choice)
-					else:
-						tag += u"""<option value="%s" size="50">%s</option>""" % (choice, choice)
-				
-				tag += u"""</select>"""
+			tag += u"""</select>"""
+		return (configType, tag, )
+
+	def buildTableGlobal(self, section):
+		tableBody = u""
+		entries = WebData().getData(section)
+		for entry in entries:
+			value = entry[1].value
+			
+			configType, tag = self.prepareTable(value, entry[1])
 			
 			tableBody += u"""
 							<form id="saveSetting" action="/action" method="get">
 								<input type="hidden" name="method" value="options.saveconfig"></input>
-								<input type="hidden" name="what" value="settings_e2"></input>
+								<input type="hidden" name="what" value="settings_global"></input>
 								<input type="hidden" name="type" value="%s"></input>
 								<tr id="tr_entry">
 									<td width="300px">%s:</td>
@@ -358,9 +378,80 @@ class Options (Resource):
 							</form>
 					""" % (configType, entry[0], entry[0], tag)
 		
-		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_E2 -->", tableBody)
+		return tableBody
+
+	def buildTableSync(self, section):
+		tableBody = u""
+		pathsConfig = WebData().getData(section)
 		
-		return utf8ToLatin(finalOutput)
+		name = u"FileTypes"
+		value = '|'.join(pathsConfig.getFileTypes())
+		configType, tag = self.prepareTable(value, None)
+		
+		tableBody += u"""
+						<form id="saveSetting" action="/action" method="get">
+							<input type="hidden" name="method" value="options.saveconfig"></input>
+							<input type="hidden" name="what" value="settings_sync"></input>
+							<input type="hidden" name="section" value="filetypes"></input>
+							<input type="hidden" name="type" value="%s"></input>
+							<tr id="tr_entry">
+								<td width="300px">%s:</td>
+								<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
+								<td width="200px">%s</td>
+								<td width="70px"><input type="submit" value="save"></input></td>
+							</tr>
+						</form>
+				""" % (configType, name, name, tag)
+		
+		tableBody += u"""<tr id="tr_entry">
+									<td width="50px">Paths</td>
+									<td width="200px"></td>
+									<td width="50px"></td>
+									<td width="50px"></td>
+									<td width="70px"></td>
+								</tr>"""
+		
+		tableBody += u"""<table align="center" id="settings_sync_sub">"""
+		tableBody += u"""<thead>
+									<td width="50px">Enabled</td>
+									<td width="200px">Directory</td>
+									<td width="50px">Type</td>
+									<td width="50px">UseFolder</td>
+									<td width="70px"></td>
+								</thead>"""
+		
+		tableBody += u"""<tbody>"""
+		
+		for path in pathsConfig.getPaths():
+			name = u"Directory"
+			value = path["directory"]
+			id = path["directory"]
+			
+			configType, tag = self.prepareTable(value, None)
+			
+			types = (path["type"], pathsConfig.getPathsChoices()["type"], )
+			
+			
+			tableBody += u"""
+							<form id="saveSetting" action="/action" method="get">
+								<input type="hidden" name="method" value="options.saveconfig"></input>
+								<input type="hidden" name="what" value="settings_sync"></input>
+								<input type="hidden" name="section" value="paths"></input>
+								<input type="hidden" name="id" value="%s"></input>
+								<tr id="tr_entry">
+									<td width="50px">%s</td>
+									<td width="200px">%s</td>
+									<td width="50px">%s</td>
+									<td width="50px">%s</td>
+									<td width="70px"><input type="submit" value="save"></input></td>
+								</tr>
+							</form>
+					""" % (id, self.prepareTable(path["enabled"], None, "enabled")[1], self.prepareTable(path["directory"], None, "directory")[1], 
+									self.prepareTable(types, None, "type")[1], self.prepareTable(path["usefolder"], None, "usefolder")[1])
+		
+		tableBody += u"""</tbody>"""
+		
+		return tableBody
 
 ##
 #

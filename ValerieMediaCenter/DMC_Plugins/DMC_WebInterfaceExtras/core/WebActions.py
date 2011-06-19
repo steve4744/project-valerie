@@ -183,18 +183,17 @@ class WebActions(Resource):
 		# option section
 		##
 		elif request.args["method"][0] == "options.saveconfig":
-			if request.args["what"][0] == "settings_e2":
+			if request.args["what"][0] == "settings_global":
 				name = request.args["name"][0]
+				value = "unchecked"
 				if request.args.has_key("value"):
 					value = request.args["value"][0]
-				else:
-					value = "unchecked"
+				
 				valueType = request.args["type"][0]
 				
 				printl("name=\"%s\" value=\"%s\" type=\"%s\"" % (name, value, valueType), self, "D")
 				
 				entries = WebData().getData("options")
-				
 				for entry in entries:
 					if entry[0] == name:
 						if valueType == "text" or valueType == "select":
@@ -208,9 +207,28 @@ class WebActions(Resource):
 							printl("Setting \"%s\" to \"%s\"" % (name, value), self, "I")
 							entry[1].value = value
 						entry[1].save()
+			
+			elif request.args["what"][0] == "settings_sync":
+				if request.args["section"][0] == "paths":
+					id = request.args["id"][0]
+					directory = request.args["directory"][0]
+					typeFolder = request.args["type"][0]
+					enabled = request.args.has_key("enabled")
+					useFolder = request.args.has_key("usefolder")
+					
+					path = {"directory": directory, "enabled": enabled, "usefolder": useFolder, "type": typeFolder}
+					
+					from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
+					PathsConfig().getInstance().setPath(id, path)
+					PathsConfig().getInstance().save()
 				
-				return WebHelper().redirectMeTo("/options")
-		
+				elif request.args["section"][0] == "filetypes":
+					value = request.args["value"][0]
+					from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
+					PathsConfig().getInstance().setFileTypes(value.split("|"))
+					PathsConfig().getInstance().save()
+			
+			return WebHelper().redirectMeTo("/options")
 		
 		##
 		# collecting data

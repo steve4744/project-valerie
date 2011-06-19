@@ -232,56 +232,6 @@ class pyvalerie(Thread):
 		printl("Loading Replacements", self)
 		replace.load()
 		
-		self.output(_("Loading Filesystem"))
-		printl("Loading Filesystem", self)
-		ds = DirectoryScanner.DirectoryScanner()
-		ds.clear()
-		if self.mode == self.FAST:
-			ds.load()
-		
-		self.output(_("Searching for media files"))
-		printl("Searching for media files", self)
-		start_time = time.time()
-		fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
-		lines = fconf.read().split(u"\n")
-		fconf.close()
-		
-		folderList = []
-		elementListFileCounter = 0
-		
-		if len(lines) > 1:
-			filetypes = lines[0].strip().split('|')
-			filetypes.append("ifo")
-			filetypes.append("iso")
-			self.output(_("Extensions:") + ' ' + str(filetypes))
-			printl("Extensions: " + str(filetypes), self)
-			
-			for path in lines[1:]: 
-				path = path.strip()
-				
-				p = path.split(u'|')
-				print "p", p
-				path = p[0]
-				
-				folderType = u"MOVIE_AND_TV"
-				if len(p) > 1:
-					folderType = p[1]
-				
-				useFolder = False
-				if len(p) > 2 and p[2] == u"FOLDERNAME":
-					useFolder = True
-				
-				if os.path.isdir(path):
-					ds.setDirectory(Utf8.utf8ToLatin(path))
-					ds.listDirectory(filetypes, "(sample)|(VTS)|(^\\.)")
-				
-				filelist = ds.getFileList()
-				elementListFileCounter += len(filelist)
-				folderList.append((filelist, folderType, useFolder, ))
-		
-		elapsed_time = time.time() - start_time
-		printl("Searching for media files took: " + str(elapsed_time), self)
-		
 		dSize = getDesktop(0).size()
 		posterSize = Arts.posterResolution[0]
 		if dSize.width() == 720 and dSize.height() == 576:
@@ -290,6 +240,45 @@ class pyvalerie(Thread):
 			posterSize = Arts.posterResolution[1]
 		elif dSize.width() == 1280 and dSize.height() == 720:
 			posterSize = Arts.posterResolution[2]
+		
+		self.output(_("Loading Filesystem"))
+		printl("Loading Filesystem", self)
+		ds = DirectoryScanner.DirectoryScanner()
+		ds.clear()
+		if self.mode == self.FAST:
+			ds.load()
+		
+		pathsConfig = PathsConfig().getInstance()
+		filetypes = pathsConfig.getFileTypes()
+		self.output(_("Extensions:") + ' ' + str(filetypes))
+		printl("Extensions: " + str(filetypes), self)
+		
+		self.output(_("Searching for media files"))
+		printl("Searching for media files", self)
+		start_time = time.time()
+		
+		folderList = []
+		elementListFileCounter = 0
+		
+		for searchpath in pathsConfig.getPaths(): 
+			if searchpath["enabled"] is False:
+				continue
+			
+			path = searchpath["directory"]
+			folderType = searchpath["type"]
+			useFolder = searchpath["usefolder"]
+			
+			if os.path.isdir(path) is False:
+				continue
+			
+			ds.setDirectory(Utf8.utf8ToLatin(path))
+			ds.listDirectory(filetypes, "(sample)|(VTS)|(^\\.)")
+			filelist = ds.getFileList()
+			elementListFileCounter += len(filelist)
+			folderList.append((filelist, folderType, useFolder, ))
+		
+		elapsed_time = time.time() - start_time
+		printl("Searching for media files took: " + str(elapsed_time), self)
 		
 		if elementListFileCounter == 0:
 			self.output(_("Found") + ' ' + str(0) + ' ' + _("media files"))

@@ -20,6 +20,8 @@ class WebData():
 		if Manager is None:
 			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
 		
+		dataRows = []
+		
 		manager = Manager()
 		
 		if type == "movies":
@@ -33,7 +35,7 @@ class WebData():
 				dataRows = manager.getAll(Manager.TVSHOWSEPISODES)
 		elif type == "failed":
 			dataRows = manager.getAll(Manager.FAILED_ALL)
-		elif type == "options":
+		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 			dataRows = []
 			plugins = getPlugins(where=Plugin.SETTINGS)
@@ -41,7 +43,9 @@ class WebData():
 				pluginSettingsList = plugin.fnc() 
 				for pluginSetting in pluginSettingsList: 
 					dataRows.append(("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
-		
+		elif type == "options.sync":
+			from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
+			dataRows = PathsConfig().getInstance()
 		
 		return dataRows
 	##

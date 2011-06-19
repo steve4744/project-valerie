@@ -32,10 +32,12 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from   FailedEntry import FailedEntry
 from   Manager import Manager
 from   MediaInfo import MediaInfo
+from   PathsConfig import PathsConfig
 from   sync import pyvalerie
 from   sync import checkDefaults as SyncCheckDefaults
 import Utf8
 import WebGrabber
+
 
 # Hack as long as these plugins are seperated
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
@@ -175,25 +177,27 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			self.skin = self.skinDeprecated
 		
 		self.pathsList = []
-		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
-		self.filetypes = fconf.readline().strip()
+		
+		
+		pathsConfig = PathsConfig().getInstance()
+		self.filetypes = pathsConfig.getFileTypes()
 		printl("self.filetypes: " + str(self.filetypes), self)
-		for path in fconf.readlines(): 
-			path = path.strip()
-			p = path.split('|')
-			path = p[0]
+		
+		for searchpath in pathsConfig.getPaths(): 
+			if searchpath["enabled"] is False:
+				continue
 			
-			folderType = u"MOVIE_AND_TV"
-			if len(p) > 1:
-				folderType = p[1]
+			path = searchpath["directory"]
+			folderType = searchpath["type"]
+			useFolder = searchpath["usefolder"]
 			
-			useFolder = "FILENAME"
-			if len(p) > 2 and p[2] == u"FOLDERNAME":
-				useFolder = "FOLDERNAME"
+			useFolderStr = "FILENAME"
+			if useFolder:
+				useFolderStr = "FOLDERNAME"
 			
-			if len(path) > 0 and path[0] != '#':
-				self.pathsList.append((path + " [" + folderType + "][USE_" + useFolder + "]", path, folderType, useFolder))
-		fconf.close()
+			if len(path) > 0:
+				text = "%s [%s][USE_%s]" % (path, folderType, useFolderStr )
+				self.pathsList.append((Utf8.utf8ToLatin(text), path, folderType, useFolderStr))
 		
 		self.colorButtons[0] = {}
 		self.colorButtons[0]["key_red"]    = (_("Remove"), self.remove, )
@@ -264,7 +268,9 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 			if path not in self.pathsList:
 				folderType = "MOVIE_AND_TV"
 				useFolder = "FILENAME"
-				self.pathsList.append((path + " [" + folderType + "][" + useFolder + "]", path, folderType, useFolder))
+				
+				text = "%s [%s][%s]" % (path, folderType, useFolder )
+				self.pathsList.append((Utf8.utf8ToLatin(text), path, folderType, useFolder))
 				self["pathsList"].l.setList(self.pathsList)
 
 	def toggleType(self):
@@ -273,11 +279,14 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		index = self.pathsList.index(entry)
 		printl("index: " + str(index), self)
 		if entry[2] == "MOVIE_AND_TV":
-			entry = (entry[1] + " [MOVIE][" + entry[3] + "]", entry[1], "MOVIE", entry[3])
+			text = "%s [%s][USE_%s]" % (entry[1], "MOVIE", entry[3] )
+			entry = (Utf8.utf8ToLatin(text), entry[1], "MOVIE", entry[3])
 		elif entry[2] == "MOVIE":
-			entry = (entry[1] + " [TV][" + entry[3] + "]", entry[1], "TV", entry[3])
+			text = "%s [%s][USE_%s]" % (entry[1], "TV", entry[3] )
+			entry = (Utf8.utf8ToLatin(text), entry[1], "TV", entry[3])
 		elif entry[2] == "TV":
-			entry = (entry[1] + " [MOVIE_AND_TV][" + entry[3] + "]", entry[1], "MOVIE_AND_TV", entry[3])
+			text = "%s [%s][USE_%s]" % (entry[1], "MOVIE_AND_TV", entry[3] )
+			entry = (Utf8.utf8ToLatin(text), entry[1], "MOVIE_AND_TV", entry[3])
 		printl("entryDst: " + str(entry), self)
 		self.pathsList[index] = entry
 		self["pathsList"].l.setList(self.pathsList)
@@ -288,21 +297,27 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		index = self.pathsList.index(entry)
 		printl("index: " + str(index), self)
 		if entry[3] == "FILENAME":
-			entry = (entry[1] + " [" + entry[2] + "][USE_FOLDERNAME]", entry[1], entry[2], "FOLDERNAME")
+			text = "%s [%s][USE_%s]" % (entry[1], entry[2], "FOLDERNAME" )
+			entry = (Utf8.utf8ToLatin(text), entry[1], entry[2], "FOLDERNAME")
 		elif entry[3] == "FOLDERNAME":
-			entry = (entry[1] + " [" + entry[2] + "][USE_FILENAME]", entry[1], entry[2], "FILENAME")
+			text = "%s [%s][USE_%s]" % (entry[1], entry[2], "FILENAME" )
+			entry = (Utf8.utf8ToLatin(text), entry[1], entry[2], "FILENAME")
 		printl("entryDst: " + str(entry), self)
 		self.pathsList[index] = entry
 		self["pathsList"].l.setList(self.pathsList)
 
 	def save(self):
 		printl("", self)
-		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "w")
-		fconf.write(self.filetypes + "\n")
-		for entry in self.pathsList:
-			fconf.write(entry[1] + "|" + entry[2] + "|" + entry[3] + "\n")
-		fconf.close()
 		
+		pathsConfig = PathsConfig().getInstance()
+		pathsConfig.setFileTypes(self.filetypes)
+		
+		pathsConfig.clearPaths()
+		for entry in self.pathsList:
+			path = {"directory": entry[1], "enabled": True, "usefolder": entry[3], "type":  entry[2]}
+			pathsConfig.setPath(None, path)
+		
+		pathsConfig.save()
 		self.exit()
 
 	def ok(self):
