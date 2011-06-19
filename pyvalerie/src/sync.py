@@ -23,6 +23,7 @@ from   LocalImdbProvider import LocalImdbProvider
 import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
 import replace
+from   PathsConfig import PathsConfig
 from   TheMovieDbProvider import TheMovieDbProvider
 from   TheTvDbProvider import TheTvDbProvider
 import Utf8
