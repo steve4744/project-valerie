@@ -1,3 +1,7 @@
+<!--
+/content/custom/MediaInfo/Content.tpl 
+-->
+
 <table align="center" id="main_table" width="100%">
 	<tr>
 	<td valign="top" align="center" style="background-color:#AAAAAA;">
@@ -11,6 +15,8 @@
 			<form action="/action" method="get">
 				<input type="hidden" name="method" value="edit">
 				<input type="hidden" name="what" value="">
+				<input type="hidden" name="oldImdbId" value="-1">
+				
 				<tr><td></td></tr>
 				<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
 				<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="ImdbId" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>

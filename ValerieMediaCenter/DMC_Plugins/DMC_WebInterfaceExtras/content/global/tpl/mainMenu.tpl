@@ -2,7 +2,6 @@
 
 <ul>
 	<li><a href="/">Home</a></li>
-	<li><a href="/addrecord?modus=new">add Record</a></li>
 	<li><a href="/movies">Movies</a></li>
 	<li><a href="/tvshows">TvShows</a></li>
 	<li><a href="/failed">Failed</a></li>

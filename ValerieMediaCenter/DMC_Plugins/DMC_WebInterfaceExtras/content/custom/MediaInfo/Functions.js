@@ -2,6 +2,8 @@
 //MEDIAINFO
 //
 $(document).ready(function(){
+
+	var debug = false;
 	
 	/* parse values from URL */	
 	var params = get_params();
@@ -10,6 +12,7 @@ $(document).ready(function(){
 	var type = params["type"];
 	var useData = params["useData"];
 	var usePath = params["usePath"]
+	if (debug) {alert(mode);}
 	
 	//DONE SECTION
 	if (mode == "done") {
@@ -23,7 +26,7 @@ $(document).ready(function(){
 	
 	//NEW RECORD SECTION
 	} else if (mode == "new_record") {
-
+		if (debug) {alert("add");}
 		$('[name=method]').val("add");
 		$('[name=what]').val(type);
 		
@@ -31,10 +34,14 @@ $(document).ready(function(){
 			fillTable(params, usePath);
 		}
 		changeTable(type);
+		document.getElementById('type').value = params["type"];
+		$('[name=oldImdbId]').val(params["oldImdbId"]);
 	
 	//EDIT SECTION
 	} else {
+		if (debug) {alert("edit");}
 		$('[name=what]').val(type);
+		$('[name=oldImdbId]').val(params["ImdbId"]);
 		
 		fillTable(params, usePath);
 		changeTable(type);
@@ -54,9 +61,14 @@ function changeTable(table_type) {
 		$('#tr_episode').remove();
 		$('#tr_popularity').remove();
 		$('#tr_runtime').remove();
-		$('#tr_path').remove();
-		$('#tr_filename').remove();
-		$('#tr_extension').remove();
+		$('#tr_path').hide();
+		$('#tr_filename').hide();
+		$('#tr_extension').hide();
+		// dirty workaround until TvShow needs those information like a movie or episode
+		document.getElementById('path').value = "/dummy/";
+		document.getElementById('filename').value = new Date().getTime();
+		document.getElementById('extension').value = "dmy";
+		
 	} else if (table_type == "isEpisode") {
 		//for now nothing
 	} else {

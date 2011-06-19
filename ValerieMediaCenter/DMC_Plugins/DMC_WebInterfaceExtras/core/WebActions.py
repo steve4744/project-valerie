@@ -118,7 +118,7 @@ class WebActions(Resource):
 					key_value_dict[key] = request.args[key][0]
 				
 				primary_key = {}
-				primary_key["imdbid"] = request.args["ImdbId"][0]
+				primary_key["imdbid"] = request.args["oldImdbId"][0]
 				
 				manager = Manager()
 				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
@@ -247,10 +247,15 @@ class WebActions(Resource):
 			mediainfo.ImdbId = "";
 			mediainfo.SearchString = "";
 			
-			if request.args["type"][0] == "isMovie":
+			type = request.args["type"][0]
+			if type == "isEpisode":
+				type = "isSerie" # we need to do this because Manger.syncelemnts uses this name not the name till now isTvShow
+			
+			if type == "isMovie" or type == "isSerie":
+
 				if request.args["by"][0] == "ImdbId":
 					mediainfo.ImdbId = request.args["ImdbId"][0]
-					syncData = Manager().syncElement(path, filename, extension, mediainfo.ImdbId, request.args["type"][0])
+					syncData = Manager().syncElement(path, filename, extension, mediainfo.ImdbId, type)
 					result = syncData[0]
 				
 				elif request.args["by"][0] == "Title":
@@ -259,23 +264,17 @@ class WebActions(Resource):
 					
 				else:
 					pass
-				
 			
-			elif request.args["type"][0] == "isTvShow":
-				mediainfo.ImdbId = request.args["ImdbId"][0]			
-			
-			elif request.args["type"][0] == "TheTvDbId":
-				mediainfo.ImdbId = request.args["ImdbId"][0]
-			
-			else:
-				pass
+			elif type == "TvShow":
+				return WebHelper().redirectMeTo("/")
 			
 			
 			redirectString = "mediainfo?"
-			redirectString += "mode=new_record&"
 			redirectString += "useData=true&"
 			redirectString += "usePath=" + request.args["usePath"][0] + "&"
 			redirectString += "type=" + request.args["type"][0] + "&"
+			if request.args["oldImdbId"][0] == "-1":
+				redirectString += "mode=new_record&"
 			redirectString += "ImdbId=" + urllib.quote(str(mediainfo.ImdbId)) + "&"
 			redirectString += "TheTvDbId=" + urllib.quote(str(result.TheTvDbId)) + "&"
 			redirectString += "Title=" + urllib.quote(str(result.Title)) + "&"

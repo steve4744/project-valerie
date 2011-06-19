@@ -106,7 +106,12 @@ class TvShows(Resource):
 		for entry in entries:
 			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.TheTvDbId)
 			evtEdit = WebData().getEditString(entry, "isTvShow")
-			evtDelete = WebData().getDeleteString(entry, "isTvShow")
+			evtAddEpisode = WebData().getAddEpisodeString(entry, "isEpisode")
+			## COMMENT
+			#  not active at the moment because we do not check if there are still episodes in db
+			#  another thing to solve is that a tvshow needs a path/extension/filename too
+			##
+			#evtDelete = WebData().getDeleteString(entry, "isTvShow") 
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -117,10 +122,10 @@ class TvShows(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/showEpisodes.png" alt="show Episodes" title="show Episodes" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/add.png" alt="add" title="add" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtDelete)
+			""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtAddEpisode)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -152,6 +157,7 @@ class Episodes(Resource):
 		for entry in entries:
 			evtEdit = WebData().getEditString(entry, "isEpisode")
 			evtDelete = WebData().getDeleteString(entry, "isEpisode")
+
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -258,6 +264,7 @@ class Alternatives(Resource):
 		for entry in entries:
 			existing = "false"
 			entry.type = request.args["type"][0]
+			entry.oldImdbId = request.args["oldImdbId"][0]
 			
 			if request.args["modus"][0] == "existing":
 				entry.Path = request.args["Path"][0]

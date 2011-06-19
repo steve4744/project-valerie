@@ -160,6 +160,7 @@ class WebData():
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'modus':"existing"}) + "&"
 		onclick  += urlencode({'by':"Title"}) + "&"
+		onclick  += urlencode({'oldImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'Title':entry.Title}) + "&"
 		onclick  += urlencode({'Path':entry.Path}) + "&"
 		onclick  += urlencode({'Filename':entry.Filename}) + "&"
@@ -177,6 +178,8 @@ class WebData():
 		onclick  = "javascript:window.open('/addrecord?"
 		onclick  += urlencode({'type':entry.type}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
+		onclick  += urlencode({'oldImdbId':entry.oldImdbId}) + "&"
+		
 		if existing == "true":
 			onclick  += urlencode({'usePath':"true"}) + "&"
 			onclick  += urlencode({'Path':entry.Path}) + "&"
@@ -187,4 +190,17 @@ class WebData():
 		onclick  += "', '_self');"
 		
 		return onclick
-				
+	
+	##
+	#
+	#
+	##
+	def getAddEpisodeString	(self, entry, type):
+		### <!-- build addEpisode string -->
+		onclick  = "javascript:window.open('/addrecord?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
+		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
+		onclick  += "', '_self');"
+		
+		return onclick	
