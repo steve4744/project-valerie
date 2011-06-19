@@ -55,6 +55,7 @@ class DMC_MovieLibrary(DMC_Library):
                 # Yeah its a bit supersufficial as date is already in it
                 # But will allow the view to sort the list
                 d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
+                d["Filename"] = utf8ToLatin(movie.Filename).lower()
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
                 if self.checkFileCreationDate:
                     try:
@@ -76,6 +77,8 @@ class DMC_MovieLibrary(DMC_Library):
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))
+            
+            sort.append(("Filename", "Filename", False))
             
             filter = [("All", (None, False), ("", )), ]
             if len(tmpGenres) > 0:

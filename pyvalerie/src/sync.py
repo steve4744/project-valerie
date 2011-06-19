@@ -292,7 +292,7 @@ class pyvalerie(Thread):
 			
 			i = 0
 			for folder in folderList:
-				print "folder", folder
+				#print "folder", folder
 				elementList = folder[0]
 				folderType  = folder[1]
 				useFolder   = folder[2]

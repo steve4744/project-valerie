@@ -48,7 +48,7 @@ class Database(object):
 	DB_TXD_FILENAME_S = "tvshows.txd"
 
 	def __init__(self):
-		printl("->", self)
+		printl("", self)
 		#self.db = databaseHandler().getInstance()
 		
 		#if self.db.DB_SQLITE_LOADED:
@@ -84,18 +84,18 @@ class Database(object):
 		global gDatabase
 		global gDatabaseMutex
 		
-		printl("Acquiring Mutex", self, "D")
+		#printl("Acquiring Mutex", self, "D")
 		gDatabaseMutex.acquire()
-		printl("Acquired Mutex", self, "D")
+		#printl("Acquired Mutex", self, "D")
 		
 		if gDatabase is None:
 			printl("Creating new Database instance", self)
 			self.reload()
 			gDatabase = self
 		
-		printl("Releasing Mutex", self, "D")
+		#printl("Releasing Mutex", self, "D")
 		gDatabaseMutex.release()
-		printl("Released Mutex", self, "D")
+		#printl("Released Mutex", self, "D")
 		
 		return gDatabase
 

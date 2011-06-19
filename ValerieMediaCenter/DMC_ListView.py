@@ -25,11 +25,11 @@ def getViewClass():
 
 class DMC_ListView(DMC_View):
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, select=None, sort=None, filter=None):
+	def __init__(self, session, libraryName, loadLibrary, playEntry, viewName, select=None, sort=None, filter=None):
 		
 		self.showiframe = Showiframe()
 		
-		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, "PVMC_ListView", select, sort, filter)
+		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, viewName, select, sort, filter)
 		
 		self["poster"] 				= Pixmap()
 		self["title"] 				= Label()
@@ -55,7 +55,8 @@ class DMC_ListView(DMC_View):
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText(_("Filter: ") + _("None"))
 		self["key_yellow"] = StaticText(_(" "))
-		self["key_blue"] = StaticText(_("View: ") + _("List")) #TODO: Name should be more dynamic
+		#self["key_blue"] = StaticText(_("View: ") + self.viewName[0])
+		self["key_blue"] = StaticText(self.viewName[0])
 		
 		try:
 			from StillPicture import StillPicture
@@ -86,7 +87,7 @@ class DMC_ListView(DMC_View):
 			printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 		
-		self.skinName = "PVMC_ListView"
+		self.skinName = self.viewName[2]
 
 	def _refresh(self, selection, changeBackdrop):
 		element = selection[1]
@@ -171,25 +172,28 @@ class DMC_ListView(DMC_View):
 	def close(self, arg=None):
 		if arg is None or arg[0] != DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
 			self.showiframe.finishStillPicture()
-		super(DMC_ListView, self).close(arg)
+		super(getViewClass(), self).close(arg)
 
 	def playEntry(self, entry):
 		self.showiframe.finishStillPicture()
-		super(DMC_ListView, self).playEntry(entry)
+		super(getViewClass(), self).playEntry(entry)
 
 	def sort(self):
-		self["key_red"].setText(_("Sort: ") + _(self.activeSort[0]))
-		super(DMC_ListView, self).sort()
+		#text = "%s: %s" % (_("Sort"), _(self.activeSort[0])) #To little space
+		text = "%s" % (_(self.activeSort[0]))
+		self["key_red"].setText(text)
+		super(getViewClass(), self).sort()
 
 	def filter(self):
 		if len(self.activeFilter[2]) > 0:
-			#text = _("Filter: ") + _(self.activeFilter[0]) + "[" + self.activeFilter[2] + "]"
-			text = _("Filter: ") + self.activeFilter[2]
+			#text = "%s: %s" % (_("Filter"), _(self.activeFilter[2])) #To little space
+			text = "%s" % (_(self.activeFilter[2]))
 		else:
-			text = _("Filter: ") + _(self.activeFilter[0])
+			#text = "%s: %s" % (_("Filter"), _(self.activeFilter[0])) #To little space
+			text = "%s" % (_(self.activeFilter[0]))
 		#print text
 		self["key_green"].setText(text)
-		super(DMC_ListView, self).filter()
+		super(getViewClass(), self).filter()
 
 	def onKeyUp(self):
 		self.onPreviousEntry()

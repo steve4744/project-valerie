@@ -30,10 +30,10 @@ class DMC_Library(Screen):
     # Displays the selected View
     def showView(self, selection=None, sort=None, filter=None):
         printl("", self, "D")
-        m = __import__(self._views[self.currentViewIndex], globals(), locals(), [], -1)
+        m = __import__(self._views[self.currentViewIndex][1], globals(), locals(), [], -1)
         print m
         print m.getViewClass()
-        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, select=selection, sort=sort, filter=filter)
+        self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, self._views[self.currentViewIndex], select=selection, sort=sort, filter=filter)
 
     # Called if View has closed, react on cause for example change to different view
     def onViewClosed(self, cause=None):
@@ -53,6 +53,11 @@ class DMC_Library(Screen):
                     sort = cause[2]
                 if len(cause) >= 4 and cause[3] is not None:
                     filter = cause[3]
+                if len(cause) >= 5 and cause[4] is not None:
+                    for i in range(len(self._views)):
+                        if cause[4][1] == self._views[i][1]:
+                            self.currentViewIndex = i
+                            break
                 self.showView(selection, sort, filter)
             else:
                 self.close()
@@ -68,7 +73,7 @@ class DMC_Library(Screen):
     def playEntry(self, entry):
         printl("", self, "D")
         playbackPath = entry["Path"]
-        if os.path.isfile(playbackPath) is False:
+        if playbackPath[0] == "/" and os.path.isfile(playbackPath) is False:
             return False
         else:
             self.notifyEntryPlaying(entry)

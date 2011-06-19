@@ -28,6 +28,8 @@ def localeInit():
 	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
 
 def _(txt):
+	if len(txt) == 0:
+		return ""
 	t = gettext.dgettext("ProjectValerie", txt)
 	if t == txt:
 		t = gettext.gettext(txt)
@@ -36,7 +38,10 @@ def _(txt):
 #------------------------------------------------------------------------------------------
 
 def getViews():
-	return ("DMC_ListView", "DMC_PosterView")
+	return (
+			(_("List"), "DMC_ListView", "PVMC_ListView"), 
+			(_("Poster-Flow"), "DMC_PosterView", "PVMC_PosterView"), 
+		)
 
 def getViewClass():
 	return DMC_View
@@ -59,17 +64,19 @@ class DMC_View(Screen, HelpableScreen):
 
 	FAST_STILLPIC = False
 
-	def __init__(self, session, libraryName, loadLibrary, playEntry, skinName="DMC_View", select=None, sort=None, filter=None):
-		self.skinName = skinName
+	def __init__(self, session, libraryName, loadLibrary, playEntry, viewName, select=None, sort=None, filter=None):
+		print "viewName", viewName
+		self.skinName = viewName[2]
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
-		self.skinName = skinName
+		self.skinName = viewName[2]
 		self.select = select
 		self.onFirstExecSort = sort
 		self.onFirstExecFilter = filter
 		
 		self.libraryName = libraryName
 		self.loadLibrary = loadLibrary
+		self.viewName = viewName
 		self._playEntry = playEntry
 		
 		self.oldService = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -115,6 +122,12 @@ class DMC_View(Screen, HelpableScreen):
 			"green":      (self.onKeyGreen, ""),
 			"yellow":     (self.onKeyYellow, ""),
 			"blue":       (self.onKeyBlue, ""),
+
+			"red_long":        (self.onKeyRedLong, ""),
+			"green_long":      (self.onKeyGreenLong, ""),
+			"yellow_long":     (self.onKeyYellowLong, ""),
+			"blue_long":       (self.onKeyBlueLong, ""),
+
 		}, -2)
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
@@ -201,14 +214,26 @@ class DMC_View(Screen, HelpableScreen):
 	def onKeyRed(self):
 		self.onToggleSort()
 
+	def onKeyRedLong(self):
+		self.onChooseSort()
+
 	def onKeyGreen(self):
 		self.onToggleFilter()
+
+	def onKeyGreenLong(self):
+		self.onChooseFilter()
 
 	def onKeyYellow(self):
 		pass
 
+	def onKeyYellowLong(self):
+		pass
+
 	def onKeyBlue(self):
 		self.onToggleView()
+
+	def onKeyBlueLong(self):
+		self.onChooseView()
 
 	activeSort = ("Default", None, False)
 	def onToggleSort(self):
@@ -224,6 +249,24 @@ class DMC_View(Screen, HelpableScreen):
 		self.filter()
 		
 		self.refresh()
+
+	def onChooseSortCallback(self, choice):
+		if choice is not None:
+			self.activeSort = choice[1]
+			self.sort()
+			self.filter()
+			self.refresh()
+
+	def onChooseSort(self):
+		menu = []
+		for e in self.onSortKeyValuePair:
+			menu.append((_(e[0]), e, ))
+		selection = 0
+		for i in range(len(self.onSortKeyValuePair)):
+			if self.activeSort[1] == self.onSortKeyValuePair[i][1]:
+				selection = i
+				break
+		self.session.openWithCallback(self.onChooseSortCallback, ChoiceBox, title=_("Select sort"), list=menu, selection=selection)
 
 	activeFilter = ("All", (None, False), "")
 	def onToggleFilter(self):
@@ -261,6 +304,34 @@ class DMC_View(Screen, HelpableScreen):
 		
 		self.refresh()
 
+	def onChooseFilterCallback(self, choice):
+		if choice is not None:
+			self.activeFilter = choice[1]
+			self.sort()
+			self.filter()
+			
+			self.refresh()
+
+	def onChooseFilter(self):
+		menu = []
+		
+		selection = 0
+		counter = 0
+		
+		for i in range(len(self.onFilterKeyValuePair)):
+			x = self.onFilterKeyValuePair[i]
+			subelements = self.onFilterKeyValuePair[i][2]
+			for j in range(len(subelements)):
+				y = subelements[j]
+				text = "%s: %s" % (_(x[0]), _(y))
+				menu.append((text, (x[0], x[1], y, )))
+				if self.activeFilter[1][0] == self.onFilterKeyValuePair[i][1][0]:
+					if self.activeFilter[2] == subelements[j]:
+						selection = counter
+				counter += 1
+		
+		self.session.openWithCallback(self.onChooseFilterCallback, ChoiceBox, title=_("Select filter"), list=menu, selection=selection)
+
 	def onToggleView(self):
 		# These allow us to get the correct list
 		#self.currentKeyValuePair
@@ -275,6 +346,31 @@ class DMC_View(Screen, HelpableScreen):
 					primaryKeyValuePair[key] = selection[1][key]
 			select = (self.currentKeyValuePair, primaryKeyValuePair)
 		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort, self.activeFilter))
+
+	def onChooseViewCallback(self, choice):
+		if choice is not None:
+			# These allow us to get the correct list
+			#self.currentKeyValuePair
+			# But we also need the selected element
+			select = None
+			selection = self["listview"].getCurrent()
+			if selection is not None:
+				primaryKeyValuePair = {}
+				print self.onEnterPrimaryKeys
+				for key in self.onEnterPrimaryKeys:
+					if key != "play":
+						primaryKeyValuePair[key] = selection[1][key]
+				select = (self.currentKeyValuePair, primaryKeyValuePair)
+			self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort, self.activeFilter, choice[1]))
+
+	def onChooseView(self):
+		menu = getViews()
+		selection = 0
+		for i in range(len(menu)):
+			if self.viewName[1] == menu[i][1]:
+				selection = i
+				break
+		self.session.openWithCallback(self.onChooseViewCallback, ChoiceBox, title=_("Select view"), list=menu, selection=selection)
 
 	def onNextEntry(self):
 		printl("", self)

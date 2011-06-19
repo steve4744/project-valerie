@@ -55,6 +55,7 @@ class PVMC_Player(MoviePlayer):
 			else:
 				type = 4097
 			ref = eServiceReference(type, 0, firstPath)
+			
 			ref.setName(firstName)
 			self.playing = True
 			MoviePlayer.__init__(self, session, ref)

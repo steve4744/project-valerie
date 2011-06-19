@@ -112,27 +112,15 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		printl("", self)
 		try:
 			self.list = []
-			self.list.append(getConfigListEntry(_("Show wizard on next start"), config.plugins.pvmc.showwizard))
-			self.list.append(getConfigListEntry(_("Start Valerie on e2 start"), config.plugins.pvmc.autostart))
-			self.list.append(getConfigListEntry(_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate))
-			#self.list.append(getConfigListEntry(_("Backdrop quality"), config.plugins.pvmc.backdropquality))
-			self.list.append(getConfigListEntry(_("Skin"), config.plugins.pvmc.skin))
-			self.list.append(getConfigListEntry(_("On Power press"), config.plugins.pvmc.onpowerpress))
-			self.list.append(getConfigListEntry(_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu))
-			
-			#self.list.append(getConfigListEntry(_("Use Trakt.tv"), config.plugins.pvmc.trakt))
-			#self.list.append(getConfigListEntry(_("Trakt.tv - Username"), config.plugins.pvmc.traktuser))
-			#self.list.append(getConfigListEntry(_("Trakt.tv - Password"), config.plugins.pvmc.traktpass))
-
 			plugins = getPlugins(where=Plugin.SETTINGS)
 			for plugin in plugins:
 				pluginSettingsList = plugin.fnc()
 				for pluginSetting in pluginSettingsList:
-					self.list.append(getConfigListEntry("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
-			
-			self.list.append(getConfigListEntry(_("[EXPERT] Valerie Config folder (Database, ...)"), config.plugins.pvmc.configfolderpath))
-			self.list.append(getConfigListEntry(_("[EXPERT] Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath))
-			self.list.append(getConfigListEntry(_("[EXPERT] Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath))
+					if len(plugin.name) > 0:
+						text = "[%s] %s" % (plugin.name, pluginSetting[0], )
+					else:
+						text = "%s" % (pluginSetting[0], )
+					self.list.append(getConfigListEntry(text, pluginSetting[1]))
 			
 			self["config"].setList(self.list)
 		except Exception, ex:
@@ -569,4 +557,24 @@ class PVMC_MainMenu(Screen):
 		else:
 			self.close((True,) )
 
+def settings():
+	s = []
+	s.append((_("Show wizard on next start"), config.plugins.pvmc.showwizard, ))
+	s.append((_("Start Valerie on e2 start"), config.plugins.pvmc.autostart, ))
+	s.append((_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate, ))
+	s.append((_("Skin"), config.plugins.pvmc.skin, ))
+	s.append((_("On Power press"), config.plugins.pvmc.onpowerpress, ))
+	s.append((_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu, ))
+	return s
+
+def settings_expert():
+	s = []
+	s.append((_("Valerie Config folder (Database, ...)"), config.plugins.pvmc.configfolderpath, ))
+	s.append((_("Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath, ))
+	s.append((_("Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath, ))
+	return s
+
+
+registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))
+registerPlugin(Plugin(name=_("EXPERT"), fnc=settings_expert, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True))

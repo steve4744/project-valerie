@@ -164,7 +164,6 @@ def getText(url):
 				try:
 					opener = urllib2.build_opener()
 					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
-					#opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.8.1.6) Gecko/20070723 Iceweasel/2.0.0.6 (Debian-2.0.0.6-0etch1)')]
 					if version_info[1] >= 6:
 						page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
 					else:
@@ -196,7 +195,7 @@ def getText(url):
 	
 	return u""
 
-def getFile(url, name, retry=3):
+def getFile(url, name, retry=3, fixurl=True):
 	try:
 		if name[:1] == "/":
 			# Filename is absolut
@@ -207,7 +206,18 @@ def getFile(url, name, retry=3):
 		if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
 			for i in range(retry):
 				try:
-					page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
+					fixedurl = Utf8.utf8ToLatin(url)
+					if fixurl:
+						fixedurl = url_fix(Utf8.utf8ToLatin(url))
+					opener = urllib2.build_opener()
+					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
+					if version_info[1] >= 6:
+						page = opener.open(fixedurl, timeout=10)
+					else:
+						socket.setdefaulttimeout(10)
+						page = opener.open(fixedurl)
+					
+					#page = urllib2.urlopen(url_fix(Utf8.utf8ToLatin(url)))
 					f = open(Utf8.utf8ToLatin(localFilename), 'wb')
 					f.write(page.read())
 					f.close()

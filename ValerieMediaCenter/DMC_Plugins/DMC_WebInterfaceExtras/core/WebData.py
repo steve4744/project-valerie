@@ -42,7 +42,11 @@ class WebData():
 			for plugin in plugins: 
 				pluginSettingsList = plugin.fnc() 
 				for pluginSetting in pluginSettingsList: 
-					dataRows.append(("[" + plugin.name + "] " + pluginSetting[0], pluginSetting[1]))
+					if len(plugin.name) > 0:
+						text = "[%s] %s" % (plugin.name, pluginSetting[0], )
+					else:
+						text = "%s" % (pluginSetting[0], )
+					dataRows.append((text, pluginSetting[1]))
 		elif type == "options.sync":
 			from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
 			dataRows = PathsConfig().getInstance()
