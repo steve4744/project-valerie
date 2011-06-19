@@ -82,17 +82,17 @@ class WebData():
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/Functions.js")
 				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
 					if (config.plugins.pvmc.plugins.webinterface.usepagination.value == True):
-						Pagination = '"bPaginate": true,'
+						Pagination = '"bPaginate": true,"sScrollY": 768,'
 					else:
-						Pagination = '"bPaginate": false,'
+						Pagination = '"bPaginate": false,\n"bScrollInfinite": true,'
 					customJS = customJS.replace("<!-- PAGINATION_FLAG -->", Pagination)	
 			else:
 				customJS = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/" + webResource + "/" + submenu + "/Functions.js")
 				if (webResource == "Movies" or webResource == "TvShows" or webResource == "Episodes" or webResource == "Failed"):
 					if (config.plugins.pvmc.plugins.webinterface.usepagination.value == True):
-						Pagination = '"bPaginate": true,'
+						Pagination = '"bPaginate": true,"sScrollY": 768,'
 					else:
-						Pagination = '"bPaginate": false,'
+						Pagination = '"bPaginate": false,\n"bScrollInfinite": true,'
 					customJS = customJS.replace("<!-- PAGINATION_FLAG -->", Pagination)	
 			
 			finalOutput = finalOutput.replace("<!-- CUSTOM_JAVASCRIPT -->", customJS)

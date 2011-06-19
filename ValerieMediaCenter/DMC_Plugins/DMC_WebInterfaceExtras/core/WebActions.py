@@ -200,7 +200,7 @@ class WebActions(Resource):
 							printl("Setting \"%s\" to \"%s\"" % (name, value), self, "I")
 							entry[1].value = value
 						elif valueType == "checkbox":
-							if value == "checked":
+							if value == "checked" or value == "on":
 								value = True
 							else:
 								value = False
