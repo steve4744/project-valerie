@@ -73,6 +73,8 @@ def autostart(session):
 		root.putChild("alternatives", WebResources.Alternatives())
 		
 		#Action pages in SubMenu
+		root.putChild("globalSettings", WebResources.GlobalSetting())
+		root.putChild("syncSettings", WebResources.SyncSettings())
 		root.putChild("backup", WebResources.Backup())
 		root.putChild("restore", WebResources.Restore())
 		

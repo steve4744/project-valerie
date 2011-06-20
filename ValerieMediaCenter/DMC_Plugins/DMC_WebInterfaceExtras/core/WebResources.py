@@ -1,5 +1,4 @@
 from Components.config import config
-from Components.config import ConfigSelection
 
 from twisted.web.resource import Resource
 
@@ -313,63 +312,33 @@ class Options (Resource):
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Options", True)
+		finalOutput = WebData().getHtmlCore("Options")
+				
+		return utf8ToLatin(finalOutput)
+
+##
+#
+##		
+class GlobalSetting (Resource):
+	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+				
+		finalOutput = WebData().getHtmlCore("Options" , True, "Global")
 		
 		tableBody = self.buildTableGlobal("options.global")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_GLOBAL -->", tableBody)
-		
-		tableBody = self.buildTableSync("options.sync")
-		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC -->", tableBody)
-		
-		return utf8ToLatin(finalOutput)
-
-	def prepareTable(self, value, entry, name="value"):
-		
-		#print type(value), value
-		
-		
-		tag = "input"
-		configType = "text"
-		
-		if type(value) is bool:
-			configType = "checkbox"
-			if value is True:
-				configValue = "checked=\"checked\""
-			else:
-				configValue = ""
-		elif type(value) is list or type(value) is tuple:
-			choices = value[1]
-			configType = "select"
-			tag = "select"
-			configValue = value[0]
-		elif type(entry) is ConfigSelection:
-			choices = entry.choices
-			configType = "select"
-			tag = "select"
-			configValue = value
-		else:
-			configValue = "value=\"%s\"" % value
-		
-		if tag == "input":
-			tag = """<input id="value" name="%s" type="%s" size="50" %s></input>""" % (name, configType, configValue)
-		elif tag == "select":
-			tag = u"""<select id="value" name="%s">""" % name
-			for choice in choices:
-				if choice == configValue:
-					tag += u"""<option value="%s" size="50" selected>%s</option>""" % (choice, choice)
-				else:
-					tag += u"""<option value="%s" size="50">%s</option>""" % (choice, choice)
-			
-			tag += u"""</select>"""
-		return (configType, tag, )
-
+	
+		return utf8ToLatin(finalOutput)	
+	
 	def buildTableGlobal(self, section):
 		tableBody = u""
 		entries = WebData().getData(section)
 		for entry in entries:
 			value = entry[1].value
 			
-			configType, tag = self.prepareTable(value, entry[1])
+			configType, tag = WebHelper().prepareTable(value, entry[1])
 			
 			tableBody += u"""
 							<form id="saveSetting" action="/action" method="get">
@@ -387,54 +356,71 @@ class Options (Resource):
 		
 		return tableBody
 
-	def buildTableSync(self, section):
+##
+#
+##		
+class SyncSettings (Resource):
+	def render_GET(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		
+		finalOutput = WebData().getHtmlCore("Options" , True, "Sync")
+						
+		tableBody = self.buildTableSyncFileTypes("options.sync")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC_FILETYPES -->", tableBody)
+		
+		tableBody = self.buildTableSyncPath("options.sync")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC_PATH -->", tableBody)
+	
+		return utf8ToLatin(finalOutput)
+
+	def buildTableSyncFileTypes(self, section):
 		tableBody = u""
 		pathsConfig = WebData().getData(section)
 		
 		name = u"FileTypes"
 		value = '|'.join(pathsConfig.getFileTypes())
-		configType, tag = self.prepareTable(value, None)
+		configType, tag = WebHelper().prepareTable(value, None)
 		
 		tableBody += u"""
-						<form id="saveSetting" action="/action" method="get">
-							<input type="hidden" name="method" value="options.saveconfig"></input>
-							<input type="hidden" name="what" value="settings_sync"></input>
-							<input type="hidden" name="section" value="filetypes"></input>
-							<input type="hidden" name="type" value="%s"></input>
-							<tr id="tr_entry">
-								<td width="300px">%s:</td>
-								<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
-								<td width="200px">%s</td>
-								<td width="70px"><input type="submit" value="save"></input></td>
-							</tr>
-						</form>
+						<table align="left" id="settings_sync">
+								<form id="saveSetting" action="/action" method="get">
+									<input type="hidden" name="method" value="options.saveconfig"></input>
+									<input type="hidden" name="what" value="settings_sync"></input>
+									<input type="hidden" name="section" value="filetypes"></input>
+									<input type="hidden" name="type" value="%s"></input>
+									<tr id="tr_entry">
+										<td width="100px">%s:</td>
+										<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
+										<td width="200px">%s</td>
+										<td width="70px"><input type="submit" value="save"></input></td>
+									</tr>
+								</form>
+							</table>
 				""" % (configType, name, name, tag)
 		
-		tableBody += u"""<tr id="tr_entry">
-									<td width="50px">Paths</td>
-									<td width="200px"></td>
-									<td width="50px"></td>
-									<td width="50px"></td>
-									<td width="70px"></td>
-								</tr>"""
+		return tableBody
 		
-		tableBody += u"""<table align="center" id="settings_sync_sub">"""
-		tableBody += u"""<thead>
-									<td width="50px">Enabled</td>
-									<td width="200px">Directory</td>
-									<td width="50px">Type</td>
-									<td width="50px">UseFolder</td>
-									<td width="70px"></td>
-								</thead>"""
+	def buildTableSyncPath(self, section):
+		tableBody = u""
+		pathsConfig = WebData().getData(section)
 		
-		tableBody += u"""<tbody>"""
+		tableBody += u"""<table align="left" id="settings_sync_sub">"""
+		tableBody += u"""<tr>
+							<td width="100px">Enabled</td>
+							<td width="200px">Directory</td>
+							<td width="50px">Type</td>
+							<td width="50px">UseFolder</td>
+							<td width="70px"></td>
+						</tr>"""
 		
 		for path in pathsConfig.getPaths():
 			name = u"Directory"
 			value = path["directory"]
 			id = path["directory"]
 			
-			configType, tag = self.prepareTable(value, None)
+			configType, tag = WebHelper().prepareTable(value, None)
 			
 			types = (path["type"], pathsConfig.getPathsChoices()["type"], )
 			
@@ -453,10 +439,10 @@ class Options (Resource):
 									<td width="70px"><input type="submit" value="save"></input></td>
 								</tr>
 							</form>
-					""" % (id, self.prepareTable(path["enabled"], None, "enabled")[1], self.prepareTable(path["directory"], None, "directory")[1], 
-									self.prepareTable(types, None, "type")[1], self.prepareTable(path["usefolder"], None, "usefolder")[1])
+					""" % (id, WebHelper().prepareTable(path["enabled"], None, "enabled")[1], WebHelper().prepareTable(path["directory"], None, "directory")[1], 
+									WebHelper().prepareTable(types, None, "type")[1], WebHelper().prepareTable(path["usefolder"], None, "usefolder")[1])
 		
-		tableBody += u"""</tbody>"""
+		tableBody += u"""</table>"""
 		
 		return tableBody
 

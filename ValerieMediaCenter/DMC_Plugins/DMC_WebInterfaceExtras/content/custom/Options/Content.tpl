@@ -1,23 +1,20 @@
 <div class="textheader">Options</div>	
-<!-- MOVIE-->		
-	<div class="subheader">Global Settings</div>
+	<div class="subheader">Instructions</div>
 
 	<div class="text">
-		<table align="center" id="settings_global">
-				<tbody>
-				<!-- CUSTOM_TBODY_GLOBAL -->
-			</tbody>
+		Click on the buttons above to start the corresponding feature.
 		<br><br>
-		</table>
+		In the next paragraph you will find some small instructions for each feature as information for you.
 	</div>
-	<div class="subheader">Sync Settings</div>
+	
+	<div class="subheader">Instructions - Global Settings</div>
+	<div class="text">
+		...
+	</div>
+	
+	<div class="subheader">Instruction - Sync Settings</div>
 
 	<div class="text">
-		<table align="center" id="settings_sync">
-				<tbody>
-				<!-- CUSTOM_TBODY_SYNC -->
-			</tbody>
-		<br><br>
-		</table>
+		...
 	</div>
 </div>
