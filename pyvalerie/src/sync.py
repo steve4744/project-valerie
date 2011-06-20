@@ -352,10 +352,10 @@ class pyvalerie(Thread):
 					printl("FOLDERTYPE: " + str(folderType), self)
 					printl("USEFOLDER: " + str(useFolder), self)
 					
-					if useFolder == u"MOVIE":
+					if folderType == u"MOVIE":
 						elementInfo.isMovie = True
 						elementInfo.isSerie = False
-					elif useFolder == u"TV":
+					elif folderType == u"TV":
 						elementInfo.isMovie = False
 						elementInfo.isSerie = True
 					

@@ -314,7 +314,10 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		
 		pathsConfig.clearPaths()
 		for entry in self.pathsList:
-			path = {"directory": entry[1], "enabled": True, "usefolder": entry[3], "type":  entry[2]}
+			useFolder = False
+			if entry[3] == "FOLDERNAME":
+				useFolder = True
+			path = {"directory": entry[1], "enabled": True, "usefolder": useFolder, "type":  entry[2]}
 			pathsConfig.setPath(None, path)
 		
 		pathsConfig.save()
