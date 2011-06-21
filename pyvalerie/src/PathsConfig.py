@@ -53,6 +53,14 @@ class PathsConfig(Xml2Dict):
 		# making sure that no duplicates exist
 		self._dict["xml"]["filetypes"]["filetype"] = list(set(self._dict["xml"]["filetypes"]["filetype"]))
 		
+		if self._dict["xml"]["searchpaths"].has_key("searchpath") is False:
+			self._dict["xml"]["searchpaths"]["searchpath"] = []
+		
+		if type(self._dict["xml"]["searchpaths"]["searchpath"]) == dict:
+			entry = self._dict["xml"]["searchpaths"]["searchpath"]
+			self._dict["xml"]["searchpaths"]["searchpath"] = []
+			self._dict["xml"]["searchpaths"]["searchpath"].append(entry)
+		
 		if save:
 			self.save()
 
