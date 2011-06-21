@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import cPickle as pickle
 
+from Components.config import config
 from Screens.Screen import Screen
 
 from DMC_View import DMC_View, getViews
@@ -25,21 +27,65 @@ class DMC_Library(Screen):
         self._views = getViews()
         self.currentViewIndex = 0
         
-        self.onFirstExecBegin.append(self.showView)
+        self.defaultPickle = "%sdefault_%s.bin" % (config.plugins.pvmc.configfolderpath.value, libraryName, )
+        
+        self.onFirstExecBegin.append(self.showDefaultView)
+
+    def getDefault(self):
+        try:
+            fd = open(self.defaultPickle, "rb")
+            default = pickle.load(fd)
+            fd.close()
+        except:
+            default = {
+            "view": self.currentViewIndex, 
+            "selection": None, 
+            "sort": None, 
+            "filter": None, 
+        }
+        return default
+
+    def setDefault(self, selection, sort, filter):
+        default = {
+            "view": self.currentViewIndex, 
+            "selection": selection, 
+            "sort": sort, 
+            "filter": filter, 
+        }
+        
+        fd = open(self.defaultPickle, "wb")
+        pickle.dump(default, fd, 2) #pickle.HIGHEST_PROTOCOL)
+        fd.close()
+
+    def showDefaultView(self):
+        default = self.getDefault()
+        self.currentViewIndex = default["view"]
+        self.showView(default["selection"], default["sort"], default["filter"])
 
     # Displays the selected View
     def showView(self, selection=None, sort=None, filter=None):
         printl("", self, "D")
         m = __import__(self._views[self.currentViewIndex][1], globals(), locals(), [], -1)
-        print m
-        print m.getViewClass()
         self._session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, self.playEntry, self._views[self.currentViewIndex], select=selection, sort=sort, filter=filter)
 
     # Called if View has closed, react on cause for example change to different view
     def onViewClosed(self, cause=None):
         printl("", self, "D")
         if cause is not None:
-            if cause[0] == DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
+            if cause[0] == DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT:
+                selection = None
+                sort = None
+                filter = None
+                if len(cause) >= 2 and cause[1] is not None:
+                    #self.currentViewIndex = cause[1]
+                    selection = cause[1]
+                if len(cause) >= 3 and cause[2] is not None:
+                    sort = cause[2]
+                if len(cause) >= 4 and cause[3] is not None:
+                    filter = cause[3]
+                self.setDefault(selection, sort, filter)
+                self.close()
+            elif cause[0] == DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW:
                 selection = None
                 sort = None
                 filter = None

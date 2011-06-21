@@ -61,6 +61,7 @@ class DMC_View(Screen, HelpableScreen):
 	"""
 
 	ON_CLOSED_CAUSE_CHANGE_VIEW = 1
+	ON_CLOSED_CAUSE_SAVE_DEFAULT = 2
 
 	FAST_STILLPIC = False
 
@@ -187,7 +188,7 @@ class DMC_View(Screen, HelpableScreen):
 		pass
 
 	def onKeyMenu(self):
-		self.displayPluginsMenu()
+		self.displayOptionsMenu()
 
 	def onKeyLeft(self):
 		pass
@@ -561,25 +562,46 @@ class DMC_View(Screen, HelpableScreen):
 			text = entry["Path"] + _("\n\nPlease make sure that your drive is connected/mounted.")
 			self.session.open(MessageBox, title + text, type = MessageBox.TYPE_ERROR)
 
-	def displayPluginsMenu(self):
+	def setDefaultView(self, unused=None):
+		# These allow us to get the correct list
+		#self.currentKeyValuePair
+		# But we also need the selected element
+		select = None
+		selection = self["listview"].getCurrent()
+		if selection is not None:
+			primaryKeyValuePair = {}
+			print self.onEnterPrimaryKeys
+			for key in self.onEnterPrimaryKeys:
+				if key != "play":
+					primaryKeyValuePair[key] = selection[1][key]
+			select = (self.currentKeyValuePair, primaryKeyValuePair)
+		self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT, select, self.activeSort, self.activeFilter))
+
+	def displayOptionsMenu(self):
 		pluginList = []
+		
+		pluginList.append((_("Set view as default"), Plugin("View", fnc=self.setDefaultView), ))
+		
 		plugins = getPlugins(where=Plugin.MENU_MOVIES_PLUGINS)
 		for plugin in plugins:
-			pluginList.append((plugin.name, plugin.start, ))
+			pluginList.append((plugin.name, plugin, ))
 		
 		if len(pluginList) == 0:
 			pluginList.append((_("No plugins available"), None, ))
 		
-		self.session.openWithCallback(self.displayPluginsMenuCallback, ChoiceBox, \
-			title=_("Plugins"), list=pluginList)
+		self.session.openWithCallback(self.displayOptionsMenuCallback, ChoiceBox, \
+			title=_("Options"), list=pluginList)
 
-	def displayPluginsMenuCallback(self, choice):
+	def displayOptionsMenuCallback(self, choice):
 		if choice is None or choice[1] is None:
 			return
 		
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			self.session.open(choice[1], selection[1])
+			if choice[1].start:
+				self.session.open(choice[1].start, selection[1])
+			elif choice[1].fnc:
+				choice[1].fnc(selection[1])
 
 #registerPlugin(Plugin(name=_("Set view as default"), fnc=setViewAsDefault, where=Plugin.MENU_MOVIES_PLUGINS))
 #registerPlugin(Plugin(name=_("Bookmark view"), fnc=bookmarkView, where=Plugin.MENU_MOVIES_PLUGINS))
