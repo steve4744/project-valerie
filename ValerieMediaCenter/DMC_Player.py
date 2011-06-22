@@ -72,6 +72,8 @@ class PVMC_Player(MoviePlayer):
 	def leavePlayer(self, eof=False):
 		list = []
 		
+		self.isEof = eof
+		
 		if self.nextPlaylistEntryAvailable() is True:
 			list.append((_("Yes, but play next episode"), "next"))
 		
@@ -88,8 +90,9 @@ class PVMC_Player(MoviePlayer):
 			if answer[1] == "quit":
 				self.playing = False
 				
-				self.addLastPosition()
-				self.uploadCuesheet()
+				if self.isEof is False:
+					self.addLastPosition()
+					self.uploadCuesheet()
 				
 				self.close()
 			elif answer[1] == "next":
