@@ -12,6 +12,7 @@ from Tools.Directories import resolveFilename, fileExists, pathExists, createDir
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
+from Plugins.Extensions.ProjectValerie.DMC_Global import getBoxtype
 
 #------------------------------------------------------------------------------------------
 
@@ -56,13 +57,16 @@ class PVMC_Player(MoviePlayer):
 				type = 4097
 			ref = eServiceReference(type, 0, firstPath)
 			
+			self.currentPlayingFile = firstPath
 			ref.setName(firstName)
 			self.playing = True
 			MoviePlayer.__init__(self, session, ref)
 		else:
 			self.isPlaylist = False
 			self.playing = True
+			self.currentPlayingFile = self.playlist
 			MoviePlayer.__init__(self, session, self.playlist)
+		
 		self.skinName = "MoviePlayer"
 
 	def leavePlayer(self, eof=False):
@@ -83,6 +87,10 @@ class PVMC_Player(MoviePlayer):
 			printl("ANSWER=" + str(answer[1]), self, "D")
 			if answer[1] == "quit":
 				self.playing = False
+				
+				self.addLastPosition()
+				self.uploadCuesheet()
+				
 				self.close()
 			elif answer[1] == "next":
 				self.nextPlaylistEntry()
@@ -215,6 +223,8 @@ class PVMC_Player(MoviePlayer):
 			type = 1
 		else:
 			type = 4097
+		
+		self.currentPlayingFile = selectedPath
 		ref = eServiceReference(type, 0, selectedPath)
 		ref.setName(selectedName)
 		self.playing = True
@@ -237,3 +247,67 @@ class PVMC_Player(MoviePlayer):
 				return True
 		return False
 
+	# CueSheet hacks
+	
+	def addLastPosition(self):
+		service = self.session.nav.getCurrentService()
+		seek = service and service.seek()
+		if seek != None:
+			pts = seek.getPlayPosition()[1]
+			
+			found = False
+			for i in range(len(self.cut_list)):
+				if self.cut_list[i][1] == self.CUT_TYPE_LAST:
+					self.cut_list[i] = (pts, self.CUT_TYPE_LAST, )
+					found = True
+					break
+			
+			if found is False:
+				self.cut_list.append((pts, self.CUT_TYPE_LAST, ))
+	
+	def uploadCuesheet(self):
+		printl("", self, "I")
+		try:
+			import struct
+			packed = ''
+			for cue in self.cut_list:
+				print cue
+				packed += struct.pack('>QI', cue[0], cue[1])
+			
+			if len(packed) > 0:
+				f = open(self.currentPlayingFile + ".cuts", "wb")
+				f.write(packed)
+				f.close()
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
+
+	def downloadCuesheet(self):
+		printl("", self, "I")
+		try:
+			import struct
+			f = open(self.currentPlayingFile + ".cuts", "rb")
+			packed = f.read()
+			f.close()
+			
+			while len(packed) > 0:
+				packedCue = packed[:12]
+				packed = packed[12:]
+				cue = struct.unpack('>QI', packedCue)
+				self.cut_list.append(cue)
+		except Exception, ex:
+			printl("Exception (ef): " + str(ex), self, "E")
+
+	# Why in heavens name did we forget to implement seekTo on duckbox ?
+	def doSeek(self, pts):
+		seekable = self.getSeek()
+		print "doSeek", seekable
+		if seekable is None:
+			return
+		if getBoxtype()[2] == "sh4":
+			tenSec = 90000 * 10 #10sec
+			pts -= tenSec #10sec before
+			if pts >= tenSec:
+				seekable.seekRelative(1, pts)
+		else:
+			seekable.seekTo(pts)
+	
