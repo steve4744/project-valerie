@@ -93,6 +93,9 @@ class PVMC_Player(MoviePlayer):
 				if self.isEof is False:
 					self.addLastPosition()
 					self.uploadCuesheet()
+				else:
+					self.removeLastPosition()
+					self.uploadCuesheet()
 				
 				self.close()
 			elif answer[1] == "next":
@@ -253,6 +256,7 @@ class PVMC_Player(MoviePlayer):
 	# CueSheet hacks
 	
 	def addLastPosition(self):
+		printl("", self, "I")
 		service = self.session.nav.getCurrentService()
 		seek = service and service.seek()
 		if seek != None:
@@ -267,7 +271,14 @@ class PVMC_Player(MoviePlayer):
 			
 			if found is False:
 				self.cut_list.append((pts, self.CUT_TYPE_LAST, ))
-	
+
+	def removeLastPosition(self):
+		printl("", self, "I")
+		for i in range(len(self.cut_list)):
+			if self.cut_list[i][1] == self.CUT_TYPE_LAST:
+				del self.cut_list[i]
+				break
+
 	def uploadCuesheet(self):
 		printl("", self, "I")
 		try:
@@ -281,11 +292,14 @@ class PVMC_Player(MoviePlayer):
 				f = open(self.currentPlayingFile + ".cuts", "wb")
 				f.write(packed)
 				f.close()
+			else:
+				os.remove(self.currentPlayingFile + ".cuts")
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 
 	def downloadCuesheet(self):
 		printl("", self, "I")
+		self.cut_list = []
 		try:
 			import struct
 			f = open(self.currentPlayingFile + ".cuts", "rb")
