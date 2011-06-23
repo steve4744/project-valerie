@@ -100,6 +100,7 @@ class MediaInfo(object):
 			
 			m.Id           = self.Id
 			m.ImdbId       = self.ImdbId
+			m.isXbmcNfo    = self.isXbmcNfo
 			m.TheTvDbId    = self.TheTvDbId
 			m.Title        = self.Title
 			m.Year         = self.Year
@@ -298,6 +299,11 @@ class MediaInfo(object):
 						self.isEpisode = False
 						
 						self.TheTvDbId = line
+				elif line.startswith("<title>"):
+					line = line.replace("title", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Title = line
 				elif line.startswith("<season>"):
 					line = line.replace("season", "")
 					line = line.replace("<>", "")
@@ -318,6 +324,37 @@ class MediaInfo(object):
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
 					self.Plot = line
+				elif line.startswith("<runtime>"):
+					line = line.replace("runtime", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Runtime = int(line)
+				elif line.startswith("<genre>"):
+					line = line.replace("genre", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Genres = line
+				elif line.startswith("<rating>"):
+					line = line.replace("rating", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Popularity = int(round(float(line)))
+				elif line.startswith("<tagline>"):
+					line = line.replace("tagline", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Tag = line
+				elif line.startswith("<codec>"):
+					line = line.replace("codec", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Sound = line
+				elif line.startswith("<width>"):
+					line = line.replace("width", "")
+					line = line.replace("<>", "")
+					line = line.replace("</>", "")
+					self.Resolution = line
+			return self
 		
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
@@ -381,11 +418,19 @@ class MediaInfo(object):
 				self.isSerie = result.isSerie
 				self.TheTvDbId = result.TheTvDbId
 				self.ImdbId = result.ImdbId
+				self.Title = result.Title
+				self.Plot = result.Plot
 				
 				self.Season = result.Season
 				self.Episode = result.Episode
 				
 				self.Year = result.Year
+				self.Genres = result.Genres
+				self.Runtime = result.Runtime
+				
+				if self.isXbmcNfo == True:
+					printl("XBMC-style nfo => return to sync()", self, "I")
+					return True
 			else:
 				printl("Something went wrong while reading from nfo :-(", self, "I")
 		
