@@ -407,7 +407,7 @@ class PVMC_MainMenu(Screen):
 
 	def startUpdate(self, answer=None):
 		if answer is not None and answer is True:
-			self.session.open(PVMC_Update, self.remoteurl)
+			self.session.open(PVMC_Update)
 		else:
 			self.runAutostart()
 
