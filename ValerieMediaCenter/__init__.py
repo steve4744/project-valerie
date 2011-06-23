@@ -50,7 +50,7 @@ config.plugins.pvmc = ConfigSubsection()
 config.plugins.pvmc.language          = ConfigSelection(default="EN", choices = [("EN", _("English"))])
 config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
-config.plugins.pvmc.checkforupdate    = ConfigYesNo(default = True)
+config.plugins.pvmc.checkforupdate    = ConfigSelection(default = "Passive", choices = ["Active", "Passive", "Off", ])
 
 config.plugins.pvmc.showmovieandtvinmainmenu    = ConfigYesNo(default = False)
 config.plugins.pvmc.onpowerpress      = ConfigSelection(default="DeepStandby", choices = ["DeepStandby", "Standby", ])

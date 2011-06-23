@@ -62,6 +62,7 @@ class Plugin():
 	
 	AUTOSTART = 9
 	AUTOSTART_E2 = 12
+	STOP_E2 = 13
 	
 	SETTINGS = 10
 	

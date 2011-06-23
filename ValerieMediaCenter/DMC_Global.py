@@ -225,8 +225,8 @@ class Update():
 			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
 			
 			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
-				return remoteversion
+				return (remoteversion, self.remoteurl, )
 		
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
-		return False	
+		return (None, None, )

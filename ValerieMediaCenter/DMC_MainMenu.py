@@ -27,7 +27,7 @@ from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from DataElement import DataElement
-from DMC_Global import getBoxtype, getAPILevel
+from DMC_Global import getBoxtype, getAPILevel, Update
 
 from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
@@ -138,7 +138,7 @@ class PVMC_Update(Screen):
 	<widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
 	</screen>"""
 
-	def __init__(self, session, remoteurl):
+	def __init__(self, session):
 		self.skin = PVMC_Update.skin
 		Screen.__init__(self, session)
 		
@@ -152,8 +152,6 @@ class PVMC_Update(Screen):
 			"back": self.close
 		}, -1)
 		
-		self.url = remoteurl
-		
 		self.onFirstExecBegin.append(self.update)
 
 	# RTV = 0 opkg install successfull
@@ -161,7 +159,14 @@ class PVMC_Update(Screen):
 	# RTV = 127 Binary not found
 	# RTV = 255 ERROR
 	def update(self):
-		self["text"].setText(_("Updating ProjectValerie...\n\n\nStay tuned :-)"))
+		
+		version, remoteUrl = Update().checkForUpdate()
+		
+		if version is None:
+			self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
+			return
+		
+		self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
 		cmd = """
 BIN=""
 ipkg > /dev/null 2>/dev/null
@@ -180,7 +185,7 @@ if [ $BIN != "" ]; then
  echo "Cleaning up"
  rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie*
  $BIN install %s
-fi""" % str(self.url)
+fi""" % str(remoteUrl)
 		
 		printl("cmd=" + str(cmd), self, "D")
 		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
@@ -188,6 +193,9 @@ fi""" % str(self.url)
 	def finishupdate(self):
 		time.sleep(2)
 		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
+
+	def callback(self, answer=None):
+		self.close()
 
 	def e2restart(self, answer):
 		if answer is True:
@@ -351,14 +359,27 @@ class PVMC_MainMenu(Screen):
 	def onExecStartScript(self):
 		printl("->", self)
 		
-		doUpdate = False
+		version = None
 		
-		if config.plugins.pvmc.checkforupdate.value == True:
-			doUpdate = self.checkForUpdate()
+		if config.plugins.pvmc.checkforupdate.value != "Off":
+			version, remoteurl = Update().checkForUpdate()
 		
-		printl("doUpdate=" + str(doUpdate), self)
+		printl("version=" + str(version), self)
 		
-		if doUpdate is False:
+		if version is not None:
+			if config.plugins.pvmc.checkforupdate.value == "Active":
+				self.session.openWithCallback(self.startUpdate, MessageBox, \
+					_("A new version of MediaCenter is available for download!\n\nVersion: %s") % version, \
+					MessageBox.TYPE_YESNO, timeout=120, close_on_any_key=False, default=False)
+			elif  config.plugins.pvmc.checkforupdate.value == "Passive":
+				behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
+				multiple = ""
+				if behind > 1:
+					multiple = "s"
+				self["version"].setText(_("Current Version %s. You are %d revision%s behind!") % (config.plugins.pvmc.version.value, behind, multiple, ))
+		else:
+			# If the update dialog is being shown, dont run autostart.
+			# If the user dont want an update the autostart will be initialised by messagebox callback
 			self.runAutostart()
 		printl("<-",self)
 
@@ -384,44 +405,8 @@ class PVMC_MainMenu(Screen):
 		else:
 			self.session.open(Screens.Standby.TryQuitMainloop, 1)
 
-	def checkForUpdate(self):
-		box = getBoxtype()
-		printl("box=" + str(box), self)
-		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
-		printl("Checking URL: " + str(self.url), self) 
-		try:
-			opener = urllib2.build_opener()
-			box = getBoxtype()
-			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
-			f = opener.open(self.url)
-			#f = urllib2.urlopen(self.url)
-			html = f.read()
-			dom = parseString(html)
-			update = dom.getElementsByTagName("update")[0]
-			stb = update.getElementsByTagName("stb")[0]
-			version = stb.getElementsByTagName("version")[0]
-			remoteversion = version.childNodes[0].data
-			urls = stb.getElementsByTagName("url")
-			self.remoteurl = ""
-			for url in urls:
-				if url.getAttribute("arch") == box[2]:
-					if url.getAttribute("version") is None or url.getAttribute("version") == box[3]:
-						self.remoteurl = url.childNodes[0].data
-			
-			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
-			
-			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
-				self.session.openWithCallback(self.startUpdate, MessageBox, \
-					_("A new version of MediaCenter is available for download!\n\nVersion: %s") % remoteversion, \
-					MessageBox.TYPE_YESNO, timeout=120, close_on_any_key=False, default=False)
-				return True
-		
-		except Exception, e:
-			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
-		return False
-
-	def startUpdate(self, answer):
-		if answer is True:
+	def startUpdate(self, answer=None):
+		if answer is not None and answer is True:
 			self.session.open(PVMC_Update, self.remoteurl)
 		else:
 			self.runAutostart()
@@ -574,7 +559,18 @@ def settings_expert():
 	s.append((_("Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath, ))
 	return s
 
+def stop_e2(session):
+	printl("->", __name__)
+	try:
+		import os
+		os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "stop.sh")
+		os.system("/bin/sh " + config.plugins.pvmc.configfolderpath.value + "stop.sh")
+	except Exception, e:
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+	printl("<-", __name__)
 
+registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
 registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("EXPERT"), fnc=settings_expert, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
+registerPlugin(Plugin(name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True))

@@ -12,14 +12,14 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 gSessionPV = None
 gReasonPV = -1
 
+# reason (0: start, 1: end)
 def autostart(reason, **kwargs):
 	#global gE2Control
 	global gSessionPV
 	
 	if kwargs.has_key("session"):
 		gSessionPV = kwargs["session"]
-	printl("Reason: " + str(reason), __name__, "I")
-	gReasonPV = reason
+	printl("Reason: %s - %s" % (str(reason), str(type(gSessionPV))), __name__, "E")
 	
 	#from DMC_Global import E2Control
 	#if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
@@ -28,9 +28,17 @@ def autostart(reason, **kwargs):
 #		gE2Control.stop()
 	#	gE2Control = None
 	
-	plugins = getPlugins(where=Plugin.AUTOSTART_E2)
-	for plugin in plugins:
-		plugin.fnc(gSessionPV)
+	if gSessionPV is not None:
+		plugins = []
+		if reason == 0: #Start
+			printl("AUTOSTART_E2", __name__, "I")
+			plugins = getPlugins(where=Plugin.AUTOSTART_E2)
+		elif reason == 1: #Stop
+			printl("STOP_E2", __name__, "I")
+			plugins = getPlugins(where=Plugin.STOP_E2)
+		
+		for plugin in plugins:
+			plugin.fnc(gSessionPV)
 
 def PVMC_Wizard(*args, **kwargs):
 	import DMC_Wizard

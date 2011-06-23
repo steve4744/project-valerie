@@ -46,9 +46,9 @@ class PVMC_Wizard(WizardLanguage):
 		if selection is None:
 			selection = self.selection
 		if selection == "yes":
-			config.plugins.pvmc.checkforupdate.value = True
+			config.plugins.pvmc.checkforupdate.value = "Active"
 		else:
-			config.plugins.pvmc.checkforupdate.value = False
+			config.plugins.pvmc.checkforupdate.value = "Passive"
 		printl(" -> " + str(config.plugins.pvmc.checkforupdate.value), self)
 
 	def uselocal(self, selection = None):

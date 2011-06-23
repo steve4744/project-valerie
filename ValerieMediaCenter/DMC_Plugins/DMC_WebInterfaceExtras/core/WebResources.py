@@ -30,9 +30,9 @@ class Home(Resource):
 				
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
 		
-		updateNeeded = Update().checkForUpdate();
+		updateNeeded = Update().checkForUpdate()[0]
 		
-		if (updateNeeded == False):
+		if (updateNeeded is None):
 			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", " (no Update needed)")
 		else:
 			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", "(found new version " + updateNeeded + ")")
