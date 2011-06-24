@@ -379,6 +379,14 @@ class MediaInfo(object):
 		absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
 		name = self.Filename.lower()
 		self.SearchString = name
+		valerieInfoSearchString = None
+		
+		if self.isValerieInfoAvailable(self.Path) is True:
+			valerieInfoSearchString = self.getValerieInfo(self.Path).strip()
+			printl("Found valerie.info containing: " + str(Utf8.utf8ToLatin(valerieInfoSearchString)), self)
+			if valerieInfoSearchString == u"ignore":
+				printl("=> found 'ignore'... Returning to sync process and skipping!", self, "I")
+				return False
 		
 		#################### DVD #####################
 		
@@ -600,12 +608,8 @@ class MediaInfo(object):
 				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 				return True
 		
-		if self.isValerieInfoAvailable(self.Path) is True:
-			self.SearchString = self.getValerieInfo(self.Path).strip()
-			printl("Found valerie.info containing: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
-			if self.SearchString == u"ignore":
-				printl("=> found 'ignore'... Returning to sync process and skipping!", self, "I")
-				return False
+		if valerieInfoSearchString is not None:
+			self.SearchString = valerieInfoSearchString
 			printl("Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 			return True
 		
