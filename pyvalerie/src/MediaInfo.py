@@ -308,17 +308,17 @@ class MediaInfo(object):
 					line = line.replace("season", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Season = int(line)
+					self.Season = int(re.sub(r'\D+', '', line))
 				elif line.startswith("<episode>"):
 					line = line.replace("episode", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Episode = int(line)
+					self.Episode = int(re.sub(r'\D+', '', line))
 				elif line.startswith("<year>"):
 					line = line.replace("year", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Year = int(line)
+					self.Year = int(re.sub(r'\D+', '', line))
 				elif line.startswith("<plot>"):
 					line = line.replace("plot", "")
 					line = line.replace("<>", "")
@@ -328,7 +328,7 @@ class MediaInfo(object):
 					line = line.replace("runtime", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Runtime = int(line)
+					self.Runtime = int(re.sub(r'\D+', '', line))
 				elif line.startswith("<genre>"):
 					line = line.replace("genre", "")
 					line = line.replace("<>", "")
