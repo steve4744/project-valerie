@@ -7,12 +7,11 @@ $(document).ready(function(){
 	
 	/* parse values from URL */	
 	var params = get_params();
-	var mode = params["mode"];
-	var target = params["target"];
-	var type = params["type"];
-	var useData = params["useData"];
-	var usePath = params["usePath"]
-	if (debug) {alert(mode);}
+	var mode = params["mode"];			// => done/edit/new_record/change_imdbid
+	var target = params["target"]; 		// => movies/tvshows/episodes
+	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
+	var useData = params["useData"]; 	// => true/false
+	var usePath = params["usePath"] 	// => true/false (takes the values path/filename/extension from Rquest)
 	
 	//DONE SECTION
 	if (mode == "done") {
@@ -24,27 +23,52 @@ $(document).ready(function(){
 		}
 		return;
 	
-	//NEW RECORD SECTION
+	//ADD NEW RECORD 
 	} else if (mode == "new_record") {
-		if (debug) {alert("add");}
+		if (debug) {alert(mode);}
 		$('[name=method]').val("add");
 		$('[name=what]').val(type);
 		
 		if (useData == "true") {
 			fillTable(params, usePath);
 		}
+		
+		$("#special_features").hide();
+		
 		changeTable(type);
 		document.getElementById('type').value = params["type"];
-		$('[name=oldImdbId]').val(params["oldImdbId"]);
 	
-	//EDIT SECTION
-	} else {
-		if (debug) {alert("edit");}
+	// MANUAL EDIT OF AN EXISTING RECORD 
+	} else if (mode == "edit") {
+		if (debug) {alert(mode);}
 		$('[name=what]').val(type);
 		$('[name=oldImdbId]').val(params["ImdbId"]);
+
+		if (type != "isMovie") {
+			$("#special_features").hide();
+		}
 		
 		fillTable(params, usePath);
 		changeTable(type);
+		
+		$("#tr_imdbid").hide();
+	
+	//CHANGE EXISTING RECORD BY CHANGING IMDBID
+	} else if (mode == "change_imdbid") {
+		if (debug) {alert(mode);}
+		$('[name=what]').val(type);
+		$('[name=oldImdbId]').val(params["oldImdbId"]);
+		
+		$("#special_features").hide();
+		
+		fillTable(params, usePath);
+		changeTable(type);
+		
+		$("#tr_imdbid").hide();
+	
+	//SHOULD NOT HAPPEN :-)
+	} else {
+		alert("ERROR - no mode defined")
 	}
 });
 
@@ -104,4 +128,20 @@ function fillTable(params, usePath) {
 			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + params["TheTvDbId"] + "_195x267.png");
 			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + params["TheTvDbId"] + "_320x180.png");
 		}
+}
+
+function showAlternatives() {
+	var params = get_params();
+	var reply = prompt("Please specify your search string.", params["Title"]);
+	if (reply == null) { return;} 
+	urlString = "/alternatives?";
+	urlString += "type=" + params["type"] + "&";
+	urlString += "modus=existing&";
+	urlString += "oldImdbId=" + params["ImdbId"] + "&";
+	urlString += "Title=" + reply + "&";
+	urlString += "Path=" + params["Path"] + "&";
+	urlString += "Filename=" + params["Filename"] + "&";
+	urlString += "Extension=" + params["Extension"];
+
+	window.open(urlString, '_self');
 }

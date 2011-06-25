@@ -61,7 +61,6 @@ class Movies(Resource):
 		
 		for entry in entries:
 			evtEdit = WebData().getEditString(entry, "isMovie")
-			evtAlternatives = WebData().getAlternativesString(entry, "isMovie")
 			evtDelete = WebData().getDeleteString(entry, "isMovie")
 			
 			tableBody += u"""   <tr>
@@ -72,11 +71,10 @@ class Movies(Resource):
 							<td>%s</td>
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/showAlternatives.png" alt="alternatives" title="alternatives" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtAlternatives, evtDelete)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)

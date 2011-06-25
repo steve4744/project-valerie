@@ -275,6 +275,9 @@ class WebActions(Resource):
 			redirectString += "type=" + request.args["type"][0] + "&"
 			if request.args["oldImdbId"][0] == "-1":
 				redirectString += "mode=new_record&"
+			else:
+				redirectString += "mode=change_imdbid&"
+				redirectString += "oldImdbId=" + request.args["oldImdbId"][0] + "&"
 			redirectString += "ImdbId=" + urllib.quote(str(mediainfo.ImdbId)) + "&"
 			redirectString += "TheTvDbId=" + urllib.quote(str(result.TheTvDbId)) + "&"
 			redirectString += "Title=" + urllib.quote(str(result.Title)) + "&"

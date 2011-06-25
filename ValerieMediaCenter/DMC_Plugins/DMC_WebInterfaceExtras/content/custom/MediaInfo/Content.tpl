@@ -7,8 +7,18 @@
 	<td valign="top" align="center" style="background-color:#AAAAAA;">
 		<br />
 		<img id="duck_img" src="" width="78" height="107" alt="n/a"></img>
+		<br><br>
+		<!-- <input type="button" name="changePoster" value="change Poster"> -->
 		<br /><br />
 		<img id="duck_backdrop_img" src="" width="160" height="90" alt="n/a"></img>
+		<br><br>
+		<!-- <input type="button" name="changeBackdrop" value="change Backdrop"> -->
+		<div id=special_features>
+		<br><br><br><br>
+		special Features:
+		<br><br>
+		<input type="button" name="changeImdbid" id="changeImdbid" value="change ImdbId" onclick="javascript:showAlternatives();">
+		</div>
 	</td>
 	<td>
 		<table align="center" id="details_table">
@@ -19,7 +29,7 @@
 				
 				<tr><td></td></tr>
 				<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
-				<tr id="tr_imdbid"><td>*ImdbId:</td><td><input id="imdbid" name="ImdbId" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
+				<tr id="tr_imdbid"><td>ImdbId:</td><td><input id="imdbid" name="ImdbId" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
 				<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="TheTvDbId" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
 				<tr id="tr_title"><td>*Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>
 				<tr id="tr_tag"><td>Tag:</td><td><input id="tag" name="Tag" type="text" size="50"></input></td><td>(e.g.my tag)</td></tr>

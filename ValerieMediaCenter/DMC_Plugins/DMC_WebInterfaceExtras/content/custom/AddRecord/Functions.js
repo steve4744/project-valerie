@@ -1,4 +1,6 @@
 $(document).ready(function(){
+
+	var debug = false;
 	
 	/* parse values from URL */	
 	var params = get_params();
@@ -6,6 +8,8 @@ $(document).ready(function(){
 	$("#form1_type").val(params["type"]);
 	$("#form2_type").val(params["type"]);
 	$("#form3_type").val(params["type"]);
+	
+	if (debug) {alert(params["modus"]);}
 	
 	if (params["modus"] != "new") {
 		document.getElementById('oldImdbId').value = params["oldImdbId"];

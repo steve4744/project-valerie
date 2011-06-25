@@ -116,6 +116,7 @@ class WebData():
 		### <!-- build edit string -->
 		onclick  = "javascript:window.open('/mediainfo?"
 		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'mode':"edit"}) + "&"		
 		onclick  += urlencode({'usePath':"true"}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
@@ -151,7 +152,7 @@ class WebData():
 		return onclick
 	
 	##
-	#
+	# DEPRECADED - not used anymore for now
 	#
 	##
 	def getAlternativesString (self, entry, type):
