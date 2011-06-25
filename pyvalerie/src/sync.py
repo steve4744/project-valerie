@@ -258,7 +258,8 @@ class pyvalerie(Thread):
 		printl("Searching for media files", self)
 		start_time = time.time()
 		
-		folderList = []
+		folderList  = []
+		elementList = [] 	# if there are no folder it will crash on » del elementlist	#Zuki
 		elementListFileCounter = 0
 		
 		for searchpath in pathsConfig.getPaths(): 
