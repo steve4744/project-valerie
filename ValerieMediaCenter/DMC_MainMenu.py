@@ -377,7 +377,11 @@ class PVMC_MainMenu(Screen):
 				if behind > 1:
 					multiple = "s"
 				self["version"].setText(_("Current Version %s. You are %d revision%s behind!") % (config.plugins.pvmc.version.value, behind, multiple, ))
-		else:
+				version = None #Hack for the moment
+			else:
+				version = None #Hack for the moment
+		
+		if version is None:
 			# If the update dialog is being shown, dont run autostart.
 			# If the user dont want an update the autostart will be initialised by messagebox callback
 			self.runAutostart()
