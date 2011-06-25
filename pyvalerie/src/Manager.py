@@ -174,16 +174,23 @@ class Manager():
 
 	def getElementByUsingPrimaryKey(self, type, primary_key):
 		printl("", self)
+		printl("type=" + str(type), self)
+		printl("primary_key=" + str(primary_key), self)
 		element = None
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
+			printl("isMovie found", self)
 			imdbid = primary_key["imdbid"]
+			printl("type(imdbid)=" + str(type(imdbid)), self, "E")
 			if self.db.dbMovies.has_key(imdbid):
+				printl("has_key found", self)
 				element = self.db.dbMovies[imdbid]
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
+			printl("isTvShow found", self)
 			thetvdbid = primary_key["thetvdbid"]
 			if self.db.dbSeries.has_key(thetvdbid):
 				element = self.db.dbSeries[thetvdbid]
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
+			printl("isEpisode found", self)
 			thetvdbid = primary_key["thetvdbid"]
 			season = int(primary_key["season"])
 			episode = int(primary_key["episode"])
@@ -199,6 +206,8 @@ class Manager():
 
 	def removeByUsingPrimaryKey(self, type, primary_key):
 		printl("", self)
+		printl("type=" + str(type), self)
+		printl("primary_key=" + str(primary_key), self)
 		element = self.getElementByUsingPrimaryKey(type, primary_key)
 		if element is not None:
 			self.remove(element, False)
@@ -251,7 +260,7 @@ class Manager():
 		printl("", self)
 		element = self.getElementByUsingPrimaryKey(type, primary_key)
 		if element is not None:
-			newElement = element
+			newElement = element.copy()
 			newElement = self.fillElement(newElement, key_value_dict)
 			self.replace(element, (newElement, ))
 			return newElement
