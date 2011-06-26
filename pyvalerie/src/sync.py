@@ -15,7 +15,7 @@ from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 from   Arts import Arts
 import Blacklist
 import Config
-from   Database import Database
+from   PVS_DatabaseHandler import Database
 import DirectoryScanner
 from   FailedEntry import FailedEntry
 from   GoogleProvider import GoogleProvider
@@ -30,9 +30,6 @@ import Utf8
 import WebGrabber
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-
-#from PVS_DatabaseLayer import DatabaseLayer as databaseLayer 
-#------------------------------------------------------------------------------------------
 
 def localeInit():
 	lang = language.getLanguage()
@@ -215,7 +212,7 @@ class pyvalerie(Thread):
 		#	db = Database().getInstance()
 		start_time = time.time()
 		db = Database().getInstance()
-
+		
 		elapsed_time = time.time() - start_time
 		printl("Loading Database took: " + str(elapsed_time), self)
 

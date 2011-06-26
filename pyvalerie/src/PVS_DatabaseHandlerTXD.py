@@ -5,7 +5,7 @@
 #   Project Valerie - Database Handler for TXD
 #
 #   Created by Zuki on 20/05/2011.
-#   Interface for working with sqlite database
+#   Interface for working with TXD database
 #   
 #   Revisions:
 #   r6??.Initial - Zuki - Let's import the TXD Interface from database.py

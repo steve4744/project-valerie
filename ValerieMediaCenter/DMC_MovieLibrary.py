@@ -54,7 +54,18 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Day"]     = movie.Day
                 # Yeah its a bit supersufficial as date is already in it
                 # But will allow the view to sort the list
-                d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
+                # avoid crash if Null Values
+		yy=movie.Year
+		mm=movie.Month
+		dd=movie.Day
+		if yy is None:
+		    yy=0
+		if mm is None:
+		    mm=0
+		if dd is None:
+		    dd=0
+		d["Date"]    = yy*10000 + mm*100 + dd
+		#d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
                 d["Filename"] = utf8ToLatin(movie.Filename).lower()
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
                 if self.checkFileCreationDate:

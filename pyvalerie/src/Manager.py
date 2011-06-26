@@ -2,7 +2,7 @@
 
 import Blacklist
 import Config
-from   Database import Database
+from   PVS_DatabaseHandler import Database
 from   MediaInfo import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
 import replace
@@ -11,8 +11,6 @@ from   sync import Sync
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 import os
-#from PVS_DatabaseLayer import DatabaseLayer as databaseLayer 
-#------------------------------------------------------------------------------------------
 
 class Manager():
 
@@ -27,16 +25,8 @@ class Manager():
 		printl("", self)
 		Config.load()
 		
-		# temporary - to use another unit if SQL in use
-		#if os.path.exists("/hdd/valerie/"+ "usesql"):	
-		#	self.db = databaseLayer().getInstance()			
-		#	self.db.clearMemory()
-		#	self.db.load()
-		#else:
 		self.db = Database().getInstance()
 
-		#self.db.reload()
-		
 		replace.load()
 
 	def finish(self):

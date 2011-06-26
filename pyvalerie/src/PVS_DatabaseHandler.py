@@ -1,4 +1,27 @@
 # -*- coding: utf-8 -*-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#   PVS_DatabaseHandler.py
+#   Project Valerie - Database Handler
+#
+#   Created by user on 01/01/1900.
+#   Interface for working with databases
+#   
+#   Revisions:
+#   r000.Initial - Zuki - renamed from database.py
+#
+#   r
+#
+#   r
+#
+#   r
+#
+#   r
+#
+#   r
+#
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import cPickle   as pickle
 from   datetime import date
@@ -78,10 +101,12 @@ class Database(object):
 		printl("", self)
 			
 		if self.USE_DB_TYPE == self.DB_SQLITE:			
-			self.dbHandler = databaseHandlerSQL().getInstance()
+			self.dbHandler = databaseHandlerSQL().getInstance("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 			if self.dbHandler.DB_SQLITE_FIRSTTIME:
 				printl("Sql FirstTime", self)					 
-				self.importDataToSql()					
+				self.importDataToSql()
+				self.dbHandler.DB_SQLITE_FIRSTTIME = False
+
 					
 		if self.USE_DB_TYPE == self.DB_PICKLE:			
 			self.dbHandler = databaseHandlerPICKLE().getInstance()
@@ -103,7 +128,7 @@ class Database(object):
 		printl("Importing Data", self)
 		self.dbHandler = databaseHandlerPICKLE().getInstance()
 		self.reload()	# Load from PICKLE
-		self.dbHandler = databaseHandlerSQL().getInstance()		  		
+		self.dbHandler = databaseHandlerSQL().getInstance("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
 		self.save()  	# save to Database SQL
 		try:
 			pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
@@ -279,17 +304,20 @@ class Database(object):
 	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
 		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
 		if media.isMovie or isMovie:
-			movieKey = media.ImdbId  	# movieKey = media.Id			
-			if self.dbMovies.has_key(movieKey) is True: 	#if self.dbMovies.has_key(media.ImdbId) is True:
+			#movieKey = media.ImdbId
+			movieKey = media.Id			
+			if self.dbMovies.has_key(movieKey) is True:
 				del(self.dbMovies[movieKey])	
 				return True
 		if media.isSerie or isSerie:
-			serieKey = media.TheTvDbId	# serieKey = media.Id
-			if self.dbSeries.has_key(serieKey) is True:	#if self.dbSeries.has_key(media.TheTvDbId) is True:
+			#serieKey = media.TheTvDbId
+			serieKey = media.Id
+			if self.dbSeries.has_key(serieKey) is True:
 				del(self.dbSeries[serieKey])
 				return True
 		if media.isEpisode or isEpisode:
-			serieKey   = media.TheTvDbId 	# media.Id
+			#serieKey   = media.TheTvDbId
+			serieKey   = media.Id
 			#seasonKey  = media.Season
 			#episodeKey = media.Episode
 			if self.dbEpisodes.has_key(serieKey) is True:
@@ -319,7 +347,8 @@ class Database(object):
 	def add(self, media):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isSerie:
-			serieKey = media.TheTvDbId	# media.Id
+			#serieKey = media.TheTvDbId
+			serieKey = media.Id
 			if self.dbSeries.has_key(serieKey) is False:
 				self.dbSeries[serieKey] = media
 				return True
@@ -339,14 +368,16 @@ class Database(object):
 		self.duplicateDetector.append(pth)
 		
 		if media.isMovie:
-			movieKey = media.ImdbId	# media.Id
+			#movieKey = media.ImdbId
+			movieKey = media.Id
 			if self.dbMovies.has_key(movieKey) is False:
 				self.dbMovies[movieKey] = media
 			else: 
 				self._addFailedCauseOf = self.dbMovies[movieKey]
 				return False
 		elif media.isEpisode:
-			serieKey = media.TheTvDbId	# media.Id
+			#serieKey = media.TheTvDbId
+			serieKey = media.Id
 			if self.dbEpisodes.has_key(serieKey) is False:
 				self.dbEpisodes[serieKey] = {}
 			
