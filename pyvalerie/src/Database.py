@@ -16,6 +16,30 @@ from   MediaInfo         import MediaInfo
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+	
+DB_SQLITE_LOADED = False
+
+try:
+	from Plugins.Extensions.ProjectValerieSync.PVS_DatabaseHandlerSQL import databaseHandlerSQL
+	#from PVS_DatabaseHandlerSQL import databaseHandlerSQL
+	DB_SQLITE_LOADED = True
+	printl("PVS_DatabaseHandlerSQL Loaded :) ", None, "W")	
+except Exception, ex:
+	printl("Exception: PVS_DatabaseHandlerSQL not Loaded :(   "+ str(ex), None, "W")
+		
+try:					   
+	from Plugins.Extensions.ProjectValerieSync.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+	#from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+	printl("PVS_DatabaseHandlerPICKLE Loaded :)", None, "W")
+except Exception, ex:
+	printl("Exception: PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "W")
+		
+try:
+	from Plugins.Extensions.ProjectValerieSync.PVS_DatabaseHandlerTXD import databaseHandlerTXD
+	#from PVS_DatabaseHandlerTXD import databaseHandlerTXD
+	printl("PVS_DatabaseHandlerTXD Loaded :)", None, "W")
+except Exception, ex:
+	printl("Exception: PVS_DatabaseHandlerTXD not Loaded :(   "+ str(ex), None, "W")
 
 #------------------------------------------------------------------------------------------
 
@@ -23,38 +47,47 @@ gDatabase = None
 gDatabaseMutex = Lock()
 
 class Database(object):
-	FAILEDDB = config.plugins.pvmc.configfolderpath.value + "failed.db"
+	DB_PATH           = config.plugins.pvmc.configfolderpath.value
+	DB_PATH_EPISODES  = config.plugins.pvmc.configfolderpath.value + "episodes/"
 
-	MOVIESDB   = config.plugins.pvmc.configfolderpath.value + "movies.db"
-	TVSHOWSDB  = config.plugins.pvmc.configfolderpath.value + "tvshows.db"
-	EPISODESDB = config.plugins.pvmc.configfolderpath.value + "episodes.db"
+	FAILEDDB = DB_PATH + "failed.db"
+	MOVIESDB   = DB_PATH + "movies.db"
+	TVSHOWSDB  = DB_PATH + "tvshows.db"
+	EPISODESDB = DB_PATH + "episodes.db"
 
-	MOVIESTXD  = config.plugins.pvmc.configfolderpath.value + "movies.txd"
-	TVSHOWSTXD = config.plugins.pvmc.configfolderpath.value + "tvshows.txd"
+	MOVIESTXD  = DB_PATH + "movies.txd"
+	TVSHOWSTXD = DB_PATH + "tvshows.txd"
 	
 	DB_NONE = 0
 	DB_TXD = 2
 	DB_PICKLE = 3
 	DB_SQLITE= 4
 
-	USE_DB_TYPE    = DB_NONE
+	if DB_SQLITE_LOADED and os.path.exists(DB_PATH + "usesql"):
+		USE_DB_TYPE    	= DB_SQLITE
+	else:
+		USE_DB_TYPE    	= DB_PICKLE
+		
+	#USE_DB_TYPE    	= DB_TXD
+	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
+					#   	 
 	
 	TXD_VERSION = 3
 	
-	# New Const's
-	DB_PATH           = config.plugins.pvmc.configfolderpath.value
-	DB_PATH_EPISODES  = config.plugins.pvmc.configfolderpath.value + "episodes/"
-	DB_TXD_FILENAME_M = "movies.txd"
-	DB_TXD_FILENAME_S = "tvshows.txd"
-
 	def __init__(self):
 		printl("", self)
-		#self.db = databaseHandler().getInstance()
+			
+		if self.USE_DB_TYPE == self.DB_SQLITE:			
+			self.dbHandler = databaseHandlerSQL().getInstance()
+			if self.dbHandler.DB_SQLITE_FIRSTTIME:
+				printl("Sql FirstTime", self)					 
+				self.importDataToSql()					
+					
+		if self.USE_DB_TYPE == self.DB_PICKLE:			
+			self.dbHandler = databaseHandlerPICKLE().getInstance()
 		
-		#if self.db.DB_SQLITE_LOADED:
-		#	self.setDBType(self.DB_SQLITE)
-		
-		#el
+		if self.USE_DB_TYPE == self.DB_TXD:
+			self.dbHandler = databaseHandlerTXD().getInstance()
 		
 		# Deactivate usage of txd files
 		#if os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
@@ -64,6 +97,18 @@ class Database(object):
 		#	self.setDBType(self.DB_TXT)
 			#self.setDBVersion(DB_TXD)
 		# No exception if exists movies.txd and no tvshows.txd
+
+	def importDataToSql (self):
+		printl("->", self)
+		printl("Importing Data", self)
+		self.dbHandler = databaseHandlerPICKLE().getInstance()
+		self.reload()	# Load from PICKLE
+		self.dbHandler = databaseHandlerSQL().getInstance()		  		
+		self.save()  	# save to Database SQL
+		try:
+			pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
+		except Exception, ex:
+			printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
 
 	def setDBType(self, version):
 		self.USE_DB_TYPE = version
@@ -234,24 +279,29 @@ class Database(object):
 	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
 		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
 		if media.isMovie or isMovie:
-			if self.dbMovies.has_key(media.ImdbId) is True:
-				del(self.dbMovies[media.ImdbId])
+			movieKey = media.ImdbId  	# movieKey = media.Id			
+			if self.dbMovies.has_key(movieKey) is True: 	#if self.dbMovies.has_key(media.ImdbId) is True:
+				del(self.dbMovies[movieKey])	
 				return True
 		if media.isSerie or isSerie:
-			if self.dbSeries.has_key(media.TheTvDbId) is True:
-				del(self.dbSeries[media.TheTvDbId])
+			serieKey = media.TheTvDbId	# serieKey = media.Id
+			if self.dbSeries.has_key(serieKey) is True:	#if self.dbSeries.has_key(media.TheTvDbId) is True:
+				del(self.dbSeries[serieKey])
 				return True
 		if media.isEpisode or isEpisode:
-			if self.dbEpisodes.has_key(media.TheTvDbId) is True:
-				if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is True:
-					if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is True:
-						del(self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode])
-						if len(self.dbEpisodes[media.TheTvDbId][media.Season]) == 0:
-							del(self.dbEpisodes[media.TheTvDbId][media.Season])
-						if len(self.dbEpisodes[media.TheTvDbId]) == 0:
-							del(self.dbEpisodes[media.TheTvDbId])
-							if self.dbSeries.has_key(media.TheTvDbId) is True:
-								del(self.dbSeries[media.TheTvDbId])
+			serieKey   = media.TheTvDbId 	# media.Id
+			#seasonKey  = media.Season
+			#episodeKey = media.Episode
+			if self.dbEpisodes.has_key(serieKey) is True:
+				if self.dbEpisodes[serieKey].has_key(media.Season) is True:
+					if self.dbEpisodes[serieKey][c].has_key(media.Episode) is True:
+						del(self.dbEpisodes[serieKey][media.Season][media.Episode])
+						if len(self.dbEpisodes[serieKey][media.Season]) == 0:
+							del(self.dbEpisodes[serieKey][media.Season])
+						if len(self.dbEpisodes[serieKey]) == 0:
+							del(self.dbEpisodes[serieKey])
+							if self.dbSeries.has_key(serieKey) is True:
+								del(self.dbSeries[serieKey])
 						return True
 		return False
 
@@ -269,8 +319,9 @@ class Database(object):
 	def add(self, media):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isSerie:
-			if self.dbSeries.has_key(media.TheTvDbId) is False:
-				self.dbSeries[media.TheTvDbId] = media
+			serieKey = media.TheTvDbId	# media.Id
+			if self.dbSeries.has_key(serieKey) is False:
+				self.dbSeries[serieKey] = media
 				return True
 			else:
 				#self._addFailedCauseOf = self.dbSeries[media.TheTvDbId]
@@ -288,22 +339,24 @@ class Database(object):
 		self.duplicateDetector.append(pth)
 		
 		if media.isMovie:
-			if self.dbMovies.has_key(media.ImdbId) is False:
-				self.dbMovies[media.ImdbId] = media
+			movieKey = media.ImdbId	# media.Id
+			if self.dbMovies.has_key(movieKey) is False:
+				self.dbMovies[movieKey] = media
 			else: 
-				self._addFailedCauseOf = self.dbMovies[media.ImdbId]
+				self._addFailedCauseOf = self.dbMovies[movieKey]
 				return False
 		elif media.isEpisode:
-			if self.dbEpisodes.has_key(media.TheTvDbId) is False:
-				self.dbEpisodes[media.TheTvDbId] = {}
+			serieKey = media.TheTvDbId	# media.Id
+			if self.dbEpisodes.has_key(serieKey) is False:
+				self.dbEpisodes[serieKey] = {}
 			
-			if self.dbEpisodes[media.TheTvDbId].has_key(media.Season) is False:
-				self.dbEpisodes[media.TheTvDbId][media.Season] = {}
+			if self.dbEpisodes[serieKey].has_key(media.Season) is False:
+				self.dbEpisodes[serieKey][media.Season] = {}
 			
-			if self.dbEpisodes[media.TheTvDbId][media.Season].has_key(media.Episode) is False:
-				self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode] = media
+			if self.dbEpisodes[serieKey][media.Season].has_key(media.Episode) is False:
+				self.dbEpisodes[serieKey][media.Season][media.Episode] = media
 			else:
-				self._addFailedCauseOf = self.dbEpisodes[media.TheTvDbId][media.Season][media.Episode]
+				self._addFailedCauseOf = self.dbEpisodes[serieKey][media.Season][media.Episode]
 				return False
 		return True
 
@@ -320,55 +373,24 @@ class Database(object):
 				unicode(epcount)
 		return Utf8.utf8ToLatin(rtv)
 
+
 	def save(self):
 		global gDatabaseMutex
 		gDatabaseMutex.acquire()
 		# Always safe pickel as this increses fastsync a lot
-		#if self.USE_DB_TYPE == self.DB_PICKLE:
-		self.savePickel()
 		
-		if self.USE_DB_TYPE == self.DB_TXD:
-			self.saveTxd()
-		elif self.USE_DB_TYPE == self.DB_SQLITE:
-			self.saveSql()
+		# will be the backup
+		#self.savePickel() 
+		
+		self.dbHandler.saveMovies(self.dbMovies)
+		self.dbHandler.saveSeries(self.dbSeries)
+		self.dbHandler.saveEpisodes(self.dbEpisodes)
+		
+		#if self.USE_DB_TYPE == self.DB_TXD:
+		#	self.saveTxd()
+		#elif self.USE_DB_TYPE == self.DB_SQLITE:
+		#	self.saveSql()
 		gDatabaseMutex.release()
-
-	def saveTxd(self):
-		start_time = time.time()	
-		f = Utf8.Utf8(self.MOVIESTXD, 'w')
-		f.write(unicode(self.TXD_VERSION) + u"\n")
-		for movie in self.dbMovies.values():
-			f.write(movie.exportDefined(self.TXD_VERSION))
-		f.write("EOF\n")
-		f.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (movies.txd): " + str(elapsed_time), self)
-		
-		start_time = time.time()	
-		f = Utf8.Utf8(self.TVSHOWSTXD, 'w')
-		f.write(unicode(self.TXD_VERSION) + u"\n")
-		for key in self.dbSeries:
-			if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
-				f.write(self.dbSeries[key].exportDefined(self.TXD_VERSION))
-		f.write("EOF\n")
-		f.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (tvshows.txd): " + str(elapsed_time), self)
-		
-		start_time = time.time()  
-		for serie in self.dbEpisodes:
-			try:
-				f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
-				f.write(unicode(self.TXD_VERSION) + u"\n")
-				for season in self.dbEpisodes[serie]:
-					for episode in self.dbEpisodes[serie][season].values():
-						f.write(episode.exportDefined(self.TXD_VERSION))
-				f.write("EOF\n")
-				f.close()
-			except Exception, ex: 
-				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
-		elapsed_time = time.time() - start_time
-		printl("Took (episodes/*.txd): " + str(elapsed_time), self)
 
 	def savePickel(self):
 		start_time = time.time()  
@@ -384,40 +406,7 @@ class Database(object):
 		fd.close()
 		elapsed_time = time.time() - start_time
 		printl("Took (movies.db): " + str(elapsed_time), self)
-		
-		
-		#dbMovies2 = []
-		#for movie in self.dbMovies.values():
-		#	#print movie
-		#	from struct.Media import MediaMovie
-		#	m = MediaMovie()
-		#	m.Path         = movie.Path
-		#	m.Filename     = movie.Filename
-		#	m.Extension    = movie.Extension
-		#	m.Title        = movie.Title
-		#	m.AiredYear    = movie.Year
-		#	m.AiredMonth   = movie.Month
-		#	m.AiredDay     = movie.Day
-		#	m.CreatedYear  = 0
-		#	m.CreatedMonth = 0
-		#	m.CreatedDay   = 0
-		#	m.Runtime      = movie.Runtime
-		#	
-		#	m.ImdbId       = movie.ImdbId
-		#	m.TmDbId       = movie.TmDbId
-		#	m.Tag          = movie.Tag
-		#	m.Popularity   = movie.Popularity
-		#	m.Resolution   = movie.Resolution
-		#	m.Sound        = movie.Sound
-		#	dbMovies2.append(m)
-		#
-		#start_time = time.time()  
-		#fd = open(self.MOVIESDB+"2", "wb")
-		#pickle.dump(dbMovies2, fd, pickle.HIGHEST_PROTOCOL)
-		#fd.close()
-		#elapsed_time = time.time() - start_time
-		#printl("Took (movies.db): " + str(elapsed_time), self)
-		
+			
 		start_time = time.time()  
 		fd = open(self.TVSHOWSDB, "wb")
 		pickle.dump(self.dbSeries, fd, pickle.HIGHEST_PROTOCOL)
@@ -440,46 +429,20 @@ class Database(object):
 		elapsed_time = time.time() - start_time
 		printl("Took (episodes.db): " + str(elapsed_time), self)
 
-	def saveSql(self):
-		# for moviesdb
-		#	insert on media
-		# for seriesdb
-		#	insert on media
-		#	insert on episodes
-		#
-		start_time = time.time()
-		
-		#
-		#  Code Removed to avoid version problems 
-		#
-		
-		elapsed_time = time.time() - start_time
-		printl("Took (SQL): " + str(elapsed_time), self)
-
 	def _load(self):
 		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
-			fd = open(self.FAILEDDB, "rb")
-			self.dbFailed = pickle.load(fd)
-			fd.close()
+			self.dbFailed = self.dbHandler.getFailedFiles()
 		
 		if len(self.dbMovies) == 0:
-			try:
-				if os.path.isfile(self.MOVIESDB):
-					self.loadPickle(True, False) 
-				elif os.path.isfile(self.MOVIESTXD):
-					self.loadTxd(True, False) 
-			except Exception, ex:
-				printl("Loading movie db failed! Ex: " + str(ex), __name__, "E")
+			self.dbMovies = self.dbHandler.getAllMovies()			
 		
 		if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
-			try:
-				if os.path.isfile(self.TVSHOWSDB) and os.path.isfile(self.EPISODESDB):
-					self.loadPickle(False, True) 
-				elif os.path.isfile(self.TVSHOWSTXD):
-					self.loadTxd(False, True) 
-			except Exception, ex:
-				printl("Loading tv db failed! Ex: " + str(ex), __name__, "E")
-		
+			self.dbSeries = self.dbHandler.getAllSeries()
+			if self.USE_DB_TYPE == self.DB_TXD:
+				self.dbEpisodes = self.dbHandler.getEpisodesFromAllSeries(self.dbSeries)
+			else:
+				self.dbEpisodes = self.dbHandler.getAllEpisodes()
+					
 		# FIX: GHOSTFILES
 		if self.dbEpisodes.has_key("0"):
 			ghost = self.dbEpisodes["0"].values()
@@ -496,139 +459,173 @@ class Database(object):
 						b = self.remove(episode, isEpisode=True)
 						printl("RM: " + str(b), self)
 
-	def loadTxd(self, loadMovie, loadTVShow):
-		if loadMovie:
-			start_time = time.time()
-			try:
-				db = Utf8.Utf8(self.MOVIESTXD, "r").read()
-				if db is not None:
-					lines = db.split("\n")
-					version = int(lines[0])
-					linesLen = len(lines)
-					
-					size = 11
-					if version >= 3:
-						size = 13
-					else:
-						size = 11
-					
-					for i in range(1, linesLen, size):
-						if lines[i] == "EOF":
-							break
-						m = MediaInfo()
-						m.importDefined(lines[i:i+size], version, True, False, False)
-						self.add(m)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			
-			elapsed_time = time.time() - start_time
-			printl("Took (movies.txd): " + str(elapsed_time), self)
-		
-		if loadTVShow:
-			start_time = time.time()
-			try:
-				db = Utf8.Utf8(self.TVSHOWSTXD, "r").read()
-				if db is not None:
-					lines = db.split("\n")
-					version = int(lines[0])
-					linesLen = len(lines)
-					
-					size = 9
-					if version >= 3:
-						size = 11
-					else:
-						size = 9
-					
-					for i in range(1, linesLen, size):
-						if lines[i] == "EOF":
-							break
-						m = MediaInfo()
-						m.importDefined(lines[i:i+size], version, False, True, False)
-						self.add(m)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			
-			elapsed_time = time.time() - start_time
-			printl("Took (tvshows.txd): " + str(elapsed_time), self)
-			
-			start_time = time.time()
-			try:	
-				for key in self.dbSeries:
-					db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txd", "r").read()
-					if db is not None:
-						lines = db.split("\n")
-						version = int(lines[0])
-						linesLen = len(lines)
-						
-						size = 12
-						if version >= 3:
-							size = 14
-						else:
-							size = 12
-						
-						for i in range(1, linesLen, size):
-							if lines[i] == "EOF":
-								break
-							m = MediaInfo()
-							m.importDefined(lines[i:i+size], version, False, False, True)
-							self.add(m)
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-			elapsed_time = time.time() - start_time
-			printl("Took (episodes/*.txd): " + str(elapsed_time), self)
+	#def loadTxd(self, loadMovie, loadTVShow):
+	#	if loadMovie:
+	#		start_time = time.time()
+	#		try:
+	#			db = Utf8.Utf8(self.MOVIESTXD, "r").read()
+	#			if db is not None:
+	#				lines = db.split("\n")
+	#				version = int(lines[0])
+	#				linesLen = len(lines)
+	#				
+	#				if version >= 3:
+	#					size = 13
+	#				else:
+	#					size = 11
+	#				
+	#				for i in range(1, linesLen, size):
+	#					if lines[i] == "EOF":
+	#						break
+	#					m = MediaInfo()
+	#					m.importDefined(lines[i:i+size], version, True, False, False)
+	#					self.add(m)
+	#		except Exception, ex:
+	#			print ex
+	#			print '-'*60
+	#			import sys, traceback
+	#			traceback.print_exc(file=sys.stdout)
+	#			print '-'*60
+	#		
+	#		elapsed_time = time.time() - start_time
+	#		printl("Took (movies.txd): " + str(elapsed_time), self)
+	#	
+	#	if loadTVShow:
+	#		start_time = time.time()
+	#		try:
+	#			db = Utf8.Utf8(self.TVSHOWSTXD, "r").read()
+	#			if db is not None:
+	#				lines = db.split("\n")
+	#				version = int(lines[0])
+	#				linesLen = len(lines)
+	#				
+	#				if version >= 3:
+	#					size = 11
+	#				else:
+	#					size = 9
+	#				
+	#				for i in range(1, linesLen, size):
+	#					if lines[i] == "EOF":
+	#						break
+	#					m = MediaInfo()
+	#					m.importDefined(lines[i:i+size], version, False, True, False)
+	#					self.add(m)
+	#		except Exception, ex:
+	#			print ex
+	#			print '-'*60
+	#			import sys, traceback
+	#			traceback.print_exc(file=sys.stdout)
+	#			print '-'*60
+	#		
+	#		elapsed_time = time.time() - start_time
+	#		printl("Took (tvshows.txd): " + str(elapsed_time), self)
+	#		
+	#		start_time = time.time()
+	#		try:	
+	#			for key in self.dbSeries:
+	#				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txd", "r").read()
+	#				if db is not None:
+	#					lines = db.split("\n")
+	#					version = int(lines[0])
+	#					linesLen = len(lines)
+	#					
+	#					if version >= 3:
+	#						size = 14
+	#					else:
+	#						size = 12
+	#					
+	#					for i in range(1, linesLen, size):
+	#						if lines[i] == "EOF":
+	#							break
+	#						m = MediaInfo()
+	#						m.importDefined(lines[i:i+size], version, False, False, True)
+	#						self.add(m)
+	#		except Exception, ex:
+	#			print ex
+	#			print '-'*60
+	#			import sys, traceback
+	#			traceback.print_exc(file=sys.stdout)
+	#			print '-'*60
+	#		elapsed_time = time.time() - start_time
+	#		printl("Took (episodes/*.txd): " + str(elapsed_time), self)
 
-	def loadPickle(self, loadMovie, loadTVShow):
-		if loadMovie:
-			try:
-				start_time = time.time()
-				fd = open(self.MOVIESDB, "rb")
-				self.dbMovies = pickle.load(fd)
-				fd.close()
-				elapsed_time = time.time() - start_time
-				printl("Took (movies.db): " + str(elapsed_time), self)
-			except Exception, ex:
-				printl("Exception: " + str(ex), self)
-		
-		if loadTVShow:
-			try:
-				start_time = time.time()
-				fd = open(self.TVSHOWSDB, "rb")
-				self.dbSeries = pickle.load(fd)
-				fd.close()
-				elapsed_time = time.time() - start_time
-				printl("Took (tvshows.db): " + str(elapsed_time), self)
-			except Exception, ex:
-				printl("Exception: " + str(ex), self)
-			
-			#start_time = time.time()
-			#self.dbEpisodes = {}
-			#for key in self.dbSeries:
-			#	episode = {}
-			#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".db", "wb")
-			#	self.dbEpisodes[key] = pickle.load(fd)
-			#	fd.close()
-			#elapsed_time = time.time() - start_time
-			#print "Took (episodes/*.db): ", elapsed_time
-			
-			try:
-				start_time = time.time()
-				self.dbEpisodes = {}
-				fd = open(self.EPISODESDB, "rb")
-				self.dbEpisodes = pickle.load(fd)
-				fd.close()
-				elapsed_time = time.time() - start_time
-				printl("Took (episodes.db): " + str(elapsed_time), self)
-			except Exception, ex:
-				printl("Exception: " + str(ex), self)
+	#def loadPickle(self, loadMovie, loadTVShow):
+	#	if loadMovie:
+	#		try:
+	#			start_time = time.time()
+	#			fd = open(self.MOVIESDB, "rb")
+	#			self.dbMovies = pickle.load(fd)
+	#			fd.close()
+	#			elapsed_time = time.time() - start_time
+	#			printl("Took (movies.db): " + str(elapsed_time), self)
+	#		except Exception, ex:
+	#			printl("Exception: " + str(ex), self)
+	#	
+	#	if loadTVShow:
+	#		try:
+	#			start_time = time.time()
+	#			fd = open(self.TVSHOWSDB, "rb")
+	#			self.dbSeries = pickle.load(fd)
+	#			fd.close()
+	#			elapsed_time = time.time() - start_time
+	#			printl("Took (tvshows.db): " + str(elapsed_time), self)
+	#		except Exception, ex:
+	#			printl("Exception: " + str(ex), self)
+	#		
+	#		#start_time = time.time()
+	#		#self.dbEpisodes = {}
+	#		#for key in self.dbSeries:
+	#		#	episode = {}
+	#		#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".db", "wb")
+	#		#	self.dbEpisodes[key] = pickle.load(fd)
+	#		#	fd.close()
+	#		#elapsed_time = time.time() - start_time
+	#		#print "Took (episodes/*.db): ", elapsed_time
+	#		
+	#		try:
+	#			start_time = time.time()
+	#			self.dbEpisodes = {}
+	#			fd = open(self.EPISODESDB, "rb")
+	#			self.dbEpisodes = pickle.load(fd)
+	#			fd.close()
+	#			elapsed_time = time.time() - start_time
+	#			printl("Took (episodes.db): " + str(elapsed_time), self)
+	#		except Exception, ex:
+	#			printl("Exception: " + str(ex), self)
+	#def saveTxd(self):
+	#	start_time = time.time()	
+	#	f = Utf8.Utf8(self.MOVIESTXD, 'w')
+	#	f.write(unicode(self.TXD_VERSION) + u"\n")
+	#	for movie in self.dbMovies.values():
+	#		f.write(movie.exportDefined(self.TXD_VERSION))
+	#	f.write("EOF\n")
+	#	f.close()
+	#	elapsed_time = time.time() - start_time
+	#	printl("Took (movies.txd): " + str(elapsed_time), self)
+	#	
+	#	start_time = time.time()	
+	#	f = Utf8.Utf8(self.TVSHOWSTXD, 'w')
+	#	f.write(unicode(self.TXD_VERSION) + u"\n")
+	#	for key in self.dbSeries:
+	#		if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
+	#			f.write(self.dbSeries[key].exportDefined(self.TXD_VERSION))
+	#	f.write("EOF\n")
+	#	f.close()
+	#	elapsed_time = time.time() - start_time
+	#	printl("Took (tvshows.txd): " + str(elapsed_time), self)
+	#	
+	#	start_time = time.time()  
+	#	for serie in self.dbEpisodes:
+	#		try:
+	#			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
+	#			f.write(unicode(self.TXD_VERSION) + u"\n")
+	#			for season in self.dbEpisodes[serie]:
+	#				for episode in self.dbEpisodes[serie][season].values():
+	#					f.write(episode.exportDefined(self.TXD_VERSION))
+	#			f.write("EOF\n")
+	#			f.close()
+	#		except Exception, ex: 
+	#			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
+	#	elapsed_time = time.time() - start_time
+	#	printl("Took (episodes/*.txd): " + str(elapsed_time), self)
+
