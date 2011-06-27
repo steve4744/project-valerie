@@ -67,6 +67,7 @@ class MediaInfo(object):
 	
 	Season  = -1
 	Episode = -1
+	EpisodeText = u""	 # for example: Episode Number:Special / Pilot (not numbered)
 	
 	Poster   = u""
 	Backdrop = u""

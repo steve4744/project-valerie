@@ -201,3 +201,19 @@ class databaseHandlerPICKLE(object):
 		elapsed_time = time.time() - start_time
 		printl("Took (episodes.db): " + str(elapsed_time), self)
 		
+	def saveFailed(self, records):
+		printl("->", self)
+		start_time = time.time()
+		try:		
+			fd = open(self.FAILEDDB, "wb")
+			pickle.dump(records, fd, pickle.HIGHEST_PROTOCOL)
+			fd.close()
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+	
+		elapsed_time = time.time() - start_time
+		printl("Took (failed.db): " + str(elapsed_time), self)

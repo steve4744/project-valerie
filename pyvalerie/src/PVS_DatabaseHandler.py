@@ -46,7 +46,7 @@ try:
 	from Plugins.Extensions.ProjectValerieSync.PVS_DatabaseHandlerSQL import databaseHandlerSQL
 	#from PVS_DatabaseHandlerSQL import databaseHandlerSQL
 	DB_SQLITE_LOADED = True
-	printl("PVS_DatabaseHandlerSQL Loaded :) ", None, "W")	
+	printl("PVS_DatabaseHandlerSQL Loaded    :) ", None, "W")	
 except Exception, ex:
 	printl("Exception: PVS_DatabaseHandlerSQL not Loaded :(   "+ str(ex), None, "W")
 		
@@ -60,7 +60,7 @@ except Exception, ex:
 try:
 	from Plugins.Extensions.ProjectValerieSync.PVS_DatabaseHandlerTXD import databaseHandlerTXD
 	#from PVS_DatabaseHandlerTXD import databaseHandlerTXD
-	printl("PVS_DatabaseHandlerTXD Loaded :)", None, "W")
+	printl("PVS_DatabaseHandlerTXD Loaded    :)", None, "W")
 except Exception, ex:
 	printl("Exception: PVS_DatabaseHandlerTXD not Loaded :(   "+ str(ex), None, "W")
 
@@ -416,49 +416,13 @@ class Database(object):
 		self.dbHandler.saveMovies(self.dbMovies)
 		self.dbHandler.saveSeries(self.dbSeries)
 		self.dbHandler.saveEpisodes(self.dbEpisodes)
+		self.dbHandler.saveFailed(self.dbFailed)
 		
 		#if self.USE_DB_TYPE == self.DB_TXD:
 		#	self.saveTxd()
 		#elif self.USE_DB_TYPE == self.DB_SQLITE:
 		#	self.saveSql()
 		gDatabaseMutex.release()
-
-	def savePickel(self):
-		start_time = time.time()  
-		fd = open(self.FAILEDDB, "wb")
-		pickle.dump(self.dbFailed, fd, pickle.HIGHEST_PROTOCOL)
-		fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (failed.db): " + str(elapsed_time), self)
-		
-		start_time = time.time()  
-		fd = open(self.MOVIESDB, "wb")
-		pickle.dump(self.dbMovies, fd, pickle.HIGHEST_PROTOCOL)
-		fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (movies.db): " + str(elapsed_time), self)
-			
-		start_time = time.time()  
-		fd = open(self.TVSHOWSDB, "wb")
-		pickle.dump(self.dbSeries, fd, pickle.HIGHEST_PROTOCOL)
-		fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (tvshows.db): " + str(elapsed_time), self)
-		
-		#start_time = time.time()
-		#for serie in self.dbEpisodes:
-		#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".db", "wb")
-		#	pickle.dump(self.dbEpisodes[serie], fd, pickle.HIGHEST_PROTOCOL)
-		#	fd.close()
-		#elapsed_time = time.time() - start_time
-		#print "Took (episodes/*.db): ", elapsed_time
-		
-		start_time = time.time()
-		fd = open(self.EPISODESDB, "wb")
-		pickle.dump(self.dbEpisodes, fd, pickle.HIGHEST_PROTOCOL)
-		fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Took (episodes.db): " + str(elapsed_time), self)
 
 	def _load(self):
 		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
@@ -489,174 +453,4 @@ class Database(object):
 					if episode.isEpisode is False:
 						b = self.remove(episode, isEpisode=True)
 						printl("RM: " + str(b), self)
-
-	#def loadTxd(self, loadMovie, loadTVShow):
-	#	if loadMovie:
-	#		start_time = time.time()
-	#		try:
-	#			db = Utf8.Utf8(self.MOVIESTXD, "r").read()
-	#			if db is not None:
-	#				lines = db.split("\n")
-	#				version = int(lines[0])
-	#				linesLen = len(lines)
-	#				
-	#				if version >= 3:
-	#					size = 13
-	#				else:
-	#					size = 11
-	#				
-	#				for i in range(1, linesLen, size):
-	#					if lines[i] == "EOF":
-	#						break
-	#					m = MediaInfo()
-	#					m.importDefined(lines[i:i+size], version, True, False, False)
-	#					self.add(m)
-	#		except Exception, ex:
-	#			print ex
-	#			print '-'*60
-	#			import sys, traceback
-	#			traceback.print_exc(file=sys.stdout)
-	#			print '-'*60
-	#		
-	#		elapsed_time = time.time() - start_time
-	#		printl("Took (movies.txd): " + str(elapsed_time), self)
-	#	
-	#	if loadTVShow:
-	#		start_time = time.time()
-	#		try:
-	#			db = Utf8.Utf8(self.TVSHOWSTXD, "r").read()
-	#			if db is not None:
-	#				lines = db.split("\n")
-	#				version = int(lines[0])
-	#				linesLen = len(lines)
-	#				
-	#				if version >= 3:
-	#					size = 11
-	#				else:
-	#					size = 9
-	#				
-	#				for i in range(1, linesLen, size):
-	#					if lines[i] == "EOF":
-	#						break
-	#					m = MediaInfo()
-	#					m.importDefined(lines[i:i+size], version, False, True, False)
-	#					self.add(m)
-	#		except Exception, ex:
-	#			print ex
-	#			print '-'*60
-	#			import sys, traceback
-	#			traceback.print_exc(file=sys.stdout)
-	#			print '-'*60
-	#		
-	#		elapsed_time = time.time() - start_time
-	#		printl("Took (tvshows.txd): " + str(elapsed_time), self)
-	#		
-	#		start_time = time.time()
-	#		try:	
-	#			for key in self.dbSeries:
-	#				db = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".txd", "r").read()
-	#				if db is not None:
-	#					lines = db.split("\n")
-	#					version = int(lines[0])
-	#					linesLen = len(lines)
-	#					
-	#					if version >= 3:
-	#						size = 14
-	#					else:
-	#						size = 12
-	#					
-	#					for i in range(1, linesLen, size):
-	#						if lines[i] == "EOF":
-	#							break
-	#						m = MediaInfo()
-	#						m.importDefined(lines[i:i+size], version, False, False, True)
-	#						self.add(m)
-	#		except Exception, ex:
-	#			print ex
-	#			print '-'*60
-	#			import sys, traceback
-	#			traceback.print_exc(file=sys.stdout)
-	#			print '-'*60
-	#		elapsed_time = time.time() - start_time
-	#		printl("Took (episodes/*.txd): " + str(elapsed_time), self)
-
-	#def loadPickle(self, loadMovie, loadTVShow):
-	#	if loadMovie:
-	#		try:
-	#			start_time = time.time()
-	#			fd = open(self.MOVIESDB, "rb")
-	#			self.dbMovies = pickle.load(fd)
-	#			fd.close()
-	#			elapsed_time = time.time() - start_time
-	#			printl("Took (movies.db): " + str(elapsed_time), self)
-	#		except Exception, ex:
-	#			printl("Exception: " + str(ex), self)
-	#	
-	#	if loadTVShow:
-	#		try:
-	#			start_time = time.time()
-	#			fd = open(self.TVSHOWSDB, "rb")
-	#			self.dbSeries = pickle.load(fd)
-	#			fd.close()
-	#			elapsed_time = time.time() - start_time
-	#			printl("Took (tvshows.db): " + str(elapsed_time), self)
-	#		except Exception, ex:
-	#			printl("Exception: " + str(ex), self)
-	#		
-	#		#start_time = time.time()
-	#		#self.dbEpisodes = {}
-	#		#for key in self.dbSeries:
-	#		#	episode = {}
-	#		#	fd = open(config.plugins.pvmc.configfolderpath.value + u"episodes/" + key + u".db", "wb")
-	#		#	self.dbEpisodes[key] = pickle.load(fd)
-	#		#	fd.close()
-	#		#elapsed_time = time.time() - start_time
-	#		#print "Took (episodes/*.db): ", elapsed_time
-	#		
-	#		try:
-	#			start_time = time.time()
-	#			self.dbEpisodes = {}
-	#			fd = open(self.EPISODESDB, "rb")
-	#			self.dbEpisodes = pickle.load(fd)
-	#			fd.close()
-	#			elapsed_time = time.time() - start_time
-	#			printl("Took (episodes.db): " + str(elapsed_time), self)
-	#		except Exception, ex:
-	#			printl("Exception: " + str(ex), self)
-	#def saveTxd(self):
-	#	start_time = time.time()	
-	#	f = Utf8.Utf8(self.MOVIESTXD, 'w')
-	#	f.write(unicode(self.TXD_VERSION) + u"\n")
-	#	for movie in self.dbMovies.values():
-	#		f.write(movie.exportDefined(self.TXD_VERSION))
-	#	f.write("EOF\n")
-	#	f.close()
-	#	elapsed_time = time.time() - start_time
-	#	printl("Took (movies.txd): " + str(elapsed_time), self)
-	#	
-	#	start_time = time.time()	
-	#	f = Utf8.Utf8(self.TVSHOWSTXD, 'w')
-	#	f.write(unicode(self.TXD_VERSION) + u"\n")
-	#	for key in self.dbSeries:
-	#		if self.dbEpisodes.has_key(key): # Check if we have episodes for that serie
-	#			f.write(self.dbSeries[key].exportDefined(self.TXD_VERSION))
-	#	f.write("EOF\n")
-	#	f.close()
-	#	elapsed_time = time.time() - start_time
-	#	printl("Took (tvshows.txd): " + str(elapsed_time), self)
-	#	
-	#	start_time = time.time()  
-	#	for serie in self.dbEpisodes:
-	#		try:
-	#			f = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + u"episodes/" + serie + u".txd", 'w')
-	#			f.write(unicode(self.TXD_VERSION) + u"\n")
-	#			for season in self.dbEpisodes[serie]:
-	#				for episode in self.dbEpisodes[serie][season].values():
-	#					f.write(episode.exportDefined(self.TXD_VERSION))
-	#			f.write("EOF\n")
-	#			f.close()
-	#		except Exception, ex: 
-	#			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
-	#	elapsed_time = time.time() - start_time
-	#	printl("Took (episodes/*.txd): " + str(elapsed_time), self)
-
+						
