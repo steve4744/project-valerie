@@ -83,6 +83,7 @@ class databaseHandlerPICKLE(object):
 		
 	def getAllSeries(self):
 		start_time = time.time()
+		records = {}
 		try:
 			fd = open(self.TVSHOWSDB, "rb")
 			records = {}
@@ -102,6 +103,7 @@ class databaseHandlerPICKLE(object):
 		return (records)
 
 	def getAllEpisodes(self):
+		printl("->", self)
 		start_time = time.time()
 		records = {}
 		try:
