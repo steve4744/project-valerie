@@ -170,7 +170,8 @@ class Manager():
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			printl("isMovie found", self)
 			imdbid = primary_key["imdbid"]
-			printl("type(imdbid)=" + str(type(imdbid)), self, "E")
+			#printl("type(imdbid)=" + str(type(imdbid)), self, "E")
+			#for rec in self.db.dbMovies:	#printl("movie " + str(rec), self, "E")
 			if self.db.dbMovies.has_key(imdbid):
 				printl("has_key found", self)
 				element = self.db.dbMovies[imdbid]

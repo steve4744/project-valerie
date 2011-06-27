@@ -304,20 +304,20 @@ class Database(object):
 	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
 		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
 		if media.isMovie or isMovie:
-			#movieKey = media.ImdbId
-			movieKey = media.Id			
+			movieKey = media.ImdbId
+			#movieKey = media.Id			
 			if self.dbMovies.has_key(movieKey) is True:
 				del(self.dbMovies[movieKey])	
 				return True
 		if media.isSerie or isSerie:
-			#serieKey = media.TheTvDbId
-			serieKey = media.Id
+			serieKey = media.TheTvDbId
+			#serieKey = media.Id
 			if self.dbSeries.has_key(serieKey) is True:
 				del(self.dbSeries[serieKey])
 				return True
 		if media.isEpisode or isEpisode:
-			#serieKey   = media.TheTvDbId
-			serieKey   = media.Id
+			serieKey   = media.TheTvDbId
+			#serieKey   = media.Id
 			#seasonKey  = media.Season
 			#episodeKey = media.Episode
 			if self.dbEpisodes.has_key(serieKey) is True:
@@ -347,8 +347,8 @@ class Database(object):
 	def add(self, media):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isSerie:
-			#serieKey = media.TheTvDbId
-			serieKey = media.Id
+			serieKey = media.TheTvDbId
+			#serieKey = media.Id
 			if self.dbSeries.has_key(serieKey) is False:
 				self.dbSeries[serieKey] = media
 				return True
@@ -368,16 +368,16 @@ class Database(object):
 		self.duplicateDetector.append(pth)
 		
 		if media.isMovie:
-			#movieKey = media.ImdbId
-			movieKey = media.Id
+			movieKey = media.ImdbId
+			#movieKey = media.Id
 			if self.dbMovies.has_key(movieKey) is False:
 				self.dbMovies[movieKey] = media
 			else: 
 				self._addFailedCauseOf = self.dbMovies[movieKey]
 				return False
 		elif media.isEpisode:
-			#serieKey = media.TheTvDbId
-			serieKey = media.Id
+			serieKey = media.TheTvDbId
+			#serieKey = media.Id
 			if self.dbEpisodes.has_key(serieKey) is False:
 				self.dbEpisodes[serieKey] = {}
 			
@@ -425,7 +425,7 @@ class Database(object):
 		gDatabaseMutex.release()
 
 	def _load(self):
-		if len(self.dbFailed) == 0 and os.path.isfile(self.FAILEDDB):
+		if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
 			self.dbFailed = self.dbHandler.getFailedFiles()
 		
 		if len(self.dbMovies) == 0:
