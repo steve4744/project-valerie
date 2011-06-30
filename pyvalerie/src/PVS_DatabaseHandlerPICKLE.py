@@ -119,14 +119,12 @@ class databaseHandlerPICKLE(object):
 	def getFailedFiles(self):
 		printl("->", self)
 		start_time = time.time()
+		records = []
 		try:		
 			if os.path.exists(self.FAILEDDB):
-				records = {}
 				fd = open(self.FAILEDDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
-			else:
-				records = []
 			
 		except Exception, ex:
 			print ex
@@ -384,3 +382,4 @@ class databaseHandlerPICKLE(object):
 				cnt+=1
 		elapsed_time = time.time() - start_time
 		printl("Query "+str(cnt)+" records, using -if equal- Took : " + str(elapsed_time), self)
+
