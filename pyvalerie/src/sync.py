@@ -200,22 +200,9 @@ class pyvalerie(Thread):
 		
 		self.output(_("Loading Data"))
 		printl("Loading Data", self)
-		# temporary - to use another unit if SQL in use
-		#if os.path.exists("/hdd/valerie/"+ "usesql"):	
-		#	db = databaseLayer(self.output).getInstance()
-		#	self.output(_("Using Database Type: " + db.getDBTypeText() ))
-		#	start_time = time.time()
-		#	db.clearMemory()
-		#	db.load()
-		#else:
-		#	start_time = time.time()
-		#	db = Database().getInstance()
-		start_time = time.time()
+
 		db = Database().getInstance()
 		
-		elapsed_time = time.time() - start_time
-		printl("Loading Database took: " + str(elapsed_time), self)
-
 		#db.reload()
 		db.clearFailed()
 		if self.mode != self.FAST and Config.getBoolean("delete") is True:
