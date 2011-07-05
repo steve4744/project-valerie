@@ -322,7 +322,7 @@ class Database(object):
 			#episodeKey = media.Episode
 			if self.dbEpisodes.has_key(serieKey) is True:
 				if self.dbEpisodes[serieKey].has_key(media.Season) is True:
-					if self.dbEpisodes[serieKey][c].has_key(media.Episode) is True:
+					if self.dbEpisodes[serieKey][media.Season].has_key(media.Episode) is True:
 						del(self.dbEpisodes[serieKey][media.Season][media.Episode])
 						if len(self.dbEpisodes[serieKey][media.Season]) == 0:
 							del(self.dbEpisodes[serieKey][media.Season])
