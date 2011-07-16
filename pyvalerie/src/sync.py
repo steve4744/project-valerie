@@ -8,11 +8,11 @@
 #   Sync
 #   
 #   Revisions:
-#   r1 - 15/07/2011 - Zuki - reduce size of output messages during sync
+#   v1 - 15/07/2011 - Zuki - reduce size of output messages during sync
 #
-#   r
+#   v
 #
-#   r
+#   v
 #
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -332,18 +332,18 @@ class pyvalerie(Thread):
 						if Arts().isMissing(alreadyInDb):
 							#self.output("Downloading missing poster")
 							tmp = None
-							if alreadyInDb.isMovie:
+							if alreadyInDb.isTypeMovie():
 								tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
-							elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
+							elif alreadyInDb.isTypeSerie() or alreadyInDb.isTypeEpisode():
 								tmp = TheTvDbProvider().getArtByTheTvDbId(alreadyInDb)
 							
 							if tmp is not None:
 								Arts().download(tmp)
 								
-								if alreadyInDb.isMovie:
+								if alreadyInDb.isTypeMovie():
 									self.info(str(alreadyInDb.ImdbId) + "_poster_" + posterSize + ".png", 
 										"", "")
-								elif alreadyInDb.isSerie or alreadyInDb.isEpisode:
+								elif alreadyInDb.isTypeSerie() or alreadyInDb.isTypeEpisode():
 									self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
 										"", "")
 						
@@ -363,11 +363,9 @@ class pyvalerie(Thread):
 					printl("USEFOLDER: " + str(useFolder), self)
 					
 					if folderType == u"MOVIE":
-						elementInfo.isMovie = True
-						elementInfo.isSerie = False
+						elementInfo.setMediaType(MediaInfo.MOVIE)
 					elif folderType == u"TV":
-						elementInfo.isMovie = False
-						elementInfo.isSerie = True
+						elementInfo.setMediaType(MediaInfo.SERIE)
 					
 					result = elementInfo.parse(useFolder)
 					
@@ -376,14 +374,13 @@ class pyvalerie(Thread):
 					
 					if elementInfo.isXbmcNfo == False:	
 						printl("isXbmcNfo == False => checking for E2 recorded TV show... ", self, "I")
-						if elementInfo.isSerie and elementInfo.isEnigma2MetaRecording:
+						if elementInfo.isTypeSerie() and elementInfo.isEnigma2MetaRecording:
 							printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
 							tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
 							if tmp[0] is True and tmp[1] is None:
 								# seems to be no tvshows so lets parse as movie
 								printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
-								elementInfo.isMovie = True
-								elementInfo.isSerie = False
+								elementInfo.setMediaType(MediaInfo.MOVIE)
 							elif tmp[0] is True:
 								# Issue #205, efo => use tmp[1] instead of tmp...
 								elementInfo = tmp[1]
@@ -412,7 +409,7 @@ class pyvalerie(Thread):
 						for result in results:
 							if db.add(result):
 								result.Title = self.encodeMe(result.Title)
-								if result.isMovie:
+								if result.isTypeMovie():
 									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
 										result.Title, result.Year)
 									printl("my_title " + result.Title, self, "I")
@@ -474,7 +471,7 @@ class pyvalerie(Thread):
 
 class Sync():
 	def syncWithId(self, elementInfo):
-		if elementInfo.isMovie:
+		if elementInfo.isTypeMovie():
 			# Ask TheMovieDB for the local title and plot
 			tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
 			if tmp is not None:
@@ -506,7 +503,7 @@ class Sync():
 				
 			return (elementInfo, )
 		
-		elif elementInfo.isSerie:
+		elif elementInfo.isTypeSerie():
 			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
 			if tmp is not None:
 				elementInfo = tmp
@@ -536,9 +533,7 @@ class Sync():
 					
 			elementInfoe = elementInfo.copy()
 			
-			elementInfoe.isSerie = False
-			elementInfoe.isEpisode = True
-			elementInfoe.MediaType = MediaInfo.EPISODE
+			elementInfoe.setMediaType(MediaInfo.EPISODE)
 			
 			###
 			

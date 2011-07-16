@@ -220,7 +220,7 @@ class databaseLayer(object):
             #Not IS USE pth = media.Path + "/" + media.Filename + "." + media.Extension
             #self.duplicateDetector.append(pth)
             
-            if media.isMovie:
+            if media.isTypeMovie():
                     if media.RecordStatus == MediaInfo.REC_FROM_DB:
                             movieKey = media.Id
                     else:

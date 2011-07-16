@@ -31,7 +31,7 @@ class ImdbProvider(object):
 		return mediaInfo
 
 	def getMovieByTitle(self, mediaInfo):
-		if mediaInfo.isSerie:
+		if mediaInfo.isTypeSerie():
 			urlTitle = mediaInfo.SearchString
 			urlTitle = re.sub(" ", "+", urlTitle)
 			

@@ -77,14 +77,14 @@ class DMC_ListView(DMC_View):
 		
 		for i in range(10):
 			stars = "star" + str(i)
-			printl("stars: " + stars, self)
+			#printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 			if self[stars].instance is not None:
 				self[stars].instance.hide()
 		
 		for i in range(10):
 			stars = "nostar" + str(i)
-			printl("stars: " + stars, self)
+			#printl("stars: " + stars, self)
 			self[stars] = Pixmap()
 		
 		self.skinName = self.viewName[2]

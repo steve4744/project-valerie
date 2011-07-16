@@ -13,12 +13,13 @@ gLogFile = None
 # ****************************** VERBOSITY Level *******************************
 # 	unspecified level will be DEBUG_INFO level 20
 #
-VERB_TOLOG   = 21 # pass to User Configuration
+VERB_TOLOG   = 21 # (10??) pass to User Configuration
 VERB_DEFAULT = 20 
+VERB_ENTERFUNCTION =  10
 #  give console warning (yellow) at level <= 10
-VERB_WARNING = 10
+VERB_WARNING =  3
 #  give console error (red) at level <= 1
-VERB_ERROR   =  5
+VERB_ERROR   =  2
 #  not implemented - Alert User
 VERB_ERROR_NOTIFYUSER = 1
 
@@ -78,9 +79,9 @@ def printl2(string, parent=None, type="I"):
 
 
 def log (string, parent=None, verbLevel=VERB_DEFAULT):
-	if verbLevel <= 5:
+	if verbLevel == VERB_ERROR:
 		printl2 (string, parent, "E")
-	elif verbLevel <= 10:
+	elif verbLevel == VERB_WARNING:
 		printl2 (string, parent, "W")
 	elif verbLevel == 99: # "S" Success ???
 		printl2 (string, parent, "S")

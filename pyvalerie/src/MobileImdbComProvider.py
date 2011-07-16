@@ -336,7 +336,7 @@ class MobileImdbComProvider():
 			printl("<- None (self.testNoResults in html)", self)
 			return None
 		
-		#print "MIMDB seraches for ", info.isMovie, info.isEpisode, info.isSerie
+		#print "MIMDB seraches for ", info.is_Movie, info.is_Episode, info.is_Serie
 		
 		year = info.Year
 		
@@ -347,11 +347,11 @@ class MobileImdbComProvider():
 			log("\t" + str(result), self)
 		
 		for result in results:
-			if info.isEpisode or info.isSerie:
+			if info.isTypeEpisode() or info.isTypeSerie():
 				if not result.IsTVSeries:
 					printl("Searched media is a TV-show - but result seems to be a movie => skip...", self, "I")
 					continue
-			else: # isMovie
+			else: # is_Movie
 				if result.IsTVSeries:
 					printl("Searched media is a movie - but result seems to be a TV-show => skip...", self, "I")
 					continue

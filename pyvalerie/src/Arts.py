@@ -20,13 +20,13 @@ class Arts():
 		pass
 
 	def isMissing(self, eInfo):
-		if eInfo.isMovie:
+		if eInfo.isTypeMovie():
 			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_poster_" + self.posterResolution[0] + ".png") is False:
 				return True
 			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_backdrop.m1v") is False:
 				return True
 		
-		elif eInfo.isSerie or eInfo.isEpisode:
+		elif eInfo.isTypeSerie() or eInfo.isTypeEpisode():
 			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_poster_" + self.posterResolution[0] + ".png") is False:
 				return True
 			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_backdrop.m1v") is False:
@@ -46,7 +46,7 @@ class Arts():
 
 	def download(self, eInfo):
 		printl("->", self, "D")
-		if eInfo.isMovie:
+		if eInfo.isTypeMovie():
 			if len(eInfo.Poster):
 				isMissing = False
 				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_poster_" + self.posterResolution[0] + ".png") is False:
@@ -56,7 +56,7 @@ class Arts():
 				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_backdrop.m1v") is False:
 					self.save(self.URL + self.CONVERT + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop)
 		
-		elif eInfo.isSerie or eInfo.isEpisode:
+		elif eInfo.isTypeSerie() or eInfo.isTypeEpisode():
 			if len(eInfo.Poster):
 				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_poster_" + self.posterResolution[0] + ".png") is False:
 					self.save(self.URL + self.CONVERT + eInfo.TheTvDbId + ";poster;" + eInfo.Poster)

@@ -8,11 +8,11 @@
 #   MediaInfo
 #   
 #   Revisions:
-#   r1 - 15/07/2011 - Zuki - minor changes future to support SQL DB
+#   v1 - 15/07/2011 - Zuki - minor changes future to support SQL DB
 #
-#   r
+#   v
 #
-#   r
+#   v
 #
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -521,7 +521,7 @@ class MediaInfo(object):
 		
 		#nameConverted = name
 		
-		if self.isMovie is False:
+		if not self.isTypeMovie():
 			printl("(isMovie is False) => assuming TV show - trying to get season and episode from SearchString: " + self.SearchString, self, "I")
 			#####
 			#####  s03e05
@@ -634,13 +634,13 @@ class MediaInfo(object):
 			e2info = self.getEnigma2RecordingName(absFilename)
 			if e2info is not None:
 				printl("e2info: "+ str(Utf8.utf8ToLatin(e2info.MovieName)) + " - " + str(Utf8.utf8ToLatin(e2info.EpisodeName) + "," + str(e2info.IsMovie) + "," + str(e2info.IsEpisode)), self)
-				if e2info.IsMovie:
+				if e2info.isTypeMovie():
 					printl("Assuming Movie...", self, "I")
 					self.SearchString = e2info.MovieName
 					self.isMovie = True
 					self.isSerie = False
 					self.MediaType = self.MOVIE
-				elif e2info.IsEpisode:
+				elif e2info.isTypeEpisode():
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
 					printl("Assuming TV-Show", self, "I")
@@ -683,7 +683,7 @@ class MediaInfo(object):
 		post = u"post"
 		if self.isSerie:
 			post = u"post_tv"
-		elif self.isMovie:
+		elif self.isTypeMovie():
 			post = u"post_movie"
 			
 		for replacement in replace.replacements(post):
@@ -823,7 +823,7 @@ class MediaInfo(object):
 			self.isSerie = isSerie
 			self.isEpisode = isEpisode
 			
-			if self.isMovie:
+			if self.isTypeMovie():
 				if level >=3:
 					self.Id     = lines[0]
 					self.ImdbId = lines[0]
@@ -859,7 +859,7 @@ class MediaInfo(object):
 					
 					self.Genres = lines[10]
 			
-			elif self.isSerie:
+			elif self.isTypeSerie():
 				if level >=3:
 					self.Id        = lines[1]
 					self.ImdbId    = lines[0]
@@ -889,7 +889,7 @@ class MediaInfo(object):
 					
 					self.Genres = lines[8]
 			
-			elif self.isEpisode:
+			elif self.isTypeEpisode():
 				if level >=3:
 					self.Id        = lines[0]
 					self.TheTvDbId = lines[0]
@@ -933,7 +933,7 @@ class MediaInfo(object):
 
 	def export(self):
 		stri = u'\n---BEGIN---'
-		if self.isMovie:
+		if self.isTypeMovie():
 			stri += u'\nImdbId: ' +	 self.ImdbId
 			stri += u'\nTitle: ' +	  self.Title
 			stri += u'\nYear: ' +	   unicode(self.Year)
@@ -946,7 +946,7 @@ class MediaInfo(object):
 			stri += u'\nDirectors: ' +  u"---"
 			stri += u'\nWriters: ' +	u"---"
 		
-		elif self.isSerie:
+		elif self.isTypeSerie():
 			stri += u'\nImdbId: ' +	 self.ImdbId
 			stri += u'\nTheTvDb: ' +	self.TheTvDbId
 			stri += u'\nTitle: ' +	  self.Title
@@ -959,7 +959,7 @@ class MediaInfo(object):
 			stri += u'\nDirectors: ' +  u"---"
 			stri += u'\nWriters: ' +	u"---"
 		
-		elif self.isEpisode:
+		elif self.isTypeEpisode():
 			stri += u'\nImdbId: ' +	 self.ImdbId
 			stri += u'\nTheTvDb: ' +	self.TheTvDbId
 			stri += u'\nTitle: ' +	  self.Title
@@ -979,13 +979,12 @@ class MediaInfo(object):
 		return stri
 
 	def exportDefined(self, level):
-		
 		# Workaround, can be removed in the future
 		self.Plot = re.sub("\n", " ", self.Plot).strip()
 		
 		stri = u''
 		try:
-			if self.isMovie:
+			if self.isTypeMovie():
 				stri += self.ImdbId + u'\n'
 				stri += self.Title + u'\n'
 				stri += self.Tag + u'\n'
@@ -1004,7 +1003,7 @@ class MediaInfo(object):
 				
 				stri += self.Genres + u'\n'
 			
-			elif self.isSerie:
+			elif self.isTypeSerie():
 				stri += self.ImdbId + u'\n'
 				stri += self.TheTvDbId + u'\n'
 				stri += self.Title + u'\n'
@@ -1020,7 +1019,7 @@ class MediaInfo(object):
 				
 				stri += self.Genres + u'\n'
 			
-			elif self.isEpisode:
+			elif self.isTypeEpisode():
 				stri += self.TheTvDbId + u'\n'
 				stri += self.Title + u'\n'
 				stri += unicode(self.Year) + u'\n'
@@ -1044,3 +1043,38 @@ class MediaInfo(object):
 			printl("Exception: " + str(ex), self, "E")
 		stri += u''
 		return stri
+
+
+	def getMediaType(self):		
+		if self.MediaType is None:
+			if self.isSerie:
+				self.MediaType = self.SERIE
+			elif self.isMovie:
+				self.MediaType = self.MOVIE
+			elif self.isEpisode:
+				self.MediaType = self.EPISODE
+		return self.MediaType
+	
+	def setMediaType(self, value):
+		printl("->", self)
+		self.MediaType = value
+		#compatibility
+		self.isSerie   = False;
+		self.isMovie   = False;
+		self.isEpisode = False;
+		if self.MediaType == self.SERIE:
+			self.isSerie = True
+		elif self.MediaType == self.MOVIE:
+			self.isMovie = True
+		elif self.MediaType == self.EPISODE:
+			self.isEpisode = True
+	
+	def isTypeMovie(self):
+		return (self.getMediaType()==self.MOVIE)
+	def isTypeSerie(self):
+		return (self.getMediaType()==self.SERIE)
+	def isTypeEpisode(self):
+		return (self.getMediaType()==self.EPISODE)
+		
+		
+		

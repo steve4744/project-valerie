@@ -70,7 +70,7 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
                 if self.checkFileCreationDate:
                     try:
-                        d["Creation"] = os.stat(d["Path"]).st_mtime
+		       d["Creation"] = os.stat(d["Path"]).st_mtime
                     except Exception, ex:
                         printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
                         d["Creation"] = 0

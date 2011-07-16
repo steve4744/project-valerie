@@ -8,18 +8,15 @@
 #   Interface for working with databases
 #   
 #   Revisions:
-#   r0.Initial - Zuki - renamed from database.py
+#   v0.Initial - Zuki - renamed from database.py
 #
-#   r1 15/07/2011 - Zuki - minor changes to support SQL DB
-#			 - Separate LoadALL in 3 processes (movies,series,failed)  
+#   v1 15/07/2011 - Zuki - minor changes to support SQL DB
+#			 - Separate LoadALL in 3 processes (movies,series,failed)
+#			 - Added Database requests to 
 #
-#   r
+#   v
 #
-#   r
-#
-#   r
-#
-#   r
+#   v
 #
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -40,6 +37,7 @@ from   MediaInfo         import MediaInfo
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import log as log
 	
 DB_SQLITE_LOADED = False
 
@@ -71,32 +69,30 @@ gDatabase = None
 gDatabaseMutex = Lock()
 
 class Database(object):
-	DB_PATH           = config.plugins.pvmc.configfolderpath.value
-	DB_PATH_EPISODES  = config.plugins.pvmc.configfolderpath.value + "episodes/"
-
-	FAILEDDB = DB_PATH + "failed.db"
-	MOVIESDB   = DB_PATH + "movies.db"
-	TVSHOWSDB  = DB_PATH + "tvshows.db"
-	EPISODESDB = DB_PATH + "episodes.db"
-
-	MOVIESTXD  = DB_PATH + "movies.txd"
-	TVSHOWSTXD = DB_PATH + "tvshows.txd"
-	
 	DB_NONE = 0
 	DB_TXD = 2
 	DB_PICKLE = 3
 	DB_SQLITE= 4
+
+	DB_PATH           = config.plugins.pvmc.configfolderpath.value
 
 	if DB_SQLITE_LOADED and os.path.exists(DB_PATH + "usesql"):
 		USE_DB_TYPE    	= DB_SQLITE
 	else:
 		USE_DB_TYPE    	= DB_PICKLE
 		
-	#USE_DB_TYPE    	= DB_TXD
 	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
-					#   	 
-	#USE_INDEXES = True  # Create indexes key/id
-	#PRELOADDB   = True # Reload All tables on Start
+	
+	USE_INDEXES = False  # Create indexes key/id
+	PRELOADDB   = True # Reload All tables on Start (default)
+	
+	CONFIGKEY  = -999999
+	
+	_dbMovies = {}
+	_dbSeries = {}
+	_dbEpisodes = {}
+		
+	dbFailed = []		
 	
 	def __init__(self):
 		printl("", self)
@@ -150,12 +146,13 @@ class Database(object):
 			gDatabaseMutex.acquire()
 			
 			printl("Creating new Database instance", self)
-			self.reload()
-			#if self.PRELOADDB:
-			#	self.reload()  # RELOAD ALLL ?????
-			#else:
-			#	self.clearMemory()
-			#	self.dbMovies = None
+			#self.reload()
+			if self.PRELOADDB:
+				self.reload()  # RELOAD ALLL ?????
+			else:
+				self.clearMemory()
+				self._dbMovies = None
+				
 			gDatabase = self
 		
 			gDatabaseMutex.release()
@@ -165,9 +162,9 @@ class Database(object):
 
 	def clearMemory(self):
 		printl("", self, "D")
-		self.dbMovies = {}
-		self.dbSeries = {}
-		self.dbEpisodes = {}
+		self._dbMovies = {}
+		self._dbSeries = {}
+		self._dbEpisodes = {}
 		self.dbFailed2 = {}
 		
 		self.dbFailed = []
@@ -182,14 +179,14 @@ class Database(object):
 		self.clearMemory()
 		
 		#self._load()
-		self.loadMovies()
-		self.loadSeriesEpisodes()
+		self.loadMoviesFromDB()
+		self.loadSeriesEpisodesFromDB()
 		self.loadFailed()
 
 	def transformGenres(self):
-		for key in self.dbMovies:
+		for key in self.moviesGetAll():
 			transformedGenre = ""
-			for genre in self.dbMovies[key].Genres.split("|"):
+			for genre in self._dbMovies[key].Genres.split("|"):
 				if Genres.isGenre(genre) is False:
 					newGenre = Genres.getGenre(genre)
 					if newGenre != "Unknown":
@@ -199,11 +196,11 @@ class Database(object):
 					transformedGenre += genre + u"|"
 			if len(transformedGenre) > 0:
 				transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
-			self.dbMovies[key].Genres = transformedGenre
+			self._dbMovies[key].Genres = transformedGenre
 		
-		for key in self.dbSeries:
+		for key in self.seriesGetAll():
 			transformedGenre = ""
-			for genre in self.dbSeries[key].Genres.split("|"):
+			for genre in self._dbSeries[key].Genres.split("|"):
 				if Genres.isGenre(genre) is False:
 					newGenre = Genres.getGenre(genre)
 					if newGenre != "Unknown":
@@ -213,13 +210,13 @@ class Database(object):
 					transformedGenre += genre + u"|"
 			if len(transformedGenre) > 0:
 				transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
-			self.dbSeries[key].Genres = transformedGenre
+			self._dbSeries[key].Genres = transformedGenre
 			
-			if key in self.dbEpisodes:
-				for season in self.dbEpisodes[key]:
-					for episode in self.dbEpisodes[key][season]:
+			if key in self._dbEpisodes:
+				for season in self._dbEpisodes[key]:
+					for episode in self._dbEpisodes[key][season]:
 						transformedGenre = ""
-						for genre in self.dbEpisodes[key][season][episode].Genres.split("|"):
+						for genre in self._dbEpisodes[key][season][episode].Genres.split("|"):
 							if Genres.isGenre(genre) is False:
 								newGenre = Genres.getGenre(genre)
 								if newGenre != "Unknown":
@@ -229,7 +226,7 @@ class Database(object):
 								transformedGenre += genre + u"|"
 						if len(transformedGenre) > 0:
 							transformedGenre = transformedGenre[:len(transformedGenre) - 1] # Remove the last pipe
-						self.dbEpisodes[key][season][episode].Genres = transformedGenre
+						self._dbEpisodes[key][season][episode].Genres = transformedGenre
 
 	def clearFailed(self):
 		try:
@@ -247,17 +244,17 @@ class Database(object):
 	def deleteMissingFiles(self):
 		listMissing = []
 		
-		for key in self.dbMovies:
-			m = self.dbMovies[key]
+		for key in self.moviesGetAll():
+			m = self._dbMovies[key]
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 				listMissing.append(m)
 		
-		for key in self.dbSeries:
-			if key in self.dbEpisodes:
-				for season in self.dbEpisodes[key]:
-					for episode in self.dbEpisodes[key][season]:
-						m = self.dbEpisodes[key][season][episode]
+		for key in self.seriesGetAll():
+			if key in self._dbEpisodes:
+				for season in self._dbEpisodes[key]:
+					for episode in self._dbEpisodes[key][season]:
+						m = self._dbEpisodes[key][season][episode]
 						path = m.Path + u"/" + m.Filename + u"." + m.Extension
 						if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 							listMissing.append(m)
@@ -267,17 +264,17 @@ class Database(object):
 			self.remove(m)
 
 	def searchDeleted(self):
-		for key in self.dbMovies:
-			m = self.dbMovies[key]
+		for key in self.moviesGetAll():
+			m = self._dbMovies[key]
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 				printl(":-( " + Utf8.utf8ToLatin(path), self)
 		
-		for key in self.dbSeries:
-			if key in self.dbEpisodes:
-				for season in self.dbEpisodes[key]:
-					for episode in self.dbEpisodes[key][season]:
-						m = self.dbEpisodes[key][season][episode]
+		for key in self.seriesGetAll():
+			if key in self._dbEpisodes:
+				for season in self._dbEpisodes[key]:
+					for episode in self._dbEpisodes[key][season]:
+						m = self._dbEpisodes[key][season][episode]
 						path = m.Path + u"/" + m.Filename + u"." + m.Extension
 						if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 							printl(":-( " + Utf8.utf8ToLatin(path), self)
@@ -289,52 +286,52 @@ class Database(object):
 	# @param extension: utf-8 
 	# @return: True if already in db, False if not
 	def checkDuplicate(self, path, filename, extension):
-		for key in self.dbMovies:
-			if self.dbMovies[key].Path == path:
-				if self.dbMovies[key].Filename == filename:
-					if self.dbMovies[key].Extension == extension:
-						return self.dbMovies[key]
+		for key in self.moviesGetAll():
+			if self._dbMovies[key].Path == path:
+				if self._dbMovies[key].Filename == filename:
+					if self._dbMovies[key].Extension == extension:
+						return self._dbMovies[key]
 		
-		for key in self.dbSeries:
-			if key in self.dbEpisodes:
-				for season in self.dbEpisodes[key]:
-					for episode in self.dbEpisodes[key][season]:
-						if self.dbEpisodes[key][season][episode].Path == path:
-							if self.dbEpisodes[key][season][episode].Filename == filename:
-								if self.dbEpisodes[key][season][episode].Extension == extension:
-									return self.dbEpisodes[key][season][episode]
+		for key in self.seriesGetAll():
+			if key in self._dbEpisodes:
+				for season in self._dbEpisodes[key]:
+					for episode in self._dbEpisodes[key][season]:
+						if self._dbEpisodes[key][season][episode].Path == path:
+							if self._dbEpisodes[key][season][episode].Filename == filename:
+								if self._dbEpisodes[key][season][episode].Extension == extension:
+									return self._dbEpisodes[key][season][episode]
 		
 		return None
 
-	def remove(self, media, isMovie=False, isSerie=False, isEpisode=False):
-		printl("isMovie=" + str(media.isMovie) + " isSerie=" + str(media.isSerie) + " isEpisode=" + str(media.isEpisode), self)
-		if media.isMovie or isMovie:
+	def remove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
+		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
+		if media.isTypeMovie() or is_Movie:
 			movieKey = media.ImdbId
 			#movieKey = media.Id			
-			if self.dbMovies.has_key(movieKey) is True:
-				del(self.dbMovies[movieKey])	
+			if self._dbMovies.has_key(movieKey) is True:
+				del(self._dbMovies[movieKey])	
 				return True
-		if media.isSerie or isSerie:
+		if media.isTypeSerie() or is_Serie:
 			serieKey = media.TheTvDbId
 			#serieKey = media.Id
-			if self.dbSeries.has_key(serieKey) is True:
-				del(self.dbSeries[serieKey])
+			if self._dbSeries.has_key(serieKey) is True:
+				del(self._dbSeries[serieKey])
 				return True
-		if media.isEpisode or isEpisode:
+		if media.isTypeEpisode() or is_Episode:
 			serieKey   = media.TheTvDbId
 			#serieKey   = media.Id
 			#seasonKey  = media.Season
 			#episodeKey = media.Episode
-			if self.dbEpisodes.has_key(serieKey) is True:
-				if self.dbEpisodes[serieKey].has_key(media.Season) is True:
-					if self.dbEpisodes[serieKey][media.Season].has_key(media.Episode) is True:
-						del(self.dbEpisodes[serieKey][media.Season][media.Episode])
-						if len(self.dbEpisodes[serieKey][media.Season]) == 0:
-							del(self.dbEpisodes[serieKey][media.Season])
-						if len(self.dbEpisodes[serieKey]) == 0:
-							del(self.dbEpisodes[serieKey])
-							if self.dbSeries.has_key(serieKey) is True:
-								del(self.dbSeries[serieKey])
+			if self._dbEpisodes.has_key(serieKey) is True:
+				if self._dbEpisodes[serieKey].has_key(media.Season) is True:
+					if self._dbEpisodes[serieKey][media.Season].has_key(media.Episode) is True:
+						del(self._dbEpisodes[serieKey][media.Season][media.Episode])
+						if len(self._dbEpisodes[serieKey][media.Season]) == 0:
+							del(self._dbEpisodes[serieKey][media.Season])
+						if len(self._dbEpisodes[serieKey]) == 0:
+							del(self._dbEpisodes[serieKey])
+							if self._dbSeries.has_key(serieKey) is True:
+								del(self._dbSeries[serieKey])
 						return True
 		return False
 
@@ -350,23 +347,13 @@ class Database(object):
 	# @param media: The media file
 	# @return: False if file is already in db or movie already in db, else True 
 	def add(self, media):
-		if media.MediaType is None:
-			if media.isSerie:
-				media.MediaType = MediaInfo.SERIE
-				#printl("IS SERIE")
-			elif media.isMovie:
-				media.MediaType = MediaInfo.MOVIE
-				#printl("IS MOVIE")
-			elif media.isEpisode:
-				media.MediaType = MediaInfo.EPISODE
-				#printl("IS EPISODE")
-			
+
 		if media.MediaType == MediaInfo.FAILEDSYNC:
 			nextID = len(self.dbFailed2)
 			self.dbFailed2[nextID] = media			
 
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
-		if media.MediaType == MediaInfo.SERIE:
+		if media.isTypeSerie():
 			serieKey = media.TheTvDbId
 			#serieKey = media.Id
 			#if USE_INDEXES:
@@ -374,11 +361,11 @@ class Database(object):
 				
 			#else:
 			
-			if self.dbSeries.has_key(serieKey) is False:
-				self.dbSeries[serieKey] = media
+			if self._dbSeries.has_key(serieKey) is False:
+				self._dbSeries[serieKey] = media
 				return True
 			else:
-				#self._addFailedCauseOf = self.dbSeries[media.TheTvDbId]
+				#self._addFailedCauseOf = self._dbSeries[media.TheTvDbId]
 				#return False
 				return True # We return true here cause this is not a failure but simply means that the tvshow already exists in the db
 		
@@ -392,40 +379,40 @@ class Database(object):
 		pth = media.Path + "/" + media.Filename + "." + media.Extension
 		self.duplicateDetector.append(pth)
 		
-		if media.MediaType == MediaInfo.MOVIE:
+		if media.isTypeMovie():
 			movieKey = media.ImdbId
 			#movieKey = media.Id
-			if self.dbMovies.has_key(movieKey) is False:
-				self.dbMovies[movieKey] = media
+			if self._dbMovies.has_key(movieKey) is False:
+				self._dbMovies[movieKey] = media
 			else: 
-				self._addFailedCauseOf = self.dbMovies[movieKey]
+				self._addFailedCauseOf = self._dbMovies[movieKey]
 				return False
-		elif media.MediaType == MediaInfo.EPISODE:
+		elif media.isTypeEpisode():
 			serieKey = media.TheTvDbId
 			#printl("serie: "+serieKey+ " season: " + str(media.Season) + " Episode: "+str(media.Episode))
 			#serieKey = media.Id
-			if self.dbEpisodes.has_key(serieKey) is False:
-				self.dbEpisodes[serieKey] = {}
+			if self._dbEpisodes.has_key(serieKey) is False:
+				self._dbEpisodes[serieKey] = {}
 			
-			if self.dbEpisodes[serieKey].has_key(media.Season) is False:
-				self.dbEpisodes[serieKey][media.Season] = {}
+			if self._dbEpisodes[serieKey].has_key(media.Season) is False:
+				self._dbEpisodes[serieKey][media.Season] = {}
 			
-			if self.dbEpisodes[serieKey][media.Season].has_key(media.Episode) is False:
-				self.dbEpisodes[serieKey][media.Season][media.Episode] = media
+			if self._dbEpisodes[serieKey][media.Season].has_key(media.Episode) is False:
+				self._dbEpisodes[serieKey][media.Season][media.Episode] = media
 			else:
-				self._addFailedCauseOf = self.dbEpisodes[serieKey][media.Season][media.Episode]
+				self._addFailedCauseOf = self._dbEpisodes[serieKey][media.Season][media.Episode]
 				return False
 		return True
 
 	def __str__(self):
 		epcount = 0
-		for key in self.dbSeries:
-			if key in self.dbEpisodes:
-				for season in self.dbEpisodes[key]:
-					epcount +=  len(self.dbEpisodes[key][season])
-		rtv = unicode(len(self.dbMovies)) + \
+		for key in self.seriesGetAll():
+			if key in self._dbEpisodes:
+				for season in self._dbEpisodes[key]:
+					epcount +=  len(self._dbEpisodes[key][season])
+		rtv = unicode(len(self._dbMovies)) + \
 				u" " + \
-				unicode(len(self.dbSeries)) + \
+				unicode(len(self._dbSeries)) + \
 				u" " + \
 				unicode(epcount)
 		return Utf8.utf8ToLatin(rtv)
@@ -439,9 +426,9 @@ class Database(object):
 		# will be the backup
 		#self.savePickel() 
 		
-		self.dbHandler.saveMovies(self.dbMovies)
-		self.dbHandler.saveSeries(self.dbSeries)
-		self.dbHandler.saveEpisodes(self.dbEpisodes)
+		self.dbHandler.saveMovies(self._dbMovies)
+		self.dbHandler.saveSeries(self._dbSeries)
+		self.dbHandler.saveEpisodes(self._dbEpisodes)
 		self.dbHandler.saveFailed(self.dbFailed)
 		self.dbHandler.saveFailed2(self.dbFailed2)
 		
@@ -451,89 +438,199 @@ class Database(object):
 		#	self.saveSql()
 		gDatabaseMutex.release()
 
-	def loadMovies(self):
+	def loadMoviesFromDB(self):
 		start_time = time.time()
-		if len(self.dbMovies) == 0:
-			self.dbMovies = self.dbHandler.getAllMovies()			
-			#self.dbMovies = self.dbHandler.loadMovies()
-			#if self.USE_INDEXES:
-			#	self.createMoviesIndexes()
+		if len(self._dbMovies) == 0:
+			self._dbMovies = self.dbHandler.getAllMovies()			
+			if self.USE_INDEXES:
+				self.createMoviesIndexes()
 				
 		elapsed_time = time.time() - start_time
 		printl("LoadMovies Took : " + str(elapsed_time), self)
 
-	def loadSeriesEpisodes(self):
+	def loadSeriesEpisodesFromDB(self):
 		start_time = time.time()
-		if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
-			self.dbSeries = self.dbHandler.getAllSeries()
+		if len(self._dbSeries) == 0 or len(self._dbEpisodes) == 0:
+			self._dbSeries = self.dbHandler.getAllSeries()
 			if self.USE_DB_TYPE == self.DB_TXD:
-				self.dbEpisodes = self.dbHandler.getEpisodesFromAllSeries(self.dbSeries)
+				self._dbEpisodes = self.dbHandler.getEpisodesFromAllSeries(self._dbSeries)
 			else:
-				self.dbEpisodes = self.dbHandler.getAllEpisodes()
+				self._dbEpisodes = self.dbHandler.getAllEpisodes()
 					
 		# FIX: GHOSTFILES
-		if self.dbEpisodes.has_key("0"):
-			ghost = self.dbEpisodes["0"].values()
+		if self._dbEpisodes.has_key("0"):
+			ghost = self._dbEpisodes["0"].values()
 			for season in ghost:
 				for episode in season.values():
 					self.remove(episode)
-			if self.dbEpisodes.has_key("0"):
-				del self.dbEpisodes["0"]
+			if self._dbEpisodes.has_key("0"):
+				del self._dbEpisodes["0"]
 		
-		for tvshow in self.dbEpisodes.values():
-			for season in tvshow.values():
-				for episode in season.values():
-					if episode.isEpisode is False:
-						b = self.remove(episode, isEpisode=True)
-						printl("RM: " + str(b), self)
+		#for tvshow in self._dbEpisodes.values():
+		#	for season in tvshow.values():
+		#		for episode in season.values():
+		#			if not episode.isTypeEpisode():
+		#				b = self.remove(episode, isEpisode=True)
+		#				printl("RM: " + str(b), self)
+		for serie in self._dbEpisodes:
+			if serie != self.CONFIGKEY: #not ConfigRecord
+				for seasonKey in self._dbEpisodes[serie]:
+					season = self._dbEpisodes[serie][seasonKey]
+					for episodeKey in season:
+						episode = season[episodeKey]
+						if type(episode) is MediaInfo:
+							if not episode.isTypeEpisode():
+								b = self.remove(episode, isEpisode=True)
+								printl("RM: " + str(b), self)
+				
 		elapsed_time = time.time() - start_time
 		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
 
 	def loadFailed(self):
-		if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
+		if len(self.dbFailed) == 0:
 			self.dbFailed = self.dbHandler.getFailedFiles()
 		#self.dbFailed2
 
-	#def _load(self):
-	#	if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
-	#		self.dbFailed = self.dbHandler.getFailedFiles()
-	#	
-	#	if len(self.dbMovies) == 0:
-	#		self.dbMovies = self.dbHandler.getAllMovies()			
-	#	
-	#	if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
-	#		self.dbSeries = self.dbHandler.getAllSeries()
-	#		if self.USE_DB_TYPE == self.DB_TXD:
-	#			self.dbEpisodes = self.dbHandler.getEpisodesFromAllSeries(self.dbSeries)
-	#		else:
-	#			self.dbEpisodes = self.dbHandler.getAllEpisodes()
-	#				
-	#	# FIX: GHOSTFILES
-	#	if self.dbEpisodes.has_key("0"):
-	#		ghost = self.dbEpisodes["0"].values()
-	#		for season in ghost:
-	#			for episode in season.values():
-	#				self.remove(episode)
-	#		if self.dbEpisodes.has_key("0"):
-	#			del self.dbEpisodes["0"]
-	#	
-	#	for tvshow in self.dbEpisodes.values():
-	#		for season in tvshow.values():
-	#			for episode in season.values():
-	#				if episode.isEpisode is False:
-	#					b = self.remove(episode, isEpisode=True)
-	#					printl("RM: " + str(b), self)
-						
-	#def createMoviesIndexes(self):
+#
+#################################   MOVIES   ################################# 
+#
+	#Call when data is needed, to verify if is loaded
+	def _moviesCheckLoaded(self):
+		log("->", self, 10)
+		if self._dbMovies is None:
+			self.loadMoviesFromDB()
+
+	def moviesGetAll(self):
+		log("->", self, 10)
+		self._moviesCheckLoaded()
+		newList	= self._dbMovies.copy()
+		if self.CONFIGKEY in newList:		# only for Pickle
+			del newList[self.CONFIGKEY]
+		return newList
+
+	def moviesGetAllValues(self):
+		log("->", self, 10)
+		return self.moviesGetAll().values()
+
+	def moviesGetWithKey(self, key):
+		printl("->", self)
+		self._moviesCheckLoaded()
+		start_time = time.time()
+		element = None
+		if key in self._dbMovies:
+			element = self._dbMovies[key]
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+		return element
+
+	#def moviesGetWithImdb(self, imdb):
+	#	printl("->", self)
+	#	self._moviesCheckLoaded()
 	#	start_time = time.time()
-	#	records = {}
-	#	for key in self.dbMovies:
-	#		self.idxMoviesByImdb[self.dbMovies[key].ImdbId] = key
+	#	element = None
+	#	if self.USE_INDEXES:
+	#		# use Indexes loaded at beginning
+	#		# indexing 0.0007		
+	#		key = self.idxMoviesImdb[imdb]
+	#		element = self.dbMovies[key]			
+	#	
+	#	else:			
+	#		# without indexing 0.02
+	#		for key in self.db.dbMovies:
+	#			if self.db.dbMovies[key].ImdbId == imdb:
+	#				element = self.db.dbMovies[key]
+	#				break
+	#	
 	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self)
+	#	printl("Took B: " + str(elapsed_time), self)
+	#	return element
+	
+#	
+#################################   SERIES   ################################# 
+#
+	#Call when data is needed, to verify if is loaded
+	def _seriesCheckLoaded(self):
+		log("->", self, 10)
+		if self._dbSeries is None:
+			self.loadSeriesEpisodesFromDB()
+
+	def seriesGetAll(self):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		newList	= self._dbSeries.copy()
+		if self.CONFIGKEY in newList:
+			del newList[self.CONFIGKEY]
+		return newList
+
+	def seriesGetAllValues(self):
+		log("->", self, 10)
+		return self.seriesGetAll().values()
+		
+	def seriesGetAllEpisodes(self):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		list = []
+		for serie in self._dbEpisodes:
+			for season in self._dbEpisodes[serie]:
+				list += self._dbEpisodes[serie][season].values()
+		return list	
+	
+	def seriesGetSeasonsFromSerie(self, serie):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		if serie in self._dbEpisodes:
+			return self._dbEpisodes[serie].keys()
+				
+		return self.seriesGetAll().values()
+	
+	def seriesGetEpisodesFromSerie(self, serie):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		list = []
+		if serie in self._dbEpisodes:
+			for season in self._dbEpisodes[serie]:
+				list += self._dbEpisodes[serie][season].values()
+		return list
+	
+	def seriesGetEpisodesFromSeason(self, serie, season):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		if serie in self._dbEpisodes:
+			if season in self._dbEpisodes[serie]:
+				return self._dbEpisodes[serie][season].values()
+				
+	def seriesGetWithKey(self, key):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		start_time = time.time()
+		element = None
+		if key in self._dbSeries:
+			element = self._dbSeries[key]
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+		return element
+	
+	def seriesGetEpisode(self, serie, season, episode):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		element = None
+		if serie in self._dbEpisodes:
+			if season in self._dbEpisodes[serie]:
+				if episode in self._dbEpisodes[serie][season]:
+					element = self._dbEpisodes[serie][season][episode]
+		return element
+
+	def createMoviesIndexes(self):
+		start_time = time.time()
+		records = {}
+		for key in self._dbMovies:
+			self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
+		elapsed_time = time.time() - start_time
+		printl("Indexing Took : " + str(elapsed_time), self)
+	
 	#def createSeriesIndexes(self):
 	#	start_time = time.time()
-	#	for key in self.dbSeries:
-	#		self.idxSeriesByThetvdb[self.dbSeries[key].TheTvDbId] = key
+	#	for key in self._dbSeries:
+	#		self.idxSeriesByThetvdb[self._dbSeries[key].TheTvDbId] = key
 	#	elapsed_time = time.time() - start_time
 	#	printl("Indexing Took : " + str(elapsed_time), self)

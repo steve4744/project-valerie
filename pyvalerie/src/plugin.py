@@ -893,7 +893,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 				date = date + "-" + str(self.element.Month) + "-" + str(self.element.Day)
 			self["year"].setText(date)
 			
-			if self.element.isMovie:
+			if self.element.isTypeMovie():
 				self["season"].setText(" ")
 				self["episode"].setText(" ")
 			else:

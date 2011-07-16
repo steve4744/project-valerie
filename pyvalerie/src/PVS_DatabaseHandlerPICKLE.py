@@ -8,18 +8,19 @@
 #   Interface for working with PICKLE Files
 #   
 #   Revisions:
-#   r0 - ../06/2011 - Zuki - Let's import the Pickle Interface from database.py
+#   v0 - ../06/2011 - Zuki - Let's import the Pickle Interface from database.py
 #
-#   r1 - 15/07/2011 - Zuki - added Config Record to pickle's to save the structure version
+#   v1 - 15/07/2011 - Zuki - added Config Record to pickle's to save the structure version
 #			   - added Upgrade Database function's (to apply conversions)
 #
-#   r
+#   v2 - 16/07/2011 - Zuki - upgrade database is now working
+#			     DB Patch 1 will update fields MediaInfo.MediaType
 #
-#   r
+#   v
 #
-#   r
+#   v
 #
-#   r
+#   v
 #
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -30,6 +31,7 @@ import cPickle   as pickle
 from Components.config import config
 from   MediaInfo         import MediaInfo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import log as log
 
 gDatabaseHandler = None
 gConnection = None
@@ -44,7 +46,7 @@ class databaseHandlerPICKLE(object):
 
 	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
-	DB_VERSION = 0
+	DB_VERSION = 1
 	IDMODEAUTO = False	
 
 	def __init__(self):
@@ -68,7 +70,12 @@ class databaseHandlerPICKLE(object):
 				fd = open(self.MOVIESDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
-				#self._upgradeMovies()
+				#for key in records:
+				#	if type(records[key]) is MediaInfo:
+				#		log("Rec: "+str(key)+" IsMovie:" + str(records[key].isMovie) + " mediatype:" + str(records[key].MediaType)  )
+				self._upgradeMovies(records)
+			else:
+				self.setDBVersion(records, self.DB_VERSION)
 
 		except Exception, ex:
 			print ex
@@ -88,6 +95,12 @@ class databaseHandlerPICKLE(object):
 				records = {}
 				records = pickle.load(fd)
 				fd.close()
+				#for key in records:
+				#	if type(records[key]) is MediaInfo:
+				#		log("Rec: "+str(key)+" IsSerie:" + str(records[key].isSerie) + " mediatype:" + str(records[key].MediaType) )
+				self._upgradeSeries(records)
+			else:
+				self.setDBVersion(records, self.DB_VERSION)
 				
 		except Exception, ex:
 			print ex
@@ -106,8 +119,16 @@ class databaseHandlerPICKLE(object):
 				fd = open(self.EPISODESDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
-
-		
+				for serie in records:
+					if serie != self.CONFIGKEY: #not ConfigRecord
+						for season in records[serie]:
+							for episode in records[serie][season]:
+								if type(records[serie][season][episode]) is MediaInfo:
+									log("Rec: "+str(episode)+" IsEpisode:"  + str(records[serie][season][episode].isEpisode) + " mediatype:" + str(records[serie][season][episode].MediaType) )
+				self._upgradeEpisodes(records)
+			else:
+				self.setDBVersion(records, self.DB_VERSION)
+				
 		except Exception, ex:
 			print ex
 			print '-'*60
@@ -217,35 +238,75 @@ class databaseHandlerPICKLE(object):
 	def saveFailed2(self, records):
 		pass
 	
-	def _upgradeMovies(self, records):
-		CurrentDBVersion = records[CONFIGKEY];
-		if self.DB_VERSION != CurrentDBVersion:
-			#   Let's run some Upgrade Scripts... :)
-			updateToVersion = CurrentDBVersion				
-			for updateToVersion in range(CurrentDBVersion+1, self.DB_VERSION):
-				if updateToVersion==1:
-					pass
-				elif updateToVersion==2:
-					pass
-				elif updateToVersion==3:
-					pass
-				elif updateToVersion==4:
-					pass
-				elif updateToVersion==5:
-					pass
-				elif updateToVersion==6:
-					pass
-				
-		return records
+############################  DB VERSION CONTROL  #############################
+	def getDBVersion(self, records):
+		if records.has_key(self.CONFIGKEY):
+			return records[self.CONFIGKEY]
+		else:
+			printl ("DB without version")
+			return 0
 		
+	def setDBVersion(self, records, version):
+		records[self.CONFIGKEY] = version
+		printl ("DB version set to "+ str(version))
+		
+############################    UPGRADE MOVIES    #############################
+	def _upgradeMovies(self, records):
+		printl("->",self)
+		currentDBVersion = self.getDBVersion(records)
+		printl("DBVersion: " + str(currentDBVersion))
+		if self.DB_VERSION == currentDBVersion:
+			printl("DB already updated!")
+		else:
+			printl("Upgrading database to version: " + str(self.DB_VERSION) )
+			#   Let's run some Upgrade Scripts... :)
+			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION+1):
+				printl("Applying upgrade to version : " + str(updateToVersion))
+				if updateToVersion==1:
+					self._upgrade_m_1(records)
+					self.setDBVersion(records, updateToVersion)
+					
+				elif updateToVersion==2:
+					#self._upgrade_m_2(records)
+					#self.setDBVersion(records, updateToVersion)
+					pass
+				elif updateToVersion==3:
+					pass		
+				elif updateToVersion==4:
+					pass
+				elif updateToVersion==5:
+					pass
+				elif updateToVersion==6:
+					pass
+				
+			self.saveMovies(records)
+	
+	# Migrate isMovie,isSerie,isEpisode to MediaType (1,2,3)
+	# can be used by movies.db and tvshows.db
+	def _upgrade_m_1(self, records):
+		for rec in records:
+			if type(records[rec]) is MediaInfo:
+				records[rec].getMediaType() # will populate mediatype field
+			
+	def _upgrade_m_2(self, records):
+		pass
+	
+############################    UPGRADE SERIES    #############################
 	def _upgradeSeries(self, records):
-		CurrentDBVersion = records[CONFIGKEY];
-		if self.DB_VERSION != CurrentDBVersion:
+		printl("->",self)
+		currentDBVersion = self.getDBVersion(records)
+		printl("DBVersion: " + str(currentDBVersion))
+		if self.DB_VERSION == currentDBVersion:
+			printl("DB already updated!")
+		else:
+			printl("Upgrading database to version: " + str(self.DB_VERSION) )
 			#   Let's run some Upgrade Scripts... :)
-			updateToVersion = CurrentDBVersion				
-			for updateToVersion in range(CurrentDBVersion+1, self.DB_VERSION):
+			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION+1):
+				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
-					pass
+					self._upgrade_m_1(records) #use Movies upgrade
+					self.setDBVersion(records, updateToVersion)
+					
 				elif updateToVersion==2:
 					pass
 				elif updateToVersion==3:
@@ -257,20 +318,28 @@ class databaseHandlerPICKLE(object):
 				elif updateToVersion==6:
 					pass
 				
-		return records
-
+			self.saveSeries(records)
+	
+	def _upgrade_s_2(self, records):
+		pass
+	
+############################    UPGRADE EPISODES    #############################
 	def _upgradeEpisodes(self, records):
-		printl("->", self)
-		CurrentDBVersion = records[CONFIGKEY];
-		if self.DB_VERSION != CurrentDBVersion:
+		printl("->",self)
+		currentDBVersion = self.getDBVersion(records)
+		printl("DBVersion: " + str(currentDBVersion))
+		if self.DB_VERSION == currentDBVersion:
+			printl("DB already updated!")
+		else:
+			printl("Upgrading database to version: " + str(self.DB_VERSION) )
 			#   Let's run some Upgrade Scripts... :)
-			updateToVersion = CurrentDBVersion
-			printl("From version "+ str(CurrentDBVersion) +" to " + str(self.DB_VERSION), self)
-			for updateToVersion in range(CurrentDBVersion+1, self.DB_VERSION):
+			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION+1):
+				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
-					pass
+					self._upgrade_e_1(records) #use Movies upgrade
+					self.setDBVersion(records, updateToVersion)
 				elif updateToVersion==2:
-					pass
+					pass					
 				elif updateToVersion==3:
 					pass
 				elif updateToVersion==4:
@@ -279,13 +348,17 @@ class databaseHandlerPICKLE(object):
 					pass
 				elif updateToVersion==6:
 					pass
-				
-		return records
+
+			self.saveEpisodes(records)
 
 
-
-
-
+	def _upgrade_e_1(self, records):
+		for serie in records:
+			for season in records[serie]:
+				for episode in records[serie][season]:
+					if type(records[serie][season][episode]) is MediaInfo:
+						records[serie][season][episode].getMediaType() # will populate mediatype field
+			
 
 
 

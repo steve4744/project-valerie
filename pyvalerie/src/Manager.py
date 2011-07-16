@@ -8,11 +8,11 @@
 #   Manager
 #   
 #   Revisions:
-#   r1 - 15/07/2011 - Zuki - Avoid null values on Dates, Popularity & Runtime
+#   v1 - 15/07/2011 - Zuki - Avoid null values on Dates, Popularity & Runtime
 #
-#   r
+#   v
 #
-#   r
+#   v
 #
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -26,6 +26,7 @@ import replace
 from   sync import Sync
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import log as log
 
 import os
 
@@ -56,40 +57,33 @@ class Manager():
 
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)
+					
 		if type == self.MOVIES:
-			return self.db.dbMovies.values()
+			return self.db.moviesGetAllValues()
+					
 		elif type == self.TVSHOWS:
-			return self.db.dbSeries.values()
+			return self.db.seriesGetAllValues()
+			
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				serie = param
-				if self.db.dbEpisodes.has_key(serie):
-					for season in self.db.dbEpisodes[serie]:
-						list += self.db.dbEpisodes[serie][season].values()
+				list = self.db.seriesGetEpisodesFromSerie(param)
 			else:
-				for serie in self.db.dbEpisodes:
-					for season in self.db.dbEpisodes[serie]:
-						list += self.db.dbEpisodes[serie][season].values()
-						#for episode in self.db.dbEpisodes[serie][season]:
-						#	if self.db.dbEpisodes[serie][season][episode].TheTvDbId == "79488":
-						#		print self.db.dbEpisodes[serie][season][episode].Filename, serie, season, episode
+				list = self.db.seriesGetAllEpisodes()
 			return list
 		
 		elif type == self.TVSHOWSSEASONS: 
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, )
 			if param is not None and len(param) == 1:
-				serie = param[0]
-				if self.db.dbEpisodes.has_key(serie):
-					return self.db.dbEpisodes[serie].keys()
-			
+				list = self.db.seriesGetSeasonsFromSerie(param[0])
+
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
 			elif param is not None and len(param) == 2:
-				serie = param[0]
+				serie  = param[0]
 				season = param[1]
-				if self.db.dbEpisodes.has_key(serie):
-					if self.db.dbEpisodes[serie].has_key(season):
-						return self.db.dbEpisodes[serie][season].values()
+				list = self.db.seriesGetEpisodesFromSeason(serie, season)
+			
+			return list
 		
 		elif type == self.FAILED or type == self.FAILED_ALL:
 			return self.db.dbFailed
@@ -123,22 +117,18 @@ class Manager():
 			element = oldelement.copy()
 		
 		if istvshow:
-			element.isSerie = True
-			element.isMovie = False
+			element.setMediaType(MediaInfo.SERIE)
 		else:
-			element.isSerie = False
-			element.isMovie = True
+			element.setMediaType(MediaInfo.MOVIE)
 		
 		results = Sync().syncWithId(element)
 		if results is not None:
 			return results
 		else:
 			if istvshow is False:
-				element.isSerie = True
-				element.isMovie = False
+				element.setMediaType(MediaInfo.SERIE)
 			else:
-				element.isSerie = False
-				element.isMovie = True
+				element.setMediaType(MediaInfo.MOVIE)
 			
 			results = Sync().syncWithId(element)
 			if results is not None:
@@ -185,30 +175,26 @@ class Manager():
 		printl("primary_key=" + str(primary_key), self)
 		element = None
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
-			printl("isMovie found", self)
+			printl("is_Movie found", self)
 			imdbid = primary_key["imdbid"]
-			#printl("type(imdbid)=" + str(type(imdbid)), self, "E")
-			#for rec in self.db.dbMovies:	#printl("movie " + str(rec), self, "E")
-			if self.db.dbMovies.has_key(imdbid):
-				printl("has_key found", self)
-				element = self.db.dbMovies[imdbid]
+			element = self.db.moviesGetWithKey(imdbid)
+		
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
-			printl("isTvShow found", self)
+			printl("is_TvShow found", self)
 			thetvdbid = primary_key["thetvdbid"]
-			if self.db.dbSeries.has_key(thetvdbid):
-				element = self.db.dbSeries[thetvdbid]
+			element = self.db.seriesGetWithKey(thetvdbid)
+		
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
-			printl("isEpisode found", self)
+			printl("is_Episode found", self)
 			thetvdbid = primary_key["thetvdbid"]
 			season = int(primary_key["season"])
 			episode = int(primary_key["episode"])
 			printl("Looking up episode", self, "D")
-			print self.db.dbEpisodes.has_key(thetvdbid)
-			print self.db.dbEpisodes[thetvdbid]
-			print self.db.dbEpisodes[thetvdbid].has_key(season)
-			print self.db.dbEpisodes[thetvdbid][season].has_key(episode)
-			if self.db.dbEpisodes.has_key(thetvdbid) and self.db.dbEpisodes[thetvdbid].has_key(season) and self.db.dbEpisodes[thetvdbid][season].has_key(episode):
-				element = self.db.dbEpisodes[thetvdbid][season][episode]
+			#print self.db._dbEpisodes.has_key(thetvdbid)
+			#print self.db._dbEpisodes[thetvdbid]
+			#print self.db._dbEpisodes[thetvdbid].has_key(season)
+			#print self.db._dbEpisodes[thetvdbid][season].has_key(episode)
+			element = self.db.seriesGetEpisode(thetvdbid, season, episode)
 		
 		return element
 
@@ -299,24 +285,17 @@ class Manager():
 		newElement = MediaInfo()
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			newElement.ImdbId = primary_key["imdbid"]
-			newElement.isMovie = True
-			newElement.isSerie = False
-			newElement.isEpisode = False
+			newElement.setMediaType(MediaInfo.MOVIE)
 		
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
 			newElement.TheTvDbId = primary_key["thetvdbid"]
-			newElement.isMovie = False
-			newElement.isSerie = True
-			newElement.isEpisode = False
+			newElement.setMediaType(MediaInfo.SERIE)
 		
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
 			newElement.TheTvDbId = primary_key["thetvdbid"]
 			newElement.Season = primary_key["season"]
 			newElement.Episode = primary_key["episode"]
-			newElement.isMovie = False
-			newElement.isSerie = False
-			newElement.isEpisode = True
-		
+			newElement.setMediaType(MediaInfo.EPISODE)
 		else:
 			return None
 		
