@@ -287,12 +287,12 @@ class PVMC_MainMenu(Screen):
 			if config.plugins.pvmc.showmovieandtvinmainmenu.value is True:
 				list.append((_("Movies"),   "PVMC_Movies","", "50"))
 				list.append((_("TV Shows"), "PVMC_Series", "", "50"))
-			
-			plugins = getPlugins(where=Plugin.MENU_VIDEOS)
-			if plugins is not None and len(plugins) == 1:
-				list.append((_("Videos"), plugins[0], "menu_videos", "50"))
-			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Videos >"), plugins, "menu_videos", "50"))
+			else:
+				plugins = getPlugins(where=Plugin.MENU_VIDEOS)
+				if plugins is not None and len(plugins) == 1:
+					list.append((_("Videos"), plugins[0], "menu_videos", "50"))
+				elif plugins is not None and len(plugins) > 1:
+					list.append((_("Videos >"), plugins, "menu_videos", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
 			if plugins is not None and len(plugins) == 1:

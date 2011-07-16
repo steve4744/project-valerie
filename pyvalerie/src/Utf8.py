@@ -6,6 +6,18 @@ import unicodedata
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
+def getEncode(value):
+	# Not the best function... but help testing
+	s = ""
+	printl (repr(value))
+	if ord(max(value)) >= 128:
+		s = str(ord(max(value)))+">=128"	
+	if isinstance(value, unicode):
+		s = s + " Is unicode "
+	if isinstance(value, str): 
+		s = s + " Is str"
+	
+	return s
 
 ##
 # Converts RAW strings to UTF-8 strings
@@ -14,6 +26,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 def stringToUtf8(rawString):
 	utf8String = None
 	if rawString is not None:
+		#printl (repr (rawString ))
 		try:
 			utf8String = unicode(rawString, "utf-8")
 		except UnicodeDecodeError, ex:
@@ -38,6 +51,7 @@ def stringToUtf8(rawString):
 def utf8ToLatin(utfString):
 	latinString = None
 	if utfString is not None:
+		#printl (repr (utfString ))
 		# Issue #151, efo => try default encoding, which should be UTF8
 		try:
 			byteString = utfString.encode()

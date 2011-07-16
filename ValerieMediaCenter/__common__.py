@@ -9,8 +9,18 @@ from   Components.config import config
 #------------------------------------------------------------------------------------------
 
 gLogFile = None
-#gLogFileHtml = None
-gInDebug = None
+
+# ****************************** VERBOSITY Level *******************************
+# 	unspecified level will be DEBUG_INFO level 20
+#
+VERB_TOLOG   = 21 # pass to User Configuration
+VERB_DEFAULT = 20 
+#  give console warning (yellow) at level <= 10
+VERB_WARNING = 10
+#  give console error (red) at level <= 1
+VERB_ERROR   =  5
+#  not implemented - Alert User
+VERB_ERROR_NOTIFYUSER = 1
 
 def openLogFile():
 	global gLogFile
@@ -37,15 +47,7 @@ def printl2(string, parent=None, type="I"):
 	#global gLogFileHtml
 	if gLogFile is None:
 		openLogFile()
-	# Only register message of type "D" if debug active
-	global gInDebug 
-	if gInDebug is None:
-		#gInDebug = os.path.exists(config.plugins.pvmc.configfolderpath.value + "debug")
-		gInDebug = True
 		
-	if type == "D" and not gInDebug:
-		return
-
 	out = ""
 	if parent is None:
 		out = str(string)
@@ -73,3 +75,15 @@ def printl2(string, parent=None, type="I"):
 	#gLogFileHtml.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "<br />")
 	gLogFile.flush()
 	#gLogFileHtml.flush()
+
+
+def log (string, parent=None, verbLevel=VERB_DEFAULT):
+	if verbLevel <= 5:
+		printl2 (string, parent, "E")
+	elif verbLevel <= 10:
+		printl2 (string, parent, "W")
+	elif verbLevel == 99: # "S" Success ???
+		printl2 (string, parent, "S")
+	elif verbLevel <= VERB_TOLOG:
+		printl2 (string, parent)
+	

@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#   sync.py
+#   Project Valerie - Syncronization module
+#
+#   Created by user on 00/00/0000.
+#   Sync
+#   
+#   Revisions:
+#   r1 - 15/07/2011 - Zuki - reduce size of output messages during sync
+#
+#   r
+#
+#   r
+#
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import os
 from   os import environ
@@ -20,7 +37,7 @@ import DirectoryScanner
 from   FailedEntry import FailedEntry
 from   GoogleProvider import GoogleProvider
 from   LocalImdbProvider import LocalImdbProvider
-import MediaInfo
+from   MediaInfo         import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
 import replace
 from   PathsConfig import PathsConfig
@@ -172,6 +189,13 @@ def checkDefaults():
 			printl("\t- OK", __name__)
 	except Exception, ex:
 		printl("Exception: " + str(ex), __name__)
+
+def getStringShrinked(value):
+	dif = 16 - len(value)
+	result = value
+	if dif < 0:
+		result = value[:8] + "..." + value[-8:]
+	return result
 
 class pyvalerie(Thread):
 	
@@ -325,14 +349,15 @@ class pyvalerie(Thread):
 						
 						continue
 					
+					outStr = "(" + str(i) + "/" + str(elementListFileCounter)  + ")"
+					
+					self.output(outStr + " -> " + getStringShrinked(Utf8.utf8ToLatin(path)) + " >> " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
 					printl("#"*60, self)
-					self.output("(" + str(i) + "/" + str(elementListFileCounter)  + ")")
 					printl("(" + str(i) + "/" + str(elementListFileCounter)  + ")", self)
 					printl("#"*6, self)
-					self.output("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
 					printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
 					
-					elementInfo = MediaInfo.MediaInfo(path, filename, extension)
+					elementInfo = MediaInfo(path, filename, extension)
 					
 					printl("FOLDERTYPE: " + str(folderType), self)
 					printl("USEFOLDER: " + str(useFolder), self)
@@ -372,6 +397,9 @@ class pyvalerie(Thread):
 						if tmp is None:
 							printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
 							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
+							#result.failedCause = cause
+							#elementInfo.syncStatus = MediaInfo.FAILEDSYNC
+							#db.add(elementInfo)
 							continue
 						elementInfo = tmp
 						printl("Finally about to sync element... ", self, "I")
@@ -396,10 +424,14 @@ class pyvalerie(Thread):
 								cause = db.getAddFailedCauseOf()
 								db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
 									cause))
+								#result.failedCause = cause
+								#result.MediaType = MediaInfo.FAILED
+								#db.add(result)
+
 								printl("Title already in db", self, "W")
 					
-					self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
-					printl("(" + str(i) + "/" + str(elementListFileCounter) + ")", self)
+					#self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
+					#printl("(" + str(i) + "/" + str(elementListFileCounter) + ")", self)
 					self.progress(i)
 		
 		self.output(_("Saving database"))
@@ -506,6 +538,7 @@ class Sync():
 			
 			elementInfoe.isSerie = False
 			elementInfoe.isEpisode = True
+			elementInfoe.MediaType = MediaInfo.EPISODE
 			
 			###
 			

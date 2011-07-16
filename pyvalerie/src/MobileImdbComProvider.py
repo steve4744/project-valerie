@@ -6,6 +6,7 @@ import Utf8
 import WebGrabber
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import log
 
 #------------------------------------------------------------------------------------------
 
@@ -226,7 +227,7 @@ class MobileImdbComProvider():
 		#print "plot", plot
 		pos = plot.find(self.DIV_PLOT_START)
 		if pos < 0:
-			printl("Details " + plot, self, "W")
+			log("Details " + plot, self, "W")
 			printl("<- (if pos < 0: b)", self, "W")
 			return None
 		
@@ -340,10 +341,10 @@ class MobileImdbComProvider():
 		year = info.Year
 		
 		results = self.getResults(html)
-		printl("Results are: ", self)
+		log("Results are: ", self)
 		
 		for result in results:
-			printl("\t" + str(result), self)
+			log("\t" + str(result), self)
 		
 		for result in results:
 			if info.isEpisode or info.isSerie:

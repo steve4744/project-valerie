@@ -1,11 +1,28 @@
 # -*- coding: utf-8 -*-
-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#   MediaInfo.py
+#   Project Valerie - Class to support media information
+#
+#   Created by user on 00/00/0000.
+#   MediaInfo
+#   
+#   Revisions:
+#   r1 - 15/07/2011 - Zuki - minor changes future to support SQL DB
+#
+#   r
+#
+#   r
+#
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 import os
 import re
 import replace
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import log
 
 #------------------------------------------------------------------------------------------
 
@@ -17,15 +34,24 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 ## WORKAROUND
 
 class MediaInfo(object):
+	#RecordStatus
 	REC_NEW 	= 1
 	REC_CHANGED 	= 2 
 	REC_FROM_DB	= 3
+
+	#MediaType
+	MOVIE  		= 1
+	SERIE 		= 2
+	EPISODE 	= 3
+	
+	FAILEDSYNC 	= 0
 
 	RecordStatus = REC_NEW  
 	
 	Id = None	# for Sql - Primary Key
 			# in TXD initialized with:
 			#    dbMovies:ImdbID   dbSeries/dbEpisodes:TheTvdbId
+	MediaType = None # Not Used - only after db version 2 of Pickle
 	isMovie   = False
 	isSerie   = False
 	isEpisode = False
@@ -66,8 +92,10 @@ class MediaInfo(object):
 	Popularity = 0
 	
 	Season  = -1
-	Episode = -1
+	Episode = -1		
 	EpisodeText = u""	 # for example: Episode Number:Special / Pilot (not numbered)
+	syncStatus  = 0
+	syncFailedCause = u""
 	
 	Poster   = u""
 	Backdrop = u""
@@ -117,6 +145,8 @@ class MediaInfo(object):
 			m.Season       = self.Season
 			m.Episode      = self.Episode
 			m.SearchString = self.SearchString
+			m.MediaType    = self.MediaType
+			m.RecordStatus = self.RecordStatus
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 		return m
@@ -145,10 +175,12 @@ class MediaInfo(object):
 					printl("IS Movie", self)
 					self.IsMovie = True
 					self.IsEpisode = False
+					self.MediaType = self.MOVIE
 				else:
 					printl("IS Episode", self)
 					self.IsMovie = False
 					self.IsEpisode = True
+					self.MediaType = self.EPISODE
 			except Exception, ex:
 				printl("Exception (ef): " + str(ex), self, "E")
 
@@ -292,12 +324,14 @@ class MediaInfo(object):
 						self.isMovie = True
 						self.isSerie = False
 						self.isEpisode = False
+						self.MediaType = self.MOVIE
 						
 						self.ImdbId = line
 					elif lines[1].startswith("<episodedetails>"):
 						self.isMovie = False
 						self.isSerie = True
 						self.isEpisode = False
+						self.MediaType = self.SERIE
 						
 						self.TheTvDbId = line
 				elif line.startswith("<title>"):
@@ -404,9 +438,9 @@ class MediaInfo(object):
 		### Replacements PRE
 		printl("[pre] - " + str(self.SearchString), self)
 		for replacement in replace.replacements(u"pre"):
-			printl("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
+			log("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
-			printl("\t" + str(self.SearchString), self)
+			log("\t" + str(self.SearchString), self)
 		
 		printl(":-1: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
@@ -425,6 +459,8 @@ class MediaInfo(object):
 				self.isMovie = result.isMovie
 				self.isEpisode = result.isEpisode
 				self.isSerie = result.isSerie
+				self.MediaType = self.MediaType
+				
 				self.TheTvDbId = result.TheTvDbId
 				self.ImdbId = result.ImdbId
 				self.Title = result.Title
@@ -496,6 +532,7 @@ class MediaInfo(object):
 				if m and m.group("season") and m.group("episode"):
 					self.isSerie = True
 					self.isMovie = False
+					self.MediaType = self.SERIE
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
@@ -511,6 +548,7 @@ class MediaInfo(object):
 				if m and m.group("season") and m.group("episode"):
 					self.isSerie = True
 					self.isMovie = False
+					self.MediaType = self.SERIE
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
@@ -526,7 +564,8 @@ class MediaInfo(object):
 				if m and m.group("season") and m.group("episode"):
 					self.isSerie = True
 					self.isMovie = False
-					
+					self.MediaType = self.SERIE
+
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
 					
@@ -541,6 +580,7 @@ class MediaInfo(object):
 				if m and m.group("episode"):
 					self.isSerie = True
 					self.isMovie = False
+					self.MediaType = self.SERIE
 					
 					self.Season = int(0)
 					self.Episode = int(m.group("episode"))
@@ -580,6 +620,7 @@ class MediaInfo(object):
 					if (s == 2 and e == 64 or s == 7 and e == 20 or s == 10 and e == 80 or s == 0 or s == 19 and e >= 40 or s == 20 and e <= 14) is False:
 						self.isSerie = True
 						self.isMovie = False
+						self.MediaType = self.SERIE
 						
 						self.Season = s
 						self.Episode = e
@@ -598,12 +639,14 @@ class MediaInfo(object):
 					self.SearchString = e2info.MovieName
 					self.isMovie = True
 					self.isSerie = False
+					self.MediaType = self.MOVIE
 				elif e2info.IsEpisode:
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
 					printl("Assuming TV-Show", self, "I")
 					self.isMovie = False
 					self.isSerie = True
+					self.MediaType = self.SERIE
 					
 				self.isEnigma2MetaRecording = True
 				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
@@ -616,6 +659,7 @@ class MediaInfo(object):
 		
 		if self.isSerie == False:
 			self.isMovie = True
+			self.MediaType = self.MOVIE
 		
 		# So we got year and season and episode 
 		# now we can delete everything after the year
@@ -655,7 +699,7 @@ class MediaInfo(object):
 				printl("Exception: " + str(ex), self, "E")
 		
 		self.SearchString = self.SearchString.strip()
-		printl("eof: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
+		printl("eof: SearchString:" + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
 		return True
 

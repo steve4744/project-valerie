@@ -1,4 +1,21 @@
 # -*- coding: utf-8 -*-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#   Manager.py
+#   Project Valerie - Layer between user interfaces and background processing
+#
+#   Created by user on 00/00/0000.
+#   Manager
+#   
+#   Revisions:
+#   r1 - 15/07/2011 - Zuki - Avoid null values on Dates, Popularity & Runtime
+#
+#   r
+#
+#   r
+#
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import Blacklist
 import Config
@@ -211,11 +228,23 @@ class Manager():
 			if key == "Title":
 				newElement.Title = key_value_dict[key]
 			elif key == "Year":
-				newElement.Year = int(key_value_dict[key])
+				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					value = None
+				else:
+					value = int(key_value_dict[key])
+				newElement.Year = value
 			elif key == "Month":
-				newElement.Month = int(key_value_dict[key])
+				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					value = None
+				else:
+					value = int(key_value_dict[key])
+				newElement.Month = value
 			elif key == "Day":
-				newElement.Day = int(key_value_dict[key])
+				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					value = None
+				else:
+					value = int(key_value_dict[key])
+				newElement.Day = value
 			elif key == "ImdbId":
 				newElement.ImdbId = key_value_dict[key]
 			elif key == "TheTvDbId":
@@ -223,7 +252,11 @@ class Manager():
 			elif key == "TmDbId":
 				newElement.TmDbId = key_value_dict[key]
 			elif key == "Runtime":
-				newElement.Runtime = int(key_value_dict[key])
+				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					value = None
+				else:
+					value = int(key_value_dict[key])
+				newElement.Runtime = value
 			#elif Resolution
 			#elif Sound
 			elif key == "Plot":
@@ -233,7 +266,11 @@ class Manager():
 			elif key == "Tag":
 				newElement.Tag = key_value_dict[key]
 			elif key == "Popularity":
-				newElement.Popularity = int(key_value_dict[key])
+				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					value = None
+				else:
+					value = int(key_value_dict[key])
+				newElement.Popularity = value
 			elif key == "Season":
 				newElement.Season = int(key_value_dict[key])
 			elif key == "Episode":

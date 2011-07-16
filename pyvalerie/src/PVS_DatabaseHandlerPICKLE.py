@@ -8,9 +8,10 @@
 #   Interface for working with PICKLE Files
 #   
 #   Revisions:
-#   r0 - 06/2011 - Zuki - Let's import the Pickle Interface from database.py
+#   r0 - ../06/2011 - Zuki - Let's import the Pickle Interface from database.py
 #
-#   r1
+#   r1 - 15/07/2011 - Zuki - added Config Record to pickle's to save the structure version
+#			   - added Upgrade Database function's (to apply conversions)
 #
 #   r
 #
@@ -67,6 +68,7 @@ class databaseHandlerPICKLE(object):
 				fd = open(self.MOVIESDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
+				#self._upgradeMovies()
 
 		except Exception, ex:
 			print ex
@@ -139,8 +141,7 @@ class databaseHandlerPICKLE(object):
 		return (records)
 
 
-	def saveMovies(self, records):
-		
+	def saveMovies(self, records):		
 		printl("->", self)
 		start_time = time.time()
 		try:		
@@ -212,7 +213,10 @@ class databaseHandlerPICKLE(object):
 	
 		elapsed_time = time.time() - start_time
 		printl("Took (failed.db): " + str(elapsed_time), self)
-
+		
+	def saveFailed2(self, records):
+		pass
+	
 	def _upgradeMovies(self, records):
 		CurrentDBVersion = records[CONFIGKEY];
 		if self.DB_VERSION != CurrentDBVersion:

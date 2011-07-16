@@ -320,3 +320,7 @@ class databaseHandlerTXD(object):
 	
 		elapsed_time = time.time() - start_time
 		printl("Took (failed.db): " + str(elapsed_time), self)
+	
+	def saveFailed2(self, records):
+		pass
+	

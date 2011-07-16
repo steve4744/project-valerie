@@ -8,9 +8,10 @@
 #   Interface for working with databases
 #   
 #   Revisions:
-#   r000.Initial - Zuki - renamed from database.py
+#   r0.Initial - Zuki - renamed from database.py
 #
-#   r
+#   r1 15/07/2011 - Zuki - minor changes to support SQL DB
+#			 - Separate LoadALL in 3 processes (movies,series,failed)  
 #
 #   r
 #
@@ -94,41 +95,31 @@ class Database(object):
 	#USE_DB_TYPE    	= DB_TXD
 	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
 					#   	 
-	
-	TXD_VERSION = 3
+	#USE_INDEXES = True  # Create indexes key/id
+	#PRELOADDB   = True # Reload All tables on Start
 	
 	def __init__(self):
 		printl("", self)
 			
 		if self.USE_DB_TYPE == self.DB_SQLITE:			
-			self.dbHandler = databaseHandlerSQL().getInstance("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+			self.dbHandler = databaseHandlerSQL().getInstance("from __init__")
 			if self.dbHandler.DB_SQLITE_FIRSTTIME:
 				printl("Sql FirstTime", self)					 
 				self.importDataToSql()
 				self.dbHandler.DB_SQLITE_FIRSTTIME = False
-
 					
 		if self.USE_DB_TYPE == self.DB_PICKLE:			
 			self.dbHandler = databaseHandlerPICKLE().getInstance()
 		
 		if self.USE_DB_TYPE == self.DB_TXD:
 			self.dbHandler = databaseHandlerTXD().getInstance()
-		
-		# Deactivate usage of txd files
-		#if os.path.exists(self.DB_PATH + self.DB_TXD_FILENAME_M):
-		#	self.setDBType(self.DB_TXD)
-		#
-		#elif os.path.exists(self.DB_PATH + self.DB_TXT_FILENAME_M):
-		#	self.setDBType(self.DB_TXT)
-			#self.setDBVersion(DB_TXD)
-		# No exception if exists movies.txd and no tvshows.txd
-
+	
 	def importDataToSql (self):
 		printl("->", self)
 		printl("Importing Data", self)
 		self.dbHandler = databaseHandlerPICKLE().getInstance()
 		self.reload()	# Load from PICKLE
-		self.dbHandler = databaseHandlerSQL().getInstance("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+		self.dbHandler = databaseHandlerSQL().getInstance("from ImportDataToSql")
 		self.save()  	# save to Database SQL
 		try:
 			pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
@@ -154,32 +145,46 @@ class Database(object):
 		global gDatabase
 		global gDatabaseMutex
 		
-		#printl("Acquiring Mutex", self, "D")
-		gDatabaseMutex.acquire()
-		#printl("Acquired Mutex", self, "D")
-		
 		if gDatabase is None:
+			#printl("Acquiring Mutex", self, "D")
+			gDatabaseMutex.acquire()
+			
 			printl("Creating new Database instance", self)
 			self.reload()
+			#if self.PRELOADDB:
+			#	self.reload()  # RELOAD ALLL ?????
+			#else:
+			#	self.clearMemory()
+			#	self.dbMovies = None
 			gDatabase = self
 		
-		#printl("Releasing Mutex", self, "D")
-		gDatabaseMutex.release()
-		#printl("Released Mutex", self, "D")
+			gDatabaseMutex.release()
+			#printl("Released Mutex", self, "D")
 		
 		return gDatabase
 
-	def reload(self):
+	def clearMemory(self):
 		printl("", self, "D")
 		self.dbMovies = {}
 		self.dbSeries = {}
 		self.dbEpisodes = {}
+		self.dbFailed2 = {}
 		
 		self.dbFailed = []
 		
 		self.duplicateDetector = []
 		
-		self._load()
+	#	self.idxMoviesByImdb = {}
+	#	self.idxSeriesByThetvdb = {}
+
+	def reload(self):
+		printl("", self, "D")
+		self.clearMemory()
+		
+		#self._load()
+		self.loadMovies()
+		self.loadSeriesEpisodes()
+		self.loadFailed()
 
 	def transformGenres(self):
 		for key in self.dbMovies:
@@ -345,10 +350,30 @@ class Database(object):
 	# @param media: The media file
 	# @return: False if file is already in db or movie already in db, else True 
 	def add(self, media):
+		if media.MediaType is None:
+			if media.isSerie:
+				media.MediaType = MediaInfo.SERIE
+				#printl("IS SERIE")
+			elif media.isMovie:
+				media.MediaType = MediaInfo.MOVIE
+				#printl("IS MOVIE")
+			elif media.isEpisode:
+				media.MediaType = MediaInfo.EPISODE
+				#printl("IS EPISODE")
+			
+		if media.MediaType == MediaInfo.FAILEDSYNC:
+			nextID = len(self.dbFailed2)
+			self.dbFailed2[nextID] = media			
+
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
-		if media.isSerie:
+		if media.MediaType == MediaInfo.SERIE:
 			serieKey = media.TheTvDbId
 			#serieKey = media.Id
+			#if USE_INDEXES:
+			#	if self.idxSeriesByThetvdb.has_key(media.TheTvDbId) is None:
+				
+			#else:
+			
 			if self.dbSeries.has_key(serieKey) is False:
 				self.dbSeries[serieKey] = media
 				return True
@@ -367,7 +392,7 @@ class Database(object):
 		pth = media.Path + "/" + media.Filename + "." + media.Extension
 		self.duplicateDetector.append(pth)
 		
-		if media.isMovie:
+		if media.MediaType == MediaInfo.MOVIE:
 			movieKey = media.ImdbId
 			#movieKey = media.Id
 			if self.dbMovies.has_key(movieKey) is False:
@@ -375,8 +400,9 @@ class Database(object):
 			else: 
 				self._addFailedCauseOf = self.dbMovies[movieKey]
 				return False
-		elif media.isEpisode:
+		elif media.MediaType == MediaInfo.EPISODE:
 			serieKey = media.TheTvDbId
+			#printl("serie: "+serieKey+ " season: " + str(media.Season) + " Episode: "+str(media.Episode))
 			#serieKey = media.Id
 			if self.dbEpisodes.has_key(serieKey) is False:
 				self.dbEpisodes[serieKey] = {}
@@ -417,6 +443,7 @@ class Database(object):
 		self.dbHandler.saveSeries(self.dbSeries)
 		self.dbHandler.saveEpisodes(self.dbEpisodes)
 		self.dbHandler.saveFailed(self.dbFailed)
+		self.dbHandler.saveFailed2(self.dbFailed2)
 		
 		#if self.USE_DB_TYPE == self.DB_TXD:
 		#	self.saveTxd()
@@ -424,13 +451,19 @@ class Database(object):
 		#	self.saveSql()
 		gDatabaseMutex.release()
 
-	def _load(self):
-		if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
-			self.dbFailed = self.dbHandler.getFailedFiles()
-		
+	def loadMovies(self):
+		start_time = time.time()
 		if len(self.dbMovies) == 0:
 			self.dbMovies = self.dbHandler.getAllMovies()			
-		
+			#self.dbMovies = self.dbHandler.loadMovies()
+			#if self.USE_INDEXES:
+			#	self.createMoviesIndexes()
+				
+		elapsed_time = time.time() - start_time
+		printl("LoadMovies Took : " + str(elapsed_time), self)
+
+	def loadSeriesEpisodes(self):
+		start_time = time.time()
 		if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
 			self.dbSeries = self.dbHandler.getAllSeries()
 			if self.USE_DB_TYPE == self.DB_TXD:
@@ -453,4 +486,54 @@ class Database(object):
 					if episode.isEpisode is False:
 						b = self.remove(episode, isEpisode=True)
 						printl("RM: " + str(b), self)
+		elapsed_time = time.time() - start_time
+		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
+
+	def loadFailed(self):
+		if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
+			self.dbFailed = self.dbHandler.getFailedFiles()
+		#self.dbFailed2
+
+	#def _load(self):
+	#	if len(self.dbFailed) == 0:# and os.path.isfile(self.FAILEDDB):
+	#		self.dbFailed = self.dbHandler.getFailedFiles()
+	#	
+	#	if len(self.dbMovies) == 0:
+	#		self.dbMovies = self.dbHandler.getAllMovies()			
+	#	
+	#	if len(self.dbSeries) == 0 or len(self.dbEpisodes) == 0:
+	#		self.dbSeries = self.dbHandler.getAllSeries()
+	#		if self.USE_DB_TYPE == self.DB_TXD:
+	#			self.dbEpisodes = self.dbHandler.getEpisodesFromAllSeries(self.dbSeries)
+	#		else:
+	#			self.dbEpisodes = self.dbHandler.getAllEpisodes()
+	#				
+	#	# FIX: GHOSTFILES
+	#	if self.dbEpisodes.has_key("0"):
+	#		ghost = self.dbEpisodes["0"].values()
+	#		for season in ghost:
+	#			for episode in season.values():
+	#				self.remove(episode)
+	#		if self.dbEpisodes.has_key("0"):
+	#			del self.dbEpisodes["0"]
+	#	
+	#	for tvshow in self.dbEpisodes.values():
+	#		for season in tvshow.values():
+	#			for episode in season.values():
+	#				if episode.isEpisode is False:
+	#					b = self.remove(episode, isEpisode=True)
+	#					printl("RM: " + str(b), self)
 						
+	#def createMoviesIndexes(self):
+	#	start_time = time.time()
+	#	records = {}
+	#	for key in self.dbMovies:
+	#		self.idxMoviesByImdb[self.dbMovies[key].ImdbId] = key
+	#	elapsed_time = time.time() - start_time
+	#	printl("Indexing Took : " + str(elapsed_time), self)
+	#def createSeriesIndexes(self):
+	#	start_time = time.time()
+	#	for key in self.dbSeries:
+	#		self.idxSeriesByThetvdb[self.dbSeries[key].TheTvDbId] = key
+	#	elapsed_time = time.time() - start_time
+	#	printl("Indexing Took : " + str(elapsed_time), self)

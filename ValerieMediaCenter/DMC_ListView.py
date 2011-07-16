@@ -152,11 +152,15 @@ class DMC_ListView(DMC_View):
 		self.setText("year", date)
 		self.setText("runtime", str(element["Runtime"]) + ' ' + _("min"))
 		
-		for i in range(int(element["Popularity"])):
+		if element["Popularity"] is None: # To avoid null Values
+			popularity = 0
+		else:
+			popularity = int(element["Popularity"])
+		for i in range(popularity):
 			if self["star" + str(i)].instance is not None:
 				self["star" + str(i)].instance.show()
 		
-		for i in range(10 - int(element["Popularity"])):
+		for i in range(10 - popularity):
 			if self["star" + str(9 - i)].instance is not None:
 				self["star" + str(9 - i)].instance.hide()
 		
