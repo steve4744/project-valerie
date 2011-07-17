@@ -41,11 +41,17 @@ class Manager():
 	
 	def __init__(self):
 		printl("", self)
-		Config.load()
-		
-		self.db = Database().getInstance()
-
-		replace.load()
+		try:
+			Config.load()
+			self.db = Database().getInstance()
+			replace.load()
+		except:
+			from Plugins.Extensions.ProjectValerieSync.sync import checkDefaults
+			checkDefaults()
+			
+			Config.load()
+			self.db = Database().getInstance()
+			replace.load()
 
 	def finish(self):
 		printl("", self)
