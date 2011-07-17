@@ -375,16 +375,18 @@ class pyvalerie(Thread):
 					if elementInfo.isXbmcNfo == False:	
 						printl("isXbmcNfo == False => checking for E2 recorded TV show... ", self, "I")
 						if elementInfo.isTypeSerie() and elementInfo.isEnigma2MetaRecording:
-							printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
-							tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
-							if tmp[0] is True and tmp[1] is None:
-								# seems to be no tvshows so lets parse as movie
-								printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
-								elementInfo.setMediaType(MediaInfo.MOVIE)
-							elif tmp[0] is True:
-								# Issue #205, efo => use tmp[1] instead of tmp...
-								elementInfo = tmp[1]
-								printl("Result from google => Season=" + str(elementInfo.Season) + " / Episode=" + str(elementInfo.Episode), self, "I")
+							printl("E2-recorded TV-Show => checking if season and episode already set... ", self, "I")
+							if elementInfo.Season == -1 or elementInfo.Episode == -1:
+								printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
+								tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
+								if tmp[0] is True and tmp[1] is None:
+									# seems to be no tvshows so lets parse as movie
+									printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
+									elementInfo.setMediaType(MediaInfo.MOVIE)
+								elif tmp[0] is True:
+									# Issue #205, efo => use tmp[1] instead of tmp...
+									elementInfo = tmp[1]
+									printl("Result from google => Season=" + str(elementInfo.Season) + " / Episode=" + str(elementInfo.Episode), self, "I")
 							searchStringSplitted = elementInfo.SearchString.split("::")
 							if len(searchStringSplitted) >= 2:
 								elementInfo.SearchString = searchStringSplitted[0]

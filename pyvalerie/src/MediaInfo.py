@@ -415,6 +415,7 @@ class MediaInfo(object):
 		name = self.Filename.lower()
 		self.SearchString = name
 		valerieInfoSearchString = None
+		isSeasonEpisodeFromFilename = False
 		
 		if self.isValerieInfoAvailable(self.Path) is True:
 			valerieInfoSearchString = self.getValerieInfo(self.Path).strip()
@@ -444,7 +445,7 @@ class MediaInfo(object):
 		
 		printl(":-1: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
-		###
+		### Check for IMDb-ID in filename
 		printl("Check for IMDb-ID in filename '" + name + "'", self, "I")
 		m = re.search(r'(?P<imdbid>tt\d{7})', name)
 		if m and m.group("imdbid"):
@@ -532,6 +533,7 @@ class MediaInfo(object):
 				if m and m.group("season") and m.group("episode"):
 					self.isSerie = True
 					self.isMovie = False
+					isSeasonEpisodeFromFilename = True
 					self.MediaType = self.SERIE
 					
 					self.Season = int(m.group("season"))
@@ -643,7 +645,11 @@ class MediaInfo(object):
 				elif self.isTypeEpisode():
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
-					printl("Assuming TV-Show", self, "I")
+					printl("Assuming TV-Show...", self, "I")
+					if isSeasonEpisodeFromFilename == False:
+						printl("Season / episode seem not to be retrieved from filename => resetting...", self, "I")
+						self.Season = -1
+						self.Episode = -1
 					self.isMovie = False
 					self.isSerie = True
 					self.MediaType = self.SERIE
