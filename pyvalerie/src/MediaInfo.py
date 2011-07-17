@@ -175,12 +175,12 @@ class MediaInfo(object):
 					printl("IS Movie", self)
 					self.IsMovie = True
 					self.IsEpisode = False
-					self.MediaType = self.MOVIE
+					self.MediaType = MediaInfo.MOVIE
 				else:
 					printl("IS Episode", self)
 					self.IsMovie = False
 					self.IsEpisode = True
-					self.MediaType = self.EPISODE
+					self.MediaType = MediaInfo.EPISODE
 			except Exception, ex:
 				printl("Exception (ef): " + str(ex), self, "E")
 
@@ -634,13 +634,13 @@ class MediaInfo(object):
 			e2info = self.getEnigma2RecordingName(absFilename)
 			if e2info is not None:
 				printl("e2info: "+ str(Utf8.utf8ToLatin(e2info.MovieName)) + " - " + str(Utf8.utf8ToLatin(e2info.EpisodeName) + "," + str(e2info.IsMovie) + "," + str(e2info.IsEpisode)), self)
-				if e2info.isTypeMovie():
+				if self.isTypeMovie():
 					printl("Assuming Movie...", self, "I")
 					self.SearchString = e2info.MovieName
 					self.isMovie = True
 					self.isSerie = False
 					self.MediaType = self.MOVIE
-				elif e2info.isTypeEpisode():
+				elif self.isTypeEpisode():
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
 					printl("Assuming TV-Show", self, "I")
