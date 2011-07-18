@@ -496,7 +496,7 @@ class Database(object):
 #
 	#Call when data is needed, to verify if is loaded
 	def _moviesCheckLoaded(self):
-		log("->", self, 10)
+		#log("->", self, 10)
 		if self._dbMovies is None:
 			self.loadMoviesFromDB()
 
@@ -550,12 +550,12 @@ class Database(object):
 #
 	#Call when data is needed, to verify if is loaded
 	def _seriesCheckLoaded(self):
-		log("->", self, 10)
+		log("->", self, 11)
 		if self._dbSeries is None:
 			self.loadSeriesEpisodesFromDB()
 
 	def seriesGetAll(self):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		newList	= self._dbSeries.copy()
 		if self.CONFIGKEY in newList:
@@ -563,11 +563,11 @@ class Database(object):
 		return newList
 
 	def seriesGetAllValues(self):
-		log("->", self, 10)
+		log("->", self, 11)
 		return self.seriesGetAll().values()
 		
 	def seriesGetAllEpisodes(self):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		list = []
 		for serie in self._dbEpisodes:
@@ -576,7 +576,7 @@ class Database(object):
 		return list	
 	
 	def seriesGetSeasonsFromSerie(self, serie):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		if serie in self._dbEpisodes:
 			return self._dbEpisodes[serie].keys()
@@ -584,7 +584,7 @@ class Database(object):
 		return self.seriesGetAll().values()
 	
 	def seriesGetEpisodesFromSerie(self, serie):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		list = []
 		if serie in self._dbEpisodes:
@@ -593,14 +593,14 @@ class Database(object):
 		return list
 	
 	def seriesGetEpisodesFromSeason(self, serie, season):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		if serie in self._dbEpisodes:
 			if season in self._dbEpisodes[serie]:
 				return self._dbEpisodes[serie][season].values()
 				
 	def seriesGetWithKey(self, key):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		start_time = time.time()
 		element = None
@@ -611,7 +611,7 @@ class Database(object):
 		return element
 	
 	def seriesGetEpisode(self, serie, season, episode):
-		log("->", self, 10)
+		log("->", self, 11)
 		self._seriesCheckLoaded()
 		element = None
 		if serie in self._dbEpisodes:

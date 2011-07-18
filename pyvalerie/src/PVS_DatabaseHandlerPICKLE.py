@@ -70,9 +70,6 @@ class databaseHandlerPICKLE(object):
 				fd = open(self.MOVIESDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
-				#for key in records:
-				#	if type(records[key]) is MediaInfo:
-				#		log("Rec: "+str(key)+" IsMovie:" + str(records[key].isMovie) + " mediatype:" + str(records[key].MediaType)  )
 				self._upgradeMovies(records)
 			else:
 				self.setDBVersion(records, self.DB_VERSION)
@@ -95,9 +92,6 @@ class databaseHandlerPICKLE(object):
 				records = {}
 				records = pickle.load(fd)
 				fd.close()
-				#for key in records:
-				#	if type(records[key]) is MediaInfo:
-				#		log("Rec: "+str(key)+" IsSerie:" + str(records[key].isSerie) + " mediatype:" + str(records[key].MediaType) )
 				self._upgradeSeries(records)
 			else:
 				self.setDBVersion(records, self.DB_VERSION)
@@ -119,12 +113,12 @@ class databaseHandlerPICKLE(object):
 				fd = open(self.EPISODESDB, "rb")
 				records = pickle.load(fd)
 				fd.close()
-				for serie in records:
-					if serie != self.CONFIGKEY: #not ConfigRecord
-						for season in records[serie]:
-							for episode in records[serie][season]:
-								if type(records[serie][season][episode]) is MediaInfo:
-									log("Rec: "+str(episode)+" IsEpisode:"  + str(records[serie][season][episode].isEpisode) + " mediatype:" + str(records[serie][season][episode].MediaType) )
+				#for serie in records:
+				#	if serie != self.CONFIGKEY: #not ConfigRecord
+				#		for season in records[serie]:
+				#			for episode in records[serie][season]:
+				#				if type(records[serie][season][episode]) is MediaInfo:
+				#					log("Rec: "+str(episode)+" IsEpisode:"  + str(records[serie][season][episode].isEpisode) + " mediatype:" + str(records[serie][season][episode].MediaType) )
 				self._upgradeEpisodes(records)
 			else:
 				self.setDBVersion(records, self.DB_VERSION)

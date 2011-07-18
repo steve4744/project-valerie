@@ -175,12 +175,10 @@ class MediaInfo(object):
 					printl("IS Movie", self)
 					self.IsMovie = True
 					self.IsEpisode = False
-					self.MediaType = MediaInfo.MOVIE
 				else:
 					printl("IS Episode", self)
 					self.IsMovie = False
 					self.IsEpisode = True
-					self.MediaType = MediaInfo.EPISODE
 			except Exception, ex:
 				printl("Exception (ef): " + str(ex), self, "E")
 
@@ -321,17 +319,11 @@ class MediaInfo(object):
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
 					if lines[1].startswith("<movie"):
-						self.isMovie = True
-						self.isSerie = False
-						self.isEpisode = False
-						self.MediaType = self.MOVIE
+						self.setMediaType(self.MOVIE)
 						
 						self.ImdbId = line
 					elif lines[1].startswith("<episodedetails>"):
-						self.isMovie = False
-						self.isSerie = True
-						self.isEpisode = False
-						self.MediaType = self.SERIE
+						self.setMediaType(self.SERIE)
 						
 						self.TheTvDbId = line
 				elif line.startswith("<title>"):
@@ -460,7 +452,7 @@ class MediaInfo(object):
 				self.isMovie = result.isMovie
 				self.isEpisode = result.isEpisode
 				self.isSerie = result.isSerie
-				self.MediaType = self.MediaType
+				self.MediaType = result.MediaType
 				
 				self.TheTvDbId = result.TheTvDbId
 				self.ImdbId = result.ImdbId
@@ -531,10 +523,8 @@ class MediaInfo(object):
 			if self.Season == -1 or self.Episode == -1:
 				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
-					self.isSerie = True
-					self.isMovie = False
+					self.setMediaType(self.SERIE)
 					isSeasonEpisodeFromFilename = True
-					self.MediaType = self.SERIE
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
@@ -548,9 +538,7 @@ class MediaInfo(object):
 			if self.Season == -1 or self.Episode == -1:
 				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
-					self.isSerie = True
-					self.isMovie = False
-					self.MediaType = self.SERIE
+					self.setMediaType(self.SERIE)
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
@@ -564,10 +552,8 @@ class MediaInfo(object):
 			if self.Season == -1 or self.Episode == -1:  
 				m = re.search(r'\D(?P<season>\d+)x(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
-					self.isSerie = True
-					self.isMovie = False
-					self.MediaType = self.SERIE
-
+					self.setMediaType(self.SERIE)
+					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
 					
@@ -580,9 +566,7 @@ class MediaInfo(object):
 			if self.Season == -1 or self.Episode == -1:
 				m = re.search(r'\W(part|pt)\s?(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("episode"):
-					self.isSerie = True
-					self.isMovie = False
-					self.MediaType = self.SERIE
+					self.setMediaType(self.SERIE)
 					
 					self.Season = int(0)
 					self.Episode = int(m.group("episode"))
@@ -620,9 +604,7 @@ class MediaInfo(object):
 					e = se % 100
 					
 					if (s == 2 and e == 64 or s == 7 and e == 20 or s == 10 and e == 80 or s == 0 or s == 19 and e >= 40 or s == 20 and e <= 14) is False:
-						self.isSerie = True
-						self.isMovie = False
-						self.MediaType = self.SERIE
+						self.setMediaType(self.SERIE)
 						
 						self.Season = s
 						self.Episode = e
@@ -639,9 +621,7 @@ class MediaInfo(object):
 				if e2info.IsMovie:
 					printl("Assuming Movie...", self, "I")
 					self.SearchString = e2info.MovieName
-					self.isMovie = True
-					self.isSerie = False
-					self.MediaType = self.MOVIE
+					self.setMediaType(self.MOVIE) 
 				elif e2info.IsEpisode:
 					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
 					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
@@ -650,9 +630,7 @@ class MediaInfo(object):
 						printl("Season / episode seem not to be retrieved from filename => resetting...", self, "I")
 						self.Season = -1
 						self.Episode = -1
-					self.isMovie = False
-					self.isSerie = True
-					self.MediaType = self.SERIE
+					self.setMediaType(self.SERIE)
 					
 				self.isEnigma2MetaRecording = True
 				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
@@ -663,9 +641,8 @@ class MediaInfo(object):
 			printl("Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 			return True
 		
-		if self.isSerie == False:
-			self.isMovie = True
-			self.MediaType = self.MOVIE
+		if not self.isTypeSerie():
+			self.setMediaType(self.MOVIE)
 		
 		# So we got year and season and episode 
 		# now we can delete everything after the year
@@ -687,7 +664,7 @@ class MediaInfo(object):
 		self.SearchString = self.SearchString.strip()
 		
 		post = u"post"
-		if self.isSerie:
+		if self.isTypeSerie():
 			post = u"post_tv"
 		elif self.isTypeMovie():
 			post = u"post_movie"

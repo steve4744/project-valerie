@@ -15,7 +15,8 @@ gLogFile = None
 #
 VERB_TOLOG   = 21 # (10??) pass to User Configuration
 VERB_DEFAULT = 20 
-VERB_ENTERFUNCTION =  10
+VERB_ENTERFUNCTION  =  10
+VERB_ENTERFUNCTION2 =  11  # for functions with lot off calls
 #  give console warning (yellow) at level <= 10
 VERB_WARNING =  3
 #  give console error (red) at level <= 1
@@ -72,19 +73,31 @@ def printl2(string, parent=None, type="I"):
 		print "[Valerie] " + str(type) + "  " + str(out)
 	now = datetime.datetime.now()
 	gLogFile.write("%02d:%02d:%02d.%07d " % (now.hour, now.minute, now.second, now.microsecond) + str(type) + "  " + str(out) + "\n")
-	#gLogFile.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "\n")
-	#gLogFileHtml.write("%02d:%02d " % (now.hour, now.minute, ) + str(out) + "<br />")
 	gLogFile.flush()
 	#gLogFileHtml.flush()
 
 
 def log (string, parent=None, verbLevel=VERB_DEFAULT):
+	out = ""
+	if parent is None:
+		out = str(string)
+	else:
+		classname = str(parent.__class__).rsplit(".", 1)
+		if len(classname) == 2:
+			classname = classname[1]
+			classname = classname.rstrip("\'>")
+			classname += "::"
+			
+		else:
+			classname = ""
+		out = str(classname) + str(sys._getframe(1).f_code.co_name) +" " + str(string)
+
 	if verbLevel == VERB_ERROR:
-		printl2 (string, parent, "E")
+		printl2 (str(out), None, "E")
 	elif verbLevel == VERB_WARNING:
-		printl2 (string, parent, "W")
+		printl2 (str(out), None, "W")
 	elif verbLevel == 99: # "S" Success ???
-		printl2 (string, parent, "S")
+		printl2 (str(out), None, "S")
 	elif verbLevel <= VERB_TOLOG:
-		printl2 (string, parent)
+		printl2 (str(out), None)
 	
