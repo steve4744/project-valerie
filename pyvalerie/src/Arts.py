@@ -39,7 +39,11 @@ class Arts():
 		if file is None:
 			urlresponse = WebGrabber.getText(url)
 		else:
-			urlresponse = DuckboxAPI.sendFile(url, file, ())
+			try:
+				urlresponse = DuckboxAPI.sendFile(url, file, ())
+			except:
+				urlresponse = ""
+				printl("EXCEPTION ON DUCKAPI")
 		printl("urlresponse=" + str(urlresponse), self, "D")
 		if urlresponse is not None and urlresponse != "NONE":
 			urlresponse = urlresponse.strip().split("<br />")
