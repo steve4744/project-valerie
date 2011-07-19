@@ -113,7 +113,7 @@ class TvShows(Resource):
 			tableBody += u"""   <tr>
 							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
-							<td>%d</td>
+							<td>%s</td>
 							<td>%s</td>
 							<td><a href=http://thetvdb.com/index.php?tab=series&id=%s target="_blank">%s</a></td>
 							<td>
