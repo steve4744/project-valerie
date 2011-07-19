@@ -14,7 +14,7 @@
 #			 - Separate LoadALL in 3 processes (movies,series,failed)
 #			 - Added Database requests to 
 #
-#   v
+#   v2 18/07/2011 - Zuki - Added Counters for Movies/Series
 #
 #   v
 #
@@ -84,7 +84,7 @@ class Database(object):
 	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
 	
 	USE_INDEXES = False  # Create indexes key/id
-	PRELOADDB   = True # Reload All tables on Start (default)
+	PRELOADDB   = True   # Reload All tables on Start (default)
 	
 	CONFIGKEY  = -999999
 	
@@ -101,7 +101,8 @@ class Database(object):
 			self.dbHandler = databaseHandlerSQL().getInstance("from __init__")
 			if self.dbHandler.DB_SQLITE_FIRSTTIME:
 				printl("Sql FirstTime", self)					 
-				self.importDataToSql()
+				self.importDataToSql()#.addCallback(self.ImportDone).addErrback(self.ImportError)
+
 				self.dbHandler.DB_SQLITE_FIRSTTIME = False
 					
 		if self.USE_DB_TYPE == self.DB_PICKLE:			
@@ -112,15 +113,22 @@ class Database(object):
 	
 	def importDataToSql (self):
 		printl("->", self)
-		printl("Importing Data", self)
-		self.dbHandler = databaseHandlerPICKLE().getInstance()
-		self.reload()	# Load from PICKLE
-		self.dbHandler = databaseHandlerSQL().getInstance("from ImportDataToSql")
-		self.save()  	# save to Database SQL
 		try:
-			pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
+			printl("Importing Data", self)
+			self.dbHandler = databaseHandlerPICKLE().getInstance()
+			self.reload()	# Load from PICKLE
+			self.dbHandler = databaseHandlerSQL().getInstance("ImportDataToSql")
+			printl("5555555555555555", self)
+			self.save()  	# save to Database SQL
+			try:
+				pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
+			except Exception, ex:
+				printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
 		except Exception, ex:
-			printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
+			printl("Failed Import to SQL! Reloading Pickles Ex: " + str(ex), __name__, "E")
+			self.dbHandler = databaseHandlerPICKLE().getInstance()
+			self.reload()	# Load from PICKLE
+			
 
 	def setDBType(self, version):
 		self.USE_DB_TYPE = version
@@ -142,21 +150,21 @@ class Database(object):
 		global gDatabaseMutex
 		
 		if gDatabase is None:
-			#printl("Acquiring Mutex", self, "D")
+			printl("Acquiring Mutex", self, "W")
 			gDatabaseMutex.acquire()
-			
-			printl("Creating new Database instance", self)
-			#self.reload()
-			if self.PRELOADDB:
-				self.reload()  # RELOAD ALLL ?????
-			else:
-				self.clearMemory()
-				self._dbMovies = None
-				
-			gDatabase = self
-		
-			gDatabaseMutex.release()
-			#printl("Released Mutex", self, "D")
+			try:
+				printl("Creating new Database instance", self)
+				#self.reload()
+				if self.PRELOADDB:
+					self.reload()  # RELOAD ALLL ?????
+				else:
+					self.clearMemory()
+					self._dbMovies = None
+					
+				gDatabase = self
+			finally:	
+				gDatabaseMutex.release()
+				printl("Released Mutex", self, "W")
 		
 		return gDatabase
 
@@ -171,8 +179,8 @@ class Database(object):
 		
 		self.duplicateDetector = []
 		
-	#	self.idxMoviesByImdb = {}
-	#	self.idxSeriesByThetvdb = {}
+		self.idxMoviesByImdb = {}
+		self.idxSeriesByTheTvDb = {}
 
 	def reload(self):
 		printl("", self, "D")
@@ -419,25 +427,30 @@ class Database(object):
 
 
 	def save(self):
+		printl("->", self)
 		global gDatabaseMutex
+		printl("Acquiring Mutex", self, "W")
 		gDatabaseMutex.acquire()
-		# Always safe pickel as this increses fastsync a lot
+		try:
+			printl("Acquired Mutex", self, "W")
+			# Always safe pickel as this increses fastsync a lot
+			
+			# will be the backup
+			#self.savePickel() 
+			
+			self.dbHandler.saveMovies(self._dbMovies)
+			self.dbHandler.saveSeries(self._dbSeries)
+			self.dbHandler.saveEpisodes(self._dbEpisodes)
+			self.dbHandler.saveFailed(self.dbFailed)
+			#self.dbHandler.saveFailed2(self.dbFailed2)
+			return True
+		except Exception, ex:
+			printl("Failed Save! Ex: " + str(ex), __name__, "E")
+			return False
+		finally:	
+			gDatabaseMutex.release()
+			printl("Released Mutex", self, "W")
 		
-		# will be the backup
-		#self.savePickel() 
-		
-		self.dbHandler.saveMovies(self._dbMovies)
-		self.dbHandler.saveSeries(self._dbSeries)
-		self.dbHandler.saveEpisodes(self._dbEpisodes)
-		self.dbHandler.saveFailed(self.dbFailed)
-		self.dbHandler.saveFailed2(self.dbFailed2)
-		
-		#if self.USE_DB_TYPE == self.DB_TXD:
-		#	self.saveTxd()
-		#elif self.USE_DB_TYPE == self.DB_SQLITE:
-		#	self.saveSql()
-		gDatabaseMutex.release()
-
 	def loadMoviesFromDB(self):
 		start_time = time.time()
 		if len(self._dbMovies) == 0:
@@ -494,6 +507,16 @@ class Database(object):
 #
 #################################   MOVIES   ################################# 
 #
+	#not tested
+	def createMoviesIndexes(self):
+		start_time = time.time()
+		records = {}
+		for key in self._dbMovies:
+			if key != self.CONFIGKEY:		# only for Pickle
+				self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
+		elapsed_time = time.time() - start_time
+		printl("Indexing Took : " + str(elapsed_time), self)
+	
 	#Call when data is needed, to verify if is loaded
 	def _moviesCheckLoaded(self):
 		#log("->", self, 10)
@@ -509,11 +532,11 @@ class Database(object):
 		return newList
 
 	def moviesGetAllValues(self):
-		log("->", self, 10)
+		log("->", self, 20)
 		return self.moviesGetAll().values()
 
 	def moviesGetWithKey(self, key):
-		printl("->", self)
+		log("->", self, 20)
 		self._moviesCheckLoaded()
 		start_time = time.time()
 		element = None
@@ -523,31 +546,46 @@ class Database(object):
 		printl("Took: " + str(elapsed_time), self)
 		return element
 
-	#def moviesGetWithImdb(self, imdb):
-	#	printl("->", self)
-	#	self._moviesCheckLoaded()
-	#	start_time = time.time()
-	#	element = None
-	#	if self.USE_INDEXES:
-	#		# use Indexes loaded at beginning
-	#		# indexing 0.0007		
-	#		key = self.idxMoviesImdb[imdb]
-	#		element = self.dbMovies[key]			
-	#	
-	#	else:			
-	#		# without indexing 0.02
-	#		for key in self.db.dbMovies:
-	#			if self.db.dbMovies[key].ImdbId == imdb:
-	#				element = self.db.dbMovies[key]
-	#				break
-	#	
-	#	elapsed_time = time.time() - start_time
-	#	printl("Took B: " + str(elapsed_time), self)
-	#	return element
+	def moviesGetWithImdb(self, inImdbId):
+		printl("->", self)
+		self._moviesCheckLoaded()
+		start_time = time.time()
+		element = None
+		if self.USE_INDEXES:
+			# use Indexes loaded at beginning
+			# indexing 0.0007		
+			#key = self.idxMoviesImdb[imdb]
+			#element = self.dbMovies[key]			
+			pass
+		else:			
+			# without indexing 0.02
+			for key in self.db.dbMovies:
+				if key != self.CONFIGKEY:		# only for Pickle
+					if self._dbMovies[key].ImdbId == inImdbId:
+						element = self.db.dbMovies[key]
+						break
+		
+		elapsed_time = time.time() - start_time
+		printl("Took B: " + str(elapsed_time), self)
+		return element
+
+	def moviesCount(self):
+		log("->", self, 20)
+		return len(self.moviesGetAll())
+		
 	
 #	
 #################################   SERIES   ################################# 
 #
+	#not tested
+	def createSeriesIndexes(self):
+		start_time = time.time()
+		records = {}
+		for key in self._dbSeries:
+			self.idxSeriesByTheTvDb[self._dbSeries[key].TheTvDbId] = key
+		elapsed_time = time.time() - start_time
+		printl("Indexing Took : " + str(elapsed_time), self)
+
 	#Call when data is needed, to verify if is loaded
 	def _seriesCheckLoaded(self):
 		log("->", self, 11)
@@ -619,15 +657,61 @@ class Database(object):
 				if episode in self._dbEpisodes[serie][season]:
 					element = self._dbEpisodes[serie][season][episode]
 		return element
-
-	def createMoviesIndexes(self):
-		start_time = time.time()
-		records = {}
-		for key in self._dbMovies:
-			self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
-		elapsed_time = time.time() - start_time
-		printl("Indexing Took : " + str(elapsed_time), self)
 	
+	def seriesGetPkWithTheTvDbId(self, inTheTvDbId):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		start_time = time.time()
+		element = None
+		if self.USE_INDEXES:
+			# use Indexes loaded at beginning
+			# indexing 0.0007		
+			#serieKey = self.idxSeriesTheTvDb[thetvdb]
+			pass
+		else:			
+			# without indexing 0.02s
+			for serieKey in self._dbSeries:
+				if self._dbSeries[serieKey].TheTvDbId == inTheTvDbId:
+					key = serieKey
+					break
+		
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+		return element
+	
+	#not tested
+	def seriesCountOfSeasons(self, serieKey):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		count = None
+		if serieKey in self._dbEpisodes:
+			count = len(self._dbEpisodes[serieKey])
+		return count
+	
+	#not tested
+	def seriesCountOfEpisodes(self, serieKey, season):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		count = None
+		if serieKey in self._dbEpisodes:
+			if season in self._dbEpisodes[serieKey]:
+				count = len(self._dbEpisodes[serieKey][season])
+		return count
+
+	#not tested
+	def seriesDeleteSerieCascade(self, serieKey):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		if serie in self._dbEpisodes:
+			del(self._dbEpisodes[serieKey])
+		if serie in self._dbSeries:	
+			del(self._dbSeries[serieKey])
+		return None
+
+	#getCountOfSeasons("thetvdbid")
+	#getCountOfEpisodesOfSeason("thetvdbid", "season")
+	#deleteTvShowWithCorrespondingEpisodes();
+
 	#def createSeriesIndexes(self):
 	#	start_time = time.time()
 	#	for key in self._dbSeries:

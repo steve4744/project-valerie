@@ -10,7 +10,7 @@
 #   Revisions:
 #   v1 - 15/07/2011 - Zuki - Avoid null values on Dates, Popularity & Runtime
 #
-#   v
+#   v2 - 18/07/2011 - Zuki - Added Counters for Movies/Series
 #
 #   v
 #
@@ -40,12 +40,13 @@ class Manager():
 	FAILED_ALL = 4
 	
 	def __init__(self):
-		printl("", self)
+		printl("->", self)
 		try:
 			Config.load()
 			self.db = Database().getInstance()
 			replace.load()
 		except:
+			printl ("Exception on Init")
 			from Plugins.Extensions.ProjectValerieSync.sync import checkDefaults
 			checkDefaults()
 			
@@ -308,3 +309,38 @@ class Manager():
 		newElement = self.fillElement(newElement, key_value_dict)
 		self.replace(None, (newElement, ))
 		return newElement
+	
+	def moviesCount(self):
+		log("->", self, 15)
+		return self.db.moviesCount()
+
+	def seriesCountOfSeasonsWithTheTvDbId(self, inTheTvDbId):
+		log("->", self, 15)
+		serieKey = self.db.seriesGetPkWithTheTvDbId(inTheTvDbId)
+		return self.db.seriesCountOfSeasons(serieKey)
+
+	def seriesCountOfSeasonsWithPk(self, serieKey):
+		log("->", self, 15)
+		return self.db.seriesCountOfSeasons(serieKey)
+	
+	def seriesCountOfEpisodesWithTheTvDbId(self, inTheTvDbId, season):
+		log("->", self, 15)
+		key = self.db.seriesGetPkWithTheTvDbId(inTheTvDbId)
+		return self.db.seriesCountOfEpisodes(key, season)
+	
+	def seriesCountOfEpisodesWithPk(self, serieKey, season):
+		log("->", self, 15)
+		return self.db.seriesCountOfEpisodes(serieKey, season)
+
+	def seriesDeleteSerieCascade(self, serie):
+		log("->", self, 15)
+		seriesDeleteSerieCascade
+		
+
+	def convertNullValues(self, record):
+		log("->", self, 10)
+		if record.Year is None:
+			record.Year = u""
+		if record.Month is None:
+			record.Month = u""
+		return record
