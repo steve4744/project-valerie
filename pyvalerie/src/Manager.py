@@ -310,6 +310,13 @@ class Manager():
 		self.replace(None, (newElement, ))
 		return newElement
 	
+	def getArtsByUsingPrimaryKey(self, type, primary_key):
+		media = self.getElementByUsingPrimaryKey(type, primary_key)
+		if media is not None:
+			Arts.download(media)
+			return True
+		return False
+	
 	def moviesCount(self):
 		log("->", self, 15)
 		return self.db.moviesCount()
