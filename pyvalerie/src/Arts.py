@@ -55,34 +55,39 @@ class Arts():
 
 	def download(self, eInfo):
 		printl("->", self, "D")
-		if eInfo.isTypeMovie():
-			if len(eInfo.Poster):
-				isMissing = False
-				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_poster_" + self.posterResolution[0] + ".png") is False:
-					if eInfo.Poster[0] != "/":
-						self.save(self.URL + self.CONVERT + eInfo.ImdbId + ";poster;" + eInfo.Poster)
-					else:
-						self.save(self.URL + self.CONVERT2USER + "?id=" + eInfo.ImdbId + "&type=poster&user=true", eInfo.Poster)
-			
-			if len(eInfo.Backdrop):
-				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_backdrop.m1v") is False:
-					if eInfo.Poster[0] != "/":
-						self.save(self.URL + self.CONVERT + eInfo.ImdbId + ";backdrop;" + eInfo.Backdrop)
-					else:
-						self.save(self.URL + self.CONVERT2USER + "?id=" + eInfo.ImdbId + "&type=backdrop&user=true", eInfo.Backdrop)
 		
+		id = None
+		if eInfo.isTypeMovie():
+			id = eInfo.ImdbId
 		elif eInfo.isTypeSerie() or eInfo.isTypeEpisode():
-			if len(eInfo.Poster):
-				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_poster_" + self.posterResolution[0] + ".png") is False:
-					if eInfo.Poster[0] != "/":
-						self.save(self.URL + self.CONVERT + eInfo.TheTvDbId + ";poster;" + eInfo.Poster)
-					else:
-						self.save(self.URL + self.CONVERT2USER + "?id=" + eInfo.TheTvDbId + "&type=poster&user=true", eInfo.Poster)
-			
-			if len(eInfo.Backdrop):
-				if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_backdrop.m1v") is False:
-					if eInfo.Poster[0] != "/":
-						self.save(self.URL + self.CONVERT + eInfo.TheTvDbId + ";backdrop;" + eInfo.Backdrop)
-					else:
-						self.save(self.URL + self.CONVERT2USER + "?id=" + eInfo.TheTvDbId + "&type=backdrop&user=true", eInfo.Backdrop)
+			id = eInfo.TheTvDbId
+		else:
+			return None
+		
+		if len(eInfo.Poster):
+			self.preSave("poster", id, eInfo.Poster)
+		
+		if len(eInfo.Backdrop):
+			self.preSave("backdrop", id, eInfo.Backdrop)
+				
+		printl("<-", self, "D")
+
+	def preSave(self, type, id, url):
+		printl("->", self, "D")
+		if type == "poster":
+			localFile = id + "_poster_" + self.posterResolution[0] + ".png"
+		elif type == "backdrop":
+			localFile = id + "_backdrop.m1v"
+		else:
+			return None
+		
+		if path.isfile(WebGrabber.downloadDir + "/" + localFile) is False:
+			if url.startswith("user://"):
+				url = url[len("user://"):]
+				if url[0] == "/": #FILE
+					self.save(self.URL + self.CONVERT2USER + "?id=" + id + "&type=" + type + "&user=true&isurl=false", url)
+				else:
+					self.save(self.URL + self.CONVERT2USER + "?id=" + id + "&type=" + type + "&user=true&isurl=true&url=" + url)
+			else:
+				self.save(self.URL + self.CONVERT + id + ";" + type + ";" + url)
 		printl("<-", self, "D")
