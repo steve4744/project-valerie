@@ -53,7 +53,7 @@ class Arts():
 				if len(fileInfo) == 2:
 					WebGrabber.getFile(self.URL + fileInfo[1], fileInfo[0])
 
-	def download(self, eInfo):
+	def download(self, eInfo, overwrite=False):
 		printl("->", self, "D")
 		
 		id = None
@@ -65,14 +65,14 @@ class Arts():
 			return None
 		
 		if len(eInfo.Poster):
-			self.preSave("poster", id, eInfo.Poster)
+			self.preSave("poster", id, eInfo.Poster, overwrite)
 		
 		if len(eInfo.Backdrop):
-			self.preSave("backdrop", id, eInfo.Backdrop)
+			self.preSave("backdrop", id, eInfo.Backdrop, overwrite)
 				
 		printl("<-", self, "D")
 
-	def preSave(self, type, id, url):
+	def preSave(self, type, id, url, overwrite):
 		printl("->", self, "D")
 		if type == "poster":
 			localFile = id + "_poster_" + self.posterResolution[0] + ".png"
@@ -81,7 +81,7 @@ class Arts():
 		else:
 			return None
 		
-		if path.isfile(WebGrabber.downloadDir + "/" + localFile) is False:
+		if path.isfile(WebGrabber.downloadDir + "/" + localFile) is False or overwrite is True:
 			if url.startswith("user://"):
 				url = url[len("user://"):]
 				if url[0] == "/": #FILE

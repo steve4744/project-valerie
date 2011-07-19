@@ -310,10 +310,10 @@ class Manager():
 		self.replace(None, (newElement, ))
 		return newElement
 	
-	def getArtsByUsingPrimaryKey(self, type, primary_key):
+	def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False):
 		media = self.getElementByUsingPrimaryKey(type, primary_key)
 		if media is not None:
-			Arts.download(media)
+			Arts.download(media, overwrite)
 			return True
 		return False
 	
