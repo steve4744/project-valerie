@@ -9,6 +9,7 @@ from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.W
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
+Manager = None
 MediaInfo = None
 utf8ToLatin = None
 MediaInfo = None
@@ -21,14 +22,24 @@ MobileImdbComProvider = None
 class Home(Resource):
 	def render_GET(self, request):
 		global utf8ToLatin
+		global Manager
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-		
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+			
 		finalOutput = WebData().getHtmlCore("Home")
 		
 		currentVersion = config.plugins.pvmc.version.value
+		movieCount = str(Manager().moviesCount())
+		tvShowCount = str(Manager().seriesCount())
+		episodeCount = str(Manager().seriesCountOfEpisodes())
 				
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
+		
+		finalOutput = finalOutput.replace("<!-- MOVIE_COUNT -->", movieCount)
+		finalOutput = finalOutput.replace("<!-- TVSHOW_COUNT -->", tvShowCount)
+		finalOutput = finalOutput.replace("<!-- EPISODE_COUNT -->", episodeCount)
 		
 		updateNeeded = Update().checkForUpdate()[0]
 		
@@ -104,11 +115,8 @@ class TvShows(Resource):
 			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.TheTvDbId)
 			evtEdit = WebData().getEditString(entry, "isTvShow")
 			evtAddEpisode = WebData().getAddEpisodeString(entry, "isEpisode")
-			## COMMENT
-			#  not active at the moment because we do not check if there are still episodes in db
-			#  another thing to solve is that a tvshow needs a path/extension/filename too
-			##
-			#evtDelete = WebData().getDeleteString(entry, "isTvShow") 
+
+			evtDelete = WebData().getDeleteString(entry, "isTvShow") 
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -120,9 +128,10 @@ class TvShows(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/showEpisodes.png" alt="show Episodes" title="show Episodes" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/add.png" alt="add" title="add" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>						
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtAddEpisode)
+			""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtAddEpisode, evtDelete)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)

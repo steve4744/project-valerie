@@ -166,10 +166,6 @@ class WebActions(Resource):
 		
 		# delete tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
 				primary_key = {}
 				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
 				primary_key["season"] = request.args["Season"][0]
@@ -178,6 +174,14 @@ class WebActions(Resource):
 				manager = Manager()
 				manager.removeByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key)
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+		
+		# delete tvshow		
+			elif request.args["what"][0] == "isTvShow":
+				primary_key = request.args["TheTvDbId"][0]
+				
+				manager = Manager()
+				manager.seriesDeleteSerieCascade(primary_key)
+				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
 		
 		##
 		# option section

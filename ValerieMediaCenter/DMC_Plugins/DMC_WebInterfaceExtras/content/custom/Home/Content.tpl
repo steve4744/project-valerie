@@ -9,6 +9,16 @@
 	</div>
 	
 	<div class="subheader">
+		Stats
+	</div>
+	
+	<div class="text">
+		Movies: <!-- MOVIE_COUNT --><br><br>
+		TvShows: <!-- TVSHOW_COUNT --><br><br>
+		Episodes: <!-- EPISODE_COUNT -->
+	</div>
+	
+	<div class="subheader">
 		Authors
 	</div>
 	
