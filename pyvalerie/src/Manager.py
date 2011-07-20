@@ -321,16 +321,16 @@ class Manager():
 		log("->", self, 15)
 		return self.db.moviesCount()
 
-	def seriesCountOfSeasonsWithTheTvDbId(self, inTheTvDbId):
+	def seriesCountOfSeasonsWithTheTvDbId(self, TheTvDbId):
 		log("->", self, 15)
-		serieKey = self.db.seriesGetPkWithTheTvDbId(inTheTvDbId)
+		serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
 		return self.db.seriesCountOfSeasons(serieKey)
 
 	def seriesCountOfSeasonsWithPk(self, serieKey):
 		log("->", self, 15)
 		return self.db.seriesCountOfSeasons(serieKey)
 	
-	def seriesCountOfEpisodesWithTheTvDbId(self, inTheTvDbId, season):
+	def seriesCountOfEpisodesWithTheTvDbId(self, TheTvDbId, season):
 		log("->", self, 15)
 		key = self.db.seriesGetPkWithTheTvDbId(inTheTvDbId)
 		return self.db.seriesCountOfEpisodes(key, season)
@@ -339,11 +339,22 @@ class Manager():
 		log("->", self, 15)
 		return self.db.seriesCountOfEpisodes(serieKey, season)
 
-	def seriesDeleteSerieCascade(self, serie):
+	def seriesDeleteSerieCascade(self, serieKey):
 		log("->", self, 15)
-		seriesDeleteSerieCascade
+		return self.db.seriesDeleteSerieCascade(serieKey)
 		
-
+	def getSerieKeyWithTheTvDbId(self, TheTvDbId):
+		serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
+		return serieKey
+		
+	def seriesCount(self):
+		log("->", self, 15)
+		return self.db.seriesCount()
+		
+	def seriesCountOfEpisodes(self):
+		log("->", self, 15)
+		return self.db.seriesCountOfEpisodes()
+		
 	def convertNullValues(self, record):
 		log("->", self, 10)
 		if record.Year is None:

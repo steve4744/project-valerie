@@ -702,11 +702,35 @@ class Database(object):
 	def seriesDeleteSerieCascade(self, serieKey):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
-		if serie in self._dbEpisodes:
+		if serieKey in self._dbEpisodes:
 			del(self._dbEpisodes[serieKey])
-		if serie in self._dbSeries:	
+		if serieKey in self._dbSeries:	
 			del(self._dbSeries[serieKey])
 		return None
+
+		
+	def seriesCount(self):
+		log("->", self, 20)
+		return len(self.seriesGetAll())
+
+#	
+#################################   EPISODES   ################################# 
+#		
+
+	def episodesGetAll(self):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		newList	= self._dbEpisodes.copy()
+		if self.CONFIGKEY in newList:
+			del newList[self.CONFIGKEY]
+		return newList
+	
+	def seriesCountOfEpisodes(self):
+		log("->", self, 11)
+		return len(self.episodesGetAll())
+
+
+
 
 	#getCountOfSeasons("thetvdbid")
 	#getCountOfEpisodesOfSeason("thetvdbid", "season")
