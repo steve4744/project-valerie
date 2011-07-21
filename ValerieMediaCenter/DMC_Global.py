@@ -64,7 +64,11 @@ def getBoxtype():
 	elif box == "dm500hd":
 		manu = "Dreambox"
 		model = "500hd"
-		arch = "mipsel"
+		arch = "mipsel" 
+	elif box == "dm7025" 
+		manu = "Dreambox" 
+		model = "7025"
+		arch = "mipsel"  
 	elif box == "elite":
 		manu = "Azbox"
 		model = "Elite"
