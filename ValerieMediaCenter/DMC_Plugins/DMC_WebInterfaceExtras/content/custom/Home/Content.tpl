@@ -27,7 +27,7 @@
 		slugshot<br>
 		DonDavici<br>
 		Erik Fornoff<br>
-		zukisaca<br>
+		Zuki<br>
 		<br>
 		... and contributors
 	</div>

@@ -45,8 +45,8 @@ class Manager():
 			Config.load()
 			self.db = Database().getInstance()
 			replace.load()
-		except:
-			printl ("Exception on Init")
+		except Exception, ex:
+			printl ("Exception on Init Ex:"+str(ex), self)
 			from Plugins.Extensions.ProjectValerieSync.sync import checkDefaults
 			checkDefaults()
 			
@@ -74,7 +74,7 @@ class Manager():
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				list = self.db.seriesGetEpisodesFromSerie(param)
+				list = self.db.seriesGetEpisodesOfSerie(param)
 			else:
 				list = self.db.seriesGetAllEpisodes()
 			return list
@@ -82,13 +82,13 @@ class Manager():
 		elif type == self.TVSHOWSSEASONS: 
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, )
 			if param is not None and len(param) == 1:
-				list = self.db.seriesGetSeasonsFromSerie(param[0])
+				list = self.db.seriesGetSeasons(param[0])
 
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
 			elif param is not None and len(param) == 2:
 				serie  = param[0]
 				season = param[1]
-				list = self.db.seriesGetEpisodesFromSeason(serie, season)
+				list = self.db.seriesGetEpisodesOfSeason(serie, season)
 			
 			return list
 		
@@ -321,39 +321,39 @@ class Manager():
 		log("->", self, 15)
 		return self.db.moviesCount()
 
-	def seriesCountOfSeasonsWithTheTvDbId(self, TheTvDbId):
-		log("->", self, 15)
-		serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
-		return self.db.seriesCountOfSeasons(serieKey)
-
-	def seriesCountOfSeasonsWithPk(self, serieKey):
-		log("->", self, 15)
-		return self.db.seriesCountOfSeasons(serieKey)
-	
-	def seriesCountOfEpisodesWithTheTvDbId(self, TheTvDbId, season):
-		log("->", self, 15)
-		key = self.db.seriesGetPkWithTheTvDbId(inTheTvDbId)
-		return self.db.seriesCountOfEpisodes(key, season)
-	
-	def seriesCountOfEpisodesWithPk(self, serieKey, season):
-		log("->", self, 15)
-		return self.db.seriesCountOfEpisodes(serieKey, season)
-
-	def seriesDeleteSerieCascade(self, serieKey):
-		log("->", self, 15)
-		return self.db.seriesDeleteSerieCascade(serieKey)
-		
-	def getSerieKeyWithTheTvDbId(self, TheTvDbId):
-		serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
-		return serieKey
-		
 	def seriesCount(self):
 		log("->", self, 15)
 		return self.db.seriesCount()
-		
-	def seriesCountOfEpisodes(self):
+
+	def seriesCountSeasonsWithTheTvDbId(self, theTvDbId):
 		log("->", self, 15)
-		return self.db.seriesCountOfEpisodes()
+		serieKey = self.db.seriesGetPkWithTheTvDbId(theTvDbId)
+		return self.db.seriesCountSeasons(serieKey)
+
+	def seriesCountSeasons(self, serieKey):
+		log("->", self, 15)
+		return self.db.seriesCountSeasons(serieKey)
+	
+	def seriesCountEpisodesWithTheTvDbId(self, theTvDbId, season):
+		log("->", self, 15)
+		serieKey = self.db.seriesGetPkWithTheTvDbId(theTvDbId)
+		return self.db.seriesCountEpisodes(serieKey, season)
+	
+	def seriesCountEpisodesWithPk(self, serieKey, season):
+		log("->", self, 15)
+		return self.db.seriesCountEpisodes(serieKey, season)
+
+	def seriesCountAllEpisodes(self):
+		log("->", self, 15)
+		return self.db.seriesCountAllEpisodes()
+
+	def seriesDeleteSerieCascade(self, serieKey):
+		log("->", self, 15)
+		return self.db.seriesDeleteCascadeOfSerie(serieKey)
+	#new
+	#def serieGetPkWithTheTvDbId(self, TheTvDbId):
+	#	serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
+	#	return serieKey
 		
 	def convertNullValues(self, record):
 		log("->", self, 10)

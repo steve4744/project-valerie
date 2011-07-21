@@ -13,11 +13,33 @@
 #   v1 15/07/2011 - Zuki - minor changes to support SQL DB
 #			 - Separate LoadALL in 3 processes (movies,series,failed)
 #			 - Added Database requests to 
-#
 #   v2 18/07/2011 - Zuki - Added Counters for Movies/Series
+#   v3 21/07/2011 - Zuki - Added new functions to access Series/Episodes 
+##
+################################################################################
+# Function			Parameters		Return
+################################################################################
+# moviesGetAll						dict of MediaInfo
+# moviesGetAllValues					list of MediaInfo 
+# moviesGetWithKey		movieKey		MediaInfo
+# moviesGetPkWithImdb		ImdbID			ID
+# moviesCount						Count
 #
-#   v
+# seriesGetAll						dict of MediaInfo
+# seriesGetAllValues					list of MediaInfo
+# seriesGetWithKey		serieKey		MediaInfo
+# seriesGetPkWithTheTvDb	theTvDbId		ID
+# seriesGetSeasons		serieKey		dict of MediaInfo
+# seriesGetAllEpisodes					dict of MediaInfo
+# seriesGetEpisodesOfSerie	serieKey		dict of MediaInfo
+# seriesGetEpisodesOfSeason	serieKey,season		dict of MediaInfo
+# seriesGetEpisode		serieKey,season,episode	MediaInfo
+# seriesCount						Count
+# seriesCountSeasons		serieKey		Count
+# seriesCountEpisodes		serieKey,season		Count
+# seriesCountAllEpisodes				Count
 #
+# seriesDeleteCascadeOfSerie	serieKey		Boolean
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -535,39 +557,39 @@ class Database(object):
 		log("->", self, 20)
 		return self.moviesGetAll().values()
 
-	def moviesGetWithKey(self, key):
+	def moviesGetWithKey(self, movieKey):
 		log("->", self, 20)
 		self._moviesCheckLoaded()
 		start_time = time.time()
 		element = None
-		if key in self._dbMovies:
-			element = self._dbMovies[key]
+		if movieKey in self._dbMovies:
+			element = self._dbMovies[movieKey]
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
 		return element
 
-	def moviesGetWithImdb(self, inImdbId):
+	def moviesGetPkWithImdb(self, imdbId):
 		printl("->", self)
 		self._moviesCheckLoaded()
 		start_time = time.time()
-		element = None
+		key = None
 		if self.USE_INDEXES:
 			# use Indexes loaded at beginning
 			# indexing 0.0007		
 			#key = self.idxMoviesImdb[imdb]
-			#element = self.dbMovies[key]			
+			#element = self._dbMovies[key]			
 			pass
 		else:			
 			# without indexing 0.02
-			for key in self.db.dbMovies:
-				if key != self.CONFIGKEY:		# only for Pickle
-					if self._dbMovies[key].ImdbId == inImdbId:
-						element = self.db.dbMovies[key]
+			for movieKey in self.db._dbMovies:
+				if movieKey != self.CONFIGKEY:		# only for Pickle
+					if self._dbMovies[movieKey].ImdbId == imdbId:
+						key = movieKey
 						break
 		
 		elapsed_time = time.time() - start_time
-		printl("Took B: " + str(elapsed_time), self)
-		return element
+		printl("Took: " + str(elapsed_time), self)
+		return key
 
 	def moviesCount(self):
 		log("->", self, 20)
@@ -604,39 +626,6 @@ class Database(object):
 		log("->", self, 11)
 		return self.seriesGetAll().values()
 		
-	def seriesGetAllEpisodes(self):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		list = []
-		for serie in self._dbEpisodes:
-			for season in self._dbEpisodes[serie]:
-				list += self._dbEpisodes[serie][season].values()
-		return list	
-	
-	def seriesGetSeasonsFromSerie(self, serie):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		if serie in self._dbEpisodes:
-			return self._dbEpisodes[serie].keys()
-				
-		return self.seriesGetAll().values()
-	
-	def seriesGetEpisodesFromSerie(self, serie):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		list = []
-		if serie in self._dbEpisodes:
-			for season in self._dbEpisodes[serie]:
-				list += self._dbEpisodes[serie][season].values()
-		return list
-	
-	def seriesGetEpisodesFromSeason(self, serie, season):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		if serie in self._dbEpisodes:
-			if season in self._dbEpisodes[serie]:
-				return self._dbEpisodes[serie][season].values()
-				
 	def seriesGetWithKey(self, key):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
@@ -648,21 +637,11 @@ class Database(object):
 		printl("Took: " + str(elapsed_time), self)
 		return element
 	
-	def seriesGetEpisode(self, serie, season, episode):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		element = None
-		if serie in self._dbEpisodes:
-			if season in self._dbEpisodes[serie]:
-				if episode in self._dbEpisodes[serie][season]:
-					element = self._dbEpisodes[serie][season][episode]
-		return element
-	
 	def seriesGetPkWithTheTvDbId(self, inTheTvDbId):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
 		start_time = time.time()
-		element = None
+		key = None
 		if self.USE_INDEXES:
 			# use Indexes loaded at beginning
 			# indexing 0.0007		
@@ -671,16 +650,73 @@ class Database(object):
 		else:			
 			# without indexing 0.02s
 			for serieKey in self._dbSeries:
-				if self._dbSeries[serieKey].TheTvDbId == inTheTvDbId:
-					key = serieKey
-					break
+				if serieKey != self.CONFIGKEY:		# only for Pickle
+					if self._dbSeries[serieKey].TheTvDbId == inTheTvDbId:
+						key = serieKey
+						break
 		
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
+		return key
+
+	def seriesGetAllEpisodes(self):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		list = []
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					list += self._dbEpisodes[serieKey][season].values()
+		return list	
+
+	#def seriesGetAllEpisodes(self):
+	#	log("->", self, 11)
+	#	self._seriesCheckLoaded()
+	#	newList	= self._dbEpisodes.copy()
+	#	if self.CONFIGKEY in newList:
+	#		del newList[self.CONFIGKEY]
+	#	return newList
+	
+	def seriesGetSeasons(self, serieKey):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		if serieKey in self._dbEpisodes:
+			return self._dbEpisodes[serieKey].keys()
+				
+		return self.seriesGetAll().values()
+	
+	def seriesGetEpisodesOfSerie(self, serieKey):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		list = []
+		if serieKey in self._dbEpisodes:
+			for season in self._dbEpisodes[serieKey]:
+				list += self._dbEpisodes[serieKey][season].values()
+		return list
+	
+	def seriesGetEpisodesOfSeason(self, serieKey, season):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		if serieKey in self._dbEpisodes:
+			if season in self._dbEpisodes[serieKey]:
+				return self._dbEpisodes[serieKey][season].values()
+				
+	def seriesGetEpisode(self, serieKey, season, episode):
+		log("->", self, 11)
+		self._seriesCheckLoaded()
+		element = None
+		if serieKey in self._dbEpisodes:
+			if season in self._dbEpisodes[serieKey]:
+				if episode in self._dbEpisodes[serieKey][season]:
+					element = self._dbEpisodes[serieKey][season][episode]
 		return element
 	
-	#not tested
-	def seriesCountOfSeasons(self, serieKey):
+	
+	def seriesCount(self):
+		log("->", self, 20)
+		return len(self.seriesGetAll())
+
+	def seriesCountSeasons(self, serieKey):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
 		count = None
@@ -688,46 +724,29 @@ class Database(object):
 			count = len(self._dbEpisodes[serieKey])
 		return count
 	
-	#not tested
-	def seriesCountOfEpisodes(self, serieKey, season):
+	def seriesCountEpisodes(self, serieKey, season):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
-		count = None
+		count = 0
 		if serieKey in self._dbEpisodes:
 			if season in self._dbEpisodes[serieKey]:
 				count = len(self._dbEpisodes[serieKey][season])
 		return count
 
+	def seriesCountAllEpisodes(self):
+		log("->", self, 11)
+		return len(self.seriesGetAllEpisodes())
+
 	#not tested
-	def seriesDeleteSerieCascade(self, serieKey):
+	def seriesDeleteCascadeOfSerie(self, serieKey):
 		log("->", self, 11)
 		self._seriesCheckLoaded()
 		if serieKey in self._dbEpisodes:
 			del(self._dbEpisodes[serieKey])
 		if serieKey in self._dbSeries:	
 			del(self._dbSeries[serieKey])
-		return None
+		return True
 
-		
-	def seriesCount(self):
-		log("->", self, 20)
-		return len(self.seriesGetAll())
-
-#	
-#################################   EPISODES   ################################# 
-#		
-
-	def episodesGetAll(self):
-		log("->", self, 11)
-		self._seriesCheckLoaded()
-		newList	= self._dbEpisodes.copy()
-		if self.CONFIGKEY in newList:
-			del newList[self.CONFIGKEY]
-		return newList
-	
-	def seriesCountOfEpisodes(self):
-		log("->", self, 11)
-		return len(self.episodesGetAll())
 
 
 
