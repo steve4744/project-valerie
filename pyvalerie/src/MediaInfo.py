@@ -171,7 +171,7 @@ class MediaInfo(object):
 				self.MovieName = movieName.strip()
 				self.EpisodeName = episodeName.strip()
 				
-				if self.MovieName == self.EpisodeName:
+				if (self.EpisodeName == '') or (self.MovieName == self.EpisodeName):
 					printl("IS Movie", self)
 					self.IsMovie = True
 					self.IsEpisode = False
