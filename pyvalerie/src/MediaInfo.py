@@ -153,8 +153,8 @@ class MediaInfo(object):
 
 	def isEnigma2Recording(self, name):
 		try:
-			printl("META: " + str(Utf8.utf8ToLatin(name + u".meta")), self)
 			if os.path.isfile(Utf8.utf8ToLatin(name + u".meta")):
+				printl("Found E2 meta file: " + str(Utf8.utf8ToLatin(name + u".meta")), self)
 				return True
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
@@ -408,6 +408,7 @@ class MediaInfo(object):
 		self.SearchString = name
 		valerieInfoSearchString = None
 		isSeasonEpisodeFromFilename = False
+		isE2Recording = (self.Extension == u"ts") and (self.isEnigma2Recording(absFilename))
 		
 		if self.isValerieInfoAvailable(self.Path) is True:
 			valerieInfoSearchString = self.getValerieInfo(self.Path).strip()
@@ -473,7 +474,7 @@ class MediaInfo(object):
 				printl("Something went wrong while reading from nfo :-(", self, "I")
 		
 		###  
-		if self.Year == -1:
+		if (self.Year == -1) and (isE2Recording == False):
 			m = re.search(r'\s(?P<year>\d{4})\s', self.SearchString)
 			if m and m.group("year"):
 				year = int(m.group("year"))
@@ -613,7 +614,7 @@ class MediaInfo(object):
 		
 		printl(":2: " + str(Utf8.utf8ToLatin(self.SearchString)) + " " + str(self.Season) + " " + str(self.Episode) + " " + str(self.Year), self)
 		
-		if self.Extension == u"ts" and self.isEnigma2Recording(absFilename) is True:
+		if isE2Recording is True:
 			printl("Extension == 'ts' and E2 meta file found => retrieving name from '" + absFilename + "'", self, "I")
 			e2info = self.getEnigma2RecordingName(absFilename)
 			if e2info is not None:
