@@ -29,10 +29,12 @@ print "[valerie] I  __init__:: Init Valerie"
 # On Dreamboxes the default encoding should already be uft8
 # But on other boxes it may be latin-1 so set it here, and hopefully this will
 # not crash anything for those boxes
-defaultEncoding = "utf-8"
-reload(sys)
-sys.setdefaultencoding(defaultEncoding)
-print "[valerie] I  __init__:: Default encoding set to: " + defaultEncoding
+# By the way this crashes the e2 crashelogs ;-) funny isn't it? ;-)
+#IMPORTANT: In order to check if this is still nedded I will deactivate this.
+#defaultEncoding = "utf-8"
+#reload(sys)
+#sys.setdefaultencoding(defaultEncoding)
+#print "[valerie] I  __init__:: Default encoding set to: " + defaultEncoding
 
 # the currentVersion should be renewed every major update
 currentVersion          = "r001"
