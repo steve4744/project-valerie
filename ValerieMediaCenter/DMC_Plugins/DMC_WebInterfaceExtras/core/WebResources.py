@@ -33,7 +33,7 @@ class Home(Resource):
 		currentVersion = config.plugins.pvmc.version.value
 		movieCount = str(Manager().moviesCount())
 		tvShowCount = str(Manager().seriesCount())
-		episodeCount = str(Manager().seriesCountAllEpisodes())
+		episodeCount = str(Manager().seriesCountEpisodes())
 				
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
 		

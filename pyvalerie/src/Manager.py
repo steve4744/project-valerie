@@ -74,9 +74,9 @@ class Manager():
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				list = self.db.seriesGetEpisodesOfSerie(param)
+				list = self.db.seriesGetEpisodes(param)
 			else:
-				list = self.db.seriesGetAllEpisodes()
+				list = self.db.seriesGetEpisodes()
 			return list
 		
 		elif type == self.TVSHOWSSEASONS: 
@@ -88,7 +88,7 @@ class Manager():
 			elif param is not None and len(param) == 2:
 				serie  = param[0]
 				season = param[1]
-				list = self.db.seriesGetEpisodesOfSeason(serie, season)
+				list = self.db.seriesGetEpisodes(serie, season)
 			
 			return list
 		
@@ -316,11 +316,17 @@ class Manager():
 			Arts.download(media, overwrite)
 			return True
 		return False
-	
+
+#
+#################################   MOVIES   ################################# 
+#
 	def moviesCount(self):
 		log("->", self, 15)
 		return self.db.moviesCount()
 
+#
+#################################   SERIES   ################################# 
+#
 	def seriesCount(self):
 		log("->", self, 15)
 		return self.db.seriesCount()
@@ -339,13 +345,9 @@ class Manager():
 		serieKey = self.db.seriesGetPkWithTheTvDbId(theTvDbId)
 		return self.db.seriesCountEpisodes(serieKey, season)
 	
-	def seriesCountEpisodesWithPk(self, serieKey, season):
+	def seriesCountEpisodes(self, serieKey=None, season=None):
 		log("->", self, 15)
 		return self.db.seriesCountEpisodes(serieKey, season)
-
-	def seriesCountAllEpisodes(self):
-		log("->", self, 15)
-		return self.db.seriesCountAllEpisodes()
 
 	def seriesDeleteSerieCascade(self, serieKey):
 		log("->", self, 15)
