@@ -402,7 +402,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 			self.list.append(getConfigListEntry(_("Language"), self.local))
 			
 			self.deleteIfNotFound = ConfigYesNo(default = defaultDelete)
-			self.list.append(getConfigListEntry(_("Delete movies if file can not be found"), self.deleteIfNotFound))
+			self.list.append(getConfigListEntry(_("Delete database entry if file can not be found"), self.deleteIfNotFound))
 			
 		except KeyError, ex:
 			printl("KeyError: " + str(ex), self)
