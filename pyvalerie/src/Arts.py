@@ -14,7 +14,7 @@ class Arts():
 	
 	URL = "http://val.duckbox.info"
 	CONVERT = "/cgi-bin/convert2.py?"
-	CONVERT2USER = "/cgi-bin/convert2user.py?"
+	CONVERT2USER = "/cgi-bin/convert2user.py"
 
 	posterResolution = ("110x214", "156x214", "195x267", )
 
@@ -35,8 +35,8 @@ class Arts():
 				return True
 		return False
 
-	def save(self, url, file=None):
-		if file is None:
+	def save(self, url, file=None, overwrite=False, useDuck=False):
+		if useDuck is False:
 			urlresponse = WebGrabber.getText(url)
 		else:
 			try:
@@ -51,7 +51,7 @@ class Arts():
 				fileInfo = file.strip().split('|')
 				printl("fileInfo=" + str(fileInfo), self, "D")
 				if len(fileInfo) == 2:
-					WebGrabber.getFile(self.URL + fileInfo[1], fileInfo[0])
+					WebGrabber.getFile(self.URL + fileInfo[1], fileInfo[0], overwrite=overwrite)
 
 	def download(self, eInfo, overwrite=False):
 		printl("->", self, "D")
@@ -85,9 +85,9 @@ class Arts():
 			if url.startswith("user://"):
 				url = url[len("user://"):]
 				if url[0] == "/": #FILE
-					self.save(self.URL + self.CONVERT2USER + "?id=" + id + "&type=" + type + "&user=true&isurl=false", url)
+					self.save(self.URL + self.CONVERT2USER + "?id=" + id + ";type=" + type + ";user=true;isurl=false", url, overwrite=overwrite, useDuck=True)
 				else:
-					self.save(self.URL + self.CONVERT2USER + "?id=" + id + "&type=" + type + "&user=true&isurl=true&url=" + url)
+					self.save(self.URL + self.CONVERT2USER + "?id=" + id + ";type=" + type + ";user=true;isurl=true;url=" + url, overwrite=overwrite, useDuck=True)
 			else:
 				self.save(self.URL + self.CONVERT + id + ";" + type + ";" + url)
 		printl("<-", self, "D")

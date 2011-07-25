@@ -76,12 +76,12 @@ def sendFile(url, file, flags):
     form = MultiPartForm()
     for flag in flags:
       form.add_field(flag[0], flag[1])
-    
-    fd = open(file, "rb")
-    
-    # Add a fake file
-    form.add_file('file', file, 
-                  fileHandle=fd)
+    if file is not None:
+		fd = open(file, "rb")
+		
+		# Add a fake file
+		form.add_file('file', file, 
+					  fileHandle=fd)
 
     # Build the request
     request = urllib2.Request(url)

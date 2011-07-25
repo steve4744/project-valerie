@@ -195,7 +195,7 @@ def getText(url):
 	
 	return u""
 
-def getFile(url, name, retry=3, fixurl=True):
+def getFile(url, name, retry=3, fixurl=True, overwrite=False):
 	try:
 		if name[:1] == "/":
 			# Filename is absolut
@@ -203,7 +203,7 @@ def getFile(url, name, retry=3, fixurl=True):
 		else:
 			localFilename = downloadDir + "/" + name
 		url = url.strip() # Just to be on the save side
-		if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False:
+		if os.path.isfile(Utf8.utf8ToLatin(localFilename)) is False or overwrite is True:
 			for i in range(retry):
 				try:
 					fixedurl = Utf8.utf8ToLatin(url)
@@ -228,7 +228,7 @@ def getFile(url, name, retry=3, fixurl=True):
 					printl("Url: " + str(Utf8.utf8ToLatin(url)), __name__)
 					printl("type(ex): " + str(type(ex)), __name__)
 		else:
-			printl("ARGH: No such file " + Utf8.utf8ToLatin(localFilename), __name__, "E")
+			printl("ARGH: File already exists and overwrite flag not provided" + Utf8.utf8ToLatin(localFilename), __name__, "E")
 	except Exception, ex:
 		printl("Exception (ef): " + str(ex), __name__, "E")
 		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")

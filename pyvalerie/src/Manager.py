@@ -24,6 +24,7 @@ from   MediaInfo import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
 import replace
 from   sync import Sync
+from Arts import Arts
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__common__ import log as log
@@ -311,19 +312,24 @@ class Manager():
 		return newElement
 	
 	def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
+		printl("start changing arts", self)
 		media = self.getElementByUsingPrimaryKey(type, primary_key)
 		if media is not None:
-			
+			printl("element found ", self)
 			if backdrop is not None:
 				media.Backdrop = backdrop
+				printl("setting backdrop source", self)
 			if poster is not None:
 				media.Poster = poster
+				printl("setting poster source", self)
 			
-			if media.Backdrop is not None and media.Poster is not None:
-				Arts.download(media, overwrite)
+			if media.Backdrop is not None or media.Poster is not None:
+				printl("downloading arts", self)
+				Arts().download(media, overwrite)
 				return True
 			else:
 				return False
+		printl("no element found", self)
 		return False
 
 #
