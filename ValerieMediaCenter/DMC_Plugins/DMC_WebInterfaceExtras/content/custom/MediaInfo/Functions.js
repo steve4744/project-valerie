@@ -121,12 +121,12 @@ function fillTable(params, usePath) {
 		}
 
 		if (params["type"] == "isMovie") {
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + params["ImdbId"] + "_195x267.png");
-			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + params["ImdbId"] + "_320x180.png");
+			$("#duck_img").attr("src","/media/" + params["ImdbId"] + "_poster_195x267.png");
+			$("#duck_backdrop_img").attr("src","/media/" + params["ImdbId"] + "_backdrop_320x180.png");
 			
 		} else if (params["type"] == "isTvShow" || params["type"] == "isEpisode") {
-			$("#duck_img").attr("src","http://val.duckbox.info/convertImg2/poster/" + params["TheTvDbId"] + "_195x267.png");
-			$("#duck_backdrop_img").attr("src","http://val.duckbox.info/convertImg2/backdrop/" + params["TheTvDbId"] + "_320x180.png");
+			$("#duck_img").attr("src","/media/" + params["TheTvDbId"] + "_poster_195x267.png");
+			$("#duck_backdrop_img").attr("src","/media/" + params["TheTvDbId"] + "_backdrop_320x180.png");
 		}
 }
 
@@ -145,3 +145,64 @@ function showAlternatives() {
 
 	window.open(urlString, '_self');
 }
+
+function changePictures(media_type) {
+	var reply = prompt("Please specify URL or PATH to the picture.", "user://http://my.url or user:///path/to/picture");
+	//var reply = prompt("Please specify URL or PATH to the picture.", "user://http://img138.imageshack.us/img138/7311/iamlegendposter02.jpg");
+	
+	var params = get_params();
+	var type = params["type"];
+	var parameter = new Array();
+	
+	parameter["method"] = "change_arts";
+	
+	if (media_type == "poster") {
+		parameter["media_type"] = "poster";
+	
+	} else if (media_type == "backdrop") {
+		parameter["media_type"] = "backdrop";
+	
+	} else {
+		alert("no media type defined");
+	}
+	
+	parameter["media_source"] = reply;
+	parameter["type"] = type
+	
+	if (type == "isMovie") {
+		parameter["ImdbId"] = params["ImdbId"];
+			
+	} else if (type == "isTvShow") {
+		parameter["TheTvDbId"] = params["TheTvDbId"];	
+	
+	} else if (type == "isEpisode") {
+		parameter["TheTvDbId"] = params["TheTvDbId"];
+		parameter["Season"] = params["Season"];	
+		parameter["Episode"] = params["Episode"];
+	} else {
+		alert("no primary key set");
+	}
+
+	
+	if (reply == null) { return;} 
+	
+	var data = "";
+	for (param in parameter) {
+		data += param + "=" +  encodeURIComponent(parameter[param]) + "&";
+	}
+
+	$.ajax({
+		url: "/action",
+		type: "GET",
+		data: data,
+		success: function (returnCode) {
+			if (returnCode== "success") {
+				 location.reload();
+			} else {
+				alert('Error - Please try again');
+			}
+		}
+	});
+
+ }
+ 

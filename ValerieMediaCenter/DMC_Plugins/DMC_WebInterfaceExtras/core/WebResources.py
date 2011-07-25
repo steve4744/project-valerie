@@ -75,9 +75,9 @@ class Movies(Resource):
 			evtDelete = WebData().getDeleteString(entry, "isMovie")
 			
 			tableBody += u"""   <tr>
-							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
+							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
-							<td>%d</td>
+							<td>%s</td>
 							<td><a href=http://www.imdb.com/title/%s/ target="_blank">%s</a></td>
 							<td>%s</td>
 							<td>
@@ -119,7 +119,7 @@ class TvShows(Resource):
 			evtDelete = WebData().getDeleteString(entry, "isTvShow") 
 			
 			tableBody += u"""   <tr>
-							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
+							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%s</td>
 							<td>%s</td>
@@ -166,7 +166,7 @@ class Episodes(Resource):
 
 			
 			tableBody += u"""   <tr>
-							<td><img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img></td>
+							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%d</td>
 							<td>%d</td>

@@ -293,6 +293,8 @@ class WebActions(Resource):
 			redirectString += "Genres=" + urllib.quote(str(result.Genres)) + "&"
 			redirectString += "Tag=" + urllib.quote(str(result.Tag)) + "&"
 			redirectString += "Popularity=" + urllib.quote(str(result.Popularity)) + "&"
+			redirectString += "Poster=" + urllib.quote(str(result.Poster)) + "&"
+			redirectString += "Backdrop=" + urllib.quote(str(result.Backdrop)) + "&"			
 			if request.args["usePath"][0] == "true":
 				redirectString += "Path=" + urllib.quote(str(path)) + "&"
 				redirectString += "Filename=" + urllib.quote(str(filename)) + "&"
@@ -300,6 +302,53 @@ class WebActions(Resource):
 			
 			
 			return WebHelper().redirectMeTo(redirectString)
+		
+		##
+		# alter arts
+		##	
+		elif request.args["method"][0] == "change_arts":
+			manager = Manager()
+			type = request.args["type"][0]
+			media_source = request.args["media_source"][0]
+			media_type = request.args["media_type"][0]
+
+			
+			if type == "isMovie":
+				primary_key = {}
+				primary_key["imdbid"] = request.args["ImdbId"][0]
+			
+			elif type == "isTvShow":
+				primary_key = {}
+				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
+				
+			elif type == "isEpisode":
+				primary_key = {}
+				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
+				primary_key["season"] = request.args["Season"][0]
+				primary_key["episode"] = request.args["Episode"][0]
+			
+			else:
+				return utf8ToLatin("error")
+			
+			
+			if media_type == "poster":
+				result = manager.getArtsByUsingPrimaryKey(Manager.MOVIES, primary_key, True, None, media_source)
+				if result == True:
+					return utf8ToLatin("success")
+				else:
+					return utf8ToLatin("error")
+			
+			elif media_type == "backdrop":
+				result = manager.getArtsByUsingPrimaryKey(Manager.MOVIES, primary_key, True, media_source)
+				if result == True:
+					return utf8ToLatin("success")
+				else:
+					return utf8ToLatin("error")
+			else:
+				printl("no media type found", self)
+				return utf8ToLatin("error")
+			
+			return utf8ToLatin("error")
 		
 		##
 		# save to db

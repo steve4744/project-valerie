@@ -8,11 +8,11 @@
 		<br />
 		<img id="duck_img" src="" width="78" height="107" alt="n/a"></img>
 		<br><br>
-		<!-- <input type="button" name="changePoster" value="change Poster"> -->
+		<input type="button" name="changeBackdrop" value="change Poster" onclick="javascript:changePictures('poster');">
 		<br /><br />
 		<img id="duck_backdrop_img" src="" width="160" height="90" alt="n/a"></img>
 		<br><br>
-		<!-- <input type="button" name="changeBackdrop" value="change Backdrop"> -->
+		<input type="button" name="changeBackdrop" value="change Backdrop" onclick="javascript:changePictures('backdrop');">
 		<div id=special_features>
 		<br><br><br><br>
 		special Features:

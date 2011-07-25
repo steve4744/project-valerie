@@ -14,8 +14,7 @@
 	
 	<div class="text">
 		Movies: <!-- MOVIE_COUNT --><br><br>
-		TvShows: <!-- TVSHOW_COUNT --><br><br>
-		Episodes: <!-- EPISODE_COUNT -->
+		TvShows: <!-- TVSHOW_COUNT -->&nbsp;(with <!-- EPISODE_COUNT --> Episodes)
 	</div>
 	
 	<div class="subheader">

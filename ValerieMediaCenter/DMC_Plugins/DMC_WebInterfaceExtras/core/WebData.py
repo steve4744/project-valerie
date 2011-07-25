@@ -129,6 +129,8 @@ class WebData():
 		onclick  += urlencode({'Genres':entry.Genres}) + "&"
 		onclick  += urlencode({'Tag':entry.Tag}) + "&"
 		onclick  += urlencode({'Popularity':entry.Popularity}) + "&"
+		onclick  += urlencode({'Poster':entry.Poster}) + "&"	
+		onclick  += urlencode({'Backdrop':entry.Backdrop}) + "&"		
 		onclick  += urlencode({'Path':entry.Path}) + "&"
 		onclick  += urlencode({'Filename':entry.Filename}) + "&"
 		onclick  += urlencode({'Extension':entry.Extension})
