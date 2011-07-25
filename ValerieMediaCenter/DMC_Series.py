@@ -450,8 +450,11 @@ class PVMC_Series(Screen, HelpableScreen):
 			if self.APILevel >= 2:
 				itemsPerPage = int(self["listview_itemsperpage"].getData())
 				itemsTotal = self["listview"].count()
+				correctionVal = 0.5
+				if (itemsTotal%itemsPerPage) == 0:
+					correctionVal = 0
 				#print "itemsPerPage", itemsPerPage
-				pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + 0.5))
+				pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + correctionVal))
 				pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
 				if self.inSeries:
 					self.setText("total", _("Total tv shows:") + ' ' + str(itemsTotal))
