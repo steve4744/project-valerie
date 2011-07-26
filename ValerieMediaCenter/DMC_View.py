@@ -592,6 +592,9 @@ class DMC_View(Screen, HelpableScreen):
 		self.session.openWithCallback(self.displayOptionsMenuCallback, ChoiceBox, \
 			title=_("Options"), list=pluginList)
 
+	def pluginCallback(self, args=None):
+		self.refresh()
+
 	def displayOptionsMenuCallback(self, choice):
 		if choice is None or choice[1] is None:
 			return
@@ -599,9 +602,19 @@ class DMC_View(Screen, HelpableScreen):
 		selection = self["listview"].getCurrent()
 		if selection is not None:
 			if choice[1].start:
-				self.session.open(choice[1].start, selection[1])
+				if choice[1].supportStillPicture:
+					self.session.open(choice[1].start, selection[1])
+				else:
+					if self.has_key("backdrop"):
+						self["backdrop"].finishStillPicture()
+					self.session.openWithCallback(pluginCallback, choice[1].start, selection[1])
+					
 			elif choice[1].fnc:
-				choice[1].fnc(selection[1])
+				if choice[1].supportStillPicture is False and self.has_key("backdrop"):
+					self["backdrop"].finishStillPicture()
+				choice[1].fnc(self.session, selection[1])
+				if choice[1].supportStillPicture is False and self.has_key("backdrop"):
+					self.refresh()
 
 #registerPlugin(Plugin(name=_("Set view as default"), fnc=setViewAsDefault, where=Plugin.MENU_MOVIES_PLUGINS))
 #registerPlugin(Plugin(name=_("Bookmark view"), fnc=bookmarkView, where=Plugin.MENU_MOVIES_PLUGINS))
