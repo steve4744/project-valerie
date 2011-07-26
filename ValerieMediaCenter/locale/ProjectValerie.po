@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Project Valerie\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: \n"
+"Last-Translator: slugshot <not known>\n"
 "Language-Team: IhaD <JackDaniel@i-have-a-dreambox.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -13,75 +13,83 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 msgid "Save"
-msgstr ""
+msgstr "Speichern"
 
 msgid "Show wizard on next start"
-msgstr ""
+msgstr "Wizard beim nächsten Start anzeigen"
 
 msgid "Start Valerie on e2 start"
-msgstr ""
+msgstr "Valerie automatisch mit E2 starten"
 
 msgid "Check for updates on Valerie start"
-msgstr ""
+msgstr "Auf neue Version bei Valerie start prüfen"
 
 msgid "Backdrop quality"
-msgstr ""
+msgstr "Backdrop Qualität"
 
 msgid "Use Trakt.tv"
-msgstr ""
+msgstr "Trakt.tv verwenden"
 
 msgid "Trakt.tv - Username"
-msgstr ""
+msgstr "Trakt.tv - Benutzername"
 
 msgid "Trakt.tv - Password"
-msgstr ""
+msgstr "Trakt.tv - Passwort"
 
 msgid "TV"
-msgstr ""
+msgstr "TV"
 
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronisieren"
 
 msgid "Music"
-msgstr ""
+msgstr "Musik"
 
 msgid "Movies"
-msgstr ""
+msgstr "Filme"
 
 msgid "Series"
-msgstr ""
+msgstr "Serien"
 
 msgid "Live TV"
-msgstr ""
+msgstr "Live TV"
 
 msgid ""
 "A new version of MediaCenter is available for download!\n"
 "\n"
 "Version: %s"
 msgstr ""
+"Neue Version von Valerie verfügbar!\n"
+"\n"
+"Version: %s"
 
 msgid ""
 "UNEXPECTED ERROR:\n"
 "%s"
 msgstr ""
+"UNERWARTETER FEHLER:\n"
+"%s"
 
 msgid ""
 "Please install the plugin \n"
 "ProjectValerieSync\n"
 " to use this feature."
 msgstr ""
+"Bitte Plugin \n"
+"ProjectValerieSync\n"
+" installieren."
 
 msgid "Enigma2 will now restart!"
-msgstr ""
+msgstr "Enigma2 wird neu gestartet!"
 
 msgid "Checking for updates ..."
-msgstr ""
+msgstr "Überprüfe auf Updates ..."
 
 msgid ""
 "Updating ProjectValerie...\n"
@@ -89,300 +97,423 @@ msgid ""
 "\n"
 "Stay tuned :-)"
 msgstr ""
+"ProjectValerie wird upgedatet...\n"
+"\n"
+"\n"
+"Cool bleiben :-)"
 
 msgid "Total movies:"
-msgstr ""
+msgstr "Anzahl Filme:"
 
 msgid "Pages:"
-msgstr ""
+msgstr "Seiten:"
 
 msgid "Total tv shows:"
-msgstr ""
+msgstr "Anzahl Serien:"
 
 msgid "Total seasons:"
-msgstr ""
+msgstr "Anzahl Staffeln:"
 
 msgid "Total episodes:"
-msgstr ""
+msgstr "Anzahl Episoden:"
 
 msgid "Categories"
-msgstr ""
+msgstr "Kategorien"
 
 msgid "Sort"
-msgstr ""
+msgstr "Sortieren"
 
 msgid "Not available"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 msgid "not available"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 msgid "Select Category"
-msgstr ""
+msgstr "Kategorie auswählen"
 
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 msgid "Popularity"
-msgstr ""
+msgstr "Beliebtheit"
 
 msgid "Sort by"
-msgstr ""
+msgstr "sortieren nach"
 
 msgid "Title:\n"
-msgstr ""
+msgstr "Titel:\n"
 
 msgid ""
 "\n"
 "\n"
 "Plot:\n"
 msgstr ""
+"\n"
+"\n"
+"Inhalt:\n"
 
 msgid "Documentary"
-msgstr ""
+msgstr "Doku"
 
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 msgid "Adventure"
-msgstr ""
+msgstr "Abenteuer"
 
 msgid "Crime"
-msgstr ""
+msgstr "Krimi"
 
 msgid "Drama"
-msgstr ""
+msgstr "Drama"
 
 msgid "Fantasy"
-msgstr ""
+msgstr "Fantasy"
 
 msgid "Horror"
-msgstr ""
+msgstr "Horror"
 
 msgid "Independent"
-msgstr ""
+msgstr "Independent"
 
 msgid "Comedy"
-msgstr ""
+msgstr "Komödie"
 
 msgid "Mystery"
-msgstr ""
+msgstr "Geheimnisvoll"
 
 msgid "Romance"
-msgstr ""
+msgstr "Romantisch"
 
 msgid "Thriller"
-msgstr ""
+msgstr "Thriller"
 
 msgid "History"
-msgstr ""
+msgstr "Historisch"
 
 msgid "War"
-msgstr ""
+msgstr "Krieg"
 
 msgid "All"
-msgstr ""
+msgstr "Alles"
 
 msgid "Not found!\n"
-msgstr ""
+msgstr "Nicht gefunden!\n"
 
 msgid ""
 "\n"
 "\n"
 "Please make sure that your drive is connected/mounted."
 msgstr ""
+"\n"
+"\n"
+"Bitte Laufwerk verbinden/mounten."
 
 msgid "High"
-msgstr ""
+msgstr "Hoch"
 
 msgid "Low"
-msgstr ""
+msgstr "Niedrig"
 
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 msgid "Toggle Type"
-msgstr ""
+msgstr "Typ umschalten"
 
-msgid "Delete movies if file can not be found"
-msgstr ""
+msgid "Delete database entry if file can not be found"
+msgstr "Datenbankeintrag entfernen wenn Filmdatei nicht gefunden wird"
 
 msgid "Change searchpaths"
-msgstr ""
+msgstr "Suchpfad ändern"
 
 msgid "Change settings"
-msgstr ""
+msgstr "Einstellungen ändern"
 
 msgid "Delete cache"
-msgstr ""
+msgstr "Cache leeren"
 
 msgid "Delete all posters/backdrops"
-msgstr ""
+msgstr "Alle Poster/Hintergründe löschen"
 
 msgid "Delete database"
-msgstr ""
+msgstr "Datenbank löschen"
 
 msgid "Reset filter"
-msgstr ""
+msgstr "Filter zurücksetzen"
 
 msgid "Exit"
-msgstr ""
+msgstr "Exit"
 
 msgid "Alternatives"
-msgstr ""
+msgstr "Alternativen"
 
 msgid "IMDbID"
-msgstr ""
+msgstr "IMDbID"
 
 msgid "IMDb ID without tt"
-msgstr ""
+msgstr "IMDb ID ohne tt"
 
 msgid "No alternatives found"
-msgstr ""
+msgstr "Keine Alternativen gefunden"
 
 msgid "Failed"
-msgstr ""
+msgstr "Fehlgeschlagen"
 
 msgid "Manage"
-msgstr ""
+msgstr "Verwalten"
 
 msgid "Fast Synchronize"
-msgstr ""
+msgstr "nur hinzufügen"
 
 msgid "Please press the green button to start synchronize!\n"
-msgstr ""
+msgstr "Grüne Taste drücken um Synchronisation zu starten!\n"
 
 msgid "Log:"
-msgstr ""
+msgstr "Log:"
 
 msgid "Progress:"
-msgstr ""
+msgstr "Fortschritt:"
 
 msgid "Last:"
-msgstr ""
+msgstr "Letzes:"
 
 msgid "Year:"
-msgstr ""
+msgstr "Jahr:"
 
 msgid "Name:"
-msgstr ""
+msgstr "Name:"
 
 msgid "Add Path"
-msgstr ""
+msgstr "Pfad hinzufügen"
 
 msgid "Synchronize settings"
-msgstr ""
+msgstr "Sync Einstellungen"
 
 msgid "Synchronize Manager options"
-msgstr ""
+msgstr "Sync Manager Optionen"
 
 msgid "Synchronize finished"
-msgstr ""
+msgstr "Synchronisation beendet"
 
 msgid "Synchronize Manager"
-msgstr ""
+msgstr "Sync Manager"
 
 msgid "Synchronize Manager Info"
-msgstr ""
+msgstr "Sync Manager Infos"
 
 msgid "Synchronize Manager Overview"
-msgstr ""
+msgstr "Sync Manager Übersicht"
 
 msgid "Path:"
-msgstr ""
+msgstr "Pfad:"
 
 msgid "Filename:"
-msgstr ""
+msgstr "Dateiname:"
 
 msgid "Title:"
-msgstr ""
+msgstr "Titel:"
 
 msgid "Season:"
-msgstr ""
+msgstr "Staffel:"
 
 msgid "Episode:"
-msgstr ""
+msgstr "Episode:"
 
 msgid "Synchronize Manager Searchpaths"
-msgstr ""
+msgstr "Sync Manager Suchpfade"
 
 msgid "Welcome to the Project Valerie experiment"
-msgstr ""
+msgstr "Wilkommen zu Projekt Valerie"
 
 msgid "This Wizard allows you to setup Project Valerie"
-msgstr ""
+msgstr "Dieser Wizard hilft dir bei der Einrichtung von Projekt Valerie"
 
 msgid "Press OK to continue"
-msgstr ""
+msgstr "Drücke OK um fortzufahren"
 
 msgid "min"
-msgstr ""
+msgstr "min"
 
 msgid "Overview"
-msgstr ""
+msgstr "Übersicht"
 
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 msgid "Thread running"
-msgstr ""
+msgstr "Laufender Prozess"
 
 msgid "Loading Config"
-msgstr ""
+msgstr "Lade Konfiguration"
 
 msgid "Loading Database"
-msgstr ""
+msgstr "Lade Datenbank"
 
 msgid "Loading Replacements"
-msgstr ""
+msgstr "Lade Platzhalter"
 
 msgid "Loading Filesystem"
-msgstr ""
+msgstr "Lade Dateisystem"
 
 msgid "Searching for media files"
-msgstr ""
+msgstr "Suche Filmdateien"
 
 msgid "Found"
-msgstr ""
+msgstr "Gefunden"
 
 msgid "media files"
-msgstr ""
+msgstr "Film Dateien"
 
 msgid "Saving database"
-msgstr ""
+msgstr "Speiche Datenbank"
 
 msgid "Saving Filesystem"
-msgstr ""
+msgstr "Speichere Dateisystem"
 
 msgid "Done"
-msgstr ""
+msgstr "Fertig"
 
 msgid "Press Exit / Back"
-msgstr ""
+msgstr "Drücke Exit / Zurück"
 
 msgid "Extensions:"
-msgstr ""
+msgstr "Dateierweiterungen:"
 
 msgid "Stop playing this movie?"
-msgstr ""
+msgstr "Abspielen abbrechen?"
 
 msgid "Yes, but play next episode"
-msgstr ""
+msgstr "Ja, aber spiele nächste Episode ab"
 
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 msgid "No, continue"
-msgstr ""
+msgstr "Nein, fahre fort"
 
 msgid ""
 "Enigma2 must be restarted!\n"
 "Should Enigma2 now restart?"
 msgstr ""
+"Enigma2 muss neu gestartet werden!\n"
+"Jetzt neu starten?"
+
+msgid "List"
+msgstr "Listenansicht"
+
+msgid "Poster-Flow"
+msgstr "Posteransicht"
+
+msgid "Aired"
+msgstr "Veröffentlicht"
+
+msgid "Creation"
+msgstr "Erstellt"
+
+msgid "Plugins available"
+msgstr "Plugins verfügbar"
+
+msgid "No plugins available"
+msgstr "keine Plugins verfügbar"
+
+msgid "movies"
+msgstr "Filme"
+
+msgid "tv shows"
+msgstr "Serien"
+
+msgid "Select sort"
+msgstr "Sortierung wählen"
+
+msgid "Select filter"
+msgstr "Filter wählen"
+
+msgid "Select view"
+msgstr "Ansicht wählen"
+
+msgid "Set view as default"
+msgstr "Ansicht als Standard wählen"
+
+msgid "Pictures"
+msgstr "Bilder"
+
+msgid "Programs"
+msgstr "Programme"
+
+msgid "Current Version %s. You are %d revision%s behind!"
+msgstr "Aktuelle Version %s. Du bist %d Revision%s hinterher!"
+
+msgid "On Power press"
+msgstr "Bei Power Taste"
+
+msgid "Show Movie and TVShow in main menu"
+msgstr "Filme und Serien im Hauptmenü anzeigen"
+
+msgid "Valerie Config folder (Database, ...)"
+msgstr "Valerie Konfigurationsverzeichnis (Datenbank, ...)"
+
+msgid "Valerie media folder (Poster, Backdrops)"
+msgstr "Valerie Medienverzeichnis (Poster, Hintergründe)"
+
+msgid "Valerie tmp folder (Logs, Cache)"
+msgstr "Valerie Temp Verzeichnis (Logs, Cache)"
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "Sort: "
+msgstr "Sortieren: "
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "None"
+msgstr "Keiner"
+
+msgid "use Pagination"
+msgstr "verwende Seitennummerierung"
+
+msgid "More"
+msgstr "Mehr"
+
+msgid "Failed (All)"
+msgstr "Fehlgeschlagen (alle)"
+
+msgid "TVShows (All)"
+msgstr "TVShows (alle)"
+
+msgid "No Username"
+msgstr "kein Benutzername"
+
+msgid "Toggle useFolder"
+msgstr "benutze Ordnername"
+
+msgid "Delete movies if file can not be found"
+msgstr "Datenbankeintrag entfernen wenn Filmdatei nicht gefunden wird"
+
+msgid "Autoload Database on start"
+msgstr "Datenbank beim Start laden"
+
+msgid "Provider"
+msgstr "Anbieter"
+
+msgid "Language1"
+msgstr "Sprache1"
+
+msgid "Language2"
+msgstr "Sprache2"
+
+msgid "Language3"
+msgstr "Sprache3"
+
+msgid "Fast Sync on autostart"
+msgstr "nur hinzufügen (schneller Sync) bei Valerie Start"
 
