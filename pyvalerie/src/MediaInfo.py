@@ -432,7 +432,7 @@ class MediaInfo(object):
 		### Replacements PRE
 		printl("[pre] - " + str(self.SearchString), self)
 		for replacement in replace.replacements(u"pre"):
-			log("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
+			#log("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
 			log("\t" + str(self.SearchString), self)
 		

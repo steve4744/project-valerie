@@ -25,16 +25,22 @@ class WebData():
 		manager = Manager()
 		
 		if type == "movies":
-			dataRows = manager.getAll(Manager.MOVIES)
+			#dataRows = manager.get-All(Manager.MOVIES)
+			dataRows = manager.getMoviesValues()
 		elif type == "tvshows":
-			dataRows = manager.getAll(Manager.TVSHOWS)
+			#dataRows = manager.get-All(Manager.TVSHOWS)
+			dataRows = manager.getSeriesValues()
 		elif type == "episodes":
 			if param != None:
-				dataRows = manager.getAll(Manager.TVSHOWSEPISODES, param)
+				#dataRows = manager.get-All(Manager.TVSHOWSEPISODES, param)
+				dataRows = manager.getSeriesEpisodesWithTheTvDbId(param)				
 			else:
-				dataRows = manager.getAll(Manager.TVSHOWSEPISODES)
+				#dataRows = manager.get-All(Manager.TVSHOWSEPISODES)
+				dataRows = manager.getSeriesEpisodes()				
 		elif type == "failed":
-			dataRows = manager.getAll(Manager.FAILED_ALL)
+			#dataRows = manager.get-All(Manager.FAILED_ALL)
+			dataRows = manager.getFailed()
+			
 		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 			dataRows = []

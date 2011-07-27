@@ -40,6 +40,9 @@ class Manager():
 	FAILED = 3
 	FAILED_ALL = 4
 	
+	ORDER_TITLE = 1
+	ORDER_YEAR  = 2
+
 	def __init__(self):
 		printl("->", self)
 		try:
@@ -67,34 +70,34 @@ class Manager():
 		printl("type=" + str(type) + " param=" + str(param), self)
 					
 		if type == self.MOVIES:
-			return self.db.moviesGetAllValues()
+			return self.db.getMoviesValues()
 					
 		elif type == self.TVSHOWS:
-			return self.db.seriesGetAllValues()
+			return self.db.getSeriesValues()
 			
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				list = self.db.seriesGetEpisodes(param)
+				list = self.db.getSeriesEpisodes(param)
 			else:
-				list = self.db.seriesGetEpisodes()
+				list = self.db.getSeriesEpisodes()
 			return list
 		
 		elif type == self.TVSHOWSSEASONS: 
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, )
 			if param is not None and len(param) == 1:
-				list = self.db.seriesGetSeasons(param[0])
+				list = self.db.getSeriesSeasons(param[0])
 
 			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
 			elif param is not None and len(param) == 2:
 				serie  = param[0]
 				season = param[1]
-				list = self.db.seriesGetEpisodes(serie, season)
+				list = self.db.getSeriesEpisodes(serie, season)
 			
 			return list
 		
 		elif type == self.FAILED or type == self.FAILED_ALL:
-			return self.db.dbFailed
+			return self.db.getFailed()
 		else:
 			return None
 
@@ -145,6 +148,7 @@ class Manager():
 
 	def replace(self, oldElement, newElement):
 		printl("", self)
+		# not consistent ...todo: update serie
 		if oldElement is not None:
 			printl("oldElement=" + str(oldElement), self)
 			if type(oldElement) is MediaInfo:
@@ -185,12 +189,12 @@ class Manager():
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			printl("is_Movie found", self)
 			imdbid = primary_key["imdbid"]
-			element = self.db.moviesGetWithKey(imdbid)
+			element = self.db.getMoviesWithKey(imdbid)
 		
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
 			printl("is_TvShow found", self)
 			thetvdbid = primary_key["thetvdbid"]
-			element = self.db.seriesGetWithKey(thetvdbid)
+			element = self.db.getSeriesWithKey(thetvdbid)
 		
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
 			printl("is_Episode found", self)
@@ -202,7 +206,7 @@ class Manager():
 			#print self.db._dbEpisodes[thetvdbid]
 			#print self.db._dbEpisodes[thetvdbid].has_key(season)
 			#print self.db._dbEpisodes[thetvdbid][season].has_key(episode)
-			element = self.db.seriesGetEpisode(thetvdbid, season, episode)
+			element = self.db.getSeriesEpisode(thetvdbid, season, episode)
 		
 		return element
 
@@ -335,43 +339,88 @@ class Manager():
 #
 #################################   MOVIES   ################################# 
 #
-	def moviesCount(self):
-		log("->", self, 15)
-		return self.db.moviesCount()
+	# Pass throught functions
+	def getMovies(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMovies(order, firstRecord, numberOfRecords)
+
+	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMoviesValues(order, firstRecord, numberOfRecords)
+
+	def getMoviesWithKey(self, movieKey):
+		return self.db.getMoviesWithKey(movieKey)
+
+	def getMoviesPkWithImdb(self, imdbId):
+		return self.db.getMovieKeyWithImdb(imdbId)
+
+	def getMoviesCount(self):
+		return self.db.getMoviesCount()
 
 #
 #################################   SERIES   ################################# 
 #
-	def seriesCount(self):
-		log("->", self, 15)
-		return self.db.seriesCount()
-
-	def seriesCountSeasonsWithTheTvDbId(self, theTvDbId):
-		log("->", self, 15)
-		serieKey = self.db.seriesGetPkWithTheTvDbId(theTvDbId)
-		return self.db.seriesCountSeasons(serieKey)
-
-	def seriesCountSeasons(self, serieKey):
-		log("->", self, 15)
-		return self.db.seriesCountSeasons(serieKey)
-	
-	def seriesCountEpisodesWithTheTvDbId(self, theTvDbId, season):
-		log("->", self, 15)
-		serieKey = self.db.seriesGetPkWithTheTvDbId(theTvDbId)
-		return self.db.seriesCountEpisodes(serieKey, season)
-	
-	def seriesCountEpisodes(self, serieKey=None, season=None):
-		log("->", self, 15)
-		return self.db.seriesCountEpisodes(serieKey, season)
-
-	def seriesDeleteSerieCascade(self, serieKey):
-		log("->", self, 15)
-		return self.db.seriesDeleteCascadeOfSerie(serieKey)
-	#new
-	#def serieGetPkWithTheTvDbId(self, TheTvDbId):
-	#	serieKey = self.db.seriesGetPkWithTheTvDbId(TheTvDbId)
-	#	return serieKey
+	# Pass throught functions	
+	def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getSeries(order, firstRecord, numberOfRecords)
 		
+	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getSeriesValues(order, firstRecord, numberOfRecords)
+	
+	def getSeriesWithKey(self, serieKey):
+		return self.db.getSeriesWithKey(serieKey)
+	
+	def getSeriesWithTheTvDbId(self, theTvDbId):
+		return self.db.getSeriesWithTheTvDbId(theTvDbId)
+		
+	def getSeriesEpisodes(self, serieKey=None, season=None):
+		return self.db.getSeriesEpisodes(serieKey, season)
+	
+	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
+		return self.db.getSeriesEpisodesWithTheTvDbId(theTvDbId, season)
+	
+	def getSeriesEpisode(self, serieKey, season, episode):
+		return self.db.getSeriesEpisode(serieKey, season, episode)
+		
+	def getSeriesSeasons(self, serieKey):			
+		return self.db.getSeriesSeasons(serieKey)				
+
+	def getSeriesCount(self):
+		return self.db.getSeriesCount()
+
+	def getSeriesCountSeasonsWithTheTvDbId(self, theTvDbId):
+		return self.db.getSeriesCountSeasonsWithTheTvDbId(serieKey)
+
+	def getSeriesCountSeasons(self, serieKey):
+		return self.db.getSeriesCountSeasons(serieKey)
+	
+	def getSeriesCountEpisodesWithTheTvDbId(self, theTvDbId, season):
+		return self.db.getSeriesCountEpisodesWithTheTvDbId(serieKey, season)
+	
+	def getSeriesCountEpisodes(self, serieKey=None, season=None):
+		return self.db.getSeriesCountEpisodes(serieKey, season)
+
+
+	def deleteSerieCascade(self, serieKey):
+		return self.db.deleteSerieCascade(serieKey)
+#	
+#################################   FAILED   ################################# 
+#
+	# Pass throught functions	
+	def getFailed(self):
+		return self.db.getFailed()
+
+	#def clearFailed(self):
+	#	return self.db.deleteFailed()
+
+	#def addFailed(self, entry):
+	#	return self.db.insertFailed(entry)
+
+	#def removeFailed(self, entry):
+	#	return self.db.deleteFailed(entry)
+
+#
+###################################  UTILS  ###################################
+#
+	
 	def convertNullValues(self, record):
 		log("->", self, 10)
 		if record.Year is None:
@@ -379,3 +428,5 @@ class Manager():
 		if record.Month is None:
 			record.Month = u""
 		return record
+
+

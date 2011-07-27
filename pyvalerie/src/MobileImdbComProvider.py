@@ -253,7 +253,7 @@ class MobileImdbComProvider():
 		#print "runtime", runtime
 		pos = runtime.find(self.DIV_RUNTIME_START)
 		if pos < 0:
-			printl("Details " + runtime, self, "W")
+			#printl("Details " + runtime, self, "W")
 			printl("<- (if pos < 0: b)", self, "W")
 			return None
 		

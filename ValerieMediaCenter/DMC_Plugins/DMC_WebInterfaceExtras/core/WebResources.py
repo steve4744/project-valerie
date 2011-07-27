@@ -31,9 +31,9 @@ class Home(Resource):
 		finalOutput = WebData().getHtmlCore("Home")
 		
 		currentVersion = config.plugins.pvmc.version.value
-		movieCount = str(Manager().moviesCount())
-		tvShowCount = str(Manager().seriesCount())
-		episodeCount = str(Manager().seriesCountEpisodes())
+		movieCount = str(Manager().getMoviesCount())
+		tvShowCount = str(Manager().getSeriesCount())
+		episodeCount = str(Manager().getSeriesCountEpisodes())
 				
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
 		

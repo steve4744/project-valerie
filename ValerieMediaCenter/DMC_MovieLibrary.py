@@ -19,12 +19,14 @@ gAvailable = True
 class DMC_MovieLibrary(DMC_Library):
 
     def __init__(self, session):
+	printl ("->", self)
         global Manager
         if Manager is None:
             from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+	    printl ("Manager Imported")
         
         self.manager = Manager()
-        DMC_Library.__init__(self, session, "movies")
+	DMC_Library.__init__(self, session, "movies")
 
     ###
     # Return Value is expected to be:
@@ -69,8 +71,10 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Filename"] = utf8ToLatin(movie.Filename).lower()
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
                 if self.checkFileCreationDate:
+		    d["Creation"] = 0
                     try:
-		       d["Creation"] = os.stat(d["Path"]).st_mtime
+		      pass
+		      # d["Creation"] = os.stat(d["Path"]).st_mtime
                     except Exception, ex:
                         printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
                         d["Creation"] = 0
