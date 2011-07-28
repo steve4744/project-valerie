@@ -858,7 +858,7 @@ class databaseHandlerPICKLE(object):
 				elif updateToVersion==6:
 					pass
 				
-			self.saveMovies(records)
+			self.saveMovies()
 	
 	# Migrate isMovie,isSerie,isEpisode to MediaType (1,2,3)
 	# can be used by movies.db and tvshows.db
@@ -897,7 +897,7 @@ class databaseHandlerPICKLE(object):
 				elif updateToVersion==6:
 					pass
 				
-			self.saveSeries(records)
+			self.saveSeries()
 	
 	def _upgrade_s_2(self, records):
 		pass
@@ -928,7 +928,7 @@ class databaseHandlerPICKLE(object):
 				elif updateToVersion==6:
 					pass
 
-			self.saveEpisodes(records)
+			self.saveEpisodes()
 
 
 	def _upgrade_e_1(self, records):
