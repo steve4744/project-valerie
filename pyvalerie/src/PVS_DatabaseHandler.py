@@ -209,7 +209,7 @@ class Database(object):
 				listMissing.append(m)
 	
 		series = self.getSeries()
-		episodes = self.episodesGet()
+		episodes = self.getSeriesEpisodes()
 		log("test 3", self, 10)
 		for key in series:
 			if key in episodes:
