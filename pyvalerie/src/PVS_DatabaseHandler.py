@@ -349,6 +349,9 @@ class Database(object):
 		
 	def getSeriesEpisodes(self, serieKey=None, season=None):
 		return self.dbHandler.getSeriesEpisodes(serieKey, season)
+
+	def getSeriesEpisodesValues(self, serieKey=None, season=None):
+		return self.dbHandler.getSeriesEpisodesValues()
 	
 	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
 		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)

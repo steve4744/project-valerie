@@ -410,7 +410,7 @@ class pyvalerie(Thread):
 					if results is not None:
 						for result in results:
 							if db.add(result):
-								result.Title = self.encodeMe(result.Title)
+								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
 									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
 										result.Title, result.Year)

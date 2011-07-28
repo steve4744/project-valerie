@@ -184,7 +184,7 @@ class databaseHandlerPICKLE(object):
 							
 			elapsed_time = time.time() - start_time
 
-			printl("2 --------------------------------")			
+			#printl("2 --------------------------------")			
 			#for key in newList:
 			#	printl(repr(newList[key].Title))
 			
@@ -275,6 +275,11 @@ class databaseHandlerPICKLE(object):
 			self._dbEpisodes = self._getAllEpisodes()
 			if self.USE_INDEXES:
 				self.createSeriesIndexes()
+			
+			#printl("3 --------------------------------")			
+			#for key in self._dbSeries:
+			#	if key != self.CONFIGKEY:		# only for Pickle
+			#		printl(repr(self._dbSeries[key].Title))
 				
 		# Let's avoid refer to 0 as key... why this happen???
 		#	don't clean ghostfiles to create problems
@@ -478,6 +483,16 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 		return key
 
+	def getSeriesEpisodesValues(self):
+		log("->", self, 15)
+		self._seriesCheckLoaded()
+		list = []
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					list += self._dbEpisodes[serieKey][season].values()
+		return list
+
 	def getSeriesEpisodes(self, serieKey=None, season=None):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -487,8 +502,7 @@ class databaseHandlerPICKLE(object):
 			#	if serieKey != self.CONFIGKEY:
 			#		for season in self._dbEpisodes[serieKey]:
 			#			list += self._dbEpisodes[serieKey][season].values()
-			newList	= {}
-			self._seriesCheckLoaded()
+			newList	= {}			
 			if self._dbEpisodes is not None:
 				newList	= self._dbEpisodes.copy()
 				if self.CONFIGKEY in newList:
@@ -650,7 +664,7 @@ class databaseHandlerPICKLE(object):
 
 
 	def _failedCheckLoaded(self):
-		#log("->", self, 10)
+		log("->", self, 10)
 		if self._dbFailed is None:
 			log("Failed Not Loaded", self, 10)
 			self._loadFailedDB()

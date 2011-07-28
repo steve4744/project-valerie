@@ -78,9 +78,9 @@ class Manager():
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				list = self.db.getSeriesEpisodes(param)
+				list = self.db.getSeriesEpisodesWithTheTvDbId(param)
 			else:
-				list = self.db.getSeriesEpisodes()
+				list = self.db.getSeriesEpisodesValues()
 			return list
 		
 		elif type == self.TVSHOWSSEASONS: 
