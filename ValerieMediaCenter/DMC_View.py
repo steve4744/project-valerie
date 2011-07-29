@@ -607,7 +607,7 @@ class DMC_View(Screen, HelpableScreen):
 				else:
 					if self.has_key("backdrop"):
 						self["backdrop"].finishStillPicture()
-					self.session.openWithCallback(pluginCallback, choice[1].start, selection[1])
+					self.session.openWithCallback(self.pluginCallback, choice[1].start, selection[1])
 					
 			elif choice[1].fnc:
 				if choice[1].supportStillPicture is False and self.has_key("backdrop"):
