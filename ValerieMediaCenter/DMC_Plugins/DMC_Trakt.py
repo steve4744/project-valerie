@@ -47,7 +47,10 @@ def autostart(session):
 	global gtrakt
 	gtrakt = TraktAPI("pvmc")
 
-def info_playback(d):
+def info_playback(d, flags):
+	if flags.has_key("DO_NOT_TRACK") and flags["DO_NOT_TRACK"] is True:
+		return
+	
 	if d.has_key("title"):
 		gtrakt.setName(d["title"])
 	if d.has_key("year"):

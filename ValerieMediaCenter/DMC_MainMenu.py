@@ -336,9 +336,12 @@ class PVMC_MainMenu(Screen):
 				"cancel": self.cancel,
 			}, -1)
 		
+		
 		self.onFirstExecBegin.append(self.onExec)
 		# Executes a start script
 		self.onFirstExecBegin.append(self.onExecStartScript)
+		
+		self.onFirstExecBegin.append(self.onExecRunDev)
 		
 		printl("<-", self)
 
@@ -386,6 +389,14 @@ class PVMC_MainMenu(Screen):
 			# If the user dont want an update the autostart will be initialised by messagebox callback
 			self.runAutostart()
 		printl("<-",self)
+
+	def onExecRunDev(self):
+		plugins = getPlugins(where=Plugin.MENU_DEV)
+		for s in plugins:
+			if s.start is not None:
+				self.session.open(s.start)
+			elif s.fnc is not None:
+				s.fnc(self.session)
 
 	def runAutostart(self):
 		printl("->", self)

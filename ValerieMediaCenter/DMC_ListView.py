@@ -181,9 +181,9 @@ class DMC_ListView(DMC_View):
 			self.showiframe.finishStillPicture()
 		super(getViewClass(), self).close(arg)
 
-	def playEntry(self, entry):
+	def playEntry(self, entry, flags):
 		self.showiframe.finishStillPicture()
-		super(getViewClass(), self).playEntry(entry)
+		super(getViewClass(), self).playEntry(entry, flags)
 
 	def sort(self):
 		#text = "%s: %s" % (_("Sort"), _(self.activeSort[0])) #To little space

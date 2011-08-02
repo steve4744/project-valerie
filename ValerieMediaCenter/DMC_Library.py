@@ -116,19 +116,19 @@ class DMC_Library(Screen):
         return []
 
     # starts playback, is called by the view
-    def playEntry(self, entry):
+    def playEntry(self, entry, flags={}):
         printl("", self, "D")
         playbackPath = entry["Path"]
         if playbackPath[0] == "/" and os.path.isfile(playbackPath) is False:
             return False
         else:
-            self.notifyEntryPlaying(entry)
+            self.notifyEntryPlaying(entry, flags)
             
             isDVD, dvdFilelist, dvdDevice = self.checkIfDVD(playbackPath)
             if isDVD:
                 self.playDVD(dvdDevice, dvdFilelist)
             else:
-                self.playFile(entry)
+                self.playFile(entry, flags)
             return True
 
     # tries to determin if media entry is a dvd
@@ -158,19 +158,19 @@ class DMC_Library(Screen):
             printl("Exception: " + str(ex), self, "E")
 
     # playbacks a file by calling dmc_player
-    def playFile(self, entry):
+    def playFile(self, entry, flags):
         printl("", self, "D")
         playbackList = self.getPlaybackList(entry)
         printl("playbackList: " + str(playbackList), self, "D")
         
         if len(playbackList) == 1:
-            self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList)
+            self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, flags=flags)
         elif len(playbackList) >= 2:
-            self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry)
+            self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry, flags=flags)
 
     # After calling this the view should auto reappear
-    def leaveMoviePlayer(self): 
-        self.notifyEntryStopped()
+    def leaveMoviePlayer(self, flags): 
+        self.notifyEntryStopped(flags)
         
         self.session.nav.playService(None) 
 
@@ -185,28 +185,28 @@ class DMC_Library(Screen):
         return {}
 
     # called on start of playback
-    def notifyEntryPlaying(self, entry):
+    def notifyEntryPlaying(self, entry, flags):
         printl("", self, "D")
         args = self.buildInfoPlaybackArgs(entry)
         args["status"]  = "playing"
         plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
         for plugin in plugins:
             printl("plugin.name=" + str(plugin.name), self, "D")
-            plugin.fnc(args)
+            plugin.fnc(args, flags)
 
     # called on end of playback
-    def notifyEntryStopped(self):
+    def notifyEntryStopped(self, flags):
         printl("", self, "D")
         args = {}
         args["status"] = "stopped"
         plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
         for plugin in plugins:
             printl("plugin.name=" + str(plugin.name), self, "D")
-            plugin.fnc(args)
+            plugin.fnc(args, flags)
 
     # called if the next entry in the playbacklist is being playbacked
-    def notifyNextEntry(self, entry):
+    def notifyNextEntry(self, entry, flags):
         printl("", self, "D")
-        self.notifyEntryStopped()
-        self.notifyEntryPlaying(entry)
+        self.notifyEntryStopped(flags)
+        self.notifyEntryPlaying(entry, flags)
 

@@ -185,7 +185,7 @@ class DMC_View(Screen, HelpableScreen):
 		self.onLeave()
 
 	def onKeyInfo(self):
-		pass
+		printl("", self, "D")
 
 	def onKeyMenu(self):
 		self.displayOptionsMenu()
@@ -445,7 +445,7 @@ class DMC_View(Screen, HelpableScreen):
 			if self.onEnterPrimaryKeys is not None:
 				if "play" in self.onEnterPrimaryKeys:
 					printl("playEntry ->", self, "D")
-					self.playEntry(selection[1])
+					self.playEntry(selection[1], self.libraryFlags)
 					printl("playEntry <-", self, "D")
 					return
 				else:
@@ -489,6 +489,11 @@ class DMC_View(Screen, HelpableScreen):
 		self.onLeaveSelectKeyValuePair = library[3]
 		self.onSortKeyValuePair = library[4]
 		self.onFilterKeyValuePair = library[5]
+		if len(library) >= 7:
+			self.libraryFlags = library[6]
+		else:
+			self.libraryFlags = {}
+		
 		
 		print "onEnterPrimaryKeys", self.onEnterPrimaryKeys
 		print "onLeavePrimaryKeyValuePair", self.onLeavePrimaryKeyValuePair
@@ -556,13 +561,13 @@ class DMC_View(Screen, HelpableScreen):
 	def _refresh(self, selection, changeBackdrop):
 		pass
 
-	def playEntry(self, entry):
-		if self._playEntry(entry) is False:
+	def playEntry(self, entry, flags):
+		if self._playEntry(entry, flags) is False:
 			title = _("Not found!\n")
 			text = entry["Path"] + _("\n\nPlease make sure that your drive is connected/mounted.")
 			self.session.open(MessageBox, title + text, type = MessageBox.TYPE_ERROR)
 
-	def setDefaultView(self, unused=None):
+	def setDefaultView(self, unused=None, unused2=None):
 		# These allow us to get the correct list
 		#self.currentKeyValuePair
 		# But we also need the selected element

@@ -217,7 +217,7 @@
   </screen>
   <!-- PVMC PosterView -->
   <screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-    <widget name="API" text="4" position="0,0" zPosition="0" size="1,1" />
+    <widget name="API" text="5" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <widget name="listview_itemsperpage" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget source="listview" render="Listbox" zPosition="3" position="-17,0" size="1,1" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">
@@ -252,6 +252,10 @@
     <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    
+    <widget name="shortDescriptionContainer" transparent="1" zPosition="9" halign="left" position="88,263" size="1102,525" font="Modern;37" backgroundColor="#6ca4c5" />
+    <widget name="shortDescription" transparent="1" zPosition="10" halign="left" position="106,276" size="1066,500" font="Modern;18" foregroundColor="#ffffff" />
+    
   </screen>
   <!-- PVMC_MessageBoxInfo -->
   <screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">

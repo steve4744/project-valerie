@@ -40,6 +40,10 @@ class DMC_PosterView(DMC_View):
 		
 		self["title"] = Label()
 		
+		if self.APILevel >= 5:
+			self["shortDescriptionContainer"] = Label()
+			self["shortDescription"] = Label()
+		
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText(_(" "))
 		self["key_yellow"] = StaticText(_(" "))
@@ -64,6 +68,20 @@ class DMC_PosterView(DMC_View):
 				self.postersize = "_195x267"
 		
 		self.skinName = self.viewName[2]
+
+	def setCustomTitle(self):
+		self.showPlot(False)
+		super(getViewClass(), self).setCustomTitle()
+
+	def showPlot(self, visible):
+		self.isPlotHidden = visible
+		if self.APILevel >= 5:
+			if visible:
+				self["shortDescriptionContainer"].show()
+				self["shortDescription"].show()
+			else:
+				self["shortDescriptionContainer"].hide()
+				self["shortDescription"].hide()
 
 	def _refresh(self, selection, changeBackdrop):
 		element = selection[1]
@@ -92,6 +110,7 @@ class DMC_PosterView(DMC_View):
 					self["poster_+" + str(i)].hide()
 		
 		self.setText("title", selection[0])
+		self.setText("shortDescription", element["Plot"], what=_("Overview"))
 
 	def setPoster(self, posterName, artId):
 		if self[posterName].instance is not None:
@@ -108,9 +127,9 @@ class DMC_PosterView(DMC_View):
 			self.showiframe.finishStillPicture()
 		super(getViewClass(), self).close(arg)
 
-	def playEntry(self, entry):
+	def playEntry(self, entry, flags):
 		self.showiframe.finishStillPicture()
-		super(getViewClass(), self).playEntry(entry)
+		super(getViewClass(), self).playEntry(entry, flags)
 
 	def sort(self):
 		#text = "%s: %s" % (_("Sort"), _(self.activeSort[0])) #To little space
@@ -152,3 +171,7 @@ class DMC_PosterView(DMC_View):
 
 	def onKeyDownQuick(self):
 		pass
+
+	def onKeyInfo(self):
+		printl("", self, "D")
+		self.showPlot(not self.isPlotHidden)

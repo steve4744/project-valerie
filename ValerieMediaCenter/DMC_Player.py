@@ -36,8 +36,9 @@ class PVMC_Player(MoviePlayer):
 
 	filter = None
 
-	def __init__(self, session, playlist, notifyNextEntry=None):
+	def __init__(self, session, playlist, notifyNextEntry=None, flags=None):
 		self.session = session
+		self.flags = flags
 		self.playlist = self.fixParts(playlist)
 		
 		self.progressTimer = eTimer()
@@ -75,7 +76,11 @@ class PVMC_Player(MoviePlayer):
 		self.isEof = eof
 		
 		if self.nextPlaylistEntryAvailable() is True:
-			list.append((_("Yes, but play next episode"), "next"))
+			if eof is True and self.flags.has_key("AUTO_PLAY_NEXT") and self.flags["AUTO_PLAY_NEXT"] is True:
+				self.nextPlaylistEntry()
+				return
+			else:
+				list.append((_("Yes, but play next episode"), "next"))
 		
 		list.append((_("Yes"), "quit"))
 		
@@ -97,7 +102,7 @@ class PVMC_Player(MoviePlayer):
 					self.removeLastPosition()
 					self.uploadCuesheet()
 				
-				self.close()
+				self.close(self.flags)
 			elif answer[1] == "next":
 				self.nextPlaylistEntry()
 				if self.notifyNextEntry is not None:
@@ -214,7 +219,7 @@ class PVMC_Player(MoviePlayer):
 				elif percent >= self.progressUpdateNextPercentMargin:
 					self.progressUpdateCounter = 0
 					self.progressUpdateNextPercentMargin += self.progressUpdateNextPercentDistance
-					self. communicatelApiProgressAndDuration(percent, len)
+					self.communicatelApiProgressAndDuration(percent, len)
 
 	def communicatelApiProgressAndDuration(self, progress, duration):
 		args = {}
@@ -222,7 +227,7 @@ class PVMC_Player(MoviePlayer):
 		args["duration"] = duration
 		plugins = getPlugins(where=Plugin.INFO_PLAYBACK)
 		for plugin in plugins:
-			pluginSettingsList = plugin.fnc(args)
+			pluginSettingsList = plugin.fnc(args, self.flags)
 
 	def playFile(self, selectedPath, selectedName):
 		if selectedPath.endswith(".ts"):
