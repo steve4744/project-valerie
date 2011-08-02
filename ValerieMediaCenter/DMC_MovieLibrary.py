@@ -19,14 +19,14 @@ gAvailable = True
 class DMC_MovieLibrary(DMC_Library):
 
     def __init__(self, session):
-	printl ("->", self)
+        printl ("->", self)
         global Manager
         if Manager is None:
             from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-	    printl ("Manager Imported")
+            printl ("Manager Imported")
         
         self.manager = Manager()
-	DMC_Library.__init__(self, session, "movies")
+        DMC_Library.__init__(self, session, "movies")
 
     ###
     # Return Value is expected to be:
@@ -57,24 +57,23 @@ class DMC_MovieLibrary(DMC_Library):
                 # Yeah its a bit supersufficial as date is already in it
                 # But will allow the view to sort the list
                 # avoid crash if Null Values
-		yy=movie.Year
-		mm=movie.Month
-		dd=movie.Day
-		if yy is None:
-		    yy=0
-		if mm is None:
-		    mm=0
-		if dd is None:
-		    dd=0
-		d["Date"]    = yy*10000 + mm*100 + dd
-		#d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
+                yy=movie.Year
+                mm=movie.Month
+                dd=movie.Day
+                if yy is None:
+                    yy=0
+                if mm is None:
+                    mm=0
+                if dd is None:
+                    dd=0
+                d["Date"]    = yy*10000 + mm*100 + dd
+                #d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
                 d["Filename"] = utf8ToLatin(movie.Filename).lower()
                 d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
                 if self.checkFileCreationDate:
-		    d["Creation"] = 0
+                    d["Creation"] = 0
                     try:
-		      pass
-		      # d["Creation"] = os.stat(d["Path"]).st_mtime
+                        d["Creation"] = os.stat(d["Path"]).st_mtime
                     except Exception, ex:
                         printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
                         d["Creation"] = 0
@@ -113,4 +112,4 @@ class DMC_MovieLibrary(DMC_Library):
         return args
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
+    registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
