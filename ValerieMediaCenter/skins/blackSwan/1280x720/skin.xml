@@ -229,7 +229,8 @@
             }
         </convert>
     </widget>
-    <eLabel position="88,213" size="1102,443" zPosition="1" backgroundColor="#20404040" transparent="0" />
+    <!--eLabel position="88,213" size="1102,443" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
+    <eLabel position="0,213" size="1280,443" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <!--eLabel position="88,213" size="1102,118" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
     <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,226" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
     <widget name="title" transparent="1" zPosition="5" halign="left" position="106,276" size="1066,47" font="Modern;37" foregroundColor="#ffffff" />
@@ -253,8 +254,8 @@
     <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     
-    <widget name="shortDescriptionContainer" transparent="1" zPosition="9" halign="left" position="88,263" size="1102,525" font="Modern;37" backgroundColor="#6ca4c5" />
-    <widget name="shortDescription" transparent="1" zPosition="10" halign="left" position="106,276" size="1066,500" font="Modern;18" foregroundColor="#ffffff" />
+    <widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="112,325" size="1056,292" backgroundColor="#00404040" />
+    <widget name="shortDescription" transparent="1" zPosition="9" halign="left" position="129,337" size="1038,267" font="Modern;18" foregroundColor="#ffffff" />
     
   </screen>
   <!-- PVMC_MessageBoxInfo -->
