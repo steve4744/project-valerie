@@ -2,6 +2,12 @@
   <output id="0">
     <resolution xres="1024" yres="576" bpp="32" />
   </output>
+  <screen name="PVMC_FontLoader" position="0,0" size="1,1" title=" ">
+    <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
+    <widget name="COUNT" text="1" position="0,0" zPosition="0" size="1,1" />
+    <widget name="FONT0" text="../mayatypeuitvg.ttf|Modern|100|False" position="0,0" size="1,1" />
+  </screen>
+  
   <!-- PVMC Wizard -->
   <screen name="PVMC_Wizard" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
     <widget name="showiframe" position="0,0" zPosition="0" size="1024,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/background.m1v" />

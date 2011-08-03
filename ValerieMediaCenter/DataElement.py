@@ -43,14 +43,18 @@ class DataElement(Renderer):
 			printl("self.skinAttributes is None!!!", self, "E")
 
 	def getDataPreloading(self, screen, name):
-		printl("screen=" + str(screen.skinName) + " name=" + str(name), self)
+		if type(screen) is str:
+			skinName = screen
+		else:
+			skinName = screen.skinName
+		printl("screen=" + str(skinName) + " name=" + str(name), self)
 		try:
 			for entry in skin.dom_skins:
-				printl("entry=" + str(entry), self, "D")
-				printl("entry[0]=" + str(entry[0]) + " - " + str(config.plugins.pvmc.skinfolderpath.value), self, "D")
+				#printl("entry=" + str(entry), self, "D")
+				#printl("entry[0]=" + str(entry[0]) + " - " + str(config.plugins.pvmc.skinfolderpath.value), self, "D")
 				if entry[0] is None or entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
 					for element in entry[1]:
-						if 'name' in element.keys() and element.get('name') == screen.skinName:
+						if 'name' in element.keys() and element.get('name') == skinName:
 							for child in element:
 								if 'name' in child.keys() and child.get('name') == name:
 									return child.get('text')
@@ -59,7 +63,7 @@ class DataElement(Renderer):
 			
 			#Maybe OpenPli
 			try:
-				myscreen, path = skin.dom_screens.get(screen.skinName, (None,None))
+				myscreen, path = skin.dom_screens.get(skinName, (None,None))
 				printl("myscreen=" + str(myscreen), self, "D")
 				printl("path=" + str(path), self, "D")
 				if myscreen is not None:
