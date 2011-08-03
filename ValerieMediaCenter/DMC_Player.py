@@ -106,10 +106,7 @@ class PVMC_Player(MoviePlayer):
 			elif answer[1] == "next":
 				self.nextPlaylistEntry()
 				if self.notifyNextEntry is not None:
-					if len(self.playlist[self.current]) == 2:
-						self.notifyNextEntry()
-					else:
-						self.notifyNextEntry(self.playlist[self.current][2])
+					self.notifyNextEntry(self.playlist[self.current][2], self.flags)
 			elif answer[1] == "continue":
 				return None
 
