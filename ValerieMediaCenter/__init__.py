@@ -4,7 +4,7 @@ import os
 import sys
 
 from enigma import getDesktop
-from skin import loadSkin
+from skin import loadSkin, loadSingleSkinData
 from Components.config import config
 from Components.config import ConfigSubsection
 from Components.config import ConfigSelection
@@ -21,6 +21,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 #Cannot import printl2 here cause cofnig.pvmc not ready
 #from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import loadPlugins
+from Plugins.Extensions.ProjectValerie.DMC_Global import findSkin
 
 #------------------------------------------------------------------------------------------
 
@@ -104,7 +105,9 @@ dSize = getDesktop(0).size()
 # Load Skin, first try to find it, if not found reset to default skin
 skinLoaded = False
 try:
-	loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+	skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
+	loadSkin(skinPath + "skin.xml")
+	loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
 	skinLoaded = True
 except Exception, ex:
 	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
@@ -114,7 +117,9 @@ except Exception, ex:
 	
 if skinLoaded == False:
 	try:
-		loadSkin(config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/skin.xml")
+		skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
+		loadSkin(skinPath + "skin.xml")
+		loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
 		skinLoaded = True
 	except Exception, ex:
 		printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")

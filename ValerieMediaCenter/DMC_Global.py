@@ -6,6 +6,7 @@ import traceback
 import urllib2
 from twisted.web.microdom import parseString
 
+from enigma import addFont
 from Components.config import config
 
 from DataElement import DataElement
@@ -22,6 +23,49 @@ def getAPILevel(parent):
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
 		APILevel = 1
 	return APILevel
+
+#------------------------------------------------------------------------------------------
+
+def registerFont(file, name, scale, replacement):
+	printl("Loading Font: %s as %s" % (file, name, ))
+	try:
+		addFont(file, name, scale, replacement)
+	except Exception, ex: #probably just openpli
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "DMC_MainMenu::", "W")
+		addFont(file, name, scale, replacement, 0)
+
+def loadFonts():
+	try:
+		APILevel = int(DataElement().getDataPreloading("PVMC_FontLoader", "API"))
+	except:
+		APILevel = 1
+	
+	if APILevel >= 2:
+		count = int(DataElement().getDataPreloading("PVMC_FontLoader", "COUNT"))
+		for i in range(count):
+			font = DataElement().getDataPreloading("PVMC_FontLoader", "FONT" + str(i))
+			file,name,scale,replacement = font.split("|")
+			file = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + file
+			scale = int(scale)
+			replacement = (replacement == "True")
+			registerFont(file, name, scale, replacement)
+	
+	else:
+		registerFont("/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/mayatypeuitvg.ttf", "Modern", 100, False)
+
+#------------------------------------------------------------------------------------------
+
+def findSkin():
+	try:
+		import skin
+		for entry in skin.dom_skins:
+			if entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
+				printl("element=" + str( entry[1]), "findSkin")
+				return  entry[1]
+	except Exception, ex:
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin", "W")
+	printl("element=None", "findSkin")
+	return None
 
 #------------------------------------------------------------------------------------------
 
