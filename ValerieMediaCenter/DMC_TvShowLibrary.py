@@ -40,6 +40,7 @@ class DMC_TvShowLibrary(DMC_Library):
             parsedLibrary = []
             library = self.manager.getAll(Manager.TVSHOWS)
             
+            tmpAbc = []
             tmpGenres = []
             for tvshow in library:
                 d = {}
@@ -49,6 +50,8 @@ class DMC_TvShowLibrary(DMC_Library):
                 d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
                 d["TheTvDbId"] = utf8ToLatin(tvshow.TheTvDbId)
                 d["Title"]   = "  " + utf8ToLatin(tvshow.Title)
+                if d["Title"][2].upper() not in tmpAbc:
+                    tmpAbc.append(d["Title"][2].upper())
                 d["Tag"]     = utf8ToLatin(tvshow.Tag)
                 d["Year"]    = tvshow.Year
                 d["Month"]   = tvshow.Month
@@ -68,6 +71,10 @@ class DMC_TvShowLibrary(DMC_Library):
             if len(tmpGenres) > 0:
                 tmpGenres.sort()
                 filter.append(("Genre", ("Genres", True), tmpGenres))
+            
+            if len(tmpAbc) > 0:
+                tmpAbc.sort()
+                filter.append(("Abc", ("Title", False, 1), tmpAbc))
             
             return (parsedLibrary, ("TheTvDbId", ), None, None, sort, filter)
         

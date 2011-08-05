@@ -42,6 +42,7 @@ class DMC_MovieLibrary(DMC_Library):
             parsedLibrary = []
             library = self.manager.getAll(Manager.MOVIES)
             
+            tmpAbc = []
             tmpGenres = []
             for movie in library:
                 d = {}
@@ -50,6 +51,8 @@ class DMC_MovieLibrary(DMC_Library):
                 
                 d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
                 d["Title"]   = "  " + utf8ToLatin(movie.Title)
+                if d["Title"][2].upper() not in tmpAbc:
+                    tmpAbc.append(d["Title"][2].upper())
                 d["Tag"]     = utf8ToLatin(movie.Tag)
                 d["Year"]    = movie.Year
                 d["Month"]   = movie.Month
@@ -99,6 +102,10 @@ class DMC_MovieLibrary(DMC_Library):
                 tmpGenres.sort()
                 filter.append(("Genre", ("Genres", True), tmpGenres))
             
+            if len(tmpAbc) > 0:
+                tmpAbc.sort()
+                filter.append(("Abc", ("Title", False, 1), tmpAbc))
+            
             return (parsedLibrary, ("play", "ImdbId", ), None, None, sort, filter)
         
         return None
@@ -107,7 +114,7 @@ class DMC_MovieLibrary(DMC_Library):
         args = {}
         args["title"]   = entry["Title"]
         args["year"]    = entry["Year"]
-        args["imdbid"] = entry["ImdbId"]
+        args["imdbid"]  = entry["ImdbId"]
         args["type"]    = "movie"
         return args
 

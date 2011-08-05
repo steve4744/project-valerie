@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from time import time
+
 from Components.ActionMap import ActionMap, HelpableActionMap
 from Components.MenuList import MenuList
 from Components.Sources.List import List
+from Components.Label import Label
 from Screens.ChoiceBox import ChoiceBox
 from Screens.HelpMenu import HelpableScreen
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
+from Tools.NumericalTextInput import NumericalTextInput
 
 from DataElement import DataElement
 
@@ -46,7 +50,7 @@ def getViews():
 def getViewClass():
 	return DMC_View
 
-class DMC_View(Screen, HelpableScreen):
+class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 
 	skin = """
 	<screen name="DMC_View" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
@@ -70,6 +74,7 @@ class DMC_View(Screen, HelpableScreen):
 		self.skinName = viewName[2]
 		Screen.__init__(self, session)
 		HelpableScreen.__init__(self)
+		NumericalTextInput.__init__(self)
 		self.skinName = viewName[2]
 		self.select = select
 		self.onFirstExecSort = sort
@@ -104,6 +109,10 @@ class DMC_View(Screen, HelpableScreen):
 			self["listview"] = List(list, True)
 			self["listview_itemsperpage"] = DataElement()
 		
+		if self.APILevel >= 6:
+			self["number_key_popup"] = Label("")
+			self["number_key_popup"].hide()
+		
 		self["actions"] = HelpableActionMap(self, "DMC_View", 
 		{
 			"ok":         (self.onKeyOk, ""),
@@ -128,8 +137,22 @@ class DMC_View(Screen, HelpableScreen):
 			"green_long":      (self.onKeyGreenLong, ""),
 			"yellow_long":     (self.onKeyYellowLong, ""),
 			"blue_long":       (self.onKeyBlueLong, ""),
+			
+			"1":       (self.onKey1, ""),
+			"2":       (self.onKey2, ""),
+			"3":       (self.onKey3, ""),
+			"4":       (self.onKey4, ""),
+			"5":       (self.onKey5, ""),
+			"6":       (self.onKey6, ""),
+			"7":       (self.onKey7, ""),
+			"8":       (self.onKey8, ""),
+			"9":       (self.onKey9, ""),
+			"0":       (self.onKey0, ""),
 
 		}, -2)
+		
+		# For number key input
+		self.setUseableChars(u' 1234567890abcdefghijklmnopqrstuvwxyz')
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
 		self.onFirstExecBegin.append(self.onFirstExec)
@@ -177,6 +200,75 @@ class DMC_View(Screen, HelpableScreen):
 					self["listview"].setIndex(i)
 					break
 			self.refresh()
+
+	def onKey1(self):
+		self.onNumberKey(1)
+
+	def onKey2(self):
+		self.onNumberKey(2)
+
+	def onKey3(self):
+		self.onNumberKey(3)
+
+	def onKey4(self):
+		self.onNumberKey(4)
+
+	def onKey5(self):
+		self.onNumberKey(5)
+
+	def onKey6(self):
+		self.onNumberKey(6)
+
+	def onKey7(self):
+		self.onNumberKey(7)
+
+	def onKey8(self):
+		self.onNumberKey(8)
+
+	def onKey9(self):
+		self.onNumberKey(9)
+
+	def onKey0(self):
+		self.onNumberKey(0)
+
+	onNumerKeyLastChar = "#"
+
+	def onNumberKey(self, number):
+		printl(str(number), self, "I")
+		key = self.getKey(number)
+		if key is not None:
+			keyvalue = key.encode("utf-8")
+			if len(keyvalue) == 1:
+				self.onNumerKeyLastChar = keyvalue[0].upper()
+				self.onNumberKeyPopup(self.onNumerKeyLastChar, True)
+		#self.onChooseFilterCallback(("ABC", ("ABC", True), "A.*"))
+
+	def onNumberKeyPopup(self, value, visible):
+		if self.APILevel < 6:
+			return
+		
+		if visible:
+			self["number_key_popup"].setText(value)
+			self["number_key_popup"].show()
+		else:
+			self["number_key_popup"].hide()
+
+	#onNumberKeyTimeout
+	def timeout(self):
+		printl("", self, "I")
+		
+		printl(self.onNumerKeyLastChar, self, "I")
+		if self.onNumerKeyLastChar != ' ':
+			self.activeFilter = ('Abc', ('Title', False, 1), self.onNumerKeyLastChar)
+		else:
+			self.activeFilter = ("All", (None, False), ("All", ))
+		self.sort()
+		self.filter()
+		
+		self.refresh()
+		
+		self.onNumberKeyPopup(self.onNumerKeyLastChar, False)
+		NumericalTextInput.timeout(self)
 
 	def onKeyOk(self):
 		self.onEnter()
@@ -530,10 +622,17 @@ class DMC_View(Screen, HelpableScreen):
 			listViewList = self.listViewList
 		else:
 			
+			testLength = None
+			if len(self.activeFilter[1]) >= 3:
+				testLength = self.activeFilter[1][2]
+			
 			if self.activeFilter[1][1]:
 				listViewList = [x for x in self.listViewList if self.activeFilter[2] in x[1][self.activeFilter[1][0]]]
 			else:
-				listViewList = [x for x in self.listViewList if x[1][self.activeFilter[1][0]]  == self.activeFilter[2]]
+				if testLength is None:
+					listViewList = [x for x in self.listViewList if x[1][self.activeFilter[1][0]] == self.activeFilter[2]]
+				else:
+					listViewList = [x for x in self.listViewList if x[1][self.activeFilter[1][0]].strip()[:testLength] == self.activeFilter[2].strip()[:testLength]]
 		
 		self["listview"].setList(listViewList)
 		self["listview"].setIndex(0)

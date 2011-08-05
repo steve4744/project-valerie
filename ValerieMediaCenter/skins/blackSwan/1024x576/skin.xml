@@ -7,10 +7,6 @@
     <color name="white" value="#00FFFFFF" />
     <color name="grey" value="#a0424242" />
     <color name="bright_blue" value="#6ca4c5" />
-    
-    <color name="mainmenu_text" value="grey" />
-    <color name="mainmenu_text_selected" value="white" />
-    <color name="mainmenu_text_highlighted" value="bright_blue" />
   </colors>
   <screen name="PVMC_FontLoader" position="0,0" size="1,1" title=" ">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
@@ -38,9 +34,9 @@
     <widget name="API" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget name="stillpicture_usedreamscene" text="/hdd/valerie/dreamscene/blackSwan.mp4" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="1024,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/background.m1v" />
-    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="85,60" size="853,55" font="Modern;40" backgroundColor="transparent" foregroundColor="mainmenu_text_highlighted" transparent="1" />
-    <widget name="version" zPosition="1" halign="center" valign="top" position="85,110" size="853,30" backgroundColor="transparent" foregroundColor="mainmenu_text" font="Modern;20" transparent="1" />
-    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="298,200" size="426,400" scrollbarMode="showOnDemand" backgroundColor="transparent" backgroundColorSelected="transparent" foregroundColor="mainmenu_text" foregroundColorSelected="mainmenu_text_selected">
+    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="85,60" size="853,55" font="Modern;40" backgroundColor="transparent" foregroundColor="bright_blue" transparent="1" />
+    <widget name="version" zPosition="1" halign="center" valign="top" position="85,110" size="853,30" backgroundColor="transparent" foregroundColor="grey" font="Modern;20" transparent="1" />
+    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="298,200" size="426,400" scrollbarMode="showOnDemand" backgroundColor="transparent" backgroundColorSelected="transparent" foregroundColor="grey" foregroundColorSelected="white">
       <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0,0), size = (426,42), flags = RT_HALIGN_CENTER, text = 0) ],
             "fonts": [gFont("Modern", 32)],
@@ -174,7 +170,7 @@
   </screen>
   <!-- PVMC ListView -->
   <screen name="PVMC_ListView" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-    <widget name="API" text="5" position="0,0" zPosition="0" size="1,1" />
+    <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1024,576" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <eLabel position="71,50" size="881,476" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="0" size="1,1" />
@@ -230,10 +226,12 @@
     <widget source="key_green" render="Label" position="327,491" zPosition="5" size="184,30" font="Modern;18" halign="left" valign="top" transparent="1" />
     <widget source="key_yellow" render="Label" position="540,491" zPosition="5" size="184,30" font="Modern;18" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="753,491" zPosition="5" size="184,30" font="Modern;18" halign="left" valign="top" transparent="1" />
+    
+    <widget name="number_key_popup" zPosition="9" halign="center" valign="center" position="440,238" size="142,100" font="Modern;60" foregroundColor="#ffffff" backgroundColor="#20404040" />
   </screen>
   <!-- PVMC PosterView -->
   <screen name="PVMC_PosterView" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-    <widget name="API" text="5" position="0,0" zPosition="0" size="1,1" />
+    <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1024,576" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <widget name="listview_itemsperpage" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget source="listview" render="Listbox" zPosition="3" position="-14,0" size="1,1" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">
@@ -273,6 +271,7 @@
     <widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="89,260" size="844,234" backgroundColor="#00404040" />
     <widget name="shortDescription" transparent="1" zPosition="9" halign="left" position="103,270" size="830,214" font="Modern;15" foregroundColor="#ffffff" />
     
+    <widget name="number_key_popup" zPosition="9" halign="center" valign="center" position="440,238" size="142,100" font="Modern;60" foregroundColor="#ffffff" backgroundColor="#20404040" />
   </screen>
   <!-- PVMC_MessageBoxInfo -->
   <screen name="PVMC_MessageBoxInfo" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
