@@ -613,6 +613,7 @@ class ProjectValerieSyncInfo():
 	thread = None
 
 	def start(self, type):
+		printl("", self, "D")
 		try:
 			if self.inProgress:
 				return False
@@ -622,10 +623,12 @@ class ProjectValerieSyncInfo():
 			self.setOutput(None)
 			self.thread = pyvalerie(self.setOutput, self.setProgress, self.setRange, self.setInfo, self.finished, type)
 			self.thread.start()
+			self.outputInstance.notifyStatus()
 			return True
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 			return False
+		
 
 	def registerOutputInstance(self, instance, session):
 		try:
@@ -700,6 +703,7 @@ class ProjectValerieSyncInfo():
 	def finished(self, successfully):
 		try:
 			self.inProgress = False
+			self.outputInstance.notifyStatus()
 			if self.outputInstance is None:
 				self.session.open(ProjectValerieSyncFinished)
 		except Exception, ex:
@@ -1250,6 +1254,9 @@ class ProjectValerieSync(Screen):
 		if gSyncInfo is None:
 			gSyncInfo = ProjectValerieSyncInfo()
 		gSyncInfo.registerOutputInstance(self, self.session)
+		
+		self.notifyStatus()
+		
 		printl("gSyncInfo.inProgress: " + str(gSyncInfo.inProgress), self)
 		if gSyncInfo.inProgress is False:
 			self.checkDefaults()
@@ -1262,6 +1269,19 @@ class ProjectValerieSync(Screen):
 		gSyncInfo.unregisterOutputInstance()
 		Screen.close(self)
 
+	def notifyStatus(self):
+		
+		global gSyncInfo
+		printl("inProgress:" + str(gSyncInfo.inProgress), self, "D")
+		if gSyncInfo.inProgress is True:
+			self["key_red"].setText(_("Hide"))
+			self["key_green"].setText(_(" "))
+			self["key_yellow"].setText(_(" "))
+		else:
+			self["key_red"].setText(_("Manage"))
+			self["key_green"].setText(_("Synchronize"))
+			self["key_yellow"].setText(_("Fast Synchronize"))
+
 	def menu(self):
 		global gSyncInfo
 		if gSyncInfo.inProgress is False:
@@ -1271,6 +1291,8 @@ class ProjectValerieSync(Screen):
 		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncManager)
+		else:
+			self.close()
 
 	def go(self):
 		global gSyncInfo
