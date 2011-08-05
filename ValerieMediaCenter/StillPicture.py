@@ -88,7 +88,10 @@ class StillPicture(Renderer, InfoBarBase):
 	def __evEOF(self):
 		printl("", self)
 		if self.session is not None and self.session.nav is not None:
-			self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
+			if getBoxtype()[2] != "sh" and service and service.seek():
+				service.seek().seekTo(0)
+			else:
+				self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
 		else:
 			printl("ARGGHHHH!!! self.session is not None and self.session.nav is not None", self, "E")
 		#self.showStillPicture()
