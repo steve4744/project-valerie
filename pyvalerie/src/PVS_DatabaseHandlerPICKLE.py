@@ -764,7 +764,6 @@ class databaseHandlerPICKLE(object):
 						if self._dbEpisodes[key][season][episode].Path == path:
 							if self._dbEpisodes[key][season][episode].Filename == filename:
 								if self._dbEpisodes[key][season][episode].Extension == extension:
-									printl("DUPLICATE: " + path +" "+ filename+" "+  extension, self);
 									return self._dbEpisodes[key][season][episode]
 		
 		return None

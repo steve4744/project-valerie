@@ -212,11 +212,18 @@ class pyvalerie(Thread):
 		self.finished = finished
 		self.mode = mode
 		self.output(_("Thread running"))
+		self.doAbort = False
+
+	def abort(self):
+		self.doAbort = True
+		self.output("Aborting sync! Saving and cleaning up!")
 
 	def run(self):
 		#reload(sys)
 		#sys.setdefaultencoding( "latin-1" )
 		#sys.setdefaultencoding( "utf-8" )
+		
+		self.doAbort = False
 		
 		self.output(_("Loading Config"))
 		
@@ -306,6 +313,9 @@ class pyvalerie(Thread):
 				folderType  = folder[1]
 				useFolder   = folder[2]
 				
+				if self.doAbort:
+					break
+				
 				for element in elementList:
 					i += 1
 					self.progress(i)
@@ -313,6 +323,11 @@ class pyvalerie(Thread):
 					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
 					filename  = Utf8.stringToUtf8(element[1])
 					extension = Utf8.stringToUtf8(element[2])
+					
+					
+					if self.doAbort:
+						break
+					
 					
 					if path is None or filename is None or extension is None:
 						continue
@@ -406,7 +421,7 @@ class pyvalerie(Thread):
 					else:
 						printl("isXbmcNfo == True => using data from nfo:\n" + str(elementInfo), self, "I")
 						results = (elementInfo, )
-
+					
 					if results is not None:
 						for result in results:
 							if db.add(result):
@@ -426,7 +441,7 @@ class pyvalerie(Thread):
 								#result.failedCause = cause
 								#result.MediaType = MediaInfo.FAILED
 								#db.add(result)
-
+								
 								printl("Title already in db", self, "W")
 					
 					#self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")

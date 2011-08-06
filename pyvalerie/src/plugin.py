@@ -628,7 +628,13 @@ class ProjectValerieSyncInfo():
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 			return False
+
+	def abort(self):
+		printl("", self, "D")
+		if not self.inProgress:
+			return False
 		
+		self.thread.abort()
 
 	def registerOutputInstance(self, instance, session):
 		try:
@@ -1275,7 +1281,7 @@ class ProjectValerieSync(Screen):
 		printl("inProgress:" + str(gSyncInfo.inProgress), self, "D")
 		if gSyncInfo.inProgress is True:
 			self["key_red"].setText(_("Hide"))
-			self["key_green"].setText(_(" "))
+			self["key_green"].setText(_("Abort"))
 			self["key_yellow"].setText(_(" "))
 		else:
 			self["key_red"].setText(_("Manage"))
@@ -1298,6 +1304,8 @@ class ProjectValerieSync(Screen):
 		global gSyncInfo
 		if gSyncInfo.inProgress is False:
 			gSyncInfo.start(pyvalerie.NORMAL)
+		else:
+			gSyncInfo.abort()
 
 	def gofast(self):
 		global gSyncInfo
