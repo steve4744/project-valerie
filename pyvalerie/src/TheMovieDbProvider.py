@@ -241,17 +241,23 @@ class TheMovieDbProvider(object):
 			return None
 		
 		movieList = xml.getElementsByTagName("movie")
+		
+		# The best picture is always the first, we may need to check addidonal languages
 		for eMovie in movieList:
 			for p in eMovie.getElementsByTagName("image"):
-				if p.getAttribute("type") == "poster":
-					if p.getAttribute("size") == "original" or p.getAttribute("size") == "cover":
-						info.Poster = p.getAttribute("url")
-				elif p.getAttribute("type") == "backdrop":
-					if p.getAttribute("size") == "original":
-						info.Backdrop = p.getAttribute("url")
-				
-				if len(info.Poster) > 0 and len(info.Backdrop) > 0:
-					return info
+				if p.getAttribute("type") == "poster" and p.getAttribute("size") == "original":
+					info.Poster = p.getAttribute("url")
+					if len(info.Poster) > 0:
+						break
+		
+		for eMovie in movieList:
+			for p in eMovie.getElementsByTagName("image"):
+				if p.getAttribute("type") == "backdrop" and p.getAttribute("size") == "original":
+					info.Backdrop = p.getAttribute("url")
+					if len(info.Backdrop) > 0:
+						break
+		
+		if len(info.Poster) > 0 or len(info.Backdrop) > 0:
 			return info
 		
 		printl(" <- None (eof)", self)

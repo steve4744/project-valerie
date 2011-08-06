@@ -37,7 +37,7 @@ class Arts():
 
 	def save(self, url, file=None, overwrite=False, useDuck=False):
 		if useDuck is False:
-			urlresponse = WebGrabber.getText(url)
+			urlresponse = WebGrabber.getText(url, cache=False)
 		else:
 			try:
 				urlresponse = DuckboxAPI.sendFile(url, file, ())

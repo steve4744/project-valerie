@@ -111,9 +111,9 @@ def addCache(url, text):
 		printl("Exception (ef): " + str(ex), __name__, "E")
 		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 
-def getXml(url, rawXml = None):
+def getXml(url, rawXml=None, cache=True):
 	if rawXml is None:
-		rawXml = getText(url)
+		rawXml = getText(url, cache=cache)
 	
 	if rawXml is None:
 		return None
@@ -141,9 +141,9 @@ def getXml(url, rawXml = None):
 				printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
 	return None
 
-def getHtml(url):
+def getHtml(url, cache=True):
 	try:
-		rawHtml = getText(url) 
+		rawHtml = getText(url, cache=cache) 
 		decodedHtml = None
 		if rawHtml is not None:
 			decodedHtml = decode_htmlentities(rawHtml)
@@ -153,9 +153,12 @@ def getHtml(url):
 	
 	return decodedHtml
 
-def getText(url): 
+def getText(url, cache=True): 
 	try:
-		utfPage = checkCache(url)
+		if cache:
+			utfPage = checkCache(url)
+		else:
+			utfPage = None
 		if utfPage is None:
 			for i in range(RETRIES):
 				printl("-> (" + str(i) + ") " + str(Utf8.utf8ToLatin(url)), __name__)
@@ -184,7 +187,8 @@ def getText(url):
 					else:
 						utfPage = Utf8.stringToUtf8(rawPage)
 					
-					addCache(url, utfPage)
+					if cache:
+						addCache(url, utfPage)
 					break
 		
 		printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
