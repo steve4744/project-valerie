@@ -4,7 +4,7 @@ from enigma import eWidget, eLabel, eCanvas, eRect, eServiceReference, iPlayable
 from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
-from DMC_Global import Showiframe
+from DMC_Global import getBoxtype, Showiframe
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
