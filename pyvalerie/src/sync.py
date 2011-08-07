@@ -341,7 +341,7 @@ class pyvalerie(Thread):
 					
 					alreadyInDb = db.checkDuplicate(path, filename, extension)
 					if alreadyInDb is not None:
-						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
+						self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
 						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
 						
 						if Arts().isMissing(alreadyInDb):
@@ -349,8 +349,12 @@ class pyvalerie(Thread):
 							tmp = None
 							if alreadyInDb.isTypeMovie():
 								tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
-							elif alreadyInDb.isTypeSerie() or alreadyInDb.isTypeEpisode():
-								tmp = TheTvDbProvider().getArtByTheTvDbId(alreadyInDb)
+							elif alreadyInDb.isTypeEpisode():
+								tvshow = db.getSeriesWithTheTvDbId(alreadyInDb.TheTvDbId)
+								#printl(str(tvshow.SeasonPoster), self, "E")
+								tvshow.SeasonPoster.clear() # Make sure that there are no residues
+								tmp = TheTvDbProvider().getArtByTheTvDbId(tvshow)
+								printl(str(tmp.SeasonPoster), self, "E")
 							
 							if tmp is not None:
 								Arts().download(tmp)
@@ -361,7 +365,9 @@ class pyvalerie(Thread):
 								elif alreadyInDb.isTypeSerie() or alreadyInDb.isTypeEpisode():
 									self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
 										"", "")
+								del tmp
 						
+						del alreadyInDb
 						continue
 					
 					outStr = "(" + str(i) + "/" + str(elementListFileCounter)  + ")"

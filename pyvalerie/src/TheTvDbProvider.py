@@ -381,8 +381,8 @@ class TheTvDbProvider(object):
 			return None
 		
 		url = self.apiSeriesByID;
-		url = re.sub("<seriesid>", info.TheTvDbId,		url)
-		url = re.sub("<lang>",	 u"en",				 url)
+		url = re.sub("<seriesid>", info.TheTvDbId, url)
+		url = re.sub("<lang>", u"en", url)
 		xml = WebGrabber.getXml(url);
 		
 		if xml is None:
@@ -400,8 +400,46 @@ class TheTvDbProvider(object):
 				if len(p.childNodes) > 0:
 					info.Backdrop = self.apiArt + p.childNodes[0].data
 					break
-			return info
 		
+		if info.isTypeSerie():
+			tmp = self.getSeasonArtByTheTvDbId(info)
+			if tmp is not None and len(tmp.SeasonPoster.values()) > 0:
+				info = tmp
+			else:
+				info.SeasonPoster.clear()
+		
+		if len(info.Poster) > 0 or len(info.Backdrop) > 0:
+			return info
+
 		WebGrabber.removeFromCache(url)
 		printl(" <- None (eof)", self)
+		return None
+
+	def getSeasonArtByTheTvDbId(self, info):
+		url = self.apiSeriesByID;
+		url = re.sub("<seriesid>", info.TheTvDbId, url)
+		url = re.sub("<lang>", u"banners", url)
+		xml = WebGrabber.getXml(url, cache=False);
+		
+		if xml is None:
+			WebGrabber.removeFromCache(url)
+			printl(" <- None (xml is None)", self)
+			return None
+		
+		movieList = xml.getElementsByTagName("Banners")
+		seasonsFound = []
+		info.SeasonPoster.clear()
+		for eMovie in movieList:
+			for p in eMovie.getElementsByTagName("Banner"):
+				bannerType = p.getElementsByTagName("BannerType")[0].childNodes[0].data
+				bannerType2 = p.getElementsByTagName("BannerType2")[0].childNodes[0].data
+				bannerPath = p.getElementsByTagName("BannerPath")[0].childNodes[0].data
+				if bannerType == "season" and bannerType2 == "season":
+					season = p.getElementsByTagName("Season")[0].childNodes[0].data
+					if season not in seasonsFound:
+						seasonsFound.append(season)
+						info.SeasonPoster[str(season)] = self.apiArt + bannerPath
+		if len(info.SeasonPoster.values()) > 0:
+			return info
+		
 		return None

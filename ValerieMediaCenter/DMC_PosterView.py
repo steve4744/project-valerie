@@ -87,13 +87,13 @@ class DMC_PosterView(DMC_View):
 		element = selection[1]
 		if self.ShowStillPicture is True:
 			if changeBackdrop is True:
-				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtId"] + "_backdrop.m1v"
+				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
 				if os.access(backdrop, os.F_OK):
 					self["backdrop"].setStillPicture(backdrop)
 				else:
 					self["backdrop"].setStillPictureToDefault()
 		
-		self.setPoster("poster_0", element["ArtId"])
+		self.setPoster("poster_0", element["ArtPosterId"])
 		
 		if self.APILevel >= 2:
 			currentIndex = self["listview"].getIndex()
@@ -101,11 +101,11 @@ class DMC_PosterView(DMC_View):
 			count = len(listViewList)
 			for i in range(1,4): # 1, 2, 3
 				if currentIndex >= i:
-					self.setPoster("poster_-" + str(i), listViewList[currentIndex - i][1]["ArtId"])
+					self.setPoster("poster_-" + str(i), listViewList[currentIndex - i][1]["ArtPosterId"])
 				else:
 					self["poster_-" + str(i)].hide()
 				if currentIndex + i < count:
-					self.setPoster("poster_+" + str(i), listViewList[currentIndex + i][1]["ArtId"])
+					self.setPoster("poster_+" + str(i), listViewList[currentIndex + i][1]["ArtPosterId"])
 				else:
 					self["poster_+" + str(i)].hide()
 		

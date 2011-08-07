@@ -47,7 +47,8 @@ class DMC_MovieLibrary(DMC_Library):
             for movie in library:
                 d = {}
                 
-                d["ArtId"] = utf8ToLatin(movie.ImdbId)
+                d["ArtBackdropId"] = utf8ToLatin(movie.ImdbId)
+                d["ArtPosterId"] = d["ArtBackdropId"]
                 
                 d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
                 d["Title"]   = "  " + utf8ToLatin(movie.Title)

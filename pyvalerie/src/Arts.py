@@ -69,7 +69,11 @@ class Arts():
 		
 		if len(eInfo.Backdrop):
 			self.preSave("backdrop", id, eInfo.Backdrop, overwrite)
-				
+		
+		if eInfo.isTypeSerie():
+			for poster in eInfo.SeasonPoster.keys():
+				self.preSave("poster", id + "_s" + poster, eInfo.SeasonPoster[poster], overwrite)
+		
 		printl("<-", self, "D")
 
 	def preSave(self, type, id, url, overwrite):

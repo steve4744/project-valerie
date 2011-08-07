@@ -35,16 +35,16 @@ from Plugins.Extensions.ProjectValerie.__common__ import log
 
 class MediaInfo(object):
 	#RecordStatus
-	REC_NEW 	= 1
-	REC_CHANGED 	= 2 
-	REC_FROM_DB	= 3
+	REC_NEW      = 1
+	REC_CHANGED = 2 
+	REC_FROM_DB = 3
 
 	#MediaType
-	MOVIE  		= 1
-	SERIE 		= 2
-	EPISODE 	= 3
+	MOVIE   = 1
+	SERIE   = 2
+	EPISODE = 3
 	
-	FAILEDSYNC 	= 0
+	FAILEDSYNC = 0
 
 	RecordStatus = REC_NEW  
 	
@@ -80,10 +80,10 @@ class MediaInfo(object):
 	TmDbIdNull    = u"0"
 	TmDbId        = TmDbIdNull
 	
-	Runtime	= 0
+	Runtime    = 0
 	Resolution = u"576"
-	Sound	  = u"Stereo"
-	Plot	   = u""
+	Sound      = u"Stereo"
+	Plot       = u""
 	
 	Directors  = []
 	Writers    = []
@@ -92,7 +92,7 @@ class MediaInfo(object):
 	Popularity = 0
 	
 	Season  = -1
-	Episode = -1		
+	Episode = -1
 	EpisodeText = u""	 # for example: Episode Number:Special / Pilot (not numbered)
 	syncStatus  = 0
 	syncFailedCause = u""
@@ -100,6 +100,7 @@ class MediaInfo(object):
 	Poster   = u""
 	Backdrop = u""
 	Banner   = u""
+	SeasonPoster = {}
 
 	def __init__(self, path = None, filename = None, extension = None):
 		try:
@@ -111,6 +112,10 @@ class MediaInfo(object):
 				self.Alternatives = {}
 				self.Directors    = []
 				self.Writers      = []
+				
+				
+				self.SeasonPoster = {}
+				self.SeasonPoster.clear()
 		except Exception, ex:
 			printls("Exception (ef): " + str(ex), self, "E")
 
@@ -147,6 +152,10 @@ class MediaInfo(object):
 			m.SearchString = self.SearchString
 			m.MediaType    = self.MediaType
 			m.RecordStatus = self.RecordStatus
+			
+			# Make sure that this is not copied
+			m.SeasonPoster.clear()
+			
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 		return m

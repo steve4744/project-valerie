@@ -45,7 +45,8 @@ class DMC_TvShowLibrary(DMC_Library):
             for tvshow in library:
                 d = {}
                 
-                d["ArtId"] = utf8ToLatin(tvshow.TheTvDbId)
+                d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
+                d["ArtPosterId"] = d["ArtBackdropId"]
                 
                 d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
                 d["TheTvDbId"] = utf8ToLatin(tvshow.TheTvDbId)
@@ -91,7 +92,8 @@ class DMC_TvShowLibrary(DMC_Library):
                 if episode.Season == primaryKeyValuePair["Season"]:
                     d = {}
                     
-                    d["ArtId"] = utf8ToLatin(tvshow.TheTvDbId)
+                    d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
+                    d["ArtPosterId"] = d["ArtBackdropId"]
                     
                     d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
                     d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
@@ -134,7 +136,7 @@ class DMC_TvShowLibrary(DMC_Library):
                 dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
             d = {}
             
-            d["ArtId"] = utf8ToLatin(tvshow.TheTvDbId)
+            d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
             
             d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
             d["TheTvDbId"] = utf8ToLatin(tvshow.TheTvDbId)
@@ -156,6 +158,7 @@ class DMC_TvShowLibrary(DMC_Library):
                     s = d.copy()
                     s["Title"]  = "  Season %2d" % (season, )
                     s["Season"] = season
+                    s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
                     parsedLibrary.append((s["Title"], s, season, "50"))
             sort = (("Title", None, False), )
             

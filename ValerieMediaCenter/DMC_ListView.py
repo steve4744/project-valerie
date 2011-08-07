@@ -93,14 +93,14 @@ class DMC_ListView(DMC_View):
 		element = selection[1]
 		if self.ShowStillPicture is True:
 			if changeBackdrop is True:
-				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtId"] + "_backdrop.m1v"
+				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
 				if os.access(backdrop, os.F_OK):
 					self["backdrop"].setStillPicture(backdrop)
 				else:
 					self["backdrop"].setStillPictureToDefault()
 		
 		if self["poster"].instance is not None:
-			poster = config.plugins.pvmc.mediafolderpath.value + element["ArtId"] + "_poster"
+			poster = config.plugins.pvmc.mediafolderpath.value + element["ArtPosterId"] + "_poster"
 			if os.access(poster + self.postersize + ".png", os.F_OK):
 				self["poster"].instance.setPixmapFromFile(poster + self.postersize + ".png")
 			#Fallback for old skins
