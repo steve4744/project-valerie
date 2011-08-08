@@ -67,6 +67,8 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			<widget source="key_green" render="Label" position="300,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
 			<widget name="config" position="10,44" size="430,146" />
 		</screen>"""
+		
+	ShowStillPicture = False
 
 	def __init__(self, session):
 		from Components.Sources.StaticText import StaticText
@@ -76,6 +78,14 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -143,7 +153,7 @@ class PVMC_Update(Screen):
 			"back": self.close
 		}, -1)
 		
-		self.onFirstExecBegin.append(self.update)
+		#self.onFirstExecBegin.append(self.update)
 
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
@@ -265,13 +275,13 @@ class PVMC_MainMenu(Screen):
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Pictures"), plugins[0], "menu_pictures", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Pictures >"), plugins, "menu_pictures", "50"))
+				list.append((_("Pictures"), plugins, "menu_pictures", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_MUSIC)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Music"), plugins[0], "menu_music", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Music >"), plugins, "menu_music", "50"))
+				list.append((_("Music"), plugins, "menu_music", "50"))
 			
 			list.append((_("Live TV"),  "InfoBar", "menu_tv", "50"))
 			
@@ -283,19 +293,19 @@ class PVMC_MainMenu(Screen):
 				if plugins is not None and len(plugins) == 1:
 					list.append((_("Videos"), plugins[0], "menu_videos", "50"))
 				elif plugins is not None and len(plugins) > 1:
-					list.append((_("Videos >"), plugins, "menu_videos", "50"))
+					list.append((_("Videos"), plugins, "menu_videos", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Programs"), plugins[0], "menu_programs", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("Programs >"), plugins, "menu_programs", "50"))
+				list.append((_("Programs"), plugins, "menu_programs", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_SYSTEM)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("System"), plugins[0], "menu_system", "50"))
 			elif plugins is not None and len(plugins) > 1:
-				list.append((_("System >"), plugins, "menu_system", "50"))
+				list.append((_("System"), plugins, "menu_system", "50"))
 			
 			self["menu"] = List(list, True)
 			
