@@ -89,6 +89,8 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 			
 			<widget name="folderList" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
 		</screen>"""
+	
+	ShowStillPicture = False
 
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
@@ -98,6 +100,14 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -163,6 +173,8 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 	colorButtons = {}
 	
 	colorButtonsIndex = 0
+	
+	ShowStillPicture = False
 
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
@@ -172,6 +184,14 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -346,6 +366,8 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 			
 			<widget name="config" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
 		</screen>"""
+		
+	ShowStillPicture = False
 
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
@@ -355,6 +377,14 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -450,6 +480,8 @@ class ProjectValerieSyncSettings(Screen):
 			
 			<widget name="settingsMenu" position="10,50" size="550,340" scrollbarMode="showOnDemand" />
 		</screen>"""
+		
+	ShowStillPicture = False
 
 	def __init__(self, session, args = 0):
 		Screen.__init__(self, session)
@@ -459,6 +491,14 @@ class ProjectValerieSyncSettings(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -833,6 +873,8 @@ class ProjectValerieSyncManagerInfo(Screen):
 	colorButtons = {}
 	
 	colorButtonsIndex = 0
+	
+	ShowStillPicture = False
 
 	def __init__(self, session, manager, element):
 		Screen.__init__(self, session)
@@ -845,6 +887,14 @@ class ProjectValerieSyncManagerInfo(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -1040,6 +1090,8 @@ class ProjectValerieSyncManager(Screen):
 			</convert>
 			</widget>
 		</screen>"""
+		
+	ShowStillPicture = False
 
 	def __init__(self, session, args = None):
 		Screen.__init__(self, session)
@@ -1048,6 +1100,14 @@ class ProjectValerieSyncManager(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
@@ -1206,6 +1266,8 @@ class ProjectValerieSync(Screen):
 			<eLabel text="Name:" position="430,390" size="180,20" font="Regular;18" />
 			<widget name="name" position="440,410" size="170,60" font="Regular;16"/>
 		</screen>"""
+		
+	ShowStillPicture = False
 
 	def __init__(self, session, args = None):
 		Screen.__init__(self, session)
@@ -1214,6 +1276,14 @@ class ProjectValerieSync(Screen):
 		printl("APILevel=" + str(self.APILevel), self)
 		if self.APILevel >= 2:
 			self["API"] = DataElement()
+			
+		if self.APILevel >= 2:
+			try:
+				from Plugins.Extensions.ProjectValerie.StillPicture import StillPicture
+				self["showiframe"] = StillPicture(session)
+				self.ShowStillPicture = True
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
