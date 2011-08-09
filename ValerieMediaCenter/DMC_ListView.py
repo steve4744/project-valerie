@@ -51,7 +51,16 @@ class DMC_ListView(DMC_View):
 		if self.APILevel >= 5:
 			self["quality"] = Label()
 			self["sound"] = Label()
-		
+			
+		self.BackdropDynamic = 1 
+		if self.APILevel >= 6: 
+			try: 
+				self.BackdropDynamic = int(DataElement().getDataPreloading(self, "backdrop_dynamic")) 
+				self["backdrop_dynamic"] = DataElement() 
+			except Exception, ex: 
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W") 
+				self.BackdropDynamic = 1 
+
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText(_("Filter: ") + _("None"))
 		self["key_yellow"] = StaticText(_(" "))
@@ -91,13 +100,13 @@ class DMC_ListView(DMC_View):
 
 	def _refresh(self, selection, changeBackdrop):
 		element = selection[1]
-		#if self.ShowStillPicture is True:
-		#	if changeBackdrop is True:
-		#		backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
-		#		if os.access(backdrop, os.F_OK):
-		#			self["backdrop"].setStillPicture(backdrop)
-		#		else:
-		#			self["backdrop"].setStillPictureToDefault()
+		if self.ShowStillPicture is True: 
+			if changeBackdrop is True and self.BackdropDynamic == 1: 
+				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v" 
+				if os.access(backdrop, os.F_OK): 
+					self["backdrop"].setStillPicture(backdrop) 
+				else: 
+					self["backdrop"].setStillPictureToDefault() 
 		
 		if self["poster"].instance is not None:
 			poster = config.plugins.pvmc.mediafolderpath.value + element["ArtPosterId"] + "_poster"
