@@ -153,7 +153,7 @@ class PVMC_Update(Screen):
 			"back": self.close
 		}, -1)
 		
-		#self.onFirstExecBegin.append(self.update)
+		self.onFirstExecBegin.append(self.update)
 
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
