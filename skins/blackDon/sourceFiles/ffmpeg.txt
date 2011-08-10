@@ -1,0 +1,1 @@
+C:\Path\tp\ffmpeg.exe -i C:\path\to\image\convert.png -an -f mpeg2video -r 25.0 -vcodec mpeg2video -intra -sc_threshold 1000000000 -flags +mv0+cgop -dc 8 -g 1 -me_method zero -qscale 5 -bf 0 -aspect 16:9 C:\path\to\mein.m1v
