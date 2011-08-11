@@ -775,25 +775,28 @@ class databaseHandlerPICKLE(object):
 		self._moviesCheckLoaded()
 		self._seriesCheckLoaded()
 		self._failedCheckLoaded()
-		for key in self._dbMovies:
-			if key == self.CONFIGKEY:		# only for Pickle
-				continue
-			if self._dbMovies[key].Path == path:
-				if self._dbMovies[key].Filename == filename:
-					if self._dbMovies[key].Extension == extension:
-						return self._dbMovies[key]
-		
-		for key in self._dbSeries:
-			if key == self.CONFIGKEY:		# only for Pickle
-				continue
-			if key in self._dbEpisodes:
-				for season in self._dbEpisodes[key]:
-					for episode in self._dbEpisodes[key][season]:
-						if self._dbEpisodes[key][season][episode].Path == path:
-							if self._dbEpisodes[key][season][episode].Filename == filename:
-								if self._dbEpisodes[key][season][episode].Extension == extension:
-									printl("DUPLICATE: " + path +" "+ filename+" "+  extension, self);
-									return self._dbEpisodes[key][season][episode]
+
+		if self._dbMovies is not None:
+			for key in self._dbMovies:
+				if key == self.CONFIGKEY:		# only for Pickle
+					continue
+				if self._dbMovies[key].Path == path:
+					if self._dbMovies[key].Filename == filename:
+						if self._dbMovies[key].Extension == extension:
+							return self._dbMovies[key]
+
+		if self._dbSeries is not None:
+			for key in self._dbSeries:
+				if key == self.CONFIGKEY:		# only for Pickle
+					continue
+				if key in self._dbEpisodes:
+					for season in self._dbEpisodes[key]:
+						for episode in self._dbEpisodes[key][season]:
+							if self._dbEpisodes[key][season][episode].Path == path:
+								if self._dbEpisodes[key][season][episode].Filename == filename:
+									if self._dbEpisodes[key][season][episode].Extension == extension:
+										printl("DUPLICATE: " + path +" "+ filename+" "+  extension, self);
+										return self._dbEpisodes[key][season][episode]
 		
 		return None
 
