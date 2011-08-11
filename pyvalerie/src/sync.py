@@ -354,7 +354,8 @@ class pyvalerie(Thread):
 								#printl(str(tvshow.SeasonPoster), self, "E")
 								tvshow.SeasonPoster.clear() # Make sure that there are no residues
 								tmp = TheTvDbProvider().getArtByTheTvDbId(tvshow)
-								printl(str(tmp.SeasonPoster), self, "E")
+								#crash with - AttributeError: 'NoneType' object has no attribute 'SeasonPoster'
+								#printl(str(tmp.SeasonPoster), self, "E")
 							
 							if tmp is not None:
 								Arts().download(tmp)

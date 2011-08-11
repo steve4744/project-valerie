@@ -38,7 +38,9 @@ class DMC_TvShowLibrary(DMC_Library):
         # Diplay all TVShows
         if primaryKeyValuePair is None:
             parsedLibrary = []
-            library = self.manager.getAll(Manager.TVSHOWS)
+            #library = self.manager.get-All(Manager.TVSHOWS)
+	    library = self.manager.getSeriesValues()
+	    
             
             tmpAbc = []
             tmpGenres = []
@@ -87,6 +89,8 @@ class DMC_TvShowLibrary(DMC_Library):
                 dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
             
             library = self.manager.getAll(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
+	    #library = self.manager.getSeriesEpisodesWithTheTvDbId(param)
+	    
             
             for episode in library:
                 if episode.Season == primaryKeyValuePair["Season"]:

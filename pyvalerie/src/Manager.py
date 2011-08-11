@@ -62,9 +62,9 @@ class Manager():
 		printl("", self)
 		self.db.save()
 
-	def reload(self):
-		printl("", self)
-		self.db.reload()
+	#def reload(self):
+	#	printl("", self)
+	#	self.db.reload()
 
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)
@@ -339,15 +339,17 @@ class Manager():
 #
 #################################   MOVIES   ################################# 
 #
+	def dbIsCommited(self):
+		return self.db.dbIsCommited()
+	
 	# Pass throught functions
-	def getMovies(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getMovies(order, firstRecord, numberOfRecords)
-
+	# uncomment if necessary
+	
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMoviesValues(order, firstRecord, numberOfRecords)
 
-	def getMoviesWithKey(self, movieKey):
-		return self.db.getMoviesWithKey(movieKey)
+	#def getMoviesWithKey(self, movieKey):
+	#	return self.db.getMoviesWithKey(movieKey)
 
 	def getMoviesPkWithImdb(self, imdbId):
 		return self.db.getMovieKeyWithImdb(imdbId)
@@ -358,15 +360,14 @@ class Manager():
 #
 #################################   SERIES   ################################# 
 #
-	# Pass throught functions	
-	def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getSeries(order, firstRecord, numberOfRecords)
-		
+	# Pass throught functions
+	# uncomment if necessary
+	
 	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getSeriesValues(order, firstRecord, numberOfRecords)
 	
-	def getSeriesWithKey(self, serieKey):
-		return self.db.getSeriesWithKey(serieKey)
+	#def getSeriesWithKey(self, serieKey):
+	#	return self.db.getSeriesWithKey(serieKey)
 	
 	def getSeriesWithTheTvDbId(self, theTvDbId):
 		return self.db.getSeriesWithTheTvDbId(theTvDbId)
@@ -377,11 +378,11 @@ class Manager():
 	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
 		return self.db.getSeriesEpisodesWithTheTvDbId(theTvDbId, season)
 	
-	def getSeriesEpisode(self, serieKey, season, episode):
-		return self.db.getSeriesEpisode(serieKey, season, episode)
+	#def getSeriesEpisode(self, serieKey, season, episode):
+	#	return self.db.getSeriesEpisode(serieKey, season, episode)
 		
-	def getSeriesSeasons(self, serieKey):			
-		return self.db.getSeriesSeasons(serieKey)				
+	#def getSeriesSeasons(self, serieKey):			
+	#	return self.db.getSeriesSeasons(serieKey)				
 
 	def getSeriesCount(self):
 		return self.db.getSeriesCount()
@@ -397,7 +398,6 @@ class Manager():
 	
 	def getSeriesCountEpisodes(self, serieKey=None, season=None):
 		return self.db.getSeriesCountEpisodes(serieKey, season)
-
 
 	def deleteSerieCascade(self, serieKey):
 		return self.db.deleteSerieCascade(serieKey)

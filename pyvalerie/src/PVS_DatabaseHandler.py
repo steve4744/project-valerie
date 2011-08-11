@@ -88,12 +88,12 @@ gDatabase = None
 gDatabaseMutex = Lock()
 
 class Database(object):
-	DB_NONE = 0
-	DB_TXD = 2
+	DB_NONE   = 0
+	DB_TXD    = 2
 	DB_PICKLE = 3
-	DB_SQLITE= 4
+	DB_SQLITE = 4
 
-	DB_PATH           = config.plugins.pvmc.configfolderpath.value
+	DB_PATH   = config.plugins.pvmc.configfolderpath.value
 
 	if DB_SQLITE_LOADED and os.path.exists(DB_PATH + "usesql"):
 		USE_DB_TYPE    	= DB_SQLITE
@@ -102,8 +102,8 @@ class Database(object):
 		
 	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
 	
-	USE_INDEXES = False  # Create indexes key/id
-	PRELOADDB   = False  # Reload All tables on Start (default)
+	USE_INDEXES = False  		# Create indexes key/id
+	PRELOADDB   = False  		# Reload All tables on Start (default)
 	
 	CONFIGKEY  = -999999
 	
@@ -305,14 +305,14 @@ class Database(object):
 #
 #################################   MOVIES   ################################# 
 #
-	def getMovies(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.dbHandler.getMovies(order, firstRecord, numberOfRecords)
+	def dbIsCommited(self):
+		return self.dbHandler.dbIsCommited()
+		
+	def getMovies(self):
+		return self.dbHandler.getMovies()
 
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		log("->", self, 15)
-		ret = self.getMovies(order, firstRecord, numberOfRecords).values()
-		log("<-", 15)
-		return ret	
+		return self.dbHandler.getMoviesValues(order, firstRecord, numberOfRecords)	
 
 	def getMoviesWithKey(self, movieKey):
 		return self.dbHandler.getMoviesWithKey(movieKey)
@@ -326,6 +326,9 @@ class Database(object):
 
 	def getMoviesCount(self):
 		return self.dbHandler.getMoviesCount()	
+	
+	def setMoviesSeen(self, movieKey):
+		return 	
 #	
 #################################   SERIES   ################################# 
 #

@@ -105,11 +105,22 @@ class databaseHandlerPICKLE(object):
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
 					
-			if self.USE_INDEXES:
-				self.createMoviesIndexes()
-				
 			elapsed_time = time.time() - start_time
 			log("LoadMovies Took : " + str(elapsed_time), self, 11)
+					
+			if self.USE_INDEXES:
+				start_time = time.time()
+				self.createMoviesIndexes()
+				elapsed_time = time.time() - start_time
+				log("Indexing Took : " + str(elapsed_time), self, 11)
+				
+			#for movieKey in self._dbMovies:
+			#	if movieKey != self.CONFIGKEY:
+			#		if IDMODEAUTO:
+			#			self._dbMovies[movieKey].Id = movieKey
+			#		else:
+			#			self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId
+
 
 	def saveMovies(self):		
 		printl("->", self)
@@ -139,57 +150,76 @@ class databaseHandlerPICKLE(object):
 			log("Movies Not Loaded", self, 10)
 			self._loadMoviesDB()
 
-	def getMovies(self, order=None, firstRecord=0, numberOfRecords=9999999):
+	def getMovies(self):
+		printl("->", self)
+		newList	= {}
+		self._moviesCheckLoaded()
+		start_time = time.time()
+		newList	= self._dbMovies.copy()
+		if self.CONFIGKEY in newList:		# only for Pickle
+			del newList[self.CONFIGKEY]
+					
+		elapsed_time = time.time() - start_time
+
+		#printl("2 --------------------------------")			
+		#for key in newList:
+		#	printl(repr(newList[key].Title))
+		
+		printl("Took: " + str(elapsed_time), self)
+		return newList # return always a copy, user don't use db
+
+	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		printl("->", self)
 		if order is None:
 			order = self.ORDER_TITLE;
-		listToSort = {}
-		sortedList = {}
-		newList	= {}
+		listToSort   = []
+		listSorted   = []
+		listToReturn = []
+		
 		self._moviesCheckLoaded()
 		if self._dbMovies is not None:
 			start_time = time.time()
+		
+			for movieKey in self._dbMovies:
+				if movieKey != self.CONFIGKEY:
+					listToSort.append(self._dbMovies[movieKey])
+						
+			#printl("1 --------------------------------")
+			#print (str(listToSort))
+			
+			# sort by ....
+			if order == self.ORDER_TITLE:
+				listSorted = sorted(listToSort, key=lambda k: k.Title)				
+			elif order == self.ORDER_YEAR:
+				listSorted = sorted(listToSort, key=lambda k: k.Year)
+			else:
+				listSorted = listToSort
+			#printl("2 --------------------------------")
+			#print (str(listSorted))					
+
+			## return parcial listToReturn ---- (on Dict - orderdict only on 2.7)
 			if firstRecord==0 and numberOfRecords==9999999:
 				printl("All Records", self)
-				newList	= self._dbMovies.copy()
-				if self.CONFIGKEY in newList:		# only for Pickle
-					del newList[self.CONFIGKEY]
-			else:
-				# create list
-				for movieKey in self._dbMovies:
-					if movieKey == self.CONFIGKEY:		# only for Pickle
-						continue
-					if order == self.ORDER_TITLE:
-						listToSort[movieKey] = self._dbMovies[movieKey].Title					
-					elif order == self.ORDER_YEAR:
-						listToSort[movieKey] = self._dbMovies[movieKey].Year
-					else:
-						return
-				#printl("1 --------------------------------")			
-				
-				# sort by value
-				sortedList = sorted(listToSort.iteritems(), key=lambda (k,v): (v,k))
-					
-				## return parcial newList NOT ORDERED (orderdict only on 2.7)
+				listToReturn = listSorted
+			else:				
 				recPosition = 0
 				recCount = 0
-				for key, value in sortedList:
+				for item in listSorted:
 					if recPosition >= firstRecord:
-						#printl(str(recCount) + "  " +  self._dbMovies[key].Title)
-						newList[key] = self._dbMovies[key]
+						listToReturn.append(item)
 						recCount += 1
 					recPosition += 1
 					if recCount >= numberOfRecords:
 						break
-							
-			elapsed_time = time.time() - start_time
+			#printl("3 --------------------------------")
+			#print (str(listSorted))					
 
-			#printl("2 --------------------------------")			
-			#for key in newList:
-			#	printl(repr(newList[key].Title))
-			
+						
+							
+			elapsed_time = time.time() - start_time		
 			printl("Took: " + str(elapsed_time), self)
-		return newList # return always a copy, user don't use db
+
+		return listToReturn
 
 	def getMoviesCount(self):
 		log("->", self, 20)
@@ -497,11 +527,6 @@ class databaseHandlerPICKLE(object):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
 		if serieKey is None:		# seriesGetAllEpisodes
-			#list = []
-			#for serieKey in self._dbEpisodes:
-			#	if serieKey != self.CONFIGKEY:
-			#		for season in self._dbEpisodes[serieKey]:
-			#			list += self._dbEpisodes[serieKey][season].values()
 			newList	= {}			
 			if self._dbEpisodes is not None:
 				newList	= self._dbEpisodes.copy()
@@ -747,6 +772,9 @@ class databaseHandlerPICKLE(object):
 ###################################  UTILS  ###################################
 
 	def checkDuplicate(self, path, filename, extension):
+		self._moviesCheckLoaded()
+		self._seriesCheckLoaded()
+		self._failedCheckLoaded()
 		for key in self._dbMovies:
 			if key == self.CONFIGKEY:		# only for Pickle
 				continue
@@ -764,6 +792,7 @@ class databaseHandlerPICKLE(object):
 						if self._dbEpisodes[key][season][episode].Path == path:
 							if self._dbEpisodes[key][season][episode].Filename == filename:
 								if self._dbEpisodes[key][season][episode].Extension == extension:
+									printl("DUPLICATE: " + path +" "+ filename+" "+  extension, self);
 									return self._dbEpisodes[key][season][episode]
 		
 		return None
