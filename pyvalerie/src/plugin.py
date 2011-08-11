@@ -906,8 +906,8 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self.colorButtons[0]["key_blue"]   = (_("More"),         self.more, )
 		self.colorButtons[1] = {}
 		self.colorButtons[1]["key_red"]    = (_("IMDb ID"),      self.showEnterImdbId, )
-		self.colorButtons[1]["key_green"]  = (_("Delete"),       self.delete, )
-		self.colorButtons[1]["key_yellow"] = (_("Save"),         self.save, )
+		self.colorButtons[1]["key_green"]  = (_("IMDb ID (TV)"), self.showEnterImdbIdTV, )
+		self.colorButtons[1]["key_yellow"] = (_("Delete"),       self.delete, )
 		self.colorButtons[1]["key_blue"]   = (_("More"),         self.more, )
 		
 		self["key_red"]    = StaticText(self.colorButtons[self.colorButtonsIndex]["key_red"][0])
@@ -1005,6 +1005,21 @@ class ProjectValerieSyncManagerInfo(Screen):
 		printl("what=" + str(what), self)
 		if what is not None:
 			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, "tt" + what, False)
+			if element is not None:
+				if len(element) == 2:
+					self.elementParent = element[0]
+					self.element = element[1]
+				else:
+					self.element = element[0]
+				self.onLoad()
+	
+	def showEnterImdbIdTV(self):
+		self.session.openWithCallback(self.showEnterImdbIdTVCallback, InputBox, title=_("IMDb ID for TV Show without tt"), type=Input.NUMBER)#useableChars="0123456789")
+
+	def showEnterImdbIdTVCallback(self, what):
+		printl("what=" + str(what), self)
+		if what is not None:
+			element = self.manager.syncElement(self.element.Path, self.element.Filename, self.element.Extension, what, True)
 			if element is not None:
 				if len(element) == 2:
 					self.elementParent = element[0]
@@ -1191,15 +1206,18 @@ class ProjectValerieSyncManager(Screen):
 							Utf8.utf8ToLatin(entry.Title), entry), )
 		else:
 			for entry in entries:
-				if entry.Extension.lower() == u"ifo":
-					dirs = entry.Path.split(u"/")
-					dirs[len(dirs) - 2]
-					list.append((Utf8.utf8ToLatin(dirs[len(dirs) - 2]) + " [VIDEO_TS]", 
-								Utf8.utf8ToLatin(entry.Title), entry), )
-				else:
-					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
-								Utf8.utf8ToLatin(entry.Title), entry), )
-		
+				try:
+					if entry.Extension.lower() == u"ifo":
+						dirs = entry.Path.split(u"/")
+						dirs[len(dirs) - 2]
+						list.append((Utf8.utf8ToLatin(dirs[len(dirs) - 2]) + " [VIDEO_TS]", 
+									Utf8.utf8ToLatin(entry.Title), entry), )
+					else:
+						list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+									Utf8.utf8ToLatin(entry.Title), entry), )
+				except AttributeError:
+					printl("entry has no extension")
+				
 		list = sorted(list)
 		self["listview"].setList(list)
 

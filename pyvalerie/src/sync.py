@@ -228,7 +228,9 @@ class pyvalerie(Thread):
 		self.output(_("Loading Config"))
 		
 		Config.load()
-		
+		Blacklist.load()
+		printl(str(len(Blacklist.get())) +" entrys")
+			   
 		self.output(_("Loading Data"))
 		printl("Loading Data", self)
 
@@ -354,8 +356,8 @@ class pyvalerie(Thread):
 								#printl(str(tvshow.SeasonPoster), self, "E")
 								tvshow.SeasonPoster.clear() # Make sure that there are no residues
 								tmp = TheTvDbProvider().getArtByTheTvDbId(tvshow)
-								#crash with - AttributeError: 'NoneType' object has no attribute 'SeasonPoster'
-								#printl(str(tmp.SeasonPoster), self, "E")
+								if tmp is not None:
+									printl(str(tmp.SeasonPoster), self, "E")
 							
 							if tmp is not None:
 								Arts().download(tmp)
