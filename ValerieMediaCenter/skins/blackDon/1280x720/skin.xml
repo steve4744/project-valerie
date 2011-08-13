@@ -50,9 +50,9 @@
   <widget name="showiframe" position="0,0" zPosition="0" size="1280,720" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/mainmenu.m1v" />
   <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="373,25" size="853,35" font="Dream;37" foregroundColor="white" halign="right" />
   <!-- cotent -->
-  <widget source="menu" render="Listbox" zPosition="2" transparent="0" position="26,368" size="1226,275" scrollbarMode="showOnDemand" backgroundColor="unff000000" backgroundColorSelected="#FF000000" foregroundColor="una0424242" foregroundColorSelected="#00FFFFFF">
+  <widget source="menu" render="Listbox" enableWrapAround="False" zPosition="2" transparent="0" position="26,368" size="1226,275" scrollbarMode="showOnDemand" backgroundColor="unff000000" backgroundColorSelected="#FF000000" foregroundColor="una0424242" foregroundColorSelected="#00FFFFFF">
     <convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (0,0), size = (1226,300), flags = RT_HALIGN_CENTER | RT_VALIGN_CENTER, text = 0) ],
+				{"template": [ MultiContentEntryText(pos = (0,0), size = (1226,300), flags = RT_HALIGN_CENTER, text = 0) ],
 				"fonts": [gFont("Dream", 37)],
 				"itemHeight": 50				}
 			</convert>
@@ -96,6 +96,7 @@
   <!-- PVMC ListView -->
   <screen name="PVMC_ListView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="transparent">
     <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+    <widget name="backdrop_dynamic" text="0" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/listview.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="880,25" size="355,35" font="Dream;37" foregroundColor="white" halign="right" />
     <!-- cotent -->

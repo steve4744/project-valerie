@@ -96,6 +96,7 @@
   <!-- PVMC ListView -->
   <screen name="PVMC_ListView" position="0,0" size="1024,576" title=" " flags="wfNoBorder" backgroundColor="transparent">
     <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+    <widget name="backdrop_dynamic" text="0" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1024,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/listview.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="704,20" size="284,28" font="Dream;30" foregroundColor="white" halign="right" />
     <!-- cotent -->
