@@ -15,20 +15,21 @@ def load():
 	printl("loading blackList")
 	try:
 		del blackList[:]
+		fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "blacklist.conf", "r")
+		blackList = fconf.read().split(u"\n")
+		printl("blacklist loaded " + str(len(blackList))+ " entries")
+		fconf.close()
 	except Exception, ex:
-		printl("")
+		printl("blacklist not found")
+		blackList = []
+		
 	
-	fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "blackList.conf", "r")
-	blackList = fconf.read().split(u"\n")
-	printl("blackList loaded " + str(len(blackList))+ " entries")
-	fconf.close()
-
 def save():
 	global blackList
 	if blackList is None:
 		self.load()
 		
-	fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "blackList.conf", "w")
+	fconf = Utf8.Utf8(config.plugins.pvmc.configfolderpath.value + "blacklist.conf", "w")
 	for file in blackList:
 		fconf.write(file + u"\n")
 	fconf.close()
