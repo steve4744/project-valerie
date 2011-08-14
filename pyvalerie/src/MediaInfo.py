@@ -43,14 +43,15 @@ class MediaInfo(object):
 	MOVIE   = 1
 	SERIE   = 2
 	EPISODE = 3
+	MUSIC   = 4
 	
 	FAILEDSYNC = 0
 
 	RecordStatus = REC_NEW  
 	
-	Id = None	# for Sql - Primary Key
-			# in TXD initialized with:
-			#    dbMovies:ImdbID   dbSeries/dbEpisodes:TheTvdbId
+	Id = None	# Unique Key
+			# if IDMODE=AUTO initialized with unique key
+			# else   dbMovies:ImdbID   dbSeries/dbEpisodes:TheTvdbId
 	MediaType = None # Not Used - only after db version 2 of Pickle
 	isMovie   = False
 	isSerie   = False

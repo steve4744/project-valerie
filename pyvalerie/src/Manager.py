@@ -14,7 +14,6 @@
 #
 #   v
 #
-#
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import Blacklist
@@ -39,6 +38,7 @@ class Manager():
 	TVSHOWSEPISODES = 2
 	FAILED = 3
 	FAILED_ALL = 4
+	MUSIC = 6
 	
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
@@ -146,25 +146,26 @@ class Manager():
 				return results
 		return None
 
-	def replace(self, oldElement, newElement):
-		printl("", self)
-		# not consistent ...todo: update serie
-		if oldElement is not None:
-			printl("oldElement=" + str(oldElement), self)
-			if type(oldElement) is MediaInfo:
-				printl("RM " + str(self.db.remove(oldElement)), self)
-			else:
-				self.db.removeFailed(oldElement)
-		
-		if newElement is not None:
-			if len(newElement) == 2:
-				printl("newElement=" + str(newElement[0]), self)
-				printl("ADD " + str(self.db.add(newElement[0])), self)
-				printl("newElement=" + str(newElement[1]), self)
-				printl("ADD " + str(self.db.add(newElement[1])), self)
-			else:
-				printl("newElement=" + str(newElement[0]), self)
-				printl("ADD " + str(self.db.add(newElement[0])), self)
+	#not used anymore - replacement: update/insert media
+	#def replace(self, oldElement, newElement):
+	#	printl("", self)
+	#	# not consistent ...todo: update serie
+	#	if oldElement is not None:
+	#		printl("oldElement=" + str(oldElement), self)
+	#		if type(oldElement) is MediaInfo:
+	#			printl("RM " + str(self.db.remove(oldElement)), self)
+	#		else:
+	#			self.db.removeFailed(oldElement)
+	#	
+	#	if newElement is not None:
+	#		if len(newElement) == 2:
+	#			printl("newElement=" + str(newElement[0]), self)
+	#			printl("ADD " + str(self.db.add(newElement[0])), self)
+	#			printl("newElement=" + str(newElement[1]), self)
+	#			printl("ADD " + str(self.db.add(newElement[1])), self)
+	#		else:
+	#			printl("newElement=" + str(newElement[0]), self)
+	#			printl("ADD " + str(self.db.add(newElement[0])), self)
 
 	def remove(self, oldElement, blacklist=True):
 		printl("", self)
@@ -189,12 +190,12 @@ class Manager():
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			printl("is_Movie found", self)
 			imdbid = primary_key["imdbid"]
-			element = self.db.getMoviesWithKey(imdbid)
+			element = self.db.getMoviesWithImdbId(imdbid)
 		
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
 			printl("is_TvShow found", self)
 			thetvdbid = primary_key["thetvdbid"]
-			element = self.db.getSeriesWithKey(thetvdbid)
+			element = self.db.getSeriesWithTheTvDbId(thetvdbid)
 		
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
 			printl("is_Episode found", self)
@@ -210,110 +211,114 @@ class Manager():
 		
 		return element
 
-	def removeByUsingPrimaryKey(self, type, primary_key):
-		printl("", self)
-		printl("type=" + str(type), self)
-		printl("primary_key=" + str(primary_key), self)
-		element = self.getElementByUsingPrimaryKey(type, primary_key)
-		if element is not None:
-			self.remove(element, False)
-			return True
-		return False
+	#not used anymorE
+	#def removeByUsingPrimaryKey(self, type, primary_key):
+	#	printl("", self)
+	#	printl("type=" + str(type), self)
+	#	printl("primary_key=" + str(primary_key), self)
+	#	element = self.getElementByUsingPrimaryKey(type, primary_key)
+	#	if element is not None:
+	#		self.remove(element, False)
+	#		return True
+	#	return False
+	
+	#not used anymore - Passed to DB Layer because it will be diferent for sql
+	#def fillElement(self, newElement, key_value_dict):
+	#	printl("", self)
+	#	for key in key_value_dict.keys():
+	#		if key == "Title":
+	#			newElement.Title = key_value_dict[key]
+	#		elif key == "Year":
+	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+	#				value = None
+	#			else:
+	#				value = int(key_value_dict[key])
+	#			newElement.Year = value
+	#		elif key == "Month":
+	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+	#				value = None
+	#			else:
+	#				value = int(key_value_dict[key])
+	#			newElement.Month = value
+	#		elif key == "Day":
+	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+	#				value = None
+	#			else:
+	#				value = int(key_value_dict[key])
+	#			newElement.Day = value
+	#		elif key == "ImdbId":
+	#			newElement.ImdbId = key_value_dict[key]
+	#		elif key == "TheTvDbId":
+	#			newElement.TheTvDbId = key_value_dict[key]
+	#		elif key == "TmDbId":
+	#			newElement.TmDbId = key_value_dict[key]
+	#		elif key == "Runtime":
+	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+	#				value = None
+	#			else:
+	#				value = int(key_value_dict[key])
+	#			newElement.Runtime = value
+	#		elif Resolution
+	#		elif Sound
+	#		elif key == "Plot":
+	#			newElement.Plot = key_value_dict[key]
+	#		elif key == "Genres":
+	#			newElement.Genres = key_value_dict[key]
+	#		elif key == "Tag":
+	#			newElement.Tag = key_value_dict[key]
+	#		elif key == "Popularity":
+	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+	#				value = None
+	#			else:
+	#				value = int(key_value_dict[key])
+	#			newElement.Popularity = value
+	#		elif key == "Season":
+	#			newElement.Season = int(key_value_dict[key])
+	#		elif key == "Episode":
+	#			newElement.Episode = int(key_value_dict[key])
+	#		
+	#		elif key == "Path":
+	#			newElement.Path = key_value_dict[key]
+	#		elif key == "Filename":
+	#			newElement.Filename = key_value_dict[key]
+	#		elif key == "Extension":
+	#			newElement.Extension = key_value_dict[key]
+	#	return newElement
 
-	def fillElement(self, newElement, key_value_dict):
-		printl("", self)
-		for key in key_value_dict.keys():
-			if key == "Title":
-				newElement.Title = key_value_dict[key]
-			elif key == "Year":
-				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-					value = None
-				else:
-					value = int(key_value_dict[key])
-				newElement.Year = value
-			elif key == "Month":
-				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-					value = None
-				else:
-					value = int(key_value_dict[key])
-				newElement.Month = value
-			elif key == "Day":
-				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-					value = None
-				else:
-					value = int(key_value_dict[key])
-				newElement.Day = value
-			elif key == "ImdbId":
-				newElement.ImdbId = key_value_dict[key]
-			elif key == "TheTvDbId":
-				newElement.TheTvDbId = key_value_dict[key]
-			elif key == "TmDbId":
-				newElement.TmDbId = key_value_dict[key]
-			elif key == "Runtime":
-				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-					value = None
-				else:
-					value = int(key_value_dict[key])
-				newElement.Runtime = value
-			#elif Resolution
-			#elif Sound
-			elif key == "Plot":
-				newElement.Plot = key_value_dict[key]
-			elif key == "Genres":
-				newElement.Genres = key_value_dict[key]
-			elif key == "Tag":
-				newElement.Tag = key_value_dict[key]
-			elif key == "Popularity":
-				if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-					value = None
-				else:
-					value = int(key_value_dict[key])
-				newElement.Popularity = value
-			elif key == "Season":
-				newElement.Season = int(key_value_dict[key])
-			elif key == "Episode":
-				newElement.Episode = int(key_value_dict[key])
-			
-			elif key == "Path":
-				newElement.Path = key_value_dict[key]
-			elif key == "Filename":
-				newElement.Filename = key_value_dict[key]
-			elif key == "Extension":
-				newElement.Extension = key_value_dict[key]
-		return newElement
+	#not used anymore - replacement: update media
+	#def replaceByUsingPrimaryKey(self, type, primary_key, key_value_dict):
+	#		printl("", self)
+	#	element = self.getElementByUsingPrimaryKey(type, primary_key)
+	#	if element is not None:
+	#		newElement = element.copy()
+	#		newElement = self.fillElement(newElement, key_value_dict)
+	#		self.replace(element, (newElement, ))
+	#		return newElement
+	#	return None
 
-	def replaceByUsingPrimaryKey(self, type, primary_key, key_value_dict):
-		printl("", self)
-		element = self.getElementByUsingPrimaryKey(type, primary_key)
-		if element is not None:
-			newElement = element.copy()
-			newElement = self.fillElement(newElement, key_value_dict)
-			self.replace(element, (newElement, ))
-			return newElement
-		return None
-
-	def addByUsingPrimaryKey(self, type, primary_key, key_value_dict):
-		printl("", self)
-		newElement = MediaInfo()
-		if type == self.MOVIES and primary_key.has_key("imdbid"):
-			newElement.ImdbId = primary_key["imdbid"]
-			newElement.setMediaType(MediaInfo.MOVIE)
-		
-		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
-			newElement.TheTvDbId = primary_key["thetvdbid"]
-			newElement.setMediaType(MediaInfo.SERIE)
-		
-		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
-			newElement.TheTvDbId = primary_key["thetvdbid"]
-			newElement.Season = primary_key["season"]
-			newElement.Episode = primary_key["episode"]
-			newElement.setMediaType(MediaInfo.EPISODE)
-		else:
-			return None
-		
-		newElement = self.fillElement(newElement, key_value_dict)
-		self.replace(None, (newElement, ))
-		return newElement
+	#not used anymore - replacement: insert media
+	#def addByUsingPrimaryKey(self, type, primary_key, key_value_dict):
+	#	printl("", self)
+	#	newElement = MediaInfo()
+	#	if type == self.MOVIES and primary_key.has_key("imdbid"):
+	#		newElement.ImdbId = primary_key["imdbid"]
+	#		newElement.setMediaType(MediaInfo.MOVIE)
+	#	
+	#	elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
+	#		newElement.TheTvDbId = primary_key["thetvdbid"]
+	#		newElement.setMediaType(MediaInfo.SERIE)
+	#	
+	#	elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
+	#		newElement.TheTvDbId = primary_key["thetvdbid"]
+	#		newElement.Season = primary_key["season"]
+	#		newElement.Episode = primary_key["episode"]
+	#		newElement.setMediaType(MediaInfo.EPISODE)
+	#	else:
+	#		return None
+	#	
+	#	newElement = self.fillElement(newElement, key_value_dict)
+	#	self.replace(None, (newElement, ))
+	#	return newElement
 	
 	def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
 		printl("start changing arts", self)
@@ -348,15 +353,94 @@ class Manager():
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMoviesValues(order, firstRecord, numberOfRecords)
 
-	#def getMoviesWithKey(self, movieKey):
-	#	return self.db.getMoviesWithKey(movieKey)
+	#def getMovie(self, id):
+	#	return self.db.getMovie(id)
 
-	def getMoviesPkWithImdb(self, imdbId):
-		return self.db.getMovieKeyWithImdb(imdbId)
+	#def getMoviesPkWithImdb(self, imdbId):
+	#	return self.db.getMovieKeyWithImdb(imdbId)
 
 	def getMoviesCount(self):
 		return self.db.getMoviesCount()
 
+	def updateMedia(self, type, key_value_dict):
+		printl("", self)
+		if type == self.MOVIES:
+			if self.db.updateMovieWithDict(key_value_dict):
+				printl("Movie Update - OK", self)	
+				return True
+			else:
+				printl("Movie Update - DB Error", self)	
+				return False
+			
+		elif type == self.TVSHOWS:
+			if self.db.updateSerieWithDict(key_value_dict):
+				printl("Serie Update - OK", self)	
+				return True
+			else:
+				printl("Serie Update - DB Error", self)	
+				return False
+			
+		elif type == self.TVSHOWSEPISODES:
+			if self.db.updateEpisodeWithDict(key_value_dict):
+				printl("Episode Update - OK", self)	
+				return True
+			else:
+				printl("Episode Update - DB Error", self)	
+				return False	
+		return True
+	
+	def insertMedia(self, type, key_value_dict):
+		printl("", self)
+		newElement = MediaInfo()
+		if type == self.MOVIES:
+			if not self.db.insertMovieWithDict(key_value_dict):
+				return False
+		
+		elif type == self.TVSHOWS:
+			if not self.db.insertSerieWithDict(key_value_dict):
+				printl("Serie Insert - DB Error", self)	
+				return False
+		
+		elif type == self.TVSHOWSEPISODES:
+			if not self.db.insertEpisodeWithDict(key_value_dict):
+				printl("Episode Insert - DB Error", self)	
+				return False
+		elif type == self.MUSIC:
+			pass
+			#if not self.db.insertMusicWithDict(key_value_dict):
+			#	printl("Music Insert - DB Error", self)	
+			#	return False
+		else:
+			return None
+		
+		return True
+			
+	def deleteMedia(self, type, id):
+		printl("", self)
+		
+		if type == self.MOVIES:
+			if not self.db.deleteMovie(id):
+				printl("Episode delete - DB Error", self)	
+				return False
+		
+		elif type == self.TVSHOWS:
+			if not self.db.deleteSerieCascade(id):
+				printl("Serie delete - DB Error", self)	
+				return False
+		
+		elif type == self.TVSHOWSEPISODES:
+			if not self.db.deleteEpisode(id):
+				printl("Episode delete - DB Error", self)	
+				return False
+		elif type == self.MUSIC:
+			pass
+			#if not self.db.deleteMusic(id):
+			#	printl("Music delete - DB Error", self)	
+			#	return False
+		else:
+			return None
+		
+		return True
 #
 #################################   SERIES   ################################# 
 #
@@ -399,8 +483,6 @@ class Manager():
 	def getSeriesCountEpisodes(self, serieKey=None, season=None):
 		return self.db.getSeriesCountEpisodes(serieKey, season)
 
-	def deleteSerieCascade(self, serieKey):
-		return self.db.deleteSerieCascade(serieKey)
 #	
 #################################   FAILED   ################################# 
 #
@@ -420,7 +502,6 @@ class Manager():
 #
 ###################################  UTILS  ###################################
 #
-	
 	def convertNullValues(self, record):
 		log("->", self, 10)
 		if record.Year is None:
@@ -428,5 +509,3 @@ class Manager():
 		if record.Month is None:
 			record.Month = u""
 		return record
-
-

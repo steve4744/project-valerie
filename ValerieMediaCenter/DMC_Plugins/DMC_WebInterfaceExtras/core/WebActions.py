@@ -67,44 +67,23 @@ class WebActions(Resource):
 		##
 		elif request.args["method"][0] == "add":
 			# add movies
+			manager = Manager()				
+			key_value_dict = {}				
+			for key in request.args.keys():
+				key_value_dict[key] = request.args[key][0]
+			
 			if request.args["what"][0] == "isMovie":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["imdbid"] = request.args["ImdbId"][0]
-				
-				manager = Manager()
-				manager.addByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
+				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 			
 			# add tvshows
 			elif request.args["what"][0] == "isTvShow":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				
-				manager = Manager()
-				manager.addByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
+				result = manager.insertMedia(Manager.TVSHOWS, key_value_dict)
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")	
 			
 			# add tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				primary_key["season"] = request.args["Season"][0]
-				primary_key["episode"] = request.args["Episode"][0]
-				
-				manager = Manager()
-				manager.addByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
+				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
 		
 		##
@@ -112,75 +91,56 @@ class WebActions(Resource):
 		##
 		elif request.args["method"][0] == "edit":
 			# edit movies
+			manager = Manager()
+			key_value_dict = {}				
+			for key in request.args.keys():
+				key_value_dict[key] = request.args[key][0]
+				
 			if request.args["what"][0] == "isMovie":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["imdbid"] = request.args["oldImdbId"][0]
-				
-				manager = Manager()
-				manager.replaceByUsingPrimaryKey(Manager.MOVIES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&id=" + request.args["Id"][0])
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&id=" + request.args["Id"][0])
 			
 			# edit tvshows
 			elif request.args["what"][0] == "isTvShow":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				
-				manager = Manager()
-				manager.replaceByUsingPrimaryKey(Manager.TVSHOWS, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
+				result = manager.updateMedia(Manager.TVSHOWS, key_value_dict)
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&id=" + request.args["Id"][0])
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&id=" + request.args["Id"][0])
 			
-			# edit tvshowepisodes
+			# edit tvsshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				key_value_dict = {}
-				for key in request.args.keys():
-					key_value_dict[key] = request.args[key][0]
-				
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				primary_key["season"] = request.args["Season"][0]
-				primary_key["episode"] = request.args["Episode"][0]
-				
-				manager = Manager()
-				manager.replaceByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+				result = manager.updateMedia(Manager.TVSHOWSEPISODES, key_value_dict)
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+				#return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&Id=" + request.args["Id"][0])
 		
 		##
 		# delete section
 		##
 		elif request.args["method"][0] == "delete":
+			manager = Manager()
+			#key_value_dict = {}				
+			#for key in request.args.keys():
+			#	key_value_dict[key] = request.args[key][0]
+			
 			if request.args["what"][0] == "isMovie":
-				primary_key = {}
-				primary_key["imdbid"] = request.args["ImdbId"][0]
-				
-				manager = Manager()
-				manager.removeByUsingPrimaryKey(Manager.MOVIES, primary_key)
+				manager.deleteMedia(Manager.MOVIES, request.args["Id"][0])
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 		
 		# delete tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				primary_key["season"] = request.args["Season"][0]
-				primary_key["episode"] = request.args["Episode"][0]
-				
-				manager = Manager()
-				manager.removeByUsingPrimaryKey(Manager.TVSHOWSEPISODES, primary_key)
+				manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["Id"][0])
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
 		
 		# delete tvshow		
 			elif request.args["what"][0] == "isTvShow":
-				primary_key = request.args["TheTvDbId"][0]
-				
-				manager = Manager()
-				manager.seriesDeleteSerieCascade(primary_key)
+				manager.deleteMedia(Manager.TVSHOW, request.args["Id"][0])
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
 		
 		##

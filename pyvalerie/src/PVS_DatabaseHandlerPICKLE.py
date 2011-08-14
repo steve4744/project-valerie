@@ -33,7 +33,7 @@ from   MediaInfo         import MediaInfo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__common__ import log as log
 import Genres
-
+import random
 gDatabaseHandler = None
 gConnection = None
 
@@ -49,7 +49,11 @@ class databaseHandlerPICKLE(object):
 	CONFIGKEY  = -999999
 	DB_VERSION = 1
 	IDMODEAUTO = False
-
+	#temp
+	LastID_M   = 0
+	LastID_S   = 0
+	LastID_E   = 0
+	
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
@@ -113,13 +117,18 @@ class databaseHandlerPICKLE(object):
 				self.createMoviesIndexes()
 				elapsed_time = time.time() - start_time
 				log("Indexing Took : " + str(elapsed_time), self, 11)
-				
-			#for movieKey in self._dbMovies:
-			#	if movieKey != self.CONFIGKEY:
-			#		if IDMODEAUTO:
-			#			self._dbMovies[movieKey].Id = movieKey
-			#		else:
-			#			self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId
+			
+			# Temporary to test ID's
+			LastID_M = 0
+			for movieKey in self._dbMovies:
+				if movieKey != self.CONFIGKEY:
+					if self.IDMODEAUTO:
+						#key = int( str(time.time()) + str(random.randint(1000, 9999)) )
+						#printl(str(key))
+						LastID_M+=1
+						self._dbMovies[movieKey].Id = LastID_M
+					else:
+						self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId
 
 
 	def saveMovies(self):		
@@ -150,6 +159,7 @@ class databaseHandlerPICKLE(object):
 			log("Movies Not Loaded", self, 10)
 			self._loadMoviesDB()
 
+	#used on deleteMissingFiles
 	def getMovies(self):
 		printl("->", self)
 		newList	= {}
@@ -226,17 +236,33 @@ class databaseHandlerPICKLE(object):
 		self._moviesCheckLoaded()
 		return len(self.getMovies())
 		
-	def getMoviesWithKey(self, movieKey):
+	def getMovieKey(self, id):
 		log("->", self, 15)
 		self._moviesCheckLoaded()
 		start_time = time.time()
-		element = None
-		if movieKey in self._dbMovies:
-			log("Movie Exists", self, 18)
-			element = self._dbMovies[movieKey]
+		key = None
+		if self.USE_INDEXES:
+			# use Indexes loaded at beginning
+			# indexing 0.0007		
+			#key = self.idxMoviesImdb[imdb]
+			#element = self._dbMovies[key]			
+			pass
+		else:			
+			# without indexing 0.02
+			for key in self._dbMovies:
+				if key != self.CONFIGKEY:		# only for Pickle
+					if self.IDMODEAUTO:
+						if self._dbMovies[key].Id == int(id):
+							k = key
+							break
+					else:
+						if self._dbMovies[key].Id == id:
+							k = key
+							break
+							
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
-		return element
+		return key
 
 	def getMovieKeyWithImdbId(self, imdbId):
 		log("->", self, 15)
@@ -251,7 +277,7 @@ class databaseHandlerPICKLE(object):
 			pass
 		else:			
 			# without indexing 0.02
-			for movieKey in self.db._dbMovies:
+			for movieKey in self._dbMovies:
 				if movieKey != self.CONFIGKEY:		# only for Pickle
 					if self._dbMovies[movieKey].ImdbId == imdbId:
 						key = movieKey
@@ -261,38 +287,94 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 		return key
 
+	def getMovie(self, id):
+		log("->", self, 15)
+		self._moviesCheckLoaded()
+		element = None
+		key = self.getMovieKey(id)
+		if key is not None:
+			element = self._dbMovies[key]
+						
+		return element
+
+	## 
+	# DML statements
+	##
 	def insertMovie(self, media):
 		log("->", self, 20)
 		self._moviesCheckLoaded()
-		movieKey = media.ImdbId
+		m = media
+		if self.IDMODEAUTO:
+			LastID_M+=1
+			m.Id = LastID_M
+		else:
+			m.Id = m.ImdbId + str(random.randint(100, 999)
+		m.setMediaType(MediaInfo.MOVIE)
+		m.Path = media.Path.replace("\\", "/")
+		m.Path = media.Path.replace("//", "/")
+		movieKey = m.ImdbId
 		#movieKey = media.Id
+		# Checks if the file is already in db
+		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
+			# This should never happen, this means that the same file is already in the db
+			printl("Movie Insert - Already exists", self)	
+			self._addFailedCauseOf = self._dbMovies[movieKey]
+			return False
+		
 		if not movieKey in self._dbMovies:
 			self.MoviesCommited = False
-			self._dbMovies[movieKey] = media
+			self._dbMovies[movieKey] = m
 			if self.AUTOCOMMIT:
 				self.saveMovies()
 			return True	
 		else: 
 			self._addFailedCauseOf = self._dbMovies[movieKey]
 			return False
+		
+		if self.AUTOCOMMIT:
+			self.saveMovies()
+		return True
 			
-	def deleteMovie(self, movieKey):
+	def insertMovieWithDict(self, key_value_dict):
+		log("->", self, 20)
+		m = MediaInfo()
+		m.setMediaType(MediaInfo.MOVIE)
+		self.fillMediaInfo(m, key_value_dict)
+		
+		return self.insertMovie(m)
+	
+	def updateMovieWithDict(self, key_value_dict):	#ID is Required
+		log("->", self, 20)
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
+			return False
+		
+		self._moviesCheckLoaded()		
+		m = self.getMovie(key_value_dict['Id'])
+		if m is None:
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			return False
+		
+		self.MoviesCommited = False
+		self.fillMediaInfo(m, key_value_dict)	
+		if self.AUTOCOMMIT:
+			self.saveMovies()
+		return True
+
+	def deleteMovie(self, id):
 		log("->", self, 20)
 		self._moviesCheckLoaded()
-		if movieKey in self._dbMovies:
+		key = self.getMovieKey(id)
+		
+		if key is not None:
 			self.MoviesCommited = False
-			del(self._dbMovies[movieKey])	
+			del(self._dbMovies[key])	
 			if self.AUTOCOMMIT:
 				self.saveMovies()
 			return True
 		else:
 			return False
 
-	def updateMovie(self, movieKey, media):
-		log("->", self, 20)
-		self._moviesCheckLoaded()
-		return True
-		
 #	
 #################################   SERIES   ################################# 
 #
@@ -348,6 +430,17 @@ class databaseHandlerPICKLE(object):
 				self._upgradeSeries(records)
 			else:
 				self.setDBVersion(records, self.DB_VERSION)
+		
+			# Temporary to test ID's
+			LastID_S = 0
+			for key in records:
+				if key != self.CONFIGKEY:
+					if self.IDMODEAUTO:
+						LastID_S+=1
+						records[key].Id = LastID_S
+					else:
+						records[key].Id = records[key].TheTvDbId
+			
 				
 		except Exception, ex:
 			print ex
@@ -369,7 +462,19 @@ class databaseHandlerPICKLE(object):
 				self._upgradeEpisodes(records)
 			else:
 				self.setDBVersion(records, self.DB_VERSION)
-				
+			
+			# Temporary to test ID's
+			LastID_E = 0
+			for serieKey in records:
+				if serieKey != self.CONFIGKEY:
+					for season in records[serieKey]:
+						for episode in records[serieKey][season]:
+							if self.IDMODEAUTO:
+								LastID_E+=1
+								records[serieKey][season][episode].Id = LastID_E
+							else:
+								records[serieKey][season][episode].Id = str(serieKey) + str(season) + str(episode) + str(random.randint(100, 999))
+
 		except Exception, ex:
 			print ex
 			print '-'*60
@@ -434,7 +539,7 @@ class databaseHandlerPICKLE(object):
 		elapsed_time = time.time() - start_time
 		printl("Took (episodes.db): " + str(elapsed_time), self)
 
-
+	#used on transformgenres
 	def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		printl("->", self)
 		newList	= {}
@@ -479,17 +584,33 @@ class databaseHandlerPICKLE(object):
 		
 		return count
 			
-	def getSeriesWithKey(self, serieKey):
+	def getSerieKey(self, id):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
 		start_time = time.time()
-		element = None
-		if serieKey in self._dbSeries:
-			log("Serie Exists", self, 18)
-			element = self._dbSeries[serieKey]
+		key = None
+		if self.USE_INDEXES:
+			# use Indexes loaded at beginning
+			# indexing 0.0007		
+			#key = self.idxMoviesImdb[imdb]
+			#element = self._dbMovies[key]			
+			pass
+		else:			
+			# without indexing 0.02
+			for key in self._dbSeries:
+				if key != self.CONFIGKEY:		# only for Pickle
+					if self.IDMODEAUTO:
+						if self._dbSeries[key].Id == int(id):
+							k = key
+							break
+					else:
+						if self._dbSeries[key].Id == id:
+							k = key
+							break
+							
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
-		return element
+		return key
 
 	def getSeriesKeyWithTheTvDbId(self, theTvDbId):
 		log("->", self, 15)
@@ -513,6 +634,40 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 		return key
 
+	def getSerieWithKey(self, serieKey):
+		log("->", self, 15)
+		self._seriesCheckLoaded()
+		start_time = time.time()
+		element = None
+		if serieKey in self._dbSeries:
+			log("Serie Exists", self, 18)
+			element = self._dbSeries[serieKey]
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+		return element
+	
+	def getSerieWithId(self, id):
+		log("->", self, 15)
+		self._seriesCheckLoaded()
+		element = None
+		key = self.getSerieKey(id)
+		if key is not None:
+			element = self._dbSeries[key]
+		
+		return element
+		
+	def getEpisodeWithId(self, id):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					for episode in self._dbEpisodes[serieKey][season]:
+						if self._dbEpisodes[serieKey][season][episode].Id == id:	
+							return self._dbEpisodes[serieKey][season][episode]
+								
+		return None
+		
 	def getSeriesEpisodesValues(self):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -546,121 +701,191 @@ class databaseHandlerPICKLE(object):
 					return self._dbEpisodes[serieKey][season].values()
 		
 		return None
-
-	def getSeriesEpisode(self, serieKey, season, episode):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		element = None
-		if serieKey in self._dbEpisodes:
-			if season in self._dbEpisodes[serieKey]:
-				if episode in self._dbEpisodes[serieKey][season]:
-					element = self._dbEpisodes[serieKey][season][episode]
-		return element
-	
-	def getSeriesSeasons(self, serieKey):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		if serieKey in self._dbEpisodes:
-			return self._dbEpisodes[serieKey].keys()
-				
-		return self.seriesGetAll().values()
+	#
+	#def getSerieEpisode(self, serieKey, season, episode):
+	#	log("->", self, 15)
+	#	self._seriesCheckLoaded()
+	#	element = None
+	#	if serieKey in self._dbEpisodes:
+	#		if season in self._dbEpisodes[serieKey]:
+	#			if episode in self._dbEpisodes[serieKey][season]:
+	#				element = self._dbEpisodes[serieKey][season][episode]
+	#	return element
+	#
+	#def getSerieSeasons(self, serieKey):
+	#	log("->", self, 15)
+	#	self._seriesCheckLoaded()
+	#	if serieKey in self._dbEpisodes:
+	#		return self._dbEpisodes[serieKey].keys()
+	#			
+	#	return self.seriesGetAll().values()
 
 
 	def insertSerie(self, media):
 		log("->", self, 20)
 		self._seriesCheckLoaded()
-		serieKey = media.TheTvDbId
+		m = media
+		if self.IDMODEAUTO:
+			LastID_S+=1
+			m.Id = LastID_S
+		else:
+			m.Id = m.TheTvDbId + str(random.randint(100, 999)
+		serieKey = m.TheTvDbId
 		#serieKey = media.Id
-		#if USE_INDEXES:
-		#	if self.idxSeriesByThetvdb.has_key(media.TheTvDbId) is None:
-			
-		#else:
+		m.Path = media.Path.replace("\\", "/")
+		m.Path = media.Path.replace("//", "/")
+		# Checks if the file is already in db
+		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
+			# This should never happen, this means that the same file is already in the db
+			printl("Serie Insert - Already exists", self)	
+			return False
 		
-		if self._dbSeries.has_key(serieKey) is False:
+		if not serieKey in self._dbSeries:
 			self.SeriesCommited = False
-			self._dbSeries[serieKey] = media
+			self._dbSeries[serieKey] = m
 			if self.AUTOCOMMIT:
 				self.saveSeries()
-			return True
-		else:
-			#self._addFailedCauseOf = self._dbSeries[media.TheTvDbId]
-			#return False
-			return True # We return true here cause this is not a failure but simply means that the tvshow already exists in the db
-
+			return True	
+		else: 
+			self._addFailedCauseOf = self._dbSeries[serieKey]
+			return False
+		
+		if self.AUTOCOMMIT:
+			self.saveSeries()
+		return True
+	
+	def insertSerieWithDict(self, key_value_dict):
+		log("->", self, 20)
+		m = MediaInfo()
+		m.setMediaType(MediaInfo.SERIE)
+		self.fillMediaInfo(m, key_value_dict)
+		return self.insertSerie(m)
+		
 	def insertEpisode(self, media):
 		log("->", self, 20)
 		self._seriesCheckLoaded()
-		serieKey = media.TheTvDbId
-		#printl("serie: "+serieKey+ " season: " + str(media.Season) + " Episode: "+str(media.Episode))
+		m = media
+		if self.IDMODEAUTO:
+			LastID_E+=1
+			m.Id = LastID_E
+		else:
+			m.Id = str(m.TheTvDbId) + str(m.Season) + str(m.Episode) + str(random.randint(100, 999))
+		serieKey = m.TheTvDbId
 		#serieKey = media.Id
-		self.EpisodesCommited = False
+		m.setMediaType(MediaInfo.EPISODE)
+		m.Path = media.Path.replace("\\", "/")
+		m.Path = media.Path.replace("//", "/")
+		# Checks if the file is already in db
+		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
+			# This should never happen, this means that the same file is already in the db
+			printl("Episode Insert - Already exists", self)	
+			return False
 		
-		if self._dbEpisodes.has_key(serieKey) is False:
+		self.EpisodesCommited = False
+		if not serieKey in self._dbEpisodes:
 			self._dbEpisodes[serieKey] = {}
 		
-		if self._dbEpisodes[serieKey].has_key(media.Season) is False:
-			self._dbEpisodes[serieKey][media.Season] = {}
+		if not m.Season in self._dbEpisodes[serieKey]:
+			self._dbEpisodes[serieKey][m.Season] = {}
 		
-		if self._dbEpisodes[serieKey][media.Season].has_key(media.Episode) is False:
-			self._dbEpisodes[serieKey][media.Season][media.Episode] = media			
+		if not m.Episode in self._dbEpisodes[serieKey][m.Season]:
+			self._dbEpisodes[serieKey][m.Season][m.Episode] = m			
 		else:
-			self._addFailedCauseOf = self._dbEpisodes[serieKey][media.Season][media.Episode]
+			self._addFailedCauseOf = self._dbEpisodes[serieKey][m.Season][m.Episode]
 			return False
 		
 		if self.AUTOCOMMIT:
 			self.saveEpisodes()
 		return True
-			
-	def deleteSerie(self, serieKey): # for compability, not consistent
-		log("->", self, 10)
-		self._seriesCheckLoaded()
-		if serieKey in self._dbSeries:	
-			self.SeriesCommited = False
-			del(self._dbSeries[serieKey])
-			if self.AUTOCOMMIT:
-				self.saveSeries()
-		return True
-			
-	def deleteSerieCascade(self, serieKey):
-		log("->", self, 10)
-		self._seriesCheckLoaded()
-		if serieKey in self._dbEpisodes:
-			self.EpisodesCommited = False
-			del(self._dbEpisodes[serieKey])
-			if self.AUTOCOMMIT:
-				self.saveEpisodes()
-		if serieKey in self._dbSeries:	
-			self.SeriesCommited = False
-			del(self._dbSeries[serieKey])
-			if self.AUTOCOMMIT:
-				self.saveSeries()
-		return True
+
+	def insertEpisodeWithDict(self, key_value_dict):
+		log("->", self, 20)
+		m = MediaInfo()
+		m.setMediaType(MediaInfo.EPISODE)
+		self.fillMediaInfo(m, key_value_dict)
+		return self.insertEpisode(m)
 	
-	#def updateSerie(self, movieKey, media):
-	#	log("->", self, 20)
-	#	self._seriesCheckLoaded()
-	#	self.SeriesCommited = False
-	#	return True
+	def updateSerieWithDict(self, key_value_dict):		#ID is Required
+		log("->", self, 20)
+		log(str(key_value_dict))
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
+			return False
 		
-	def deleteEpisode(self, serieKey, season, episode):
+		self._seriesCheckLoaded()
+		
+		m = self.getSerieWithId(key_value_dict['Id'])
+		if m is None:
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			return False
+		
+		self.SeriesCommited = False
+		self.fillMediaInfo(m, key_value_dict)
+		if self.AUTOCOMMIT:
+			self.saveSeries()
+		return True
+
+	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
+		log("->", self, 20)
+		log(str(key_value_dict))
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
+			return False
+		
+		self._seriesCheckLoaded()
+		
+		m = self.getEpisodeWithId(key_value_dict['Id'])
+		if m is None:
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			return False
+		
+		self.EpisodesCommited = False
+		self.fillMediaInfo(m, key_value_dict)
+		if self.AUTOCOMMIT:
+			self.saveEpisodes()
+		return True
+
+	def deleteSerie(self, id):
+		log("->", self, 20)
+		self._seriesCheckLoaded()
+		key = self.getSerieKey(id)
+		
+		if key is not None:
+			if key in self._dbEpisodes:
+				self.EpisodesCommited = False
+				del(self._dbEpisodes[key])
+			if key in self._dbSeries:	
+				self.SeriesCommited = False
+				del(self._dbSeries[key])
+			if self.AUTOCOMMIT:
+					self.saveEpisodes()
+					self.saveSeries()
+			return True
+		else:
+			return False
+
+	def deleteEpisode(self, id):
 		log("->", self, 10)
 		self._seriesCheckLoaded()
-		if serieKey in self._dbEpisodes:
-			if season in self._dbEpisodes[serieKey]:
-				if episode in self._dbEpisodes[serieKey][season]:
-					self.EpisodesCommited = False
-					del(self._dbEpisodes[serieKey][season][episode])
-					if len(self._dbEpisodes[serieKey][season]) == 0:
-						del(self._dbEpisodes[serieKey][season])
-					if len(self._dbEpisodes[serieKey]) == 0:
-						del(self._dbEpisodes[serieKey])
-						if self._dbSeries.has_key(serieKey) is True:
-							self.SeriesCommited = False
-							del(self._dbSeries[serieKey])
-					if self.AUTOCOMMIT:
-						self.saveSeries()
-						self.saveEpisodes()
-					return True
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					for episode in self._dbEpisodes[serieKey][season]:
+						if self._dbEpisodes[serieKey][season][episode].Id == id:	
+						
+							self.EpisodesCommited = False
+							del(self._dbEpisodes[serieKey][season][episode])
+							if len(self._dbEpisodes[serieKey][season]) == 0:
+								del(self._dbEpisodes[serieKey][season])
+							if len(self._dbEpisodes[serieKey]) == 0:
+								del(self._dbEpisodes[serieKey])
+								if serieKey in self._dbSeries:
+									self.SeriesCommited = False
+									del(self._dbSeries[serieKey])
+							if self.AUTOCOMMIT:
+								self.saveSeries()
+								self.saveEpisodes()
+							return True
 		return False
 #	
 #################################   FAILED   ################################# 
@@ -771,6 +996,26 @@ class databaseHandlerPICKLE(object):
 
 ###################################  UTILS  ###################################
 
+	def fillMediaInfo(self, m, key_value_dict):
+		intFields = ['Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Episode']
+		if self.IDMODEAUTO:
+			intFields.append("Id")
+		
+		for key in key_value_dict.keys():
+			try:
+				if key in intFields:
+					if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+						value = None
+					else:
+						value = int(key_value_dict[key])
+				else:
+					value = key_value_dict[key]
+				
+				setattr(m, key, value)
+
+			except Exception, ex:
+				log("Key error: "+ str(key) + " Ex: " + str(ex), self, 5)
+	
 	def checkDuplicate(self, path, filename, extension):
 		self._moviesCheckLoaded()
 		self._seriesCheckLoaded()

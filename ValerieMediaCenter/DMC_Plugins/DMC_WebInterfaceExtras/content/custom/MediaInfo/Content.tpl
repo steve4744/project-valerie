@@ -26,9 +26,11 @@
 				<input type="hidden" name="method" value="edit">
 				<input type="hidden" name="what" value="">
 				<input type="hidden" name="oldImdbId" value="-1">
+				<input type="hidden" id="id" name="Id" value="">
 				
 				<tr><td></td></tr>
-				<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input></td></tr> 
+				<tr id="tr_type"><td>*Type:</td><td id="td_type"><input id="type" name="Type" type="text" size="10" disabled="disabled"></input>
+				<input id="id2" name="Id" type="text" size="10" disabled="disabled"></input> </td></tr> 
 				<tr id="tr_imdbid"><td>ImdbId:</td><td><input id="imdbid" name="ImdbId" type="text" size="10"></input></td><td>(e.g. tt9000000)</td></tr>
 				<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td><input id="thetvdbid" name="TheTvDbId" type="text" size="10"></input></td><td>(e.g. 999999)</td></tr>
 				<tr id="tr_title"><td>*Title:</td><td><input id="title" name="Title" type="text" size="50"></input></td><td>(e.g. my title)</td></tr>

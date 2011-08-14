@@ -227,20 +227,16 @@ class Database(object):
 	def remove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
 		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
 		if media.isTypeMovie() or is_Movie:
-			movieKey = media.ImdbId
-			return self.dbHandler.deleteMovie(movieKey)
+			return self.dbHandler.deleteMovie(media.Id)
 
-		# not consistent ...todo: delete_cascade (and update serie)
 		if media.isTypeSerie() or is_Serie:
-			serieKey = media.TheTvDbId			
-			return self.dbHandler.deleteSerie(serieKey) 
+			return self.dbHandler.deleteSerie(media.Id) 
 			
 		if media.isTypeEpisode() or is_Episode:
-			serieKey   = media.TheTvDbId
-			return self.dbHandler.deleteEpisode(serieKey, media.Season, media.Episode)
+			return self.dbHandler.deleteEpisode(media.Id)
 			
 		return False
-
+	
 	##
 	# Adds media files to the db
 	# @param media: The media file
@@ -314,12 +310,12 @@ class Database(object):
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.dbHandler.getMoviesValues(order, firstRecord, numberOfRecords)	
 
-	def getMoviesWithKey(self, movieKey):
-		return self.dbHandler.getMoviesWithKey(movieKey)
+	#def getMovie(self, id):
+	#	return self.dbHandler.getMovie(id)
 
 	#def getMoviesPkWithImdb(self, imdbId):
 	#	return self.dbHandler.getMovieKeyWithImdbId(imdbId)
-	
+		
 	def getMoviesWithImdbId(self, imdbId):
 		movieKey = self.dbHandler.getMovieKeyWithImdbId(imdbId)
 		return self.dbHandler.getMoviesWithKey(movieKey)
@@ -329,6 +325,20 @@ class Database(object):
 	
 	def setMoviesSeen(self, movieKey):
 		return 	
+
+	# DML statements
+	def insertMovie(self, media):
+		return self.dbHandler.insertMovie(media)
+	
+	def insertMovieWithDict(self, key_value_dict):
+		return self.dbHandler.insertMovieWithDict(key_value_dict)
+
+	def updateMovieWithDict(self, key_value_dict):	#ID is Required
+		return self.dbHandler.updateMovieWithDict(key_value_dict)
+		
+	def deleteMovie(self, id):
+		return self.dbHandler.deleteMovie(id)
+
 #	
 #################################   SERIES   ################################# 
 #
@@ -348,7 +358,7 @@ class Database(object):
 
 	def getSeriesWithTheTvDbId(self, theTvDbId):
 		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSeriesWithKey(serieKey)
+		return self.dbHandler.getSerieWithKey(serieKey)
 		
 	def getSeriesEpisodes(self, serieKey=None, season=None):
 		return self.dbHandler.getSeriesEpisodes(serieKey, season)
@@ -383,12 +393,31 @@ class Database(object):
 		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
 		return self.dbHandler.getSeriesCountEpisodes(serieKey, season)
 	
-	
-	def deleteSerie(self, serieKey): # for compability, not consistent
-		return self.dbHandler.deleteSerie(serieKey)
+	# DML statements
+	def insertSerie(self, media):
+		return self.dbHandler.insertSerie(media)
 
-	def deleteSerieCascade(self, serieKey):
-		return self.dbHandler.deleteSerieCascade(serieKey)
+	def insertSerieWithDict(self, key_value_dict):
+		return self.dbHandler.insertSerieWithDict(key_value_dict)
+
+	def insertEpisode(self, media):
+		return self.dbHandler.insertEpisode(media)
+	
+	def insertEpisodeWithDict(self, key_value_dict):
+		return self.dbHandler.insertEpisodeWithDict(key_value_dict)
+
+	def updateSerieWithDict(self, key_value_dict):		#ID is Required
+		return self.dbHandler.updateSerieWithDict(key_value_dict)
+
+	def updateEpisodeWithDict(self, key_value_dict):	#ID is Required
+		return self.dbHandler.updateEpisodeWithDict(key_value_dict)
+
+	def deleteSerie(self, id):
+		return self.dbHandler.deleteSerie(id)
+
+	def deleteEpisode(self, id):
+		return self.dbHandler.deleteEpisode(id)
+	
 #	
 #################################   FAILED   ################################# 
 #

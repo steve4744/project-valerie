@@ -11,7 +11,8 @@ $(document).ready(function(){
 	var target = params["target"]; 		// => movies/tvshows/episodes
 	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
 	var useData = params["useData"]; 	// => true/false
-	var usePath = params["usePath"] 	// => true/false (takes the values path/filename/extension from Rquest)
+	var usePath = params["usePath"]; 	// => true/false (takes the values path/filename/extension from Rquest)
+	var thetvdbid = params["TheTvDbId"]; 	
 	
 	//DONE SECTION
 	if (mode == "done") {
@@ -21,6 +22,10 @@ $(document).ready(function(){
 		} else {
 			window.open('/' + target + '?showSave=true', '_self');
 		}
+		return;
+	
+	} else if (mode == "error") {
+		window.alert("An Error ocurred :(  Check the log please!");
 		return;
 	
 	//ADD NEW RECORD 
@@ -103,6 +108,8 @@ function changeTable(table_type) {
 function fillTable(params, usePath) {
 		/* fill complete structure with data */
 		document.getElementById('type').value = params["type"];
+		document.getElementById('id2').value = params["Id"]; /* debug only */
+		document.getElementById('id').value = params["Id"];
 		document.getElementById('imdbid').value = params["ImdbId"];
 		document.getElementById('thetvdbid').value = params["TheTvDbId"];
 		document.getElementById('title').value = params["Title"];

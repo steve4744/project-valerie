@@ -25,20 +25,15 @@ class WebData():
 		manager = Manager()
 		
 		if type == "movies":
-			#dataRows = manager.get-All(Manager.MOVIES)
 			dataRows = manager.getMoviesValues()
 		elif type == "tvshows":
-			#dataRows = manager.get-All(Manager.TVSHOWS)
 			dataRows = manager.getSeriesValues()
 		elif type == "episodes":
 			if param != None:
-				#dataRows = manager.get-All(Manager.TVSHOWSEPISODES, param)
 				dataRows = manager.getSeriesEpisodesWithTheTvDbId(param)				
 			else:
-				#dataRows = manager.get-All(Manager.TVSHOWSEPISODES)
 				dataRows = manager.getSeriesEpisodes()				
 		elif type == "failed":
-			#dataRows = manager.get-All(Manager.FAILED_ALL)
 			dataRows = manager.getFailed()
 			
 		elif type == "options.global":
@@ -124,6 +119,7 @@ class WebData():
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'mode':"edit"}) + "&"		
 		onclick  += urlencode({'usePath':"true"}) + "&"
+		onclick  += urlencode({'Id':entry.Id}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
 		onclick  += urlencode({'Title':entry.Title}) + "&"
@@ -148,6 +144,7 @@ class WebData():
 		### <!-- build delete string -->
 		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?method=delete&what="
 		onclick  += str(type) + "&"
+		onclick  += "Id=" + str(entry.Id) + "&"
 		
 		if (type == 'isMovie'):
 			onclick  += "ImdbId=" + str(entry.ImdbId)
@@ -155,6 +152,7 @@ class WebData():
 			onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
 		elif (type == 'isEpisode'):
 			onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
+		
 		onclick  += "', '_self')} else { return};"
 		
 		return onclick
