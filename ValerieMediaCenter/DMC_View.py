@@ -42,10 +42,21 @@ def _(txt):
 #------------------------------------------------------------------------------------------
 
 def getViews():
-	return (
+	availableViewList = []
+	viewList = (
 			(_("List"), "DMC_ListView", "PVMC_ListView"), 
 			(_("Poster-Flow"), "DMC_PosterView", "PVMC_PosterView"), 
+			(_("Backdrop"), "DMC_BackdropView", "PVMC_BackdropView"), 
 		)
+	
+	for view in viewList:
+		try:
+			apiLevel = int(DataElement().getDataPreloading(view[2], "API"))
+			availableViewList.append(view)
+		except Exception, ex:
+			printl("View %s not available in this skin" % view[1], __name__, "W")
+	
+	return availableViewList
 
 def getViewClass():
 	return DMC_View
