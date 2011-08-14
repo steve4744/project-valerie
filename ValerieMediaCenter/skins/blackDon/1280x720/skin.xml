@@ -52,7 +52,7 @@
   <!-- cotent -->
   <widget source="menu" render="Listbox" enableWrapAround="False" zPosition="2" transparent="0" position="26,368" size="1226,275" scrollbarMode="showOnDemand" backgroundColor="unff000000" backgroundColorSelected="#FF000000" foregroundColor="una0424242" foregroundColorSelected="#00FFFFFF">
     <convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (0,0), size = (1226,300), flags = RT_HALIGN_CENTER, text = 0) ],
+				{"template": [ MultiContentEntryText(pos = (0,0), size = (1226,50), flags = RT_HALIGN_CENTER, text = 0) ],
 				"fonts": [gFont("Dream", 37)],
 				"itemHeight": 50				}
 			</convert>

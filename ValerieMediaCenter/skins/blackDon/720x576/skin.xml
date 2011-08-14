@@ -52,7 +52,7 @@
   <!-- cotent -->
   <widget source="menu" render="Listbox" enableWrapAround="False" zPosition="2" transparent="0" position="15,295" size="690,220" scrollbarMode="showOnDemand" backgroundColor="unff000000" backgroundColorSelected="#FF000000" foregroundColor="una0424242" foregroundColorSelected="#00FFFFFF">
     <convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (0, 0), size = (690, 240), flags = RT_HALIGN_CENTER, text = 0) ],
+				{"template": [ MultiContentEntryText(pos = (0, 0), size = (690, 50), flags = RT_HALIGN_CENTER, text = 0) ],
 				"fonts": [gFont("Dream", 30)],
 				"itemHeight": 40
 				}
@@ -100,7 +100,7 @@
     <widget name="backdrop_dynamic" text="0" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/listview.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="495,20" size="200,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="0" size="1,1" />
     <widget source="listview" render="Listbox" zPosition="3" position="40,145" size="220,322" scrollbarMode="showNever" transparent="0" backgroundColor="un10303030" backgroundColorSelected="black">
       <convert type="TemplatedMultiContent">
@@ -211,7 +211,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/splitted.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="20,20" size="670,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="console" zPosition="4" position="210,60" size="480,380" font="Regular;14" backgroundColor="black" transparent="0" />
     <widget source="progresstxt" render="Label" zPosition="1" position="210,450" size="90,25" font="Regular;14" transparent="1" />
     <widget name="progress" zPosition="1" position="310,450" size="380,15" borderWidth="1" borderColor="white" transparent="1" />
@@ -236,7 +236,7 @@
     <widget name="API" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/single.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget source="listview" render="Listbox" zPosition="1" position="40,59" size="650,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black">
       <convert type="TemplatedMultiContent">
 				{"template": [  MultiContentEntryText(pos = (10, 0),  size = (570, 30), font=0, flags = RT_HALIGN_LEFT,  text = 0),
@@ -261,7 +261,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/single.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget source="pathtxt" render="Label" zPosition="2" position="40,90" size="150,30" font="Regular;20" transparent="1" />
     <widget source="filenametxt" render="Label" zPosition="2" position="40,165" size="150,30" font="Regular;20" transparent="1" />
     <widget name="path" zPosition="2" position="230,90" size="460,60" font="Regular;20" halign="left" valign="top" transparent="1" />
@@ -289,7 +289,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/signle.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="settingsMenu" zPosition="1" position="40,59" size="650,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
@@ -302,7 +302,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/single.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="config" zPosition="1" position="40,59" size="650,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
@@ -317,7 +317,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/single.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="pathsList" zPosition="1" position="40,59" size="650,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
@@ -334,7 +334,7 @@
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/single.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="40,20" size="650,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="folderList" zPosition="1" position="40,59" size="650,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
@@ -345,27 +345,31 @@
     <widget source="key_green" render="Label" position="210,525" zPosition="1" size="130,30" font="Regular;16" halign="left" valign="top" transparent="1" />
   </screen>
   <!-- PVMC_PicturePlayer -->
-  <screen name="PVMC_PicturePlayer" position="0,0" size="720,576" title=" " backgroundColor="transparent" flags="wfNoBorder">
-    <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/default.m1v" />
-    <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="210,20" size="480,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
-    <widget name="filelist" position="210,59" zPosition="2" size="500,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
-    <widget name="thn" position="10,250" size="180,160" alphatest="on" />
-    <!-- buttons -->
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/green.png" zPosition="1" position="200,556" size="150,2" alphatest="blend" />
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/yellow.png" zPosition="1" position="370,556" size="150,2" alphatest="blend" />
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/blue.png" zPosition="1" position="540,556" size="150,2" alphatest="blend" />
-    <widget source="key_red" render="Label" position="40,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
-    <widget source="key_green" render="Label" position="210,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
-    <widget source="key_yellow" render="Label" position="380,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
-    <widget source="key_blue" render="Label" position="550,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
-  </screen>
+<screen name="PVMC_PicturePlayer" position="0,0" size="720,576" title=" " backgroundColor="transparent" flags="wfNoBorder">
+  <!-- <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/default.m1v" /> -->
+  <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="210,20" size="480,28" font="Dream; 30" foregroundColor="white" halign="right" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/top.png" zPosition="1" position="center,0" size="720,55" alphatest="blend" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/bottom.png" zPosition="1" position="0,519" size="720,55" alphatest="blend" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/logo_test.png" zPosition="1" position="0,60" size="720,248" alphatest="blend" />
+  <eLabel position="0,0" size="720,576" zPosition="0" backgroundColor="black" transparent="0" />
+  <!-- content 
+  <widget name="filelist" position="210,59" zPosition="2" size="500,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="black" />
+  <widget name="thn" position="10,250" size="180,160" alphatest="on" />-->
+  <!-- buttons -->
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/green.png" zPosition="1" position="200,556" size="150,2" alphatest="blend" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/yellow.png" zPosition="1" position="370,556" size="150,2" alphatest="blend" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/blue.png" zPosition="1" position="540,556" size="150,2" alphatest="blend" />
+  <widget source="key_red" render="Label" position="40,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
+  <widget source="key_green" render="Label" position="210,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
+  <widget source="key_yellow" render="Label" position="380,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
+  <widget source="key_blue" render="Label" position="550,525" zPosition="1" size="130,30" font="Regular;16" halign="center" valign="center" transparent="1" />
+</screen>
   <!-- PVMC_PicturePlayerSetup -->
   <screen name="PVMC_PicturePlayerSetup" position="0,0" size="720,576" title=" " backgroundColor="transparent" flags="wfNoBorder">
     <widget name="showiframe" position="0,0" zPosition="0" size="720,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/default.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="210,20" size="480,28" font="Dream; 30" foregroundColor="white" halign="right" />
-    <!-- cotent -->
+    <!-- content -->
     <widget name="config" zPosition="2" position="210,59" size="500,455" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="un404040" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="1" position="30,556" size="150,2" alphatest="blend" />
