@@ -70,7 +70,7 @@ class DMC_Library(Screen):
 
     # Called if View has closed, react on cause for example change to different view
     def onViewClosed(self, cause=None):
-        printl("", self, "D")
+        printl("cause: %s" % str(cause), self, "D")
         if cause is not None:
             if cause[0] == DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT:
                 selection = None
@@ -92,6 +92,7 @@ class DMC_Library(Screen):
                 self.currentViewIndex += 1
                 if len(self._views) <= self.currentViewIndex:
                     self.currentViewIndex = 0
+                
                 if len(cause) >= 2 and cause[1] is not None:
                     #self.currentViewIndex = cause[1]
                     selection = cause[1]
@@ -101,7 +102,7 @@ class DMC_Library(Screen):
                     filter = cause[3]
                 if len(cause) >= 5 and cause[4] is not None:
                     for i in range(len(self._views)):
-                        if cause[4][1] == self._views[i][1]:
+                        if cause[4]== self._views[i][1]:
                             self.currentViewIndex = i
                             break
                 self.showView(selection, sort, filter)
