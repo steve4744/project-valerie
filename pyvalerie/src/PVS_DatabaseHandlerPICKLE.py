@@ -308,7 +308,7 @@ class databaseHandlerPICKLE(object):
 			LastID_M+=1
 			m.Id = LastID_M
 		else:
-			m.Id = m.ImdbId + str(random.randint(100, 999)
+			m.Id = m.ImdbId + str(random.randint(100, 999))
 		m.setMediaType(MediaInfo.MOVIE)
 		m.Path = media.Path.replace("\\", "/")
 		m.Path = media.Path.replace("//", "/")
@@ -729,7 +729,7 @@ class databaseHandlerPICKLE(object):
 			LastID_S+=1
 			m.Id = LastID_S
 		else:
-			m.Id = m.TheTvDbId + str(random.randint(100, 999)
+			m.Id = m.TheTvDbId + str(random.randint(100, 999))
 		serieKey = m.TheTvDbId
 		#serieKey = media.Id
 		m.Path = media.Path.replace("\\", "/")
