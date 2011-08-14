@@ -62,7 +62,7 @@
   <screen name="PVMC_Wizard" position="0,0" size="1024,576" title=" " backgroundColor="transparent" flags="wfNoBorder">
     <widget name="showiframe" position="0,0" zPosition="0" size="1024,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/splitted.m1v" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="298,20" size="682,28" font="Dream;30" foregroundColor="white" halign="right" />
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/images/wizard.png" zPosition="1" position="69,70" size="142,100" alphatest="blend" />
+    <!-- ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/images/wizard.png" zPosition="1" position="69,70" size="142,100" alphatest="blend" /-->
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/buttons/red.png" zPosition="1" position="42,556" size="213,2" alphatest="blend" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/buttons/green.png" zPosition="1" position="284,556" size="213,2" alphatest="blend" />
