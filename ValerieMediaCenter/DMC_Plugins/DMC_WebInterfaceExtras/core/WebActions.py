@@ -140,7 +140,7 @@ class WebActions(Resource):
 		
 		# delete tvshow		
 			elif request.args["what"][0] == "isTvShow":
-				manager.deleteMedia(Manager.TVSHOW, request.args["Id"][0])
+				manager.deleteMedia(Manager.TVSHOWS, request.args["Id"][0])
 				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
 		
 		##

@@ -23,7 +23,7 @@ class WebData():
 		dataRows = []
 		
 		manager = Manager()
-		
+		printl("TYPE: " + type)
 		if type == "movies":
 			dataRows = manager.getMoviesValues()
 		elif type == "tvshows":
@@ -35,6 +35,13 @@ class WebData():
 				dataRows = manager.getSeriesEpisodes()				
 		elif type == "failed":
 			dataRows = manager.getFailed()
+
+		elif type == "MediaInfo_isMovie":
+			dataRows = manager.getMovie(param)
+		elif type == "MediaInfo_isTvShow":
+			dataRows = manager.getSerie(param)
+		elif type == "MediaInfo_isEpisode":
+			dataRows = manager.getEpisode(param)
 			
 		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
@@ -51,6 +58,7 @@ class WebData():
 		elif type == "options.sync":
 			from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
 			dataRows = PathsConfig().getInstance()
+		
 		
 		return dataRows
 	##
@@ -119,23 +127,23 @@ class WebData():
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'mode':"edit"}) + "&"		
 		onclick  += urlencode({'usePath':"true"}) + "&"
-		onclick  += urlencode({'Id':entry.Id}) + "&"
-		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
-		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
-		onclick  += urlencode({'Title':entry.Title}) + "&"
-		onclick  += urlencode({'Season':entry.Season}) + "&"
-		onclick  += urlencode({'Episode':entry.Episode}) + "&"
-		onclick  += urlencode({'Plot':entry.Plot}) + "&"
-		onclick  += urlencode({'Runtime':entry.Runtime}) + "&"
-		onclick  += urlencode({'Year':entry.Year}) + "&"
-		onclick  += urlencode({'Genres':entry.Genres}) + "&"
-		onclick  += urlencode({'Tag':entry.Tag}) + "&"
-		onclick  += urlencode({'Popularity':entry.Popularity}) + "&"
-		onclick  += urlencode({'Poster':entry.Poster}) + "&"	
-		onclick  += urlencode({'Backdrop':entry.Backdrop}) + "&"		
-		onclick  += urlencode({'Path':entry.Path}) + "&"
-		onclick  += urlencode({'Filename':entry.Filename}) + "&"
-		onclick  += urlencode({'Extension':entry.Extension})
+		onclick  += urlencode({'Id':entry.Id}) #+ "&"
+		#onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
+		#onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
+		#onclick  += urlencode({'Title':entry.Title}) + "&"
+		#onclick  += urlencode({'Season':entry.Season}) + "&"
+		#onclick  += urlencode({'Episode':entry.Episode}) + "&"
+		#onclick  += urlencode({'Plot':entry.Plot}) + "&"
+		#onclick  += urlencode({'Runtime':entry.Runtime}) + "&"
+		#onclick  += urlencode({'Year':entry.Year}) + "&"
+		#onclick  += urlencode({'Genres':entry.Genres}) + "&"
+		#onclick  += urlencode({'Tag':entry.Tag}) + "&"
+		#onclick  += urlencode({'Popularity':entry.Popularity}) + "&"
+		#onclick  += urlencode({'Poster':entry.Poster}) + "&"	
+		#onclick  += urlencode({'Backdrop':entry.Backdrop}) + "&"		
+		#onclick  += urlencode({'Path':entry.Path}) + "&"
+		#onclick  += urlencode({'Filename':entry.Filename}) + "&"
+		#onclick  += urlencode({'Extension':entry.Extension})
 		onclick  += "', '_self');"
 		
 		return onclick

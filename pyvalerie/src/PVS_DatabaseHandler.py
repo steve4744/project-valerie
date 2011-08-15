@@ -310,8 +310,8 @@ class Database(object):
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.dbHandler.getMoviesValues(order, firstRecord, numberOfRecords)	
 
-	#def getMovie(self, id):
-	#	return self.dbHandler.getMovie(id)
+	def getMovie(self, id):
+		return self.dbHandler.getMovie(id)
 
 	#def getMoviesPkWithImdb(self, imdbId):
 	#	return self.dbHandler.getMovieKeyWithImdbId(imdbId)
@@ -393,6 +393,9 @@ class Database(object):
 		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
 		return self.dbHandler.getSeriesCountEpisodes(serieKey, season)
 	
+	def getSerie(self, id):
+		return self.dbHandler.getSerieWithId(id)
+	
 	# DML statements
 	def insertSerie(self, media):
 		return self.dbHandler.insertSerie(media)
@@ -400,20 +403,26 @@ class Database(object):
 	def insertSerieWithDict(self, key_value_dict):
 		return self.dbHandler.insertSerieWithDict(key_value_dict)
 
+	def updateSerieWithDict(self, key_value_dict):		#ID is Required
+		return self.dbHandler.updateSerieWithDict(key_value_dict)
+
+	def deleteSerie(self, id):
+		return self.dbHandler.deleteSerie(id)
+
+#	
+################################   EPISODES   ################################ 
+#
+	def getEpisode(self, id):
+		return self.dbHandler.getEpisodeWithId(id)
+
 	def insertEpisode(self, media):
 		return self.dbHandler.insertEpisode(media)
 	
 	def insertEpisodeWithDict(self, key_value_dict):
 		return self.dbHandler.insertEpisodeWithDict(key_value_dict)
 
-	def updateSerieWithDict(self, key_value_dict):		#ID is Required
-		return self.dbHandler.updateSerieWithDict(key_value_dict)
-
 	def updateEpisodeWithDict(self, key_value_dict):	#ID is Required
 		return self.dbHandler.updateEpisodeWithDict(key_value_dict)
-
-	def deleteSerie(self, id):
-		return self.dbHandler.deleteSerie(id)
 
 	def deleteEpisode(self, id):
 		return self.dbHandler.deleteEpisode(id)

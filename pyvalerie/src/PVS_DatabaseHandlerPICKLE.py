@@ -128,7 +128,7 @@ class databaseHandlerPICKLE(object):
 						LastID_M+=1
 						self._dbMovies[movieKey].Id = LastID_M
 					else:
-						self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId
+						self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId + str(random.randint(100, 999))
 
 
 	def saveMovies(self):		
@@ -655,19 +655,7 @@ class databaseHandlerPICKLE(object):
 			element = self._dbSeries[key]
 		
 		return element
-		
-	def getEpisodeWithId(self, id):
-		log("->", self, 10)
-		self._seriesCheckLoaded()
-		for serieKey in self._dbEpisodes:
-			if serieKey != self.CONFIGKEY:
-				for season in self._dbEpisodes[serieKey]:
-					for episode in self._dbEpisodes[serieKey][season]:
-						if self._dbEpisodes[serieKey][season][episode].Id == id:	
-							return self._dbEpisodes[serieKey][season][episode]
-								
-		return None
-		
+				
 	def getSeriesEpisodesValues(self):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -702,16 +690,6 @@ class databaseHandlerPICKLE(object):
 		
 		return None
 	#
-	#def getSerieEpisode(self, serieKey, season, episode):
-	#	log("->", self, 15)
-	#	self._seriesCheckLoaded()
-	#	element = None
-	#	if serieKey in self._dbEpisodes:
-	#		if season in self._dbEpisodes[serieKey]:
-	#			if episode in self._dbEpisodes[serieKey][season]:
-	#				element = self._dbEpisodes[serieKey][season][episode]
-	#	return element
-	#
 	#def getSerieSeasons(self, serieKey):
 	#	log("->", self, 15)
 	#	self._seriesCheckLoaded()
@@ -719,7 +697,6 @@ class databaseHandlerPICKLE(object):
 	#		return self._dbEpisodes[serieKey].keys()
 	#			
 	#	return self.seriesGetAll().values()
-
 
 	def insertSerie(self, media):
 		log("->", self, 20)
@@ -761,6 +738,61 @@ class databaseHandlerPICKLE(object):
 		self.fillMediaInfo(m, key_value_dict)
 		return self.insertSerie(m)
 		
+	
+	def updateSerieWithDict(self, key_value_dict):		#ID is Required
+		log("->", self, 20)
+		log(str(key_value_dict))
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
+			return False
+		
+		self._seriesCheckLoaded()
+		
+		m = self.getSerieWithId(key_value_dict['Id'])
+		if m is None:
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			return False
+		
+		self.SeriesCommited = False
+		self.fillMediaInfo(m, key_value_dict)
+		if self.AUTOCOMMIT:
+			self.saveSeries()
+		return True
+
+	def deleteSerie(self, id):
+		log("->", self, 20)
+		self._seriesCheckLoaded()
+		key = self.getSerieKey(id)
+		
+		if key is not None:
+			if key in self._dbEpisodes:
+				self.EpisodesCommited = False
+				del(self._dbEpisodes[key])
+			if key in self._dbSeries:	
+				self.SeriesCommited = False
+				del(self._dbSeries[key])
+			if self.AUTOCOMMIT:
+					self.saveEpisodes()
+					self.saveSeries()
+			return True
+		else:
+			return False
+
+#	
+################################   EPISODES   ################################ 
+#
+	def getEpisodeWithId(self, id):
+		log("->", self, 10)
+		self._seriesCheckLoaded()
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					for episode in self._dbEpisodes[serieKey][season]:
+						if self._dbEpisodes[serieKey][season][episode].Id == id:	
+							return self._dbEpisodes[serieKey][season][episode]
+								
+		return None
+
 	def insertEpisode(self, media):
 		log("->", self, 20)
 		self._seriesCheckLoaded()
@@ -804,26 +836,6 @@ class databaseHandlerPICKLE(object):
 		m.setMediaType(MediaInfo.EPISODE)
 		self.fillMediaInfo(m, key_value_dict)
 		return self.insertEpisode(m)
-	
-	def updateSerieWithDict(self, key_value_dict):		#ID is Required
-		log("->", self, 20)
-		log(str(key_value_dict))
-		if not "Id" in key_value_dict:
-			log("Id not defined", self, 5)
-			return False
-		
-		self._seriesCheckLoaded()
-		
-		m = self.getSerieWithId(key_value_dict['Id'])
-		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
-			return False
-		
-		self.SeriesCommited = False
-		self.fillMediaInfo(m, key_value_dict)
-		if self.AUTOCOMMIT:
-			self.saveSeries()
-		return True
 
 	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
@@ -844,25 +856,6 @@ class databaseHandlerPICKLE(object):
 		if self.AUTOCOMMIT:
 			self.saveEpisodes()
 		return True
-
-	def deleteSerie(self, id):
-		log("->", self, 20)
-		self._seriesCheckLoaded()
-		key = self.getSerieKey(id)
-		
-		if key is not None:
-			if key in self._dbEpisodes:
-				self.EpisodesCommited = False
-				del(self._dbEpisodes[key])
-			if key in self._dbSeries:	
-				self.SeriesCommited = False
-				del(self._dbSeries[key])
-			if self.AUTOCOMMIT:
-					self.saveEpisodes()
-					self.saveSeries()
-			return True
-		else:
-			return False
 
 	def deleteEpisode(self, id):
 		log("->", self, 10)
@@ -887,6 +880,7 @@ class databaseHandlerPICKLE(object):
 								self.saveEpisodes()
 							return True
 		return False
+
 #	
 #################################   FAILED   ################################# 
 #

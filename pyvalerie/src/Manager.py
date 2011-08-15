@@ -353,8 +353,8 @@ class Manager():
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMoviesValues(order, firstRecord, numberOfRecords)
 
-	#def getMovie(self, id):
-	#	return self.db.getMovie(id)
+	def getMovie(self, id):
+		return self.db.getMovie(id)
 
 	#def getMoviesPkWithImdb(self, imdbId):
 	#	return self.db.getMovieKeyWithImdb(imdbId)
@@ -424,7 +424,7 @@ class Manager():
 				return False
 		
 		elif type == self.TVSHOWS:
-			if not self.db.deleteSerieCascade(id):
+			if not self.db.deleteSerie(id):
 				printl("Serie delete - DB Error", self)	
 				return False
 		
@@ -450,8 +450,8 @@ class Manager():
 	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getSeriesValues(order, firstRecord, numberOfRecords)
 	
-	#def getSeriesWithKey(self, serieKey):
-	#	return self.db.getSeriesWithKey(serieKey)
+	def getSerie(self, id):
+		return self.db.getSerie(id)
 	
 	def getSeriesWithTheTvDbId(self, theTvDbId):
 		return self.db.getSeriesWithTheTvDbId(theTvDbId)
@@ -482,6 +482,9 @@ class Manager():
 	
 	def getSeriesCountEpisodes(self, serieKey=None, season=None):
 		return self.db.getSeriesCountEpisodes(serieKey, season)
+
+	def getEpisode(self, id):
+		return self.db.getEpisode(id)
 
 #	
 #################################   FAILED   ################################# 

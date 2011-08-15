@@ -208,10 +208,67 @@ tr:hover {
 	padding-top: 7px;
 }
 
+img {border: none; }
+
+#actions a{ 
+/*display: block;
+width:  16px;  
+height: 16px;  
+overflow:hidden; 
+text-decoration:none; 
+*/
+} 
+
 .action_img {
-	padding: 5px;	
+	padding: 5px;
+	border: none;
 }
+
+/*Create a generic 'image' class*/
+.image { background-repeat: no-repeat; background-color: transparent; display: block; /* any other common features */ }
+
+.imgDelete
+{
+ width:16px;
+ height:16px;
+ border: none;
+ background-image:url(/content/global/img/delete-grey.png);
+ background-repeat: no-repeat; background-color: transparent;
+}
+ 
+.imgEdit
+{
+ width:16px;
+ height:16px;
+ background-image:url(/content/global/img/edit-grey.png);
+ background-repeat: no-repeat; background-color: transparent;
+}
+
+
 
 .sm_save {
 	background-color: red;	
+}
+
+
+.requiredlabel{
+	/*background-image:url(/content/global/img/required-field.png);
+	background-position:top right;
+	background-repeat:no-repeat;
+	padding-right:10px;
+	*/
+}
+
+.requiredfield{
+	background-color:#FFE3E3
+}
+
+.small{
+	width: 40px;
+}
+.medium{
+	width: 350px;
+}
+.large{
+	width: 500px;
 }

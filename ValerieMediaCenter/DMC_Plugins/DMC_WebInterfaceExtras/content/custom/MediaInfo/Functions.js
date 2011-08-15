@@ -53,7 +53,7 @@ $(document).ready(function(){
 			$("#special_features").hide();
 		}
 		
-		fillTable(params, usePath);
+		/*fillTable(params, usePath);*/
 		changeTable(type);
 		
 		$("#tr_imdbid").hide();
