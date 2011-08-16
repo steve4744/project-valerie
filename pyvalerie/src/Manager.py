@@ -147,25 +147,25 @@ class Manager():
 		return None
 
 	#not used anymore - replacement: update/insert media
-	#def replace(self, oldElement, newElement):
-	#	printl("", self)
-	#	# not consistent ...todo: update serie
-	#	if oldElement is not None:
-	#		printl("oldElement=" + str(oldElement), self)
-	#		if type(oldElement) is MediaInfo:
-	#			printl("RM " + str(self.db.remove(oldElement)), self)
-	#		else:
-	#			self.db.removeFailed(oldElement)
-	#	
-	#	if newElement is not None:
-	#		if len(newElement) == 2:
-	#			printl("newElement=" + str(newElement[0]), self)
-	#			printl("ADD " + str(self.db.add(newElement[0])), self)
-	#			printl("newElement=" + str(newElement[1]), self)
-	#			printl("ADD " + str(self.db.add(newElement[1])), self)
-	#		else:
-	#			printl("newElement=" + str(newElement[0]), self)
-	#			printl("ADD " + str(self.db.add(newElement[0])), self)
+	def replace(self, oldElement, newElement):
+		printl("", self)
+		# not consistent ...todo: update serie
+		if oldElement is not None:
+			printl("oldElement=" + str(oldElement), self)
+			if type(oldElement) is MediaInfo:
+				printl("RM " + str(self.db.remove(oldElement)), self)
+			else:
+				self.db.removeFailed(oldElement)
+		
+		if newElement is not None:
+			if len(newElement) == 2:
+				printl("newElement=" + str(newElement[0]), self)
+				printl("ADD " + str(self.db.add(newElement[0])), self)
+				printl("newElement=" + str(newElement[1]), self)
+				printl("ADD " + str(self.db.add(newElement[1])), self)
+			else:
+				printl("newElement=" + str(newElement[0]), self)
+				printl("ADD " + str(self.db.add(newElement[0])), self)
 
 	def remove(self, oldElement, blacklist=True):
 		printl("", self)
