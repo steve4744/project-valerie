@@ -9,6 +9,28 @@ from Components.config import ConfigYesNo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
+from Components.Language import language
+import gettext
+import os
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
+
+def localeInit():
+	lang = language.getLanguage()
+	os.environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+
+localeInit()
+language.addCallback(localeInit)
+
 #------------------------------------------------------------------------------------------
 
 gAvailable = False
@@ -20,13 +42,13 @@ except:
 
 #deprecated
 config.plugins.pvmc.trakt              = ConfigYesNo(default = False)
-config.plugins.pvmc.traktuser          = ConfigText(default = "No Username")
-config.plugins.pvmc.traktpass          = ConfigPassword(default = "No Password")
+config.plugins.pvmc.traktuser          = ConfigText(default = _("No Username"))
+config.plugins.pvmc.traktpass          = ConfigPassword(default = _("No Password"))
 
 config.plugins.pvmc.plugins.trakt          = ConfigSubsection()
 config.plugins.pvmc.plugins.trakt.enabled  = ConfigYesNo(default = False)
-config.plugins.pvmc.plugins.trakt.username = ConfigText(default = "No Username")
-config.plugins.pvmc.plugins.trakt.password = ConfigPassword(default = "No Password")
+config.plugins.pvmc.plugins.trakt.username = ConfigText(default = _("No Username"))
+config.plugins.pvmc.plugins.trakt.password = ConfigPassword(default = _("No Password"))
 
 #deprecated workaround
 if config.plugins.pvmc.plugins.trakt.enabled.value is False and config.plugins.pvmc.trakt.value is True:

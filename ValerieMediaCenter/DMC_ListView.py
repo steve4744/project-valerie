@@ -15,10 +15,28 @@ from DMC_View import DMC_View, localeInit, _
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
-#------------------------------------------------------------------------------------------
+from Components.Language import language
+import gettext
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
-#localeInit()
-#language.addCallback(localeInit)
+def localeInit():
+	lang = language.getLanguage()
+	os.environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+
+localeInit()
+language.addCallback(localeInit)
+
+#------------------------------------------------------------------------------------------
 
 def getViewClass():
 	return DMC_ListView

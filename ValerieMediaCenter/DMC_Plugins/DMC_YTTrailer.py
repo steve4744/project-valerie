@@ -6,6 +6,28 @@
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
+from Components.Language import language
+import gettext
+import os
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
+
+def localeInit():
+	lang = language.getLanguage()
+	os.environ["LANGUAGE"] = lang[:2]
+	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
+	gettext.textdomain("enigma2")
+	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
+
+def _(txt):
+	t = gettext.dgettext("ProjectValerie", txt)
+	if t == txt:
+		t = gettext.gettext(txt)
+	return t
+
+
+localeInit()
+language.addCallback(localeInit)
+
 gAvailable = False
 try:
 	from Plugins.Extensions.YTTrailer.plugin import YTTrailer
