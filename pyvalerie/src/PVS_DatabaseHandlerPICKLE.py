@@ -345,14 +345,14 @@ class databaseHandlerPICKLE(object):
 	
 	def updateMovieWithDict(self, key_value_dict):	#ID is Required
 		log("->", self, 20)
-		if not "Id" in key_value_dict:
-			log("Id not defined", self, 5)
+		if not "id" in key_value_dict:
+			log("id not defined", self, 5)
 			return False
 		
 		self._moviesCheckLoaded()		
-		m = self.getMovie(key_value_dict['Id'])
+		m = self.getMovie(key_value_dict['id'])
 		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
 			return False
 		
 		self.MoviesCommited = False
@@ -474,6 +474,7 @@ class databaseHandlerPICKLE(object):
 								records[serieKey][season][episode].Id = LastID_E
 							else:
 								records[serieKey][season][episode].Id = str(serieKey) + str(season) + str(episode) + str(random.randint(100, 999))
+							records[serieKey][season][episode].ParentId = self._dbSeries[serieKey].Id;
 
 		except Exception, ex:
 			print ex
@@ -486,13 +487,23 @@ class databaseHandlerPICKLE(object):
 		
 	#Call when data is needed, to verify if is loaded
 	def _seriesCheckLoaded(self):
-		log("->", self, 15)
+		#log("->", self, 15)
 		if self._dbSeries is None:
 			self._loadSeriesEpisodesDB()
 
 	#								    #	
 	#   PUBLIC FUNCTIONS	# # # # # # # # # # # # # # # # # # # # # # # 
 	#								    #	
+#	def saveSeries(self):		
+	#def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
+	#def getSeriesCount(self):
+	
+
+#	def insertSerie(self, media):
+#	def insertSerieWithDict(self, key_value_dict):
+#	def updateSerieWithDict(self, key_value_dict):		#ID is Required
+#	def deleteSerie(self, id):
+	
 	
 	def saveSeries(self):		
 		printl("->", self)
@@ -517,28 +528,6 @@ class databaseHandlerPICKLE(object):
 		elapsed_time = time.time() - start_time
 		printl("Took (tvshows.db): " + str(elapsed_time), self)
 		
-	def saveEpisodes(self):		
-		printl("->", self)
-		if self.EpisodesCommited:
-			printl("Nothing to Commit", self)
-			return
-		start_time = time.time()
-		try:		
-			fd = open(self.EPISODESDB, "wb")
-			pickle.dump(self._dbEpisodes, fd, pickle.HIGHEST_PROTOCOL)
-			fd.close()
-			EpisodesCommited = True
-			
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-		
-		elapsed_time = time.time() - start_time
-		printl("Took (episodes.db): " + str(elapsed_time), self)
-
 	#used on transformgenres
 	def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		printl("->", self)
@@ -556,34 +545,15 @@ class databaseHandlerPICKLE(object):
 		self._seriesCheckLoaded()
 		return len(self.getSeries())
 		
-	def getSeriesCountSeasons(self, serieKey):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		count = None
-		if serieKey in self._dbEpisodes:
-			count = len(self._dbEpisodes[serieKey])
-		return count
+	#def getSeriesCountSeasonsWithKey(self, serieKey):
+	#	log("->", self, 15)
+	#	self._seriesCheckLoaded()
+	#	count = None
+	#	if serieKey in self._dbEpisodes:
+	#		count = len(self._dbEpisodes[serieKey])
+	#	return count
+	#
 	
-	def getSeriesCountEpisodes(self, serieKey=None, season=None):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		count = 0
-		if serieKey is None:		# seriesCountAllEpisodes
-			for serieKey in self._dbEpisodes:
-				if serieKey != self.CONFIGKEY:
-					for season in self._dbEpisodes[serieKey]:
-						count += len(self._dbEpisodes[serieKey][season])
-		elif season is None:		# 
-			if serieKey in self._dbEpisodes:
-				for season in self._dbEpisodes[serieKey]:
-					count += len(self._dbEpisodes[serieKey][season])
-		else:
-			if serieKey in self._dbEpisodes:
-				if season in self._dbEpisodes[serieKey]:
-					count = len(self._dbEpisodes[serieKey][season])
-		
-		return count
-			
 	def getSerieKey(self, id):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -612,11 +582,11 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 		return key
 
-	def getSeriesKeyWithTheTvDbId(self, theTvDbId):
+	def getSeriesIdWithTheTvDbId(self, theTvDbId):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
 		start_time = time.time()
-		key = None
+		id = None
 		if self.USE_INDEXES:
 			# use Indexes loaded at beginning
 			# indexing 0.0007		
@@ -627,25 +597,13 @@ class databaseHandlerPICKLE(object):
 			for serieKey in self._dbSeries:
 				if serieKey != self.CONFIGKEY:		# only for Pickle
 					if self._dbSeries[serieKey].TheTvDbId == theTvDbId:
-						key = serieKey
+						id = self._dbSeries[serieKey].Id
 						break
 		
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
-		return key
+		return id
 
-	def getSerieWithKey(self, serieKey):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		start_time = time.time()
-		element = None
-		if serieKey in self._dbSeries:
-			log("Serie Exists", self, 18)
-			element = self._dbSeries[serieKey]
-		elapsed_time = time.time() - start_time
-		printl("Took: " + str(elapsed_time), self)
-		return element
-	
 	def getSerieWithId(self, id):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -656,39 +614,6 @@ class databaseHandlerPICKLE(object):
 		
 		return element
 				
-	def getSeriesEpisodesValues(self):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		list = []
-		for serieKey in self._dbEpisodes:
-			if serieKey != self.CONFIGKEY:
-				for season in self._dbEpisodes[serieKey]:
-					list += self._dbEpisodes[serieKey][season].values()
-		return list
-
-	def getSeriesEpisodes(self, serieKey=None, season=None):
-		log("->", self, 15)
-		self._seriesCheckLoaded()
-		if serieKey is None:		# seriesGetAllEpisodes
-			newList	= {}			
-			if self._dbEpisodes is not None:
-				newList	= self._dbEpisodes.copy()
-				if self.CONFIGKEY in newList:
-					del newList[self.CONFIGKEY]
-			return newList
-		
-		elif season is None:		# seriesGetEpisodesOfSerie
-			list = []
-			if serieKey in self._dbEpisodes:
-				for season in self._dbEpisodes[serieKey]:
-					list += self._dbEpisodes[serieKey][season].values()				
-			return list
-		else:				# seriesGetEpisodesOfSeason
-			if serieKey in self._dbEpisodes:
-				if season in self._dbEpisodes[serieKey]:
-					return self._dbEpisodes[serieKey][season].values()
-		
-		return None
 	#
 	#def getSerieSeasons(self, serieKey):
 	#	log("->", self, 15)
@@ -738,19 +663,18 @@ class databaseHandlerPICKLE(object):
 		self.fillMediaInfo(m, key_value_dict)
 		return self.insertSerie(m)
 		
-	
 	def updateSerieWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
 		log(str(key_value_dict))
-		if not "Id" in key_value_dict:
-			log("Id not defined", self, 5)
+		if not "id" in key_value_dict:
+			log("id not defined", self, 5)
 			return False
 		
 		self._seriesCheckLoaded()
 		
-		m = self.getSerieWithId(key_value_dict['Id'])
+		m = self.getSerieWithId(key_value_dict['id'])
 		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
 			return False
 		
 		self.SeriesCommited = False
@@ -781,6 +705,90 @@ class databaseHandlerPICKLE(object):
 #	
 ################################   EPISODES   ################################ 
 #
+#	def saveEpisodes(self):		
+#
+#	def getEpisodes(self, id=None, season=None):
+#	def getEpisodeWithId(self, id):
+#	def insertEpisode(self, media):
+#	def insertEpisodeWithDict(self, key_value_dict):
+#	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
+#	def deleteEpisode(self, id):
+	
+	def saveEpisodes(self):		
+		printl("->", self)
+		if self.EpisodesCommited:
+			printl("Nothing to Commit", self)
+			return
+		start_time = time.time()
+		try:		
+			fd = open(self.EPISODESDB, "wb")
+			pickle.dump(self._dbEpisodes, fd, pickle.HIGHEST_PROTOCOL)
+			fd.close()
+			EpisodesCommited = True
+			
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		
+		elapsed_time = time.time() - start_time
+		printl("Took (episodes.db): " + str(elapsed_time), self)
+	
+	def getEpisodes(self, mediaId=None, season=None):
+		log("-> id:"+ str(mediaId) + " season:" + str(season), self, 15)
+		self._seriesCheckLoaded()
+		list = []
+		if mediaId is None:
+			for key in self._dbEpisodes:
+				if key != self.CONFIGKEY:
+					for season in self._dbEpisodes[key]:
+						for episode in self._dbEpisodes[key][season]:
+							list.append(self._dbEpisodes[key][season][episode])
+		elif season is None:
+			for key in self._dbEpisodes:
+				if key != self.CONFIGKEY:
+					for season in self._dbEpisodes[key]:
+						for episode in self._dbEpisodes[key][season]:
+							#printl("parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) );
+							if self._dbEpisodes[key][season][episode].ParentId == mediaId:
+								list.append(self._dbEpisodes[key][season][episode])
+		else:				
+			for key in self._dbEpisodes:
+				if key != self.CONFIGKEY:
+					for season in self._dbEpisodes[key]:
+						for episode in self._dbEpisodes[key][season]:
+							if self._dbEpisodes[key][season][episode].ParentId == mediaId:
+								if self._dbEpisodes[key][season][episode].Season == season:
+									list.append(self._dbEpisodes[key][season][episode])
+		return list
+		
+	def getEpisodesWithKey(self, serieKey=None, season=None):
+		log("->", self, 15)
+		self._seriesCheckLoaded()
+		if serieKey is None:		# seriesGetAllEpisodes
+			newList	= {}			
+			if self._dbEpisodes is not None:
+				newList	= self._dbEpisodes.copy()
+				if self.CONFIGKEY in newList:
+					del newList[self.CONFIGKEY]
+			return newList
+		
+		elif season is None:		# seriesGetEpisodesOfSerie
+			list = []
+			if serieKey in self._dbEpisodes:
+				for season in self._dbEpisodes[serieKey]:
+					list += self._dbEpisodes[serieKey][season].values()				
+			return list
+		else:				# seriesGetEpisodesOfSeason
+			if serieKey in self._dbEpisodes:
+				if season in self._dbEpisodes[serieKey]:
+					return self._dbEpisodes[serieKey][season].values()
+		
+		return None
+
+
 	def getEpisodeWithId(self, id):
 		log("->", self, 10)
 		self._seriesCheckLoaded()
@@ -840,15 +848,15 @@ class databaseHandlerPICKLE(object):
 	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
 		log(str(key_value_dict))
-		if not "Id" in key_value_dict:
-			log("Id not defined", self, 5)
+		if not "id" in key_value_dict:
+			log("id not defined", self, 5)
 			return False
 		
 		self._seriesCheckLoaded()
 		
-		m = self.getEpisodeWithId(key_value_dict['Id'])
+		m = self.getEpisodeWithId(key_value_dict['id'])
 		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
 			return False
 		
 		self.EpisodesCommited = False
@@ -881,11 +889,18 @@ class databaseHandlerPICKLE(object):
 							return True
 		return False
 
+	def getEpisodesCount(self, mediaId=None, season=None):
+		log("->", self, 15)
+		self._seriesCheckLoaded()
+		list = self.getEpisodes(mediaId, season)
+		return len(list)
+		
+		
 #	
 #################################   FAILED   ################################# 
 #
 	def _loadFailedDB(self):
-		printl("->", self)
+		#printl("->", self)
 		start_time = time.time()		
 		try:		
 			if os.path.exists(self.FAILEDDB):

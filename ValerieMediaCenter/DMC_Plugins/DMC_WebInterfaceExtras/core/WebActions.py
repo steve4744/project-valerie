@@ -74,17 +74,26 @@ class WebActions(Resource):
 			
 			if request.args["what"][0] == "isMovie":
 				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies")
 			
 			# add tvshows
 			elif request.args["what"][0] == "isTvShow":
 				result = manager.insertMedia(Manager.TVSHOWS, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")	
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")	
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows")	
 			
 			# add tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
 				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&id=" + request.args["id"][0])
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&id=" + request.args["id"][0])
 		
 		##
 		# edit section	
@@ -95,30 +104,29 @@ class WebActions(Resource):
 			key_value_dict = {}				
 			for key in request.args.keys():
 				key_value_dict[key] = request.args[key][0]
-				
+					
 			if request.args["what"][0] == "isMovie":
 				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&id=" + request.args["id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies&id=" + request.args["id"][0])
 			
 			# edit tvshows
 			elif request.args["what"][0] == "isTvShow":
 				result = manager.updateMedia(Manager.TVSHOWS, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&id=" + request.args["id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&id=" + request.args["id"][0])
 			
 			# edit tvsshowepisodes
 			elif request.args["what"][0] == "isEpisode":
 				result = manager.updateMedia(Manager.TVSHOWSEPISODES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
-				#return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&Id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
 		
 		##
 		# delete section
@@ -130,18 +138,27 @@ class WebActions(Resource):
 			#	key_value_dict[key] = request.args[key][0]
 			
 			if request.args["what"][0] == "isMovie":
-				manager.deleteMedia(Manager.MOVIES, request.args["Id"][0])
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
-		
+				result = manager.deleteMedia(Manager.MOVIES, request.args["id"][0])
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies")
+				
 		# delete tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["Id"][0])
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&TheTvDbId=" + request.args["TheTvDbId"][0])
-		
+				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["id"][0])
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+				
 		# delete tvshow		
 			elif request.args["what"][0] == "isTvShow":
-				manager.deleteMedia(Manager.TVSHOWS, request.args["Id"][0])
-				return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
+				result = manager.deleteMedia(Manager.TVSHOWS, request.args["id"][0])
+				if result:
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
+				else:
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows")
 		
 		##
 		# option section
@@ -271,35 +288,41 @@ class WebActions(Resource):
 			type = request.args["type"][0]
 			media_source = request.args["media_source"][0]
 			media_type = request.args["media_type"][0]
+			id = request.args["id"][0]
 
 			
 			if type == "isMovie":
-				primary_key = {}
-				primary_key["imdbid"] = request.args["ImdbId"][0]
+				t = Manager.MOVIES
+				#primary_key = {}
+				#primary_key["imdbid"] = request.args["ImdbId"][0]
 			
 			elif type == "isTvShow":
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
+				t = Manager.TVSHOWS
+				#primary_key = {}
+				#primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
 				
 			elif type == "isEpisode":
-				primary_key = {}
-				primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
-				primary_key["season"] = request.args["Season"][0]
-				primary_key["episode"] = request.args["Episode"][0]
+				t = Manager.TVSHOWSEPISODES
+				#primary_key = {}
+				#primary_key["thetvdbid"] = request.args["TheTvDbId"][0]
+				#primary_key["season"] = request.args["Season"][0]
+				#primary_key["episode"] = request.args["Episode"][0]
 			
 			else:
 				return utf8ToLatin("error")
 			
 			
 			if media_type == "poster":
-				result = manager.getArtsByUsingPrimaryKey(Manager.MOVIES, primary_key, True, None, media_source)
+				#result = manager.getArtsByUsingPrimaryKey(t, primary_key, True, None, media_source)
+				result = manager.changeMediaArts(t, id, True, None, media_source)
 				if result == True:
 					return utf8ToLatin("success")
 				else:
 					return utf8ToLatin("error")
 			
 			elif media_type == "backdrop":
-				result = manager.getArtsByUsingPrimaryKey(Manager.MOVIES, primary_key, True, media_source)
+				#result = manager.getArtsByUsingPrimaryKey(t, primary_key, True, media_source, None)
+				result = manager.changeMediaArts(t, id, True, media_source, None)
 				if result == True:
 					return utf8ToLatin("success")
 				else:

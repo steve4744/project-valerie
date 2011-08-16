@@ -16,6 +16,30 @@
 <script src="/content/global/js/jquery.themeRoller.min.js" type="text/javascript"></script>
 <script src="/content/global/js/valerie.js" type="text/javascript"></script> 
 
+<script type="text/javascript">
+var i = 1,timer;
+window.onload=function() {
+timer = setInterval('blink()', 500);
+}
+function blink() {
+// if (i<10) {
+        if (i%2 == 0) { 
+              document.getElementById('sm_save').style.backgroundColor = '#fff';
+              document.getElementById('sm_save').style.color = '#ff0000';
+	      document.getElementById('sm_save').style.borderRadius = '5px';
+         } else {
+              document.getElementById('sm_save').style.backgroundColor = '#ff0000';
+              document.getElementById('sm_save').style.color = '#fff';
+	      document.getElementById('sm_save').style.borderRadius = '5px';
+         }
+/* } else {
+      document.getElementById('sm_save').style.backgroundColor = '#ffff00';
+      clearInterval(timer);
+  }*/
+ i++;
+}
+</script>
+
 <script><!-- CUSTOM_JAVASCRIPT --></script>
 
 <div id="container">

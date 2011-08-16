@@ -35,7 +35,7 @@
 # getSeriesEpisode		serieKey,season,episode	MediaInfo
 # getSeriesCount					Count
 # getSeriesCountSeasons		serieKey		Count
-# getSeriesCountEpisodes	serieKey,season		Count
+# getEpisodesCount		mediaId,season		Count
 #
 # seriesDeleteCascadeOfSerie	serieKey		Boolean
 #
@@ -130,7 +130,7 @@ class Database(object):
 					u" " + \
 					unicode(self.getSeriesCount) + \
 					u" " + \
-					unicode(self.getSeriesCountEpisodes())
+					unicode(self.getEpisodesCount())
 			return Utf8.utf8ToLatin(rtv)
 		except Exception, ex:
 			log("Error retriving _str_: "+ str(ex), self, 2)
@@ -200,25 +200,23 @@ class Database(object):
 		log("->", self, 10)
 		listMissing = []
 		
-		movies = self.getMovies()
+		movies = self.getMoviesValues()
 		log("test 1", self, 10)	
-		for key in movies:
-			m = movies[key]
+		for m in movies:
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 				listMissing.append(m)
 	
-		series = self.getSeries()
-		episodes = self.getSeriesEpisodes()
+		#series = self.getSeries()
+		episodes = self.getEpisodes()
 		log("test 3", self, 10)
-		for key in series:
-			if key in episodes:
-				for season in episodes[key]:
-					for episode in episodes[key][season]:
-						m = episodes[key][season][episode]
-						path = m.Path + u"/" + m.Filename + u"." + m.Extension
-						if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-							listMissing.append(m)
+		#for key in series:
+		#	if key in episodes:
+		#		for season in episodes[key]:
+		for m in episodes:
+			path = m.Path + u"/" + m.Filename + u"." + m.Extension
+			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
+				listMissing.append(m)
 		
 		printl("Missing: " + str(len(listMissing)), self)
 		for m in listMissing:
@@ -350,48 +348,34 @@ class Database(object):
 		log("->", self, 15)
 		return self.getSeries(order, firstRecord, numberOfRecords).values()
 		
-	#def getSerieKeyWithTheTvDbId(self, theTvDbId):
-	#	return self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-
 	def getSeriesWithKey(self, serieKey):
 		return self.dbHandler.getSeriesWithKey(serieKey)	
 
 	def getSeriesWithTheTvDbId(self, theTvDbId):
-		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSerieWithKey(serieKey)
+		Id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
+		return self.dbHandler.getSerieWithId(Id)	
 		
-	def getSeriesEpisodes(self, serieKey=None, season=None):
-		return self.dbHandler.getSeriesEpisodes(serieKey, season)
-
-	def getSeriesEpisodesValues(self, serieKey=None, season=None):
-		return self.dbHandler.getSeriesEpisodesValues()
-	
-	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
-		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSeriesEpisodes(serieKey, season)
-
-	def getSeriesEpisode(self, serieKey, season, episode):
-		return self.dbHandler.getSeriesEpisode(serieKey, season, episode)
-		
+	def getSeriesCount(self):
+		return self.dbHandler.getSeriesCount()
+	#	
+	######################   SEASONS   ######################
+	#
 	def getSeriesSeasons(self, serieKey):			
 		return self.dbHandler.getSeriesSeasons(serieKey)				
 	
-	def getSeriesCount(self):
-		return self.dbHandler.getSeriesCount()
+	#def getSeasonsCount(self, mediaId): errr
+	#	return self.dbHandler.getSeriesCountSeasonsWithKey(serieKey)
 
-	def getSeriesCountSeasons(self, serieKey):
-		return self.dbHandler.getSeriesCountSeasons(serieKey)
-
-	def getSeriesCountSeasonsWithTheTvDbId(self, theTvDbId):
-		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSeriesCountSeasons(serieKey)
+	#def getSeasonsCountWithTheTvDbId(self, theTvDbId):
+	#	#Id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
+	#	return self.dbHandler.getSeriesCountSeasons(theTvDbId)
 	
-	def getSeriesCountEpisodes(self, serieKey=None, season=None):
-		return self.dbHandler.getSeriesCountEpisodes(serieKey, season)
+	def getEpisodesCount(self, mediaId=None, season=None):
+		return self.dbHandler.getEpisodesCount(mediaId, season)
 		
-	def getSeriesCountEpisodesWithTheTvDbId(self, theTvDbId, season):
-		serieKey = self.dbHandler.getSeriesKeyWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSeriesCountEpisodes(serieKey, season)
+	#def getEpisodesCountWithTheTvDbId(self, theTvDbId, season):
+	#	id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
+	#	return self.dbHandler.getEpisodesCount(id, season)
 	
 	def getSerie(self, id):
 		return self.dbHandler.getSerieWithId(id)
@@ -412,6 +396,19 @@ class Database(object):
 #	
 ################################   EPISODES   ################################ 
 #
+	def getEpisodes(self, Id=None):
+		return self.dbHandler.getEpisodes(Id)
+		
+	def getEpisodesWithKey(self, serieKey=None, season=None):
+		return self.dbHandler.getEpisodesWithKey(serieKey, season)
+
+	def getEpisodesWithTheTvDbId(self, theTvDbId, season=None):
+		Id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
+		return self.dbHandler.getEpisodes(Id, season)
+
+#	def getSeriesEpisode(self, serieKey, season, episode):
+#		return self.dbHandler.getEpisode(serieKey, season, episode)
+	
 	def getEpisode(self, id):
 		return self.dbHandler.getEpisodeWithId(id)
 

@@ -78,21 +78,22 @@ class Manager():
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-				list = self.db.getSeriesEpisodesWithTheTvDbId(param)
+				list = self.db.getEpisodesWithTheTvDbId(param)
 			else:
-				list = self.db.getSeriesEpisodesValues()
+				list = self.db.getEpisodes()
 			return list
 		
+		#not used
 		elif type == self.TVSHOWSSEASONS: 
-			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, )
+			#get-ll(Manager.TVSHOWSSEASONS, (thetvdbid, )
 			if param is not None and len(param) == 1:
 				list = self.db.getSeriesSeasons(param[0])
 
-			#getAll(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
+			#get-All(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
 			elif param is not None and len(param) == 2:
 				serie  = param[0]
 				season = param[1]
-				list = self.db.getSeriesEpisodes(serie, season)
+				list = self.db.getEpisodesWithKey(serie, season)
 			
 			return list
 		
@@ -340,7 +341,7 @@ class Manager():
 				return False
 		printl("no element found", self)
 		return False
-
+	
 #
 #################################   MOVIES   ################################# 
 #
@@ -441,6 +442,40 @@ class Manager():
 			return None
 		
 		return True
+
+	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
+		printl("start changing arts 2", self)
+		m = None
+		if type == self.MOVIES:
+			m = self.db.getMovie(id)
+		elif type == self.TVSHOWS:
+			m = self.db.getSerie(id)		
+		elif type == self.TVSHOWSEPISODES:
+			m = self.db.getEpisode(id)
+		elif type == self.MUSIC:
+			pass
+			#m = self.db.getMusic(id)
+			return False
+		else:
+			return None				
+
+		if m is None:
+			printl("Change Media Art - DB Error - Not found", self)	
+			return False
+		
+		if backdrop is not None:
+			m.Backdrop = backdrop
+		if poster is not None:
+			m.Poster = poster
+		
+		if m.Backdrop is not None or m.Poster is not None:
+			printl("downloading arts", self)
+			Arts().download(m, overwrite)
+			return True
+		else:
+			return False
+	
+		return False
 #
 #################################   SERIES   ################################# 
 #
@@ -452,36 +487,36 @@ class Manager():
 	
 	def getSerie(self, id):
 		return self.db.getSerie(id)
-	
+
 	def getSeriesWithTheTvDbId(self, theTvDbId):
 		return self.db.getSeriesWithTheTvDbId(theTvDbId)
 		
-	def getSeriesEpisodes(self, serieKey=None, season=None):
-		return self.db.getSeriesEpisodes(serieKey, season)
-	
-	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
-		return self.db.getSeriesEpisodesWithTheTvDbId(theTvDbId, season)
-	
 	#def getSeriesEpisode(self, serieKey, season, episode):
-	#	return self.db.getSeriesEpisode(serieKey, season, episode)
-		
+	#	return self.db.getSeriesEpisode(serieKey, season, episode)		
 	#def getSeriesSeasons(self, serieKey):			
 	#	return self.db.getSeriesSeasons(serieKey)				
 
 	def getSeriesCount(self):
 		return self.db.getSeriesCount()
 
-	def getSeriesCountSeasonsWithTheTvDbId(self, theTvDbId):
-		return self.db.getSeriesCountSeasonsWithTheTvDbId(serieKey)
-
-	def getSeriesCountSeasons(self, serieKey):
-		return self.db.getSeriesCountSeasons(serieKey)
+	#def getSeasonsCountWithTheTvDbId(self, theTvDbId):
+	#	return self.db.getSeasonsCountWithTheTvDbId(theTvDbId)
+	#def getSeasonsCount(self, mediaId):
+	#	return self.db.getSeasonsCount(mediaId)	
+	#def getEpisodesCountWithTheTvDbId(self, theTvDbId, season):
+	#	return self.db.getEpisodesCountWithTheTvDbId(serieKey, season)
 	
-	def getSeriesCountEpisodesWithTheTvDbId(self, theTvDbId, season):
-		return self.db.getSeriesCountEpisodesWithTheTvDbId(serieKey, season)
+	def getEpisodes(self, id):
+		return self.db.getEpisodes(id)
+			
+#	def getSeriesEpisodes(self, serieKey=None, season=None):
+#		return self.db.getSeriesEpisodes(serieKey, season)
 	
-	def getSeriesCountEpisodes(self, serieKey=None, season=None):
-		return self.db.getSeriesCountEpisodes(serieKey, season)
+#	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
+#		return self.db.getSeriesEpisodesWithTheTvDbId(theTvDbId, season)
+	
+	def getEpisodesCount(self, mediaId=None, season=None):
+		return self.db.getEpisodesCount(mediaId, season)
 
 	def getEpisode(self, id):
 		return self.db.getEpisode(id)

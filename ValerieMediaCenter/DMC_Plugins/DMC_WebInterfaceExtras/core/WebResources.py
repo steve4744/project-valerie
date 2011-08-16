@@ -33,7 +33,7 @@ class Home(Resource):
 		currentVersion = config.plugins.pvmc.version.value
 		movieCount = str(Manager().getMoviesCount())
 		tvShowCount = str(Manager().getSeriesCount())
-		episodeCount = str(Manager().getSeriesCountEpisodes())
+		episodeCount = str(Manager().getEpisodesCount())
 				
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
 		
@@ -112,7 +112,7 @@ class TvShows(Resource):
 		entries = WebData().getData("tvshows")
 
 		for entry in entries:
-			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.TheTvDbId)
+			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.Id)
 			evtEdit = WebData().getEditString(entry, "isTvShow")
 			evtAddEpisode = WebData().getAddEpisodeString(entry, "isEpisode")
 
@@ -155,14 +155,13 @@ class Episodes(Resource):
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Episodes/Header.tpl")
 		tableBody = u""
 		
-		TheTvDbId = request.args["TheTvDbId"][0]
-		
-		entries = WebData().getData("episodes", TheTvDbId)
+		# get episodes of serie (parentid)
+		parentId = request.args["parentId"][0]		
+		entries = WebData().getData("EpisodesOfSerie", parentId)
 		
 		for entry in entries:
 			evtEdit = WebData().getEditString(entry, "isEpisode")
 			evtDelete = WebData().getDeleteString(entry, "isEpisode")
-
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -239,16 +238,16 @@ class MediaInfo(Resource):
 				
 		finalOutput = WebData().getHtmlCore("MediaInfo", True)
 	
-		printl("Request: " + str(request))
+		#printl("Request: " + str(request))
 		
 		#Postback error
-		if request.args["mode"][0]=="done":
+		if request.args["mode"][0]=="done" or request.args["mode"][0]=="error":
 			return finalOutput
 		
 		type = request.args["type"][0]
-		Id = request.args["Id"][0]
-		m = WebData().getData("MediaInfo_"+type, Id)
-		#if m is None:
+		id = request.args["id"][0]
+		m = WebData().getData("MediaInfo_"+type, id)
+		#if m is None:0
 		#	return finalOutput
 		
 		image = u""
@@ -266,12 +265,13 @@ class MediaInfo(Resource):
 			<input type="hidden" name="method" value="edit">
 			<input type="hidden" name="what" value=%s>
 			<input type="hidden" name="oldImdbId" value="-1">
-			<input type="hidden" id="id" name="Id" value=%s>
+			<input type="hidden" id="id" name="id" value="%s">
+			<input type="hidden" id="parentId" name="parentId" value="%s">
 	
 			<tr><td></td></tr>
 			<tr id="tr_type"><td>Type:</td><td id="td_type">
 				<input id="type" name="Type" type="text" size="10" value="%s" disabled="disabled"></input>
-				<input id="id2" name="Id" type="text" size="10" value="%s" disabled="disabled"></input> </td></tr> 
+				<input id="id2" name="id2" type="text" size="10" value="%s" disabled="disabled"></input> </td></tr> 
 			<tr id="tr_imdbid"><td>ImdbId:</td><td>
 				<input id="imdbid" name="ImdbId" type="text" size="10" value="%s"></input></td><td>(e.g. tt9000000)</td></tr>
 			<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td>
@@ -312,7 +312,7 @@ class MediaInfo(Resource):
 				<input type="submit" value="Save"></input>
 			</td></tr>
 		</form>
-			""" % (type, m.Id, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
+			""" % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)

@@ -30,9 +30,11 @@ class WebData():
 			dataRows = manager.getSeriesValues()
 		elif type == "episodes":
 			if param != None:
-				dataRows = manager.getSeriesEpisodesWithTheTvDbId(param)				
+				dataRows = manager.getEpisodesWithTheTvDbId(param)				
 			else:
-				dataRows = manager.getSeriesEpisodes()				
+				dataRows = manager.getEpisodes()				
+		elif type == "EpisodesOfSerie":
+			dataRows = manager.getEpisodes(param)	
 		elif type == "failed":
 			dataRows = manager.getFailed()
 
@@ -112,8 +114,8 @@ class WebData():
 	#
 	#
 	##
-	def getEpisodesOfTvShow (self, TheTvDbId):
-		onclick = "javascript:window.open('/episodes?TheTvDbId=" + TheTvDbId + "', '_self');"
+	def getEpisodesOfTvShow (self, parentId):
+		onclick = "javascript:window.open('/episodes?parentId=" + parentId + "', '_self');"
 		
 		return onclick
 	
@@ -127,7 +129,7 @@ class WebData():
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'mode':"edit"}) + "&"		
 		onclick  += urlencode({'usePath':"true"}) + "&"
-		onclick  += urlencode({'Id':entry.Id}) #+ "&"
+		onclick  += urlencode({'id':entry.Id}) + "&"
 		#onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		#onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
 		#onclick  += urlencode({'Title':entry.Title}) + "&"
@@ -152,15 +154,15 @@ class WebData():
 		### <!-- build delete string -->
 		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?method=delete&what="
 		onclick  += str(type) + "&"
-		onclick  += "Id=" + str(entry.Id) + "&"
-		
-		if (type == 'isMovie'):
-			onclick  += "ImdbId=" + str(entry.ImdbId)
-		elif (type == 'isTvShow'):
-			onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
-		elif (type == 'isEpisode'):
-			onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
-		
+		onclick  += "id=" + str(entry.Id) + "&"
+		onclick  += "parentId=" + str(entry.ParentId) # + "&"		
+		#if (type == 'isMovie'):
+		#	onclick  += "ImdbId=" + str(entry.ImdbId)
+		#elif (type == 'isTvShow'):
+		#	onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
+		#elif (type == 'isEpisode'):
+		#	onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
+		#
 		onclick  += "', '_self')} else { return};"
 		
 		return onclick
@@ -194,6 +196,7 @@ class WebData():
 		onclick  += urlencode({'type':entry.type}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'oldImdbId':entry.oldImdbId}) + "&"
+		onclick  += urlencode({'id':entry.Id}) + "&"
 		
 		if existing == "true":
 			onclick  += urlencode({'usePath':"true"}) + "&"
@@ -214,6 +217,8 @@ class WebData():
 		### <!-- build addEpisode string -->
 		onclick  = "javascript:window.open('/addrecord?"
 		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'id':entry.Id}) + "&"
+		onclick  += urlencode({'parentId':entry.ParentId}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
 		onclick  += "', '_self');"
