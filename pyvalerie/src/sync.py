@@ -530,9 +530,10 @@ class Sync():
 			return (elementInfo, )
 		
 		elif elementInfo.isTypeSerie():
-			tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
-			if tmp is not None:
-				elementInfo = tmp
+			if elementInfo.TheTvDbId == elementInfo.TheTvDbIdNull:
+				tmp = TheTvDbProvider().getSerieByImdbID(elementInfo)
+				if tmp is not None:
+					elementInfo = tmp
 			
 			tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
 			if tmp is not None:

@@ -403,16 +403,27 @@ class MediaInfo(object):
 		printl("", self)
 		try:
 			for line in lines:
-				m = re.search(r'(?P<imdbid>tt\d{7})', line)
-				if m and m.group("imdbid"):
-					self.ImdbId = m.group("imdbid")
-					printl("Found IMDb-ID = " + str(self.ImdbId), self, "I")
+				if self.searchForImdbAndTvdbId(line):
 					return self
-				else:
-					return None
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
 		return None
+
+	def searchForImdbAndTvdbId(self, string):
+		ret = False
+		m = re.search(r'(?P<imdbid>tt\d{7})', string)
+		if m and m.group("imdbid"):
+			self.ImdbId = m.group("imdbid")
+			printl(" => found IMDb-ID = " + str(self.ImdbId), self, "I")
+			ret = True
+				
+		m = re.search(r'(?P<tvdb>tvdb\d+)', string)
+		if m and m.group("tvdb"):
+			self.TheTvDbId = m.group("tvdb")[4:]
+			printl(" => found TheTvDb-ID = " + str(self.TheTvDbId), self, "I")
+			ret = True
+		
+		return ret
 
 	def parse(self, useParentFoldernameAsSearchstring=False):
 		absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
@@ -428,7 +439,8 @@ class MediaInfo(object):
 			if valerieInfoSearchString == u"ignore":
 				printl("=> found 'ignore'... Returning to sync process and skipping!", self, "I")
 				return False
-		
+			if self.searchForImdbAndTvdbId(valerieInfoSearchString):
+				valerieInfoSearchString = None
 		#################### DVD #####################
 		
 		if self.Extension.lower() == u"ifo":
@@ -452,10 +464,8 @@ class MediaInfo(object):
 		
 		### Check for IMDb-ID in filename
 		printl("Check for IMDb-ID in filename '" + name + "'", self, "I")
-		m = re.search(r'(?P<imdbid>tt\d{7})', name)
-		if m and m.group("imdbid"):
-			self.ImdbId = m.group("imdbid")
-			printl(" => found IMDb-ID = " + str(self.ImdbId), self, "I")
+		
+		self.searchForImdbAndTvdbId(name)
 		
 		if self.isNfoAvailable(self.Path + u"/" + self.Filename):
 			printl("nfo File present - now parsing: " + self.Path + u"/" + self.Filename, self, "I")
