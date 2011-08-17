@@ -248,7 +248,7 @@ class ProjectValerieSyncSettingsConfPaths(Screen):
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager Searchpaths"))
+		self.setTitle(_("Searchpaths"))
 
 	def key_red(self):
 		self.colorButtons[self.colorButtonsIndex]["key_red"][1]()
@@ -406,7 +406,7 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize settings"))
+		self.setTitle(_("Settings"))
 
 	def initConfigList(self, element=None):
 		printl("element: " + str(element), self)
@@ -502,6 +502,8 @@ class ProjectValerieSyncSettings(Screen):
 		
 		if self.APILevel == 1:
 			self.skin = self.skinDeprecated
+			
+		self["key_red"] = StaticText(_("Cancel"))
 		
 		list = []
 		list.append((_("Change searchpaths"), "confPaths"))
@@ -510,7 +512,6 @@ class ProjectValerieSyncSettings(Screen):
 		list.append((_("Delete all posters/backdrops"), "delArts"))
 		list.append((_("Delete database"), "delDb"))
 		list.append((_("Reset filter"), "resetFl"))
-		list.append((_("Exit"), "exit"))
 		
 		Screen.__init__(self, session)
 		
@@ -519,11 +520,12 @@ class ProjectValerieSyncSettings(Screen):
 		{
 			"cancel": self.cancel,
 			"ok": self.ok,
+			"red": self.cancel,
 		}, -2)
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager options"))
+		self.setTitle(_("Options"))
 
 	def remove(self, file):
 		try:
@@ -609,8 +611,6 @@ class ProjectValerieSyncSettings(Screen):
 					self.session.open(MessageBox,_("Filter successfully resetted..."), MessageBox.TYPE_INFO, timeout=3)
 				except:
 					self.session.open(MessageBox,_("Error while resetting filter:\n %s" % sys.exc_info()[0]), MessageBox.TYPE_ERROR)
-			elif returnValue == "exit":
-				self.cancel()
 
 	def cancel(self):
 		printl("", self)
@@ -796,7 +796,7 @@ class ProjectValerieSyncFinished(Screen):
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager"))
+		self.setTitle(_("Sync Manager"))
 
 	def initTimeout(self, timeout):
 		self.timeout = timeout
@@ -941,7 +941,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 		self.onFirstExecBegin.append(self.onLoad)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager Info"))
+		self.setTitle(_("Info"))
 
 	def onLoad(self):
 		self["path"].setText(Utf8.utf8ToLatin(self.element.Path))
@@ -1150,7 +1150,7 @@ class ProjectValerieSyncManager(Screen):
 		self.onFirstExecBegin.append(self.onLoad)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager Overview"))
+		self.setTitle(_("Overview"))
 
 	def onLoad(self):
 		self.loadFailed()
@@ -1340,7 +1340,7 @@ class ProjectValerieSync(Screen):
 		self.onFirstExecBegin.append(self.startup)
 
 	def setCustomTitle(self):
-		self.setTitle(_("Synchronize Manager"))
+		self.setTitle(_("Sync Manager"))
 
 	def startup(self):
 		global gSyncInfo
