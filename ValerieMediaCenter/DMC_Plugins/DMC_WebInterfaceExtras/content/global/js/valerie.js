@@ -27,3 +27,10 @@ function decode_utf8( s )
 {
   return decodeURIComponent( escape( s ) );
 }
+
+function blink( element )
+{
+  $(element).animate(
+  { opacity: 0.15 }, "fast", "swing").animate(
+	{ opacity: 1 }, "fast", "swing");
+}

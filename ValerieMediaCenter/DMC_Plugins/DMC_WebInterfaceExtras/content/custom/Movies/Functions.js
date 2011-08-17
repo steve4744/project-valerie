@@ -10,4 +10,9 @@ $(document).ready(function(){
 	if (params["showSave"] != "true") {
 		$('#sm_save').hide();
 	}
+	else
+	{
+		window.setInterval ( "blink('#sm_save')", 1500 );
+	}
+
 });

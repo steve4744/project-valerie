@@ -51,7 +51,7 @@ td {
 	height: 65px;
 	margin-bottom: 8px;
 	padding-left: 5px;
-	width: 100%;
+	width: 990px;
 }
 
 #banner {
@@ -66,7 +66,7 @@ td {
     margin-bottom: 8px;
     padding-bottom: 1px;
     padding-left: 5px;
-    padding-right: 3px;
+    /*padding-right: 3px;*/
     width: 990px;
 	height: 38px;
 }
@@ -238,7 +238,9 @@ img {border: none; }
 }
 
 .sm_save {
-	background-color: red;	
+	color: blue;/* #ffffff;*/
+	background-color: #ff0000;
+	border-radius: 5px;
 }
 
 .requiredlabel{
