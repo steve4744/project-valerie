@@ -45,6 +45,8 @@ class databaseHandlerPICKLE(object):
 	TVSHOWSDB  = DB_PATH + "tvshows.db"
 	EPISODESDB = DB_PATH + "episodes.db"
 
+	TABLESDB   = DB_PATH + "tables.db"
+
 	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
 	DB_VERSION = 1
@@ -69,6 +71,10 @@ class databaseHandlerPICKLE(object):
 	_dbSeries   = None
 	_dbEpisodes = None	
 	_dbFailed   = None
+
+	_dbTables	= None
+	_dbGroups	= None
+	_dbGroupsItems	= None
 
 	_addFailedCauseOf = None
 
@@ -345,14 +351,14 @@ class databaseHandlerPICKLE(object):
 	
 	def updateMovieWithDict(self, key_value_dict):	#ID is Required
 		log("->", self, 20)
-		if not "id" in key_value_dict:
-			log("id not defined", self, 5)
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
 			return False
 		
 		self._moviesCheckLoaded()		
-		m = self.getMovie(key_value_dict['id'])
+		m = self.getMovie(key_value_dict['Id'])
 		if m is None:
-			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
 			return False
 		
 		self.MoviesCommited = False
@@ -558,7 +564,7 @@ class databaseHandlerPICKLE(object):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
 		start_time = time.time()
-		key = None
+		k = None
 		if self.USE_INDEXES:
 			# use Indexes loaded at beginning
 			# indexing 0.0007		
@@ -575,12 +581,13 @@ class databaseHandlerPICKLE(object):
 							break
 					else:
 						if self._dbSeries[key].Id == id:
+							printl("result key: "+ str(key)+ "  for id:" + str(id))
 							k = key
 							break
 							
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
-		return key
+		return k
 
 	def getSeriesIdWithTheTvDbId(self, theTvDbId):
 		log("->", self, 15)
@@ -605,7 +612,7 @@ class databaseHandlerPICKLE(object):
 		return id
 
 	def getSerieWithId(self, id):
-		log("->", self, 15)
+		log("->  for id: "+str(id), self, 15)
 		self._seriesCheckLoaded()
 		element = None
 		key = self.getSerieKey(id)
@@ -666,15 +673,15 @@ class databaseHandlerPICKLE(object):
 	def updateSerieWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
 		log(str(key_value_dict))
-		if not "id" in key_value_dict:
-			log("id not defined", self, 5)
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
 			return False
 		
 		self._seriesCheckLoaded()
 		
-		m = self.getSerieWithId(key_value_dict['id'])
+		m = self.getSerieWithId(key_value_dict['Id'])
 		if m is None:
-			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
 			return False
 		
 		self.SeriesCommited = False
@@ -751,7 +758,7 @@ class databaseHandlerPICKLE(object):
 				if key != self.CONFIGKEY:
 					for season in self._dbEpisodes[key]:
 						for episode in self._dbEpisodes[key][season]:
-							#printl("parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) );
+							printl("id:" + str(self._dbEpisodes[key][season][episode].Id)  +"parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) );
 							if self._dbEpisodes[key][season][episode].ParentId == mediaId:
 								list.append(self._dbEpisodes[key][season][episode])
 		else:				
@@ -805,6 +812,7 @@ class databaseHandlerPICKLE(object):
 		log("->", self, 20)
 		self._seriesCheckLoaded()
 		m = media
+		printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ m.Filename+ m.Extension) )
 		if self.IDMODEAUTO:
 			LastID_E+=1
 			m.Id = LastID_E
@@ -815,6 +823,9 @@ class databaseHandlerPICKLE(object):
 		m.setMediaType(MediaInfo.EPISODE)
 		m.Path = media.Path.replace("\\", "/")
 		m.Path = media.Path.replace("//", "/")
+		
+		printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ media.Filename+ media.Extension) )
+				
 		# Checks if the file is already in db
 		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
 			# This should never happen, this means that the same file is already in the db
@@ -848,15 +859,15 @@ class databaseHandlerPICKLE(object):
 	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
 		log(str(key_value_dict))
-		if not "id" in key_value_dict:
-			log("id not defined", self, 5)
+		if not "Id" in key_value_dict:
+			log("Id not defined", self, 5)
 			return False
 		
 		self._seriesCheckLoaded()
 		
-		m = self.getEpisodeWithId(key_value_dict['id'])
+		m = self.getEpisodeWithId(key_value_dict['Id'])
 		if m is None:
-			log("Media not found on DB [id:"+ str(key_value_dict['id']) +"]", self, 5)
+			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
 			return False
 		
 		self.EpisodesCommited = False
@@ -1002,6 +1013,57 @@ class databaseHandlerPICKLE(object):
 			if self.AUTOCOMMIT:
 				self.saveFailed()
 			return True
+
+#	
+#################################   TABLES   ################################# 
+#
+	def _loadTablesDB(self):
+		#printl("->", self)
+		start_time = time.time()		
+		try:
+			self._dbTables = {}
+			self._dbGroups = {}
+			self._dbGroupsItems = {}
+			if os.path.exists(self.TABLESDB):
+				fd = open(self.TABLESDB, "rb")
+				self._dbTables = pickle.load(fd)
+				fd.close()
+			
+			# Separate Tables
+			if "Groups" in self._dbTables:
+				self._dbGroups = self._dbTables["Groups"]
+			if "GroupsItems" in self._dbTables:
+				self._dbGroupsItems = self._dbTables["GroupsItems"]
+			
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		
+		elapsed_time = time.time() - start_time
+		printl("Took (failed.db): " + str(elapsed_time), self)
+		
+		return (self._dbFailed)
+
+	def getGroups(self):
+		log("-> ", self, 15)
+		#self._seriesCheckLoaded()
+		table = self._dbTables["Groups"]
+		list = []
+		for key in table:
+			list.append(table[key])
+		return list
+	
+	def insertGroupWithDict(self, key_value_dict):
+		log("->", self, 20)
+		m = Group()
+		#m.setMediaType(MediaInfo.EPISODE)
+		#self.fillGroup(m, key_value_dict)
+		#return self.insertGroup(m)
+	
+
 
 ###################################  UTILS  ###################################
 

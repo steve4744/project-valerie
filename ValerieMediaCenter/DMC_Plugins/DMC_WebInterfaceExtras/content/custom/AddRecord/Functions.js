@@ -26,6 +26,7 @@ $(document).ready(function(){
 		
 	} else if (params["type"] == "isEpisode") {
 		$("#header").html("Episode");
+		document.getElementById('ParentId').value = params["ParentId"];
 		
 		//for now we romove them because thoes functions are not implemented
 		$("#form1").remove();

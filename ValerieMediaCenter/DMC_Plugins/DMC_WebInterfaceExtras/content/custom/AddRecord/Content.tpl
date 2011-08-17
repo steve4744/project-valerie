@@ -45,6 +45,7 @@
 			<form id="form3" action="/mediainfo" method="get">
 				<input id="form3_type" type="hidden" name="type" value="">
 				<input type="hidden" name="mode" value="new_record">
+				<input id="ParentId" type="hidden" name="ParentId" value="">
 				<table align="left" >
 					<tr id="tr_title">
 						<td width="100px">Information:</td>

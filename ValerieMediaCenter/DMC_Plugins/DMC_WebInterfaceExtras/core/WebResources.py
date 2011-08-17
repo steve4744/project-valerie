@@ -115,7 +115,6 @@ class TvShows(Resource):
 			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.Id)
 			evtEdit = WebData().getEditString(entry, "isTvShow")
 			evtAddEpisode = WebData().getAddEpisodeString(entry, "isEpisode")
-
 			evtDelete = WebData().getDeleteString(entry, "isTvShow") 
 			
 			tableBody += u"""   <tr>
@@ -156,8 +155,8 @@ class Episodes(Resource):
 		tableBody = u""
 		
 		# get episodes of serie (parentid)
-		parentId = request.args["parentId"][0]		
-		entries = WebData().getData("EpisodesOfSerie", parentId)
+		ParentId = request.args["ParentId"][0]		
+		entries = WebData().getData("EpisodesOfSerie", ParentId)
 		
 		for entry in entries:
 			evtEdit = WebData().getEditString(entry, "isEpisode")
@@ -166,9 +165,9 @@ class Episodes(Resource):
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
-							<td>%d</td>
-							<td>%d</td>
-							<td>%d</td>
+							<td>%s</td>
+							<td>%s</td>
+							<td>%s</td>
 							<td>%s</td>
 							<td>%s</td>
 							<td>%s</td>
@@ -240,33 +239,44 @@ class MediaInfo(Resource):
 	
 		#printl("Request: " + str(request))
 		
+		Id = None
+		ParentId = None
+		imdbId = u""
+		theTvDbId = u""
+		mode = request.args["mode"][0]
+		
 		#Postback error
-		if request.args["mode"][0]=="done" or request.args["mode"][0]=="error":
+		if mode=="done" or mode=="error":
 			return finalOutput
 		
 		type = request.args["type"][0]
-		id = request.args["id"][0]
-		m = WebData().getData("MediaInfo_"+type, id)
-		#if m is None:0
-		#	return finalOutput
+
+		if "Id" in request.args:
+			Id = request.args["Id"][0]
+			m = WebData().getData("MediaInfo_"+type, Id)
+			imdbId = m.ImdbId
+			theTvDbId = m.TheTvDbId
 		
+		if "ParentId" in request.args:
+			ParentId = request.args["ParentId"][0]
+
 		image = u""
 		backdrop = u""
 		if type == "isMovie":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_backdrop_320x180.png")
+			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + imdbId + "_poster_195x267.png")
+			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + imdbId + "_backdrop_320x180.png")
 			
 		elif type == "isTvShow" or type == "isEpisode":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_backdrop_320x180.png")
+			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_poster_195x267.png")
+			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_backdrop_320x180.png")
 	
 		mediaForm = u"""
 		<form action="/action" method="get">
 			<input type="hidden" name="method" value="edit">
 			<input type="hidden" name="what" value=%s>
 			<input type="hidden" name="oldImdbId" value="-1">
-			<input type="hidden" id="id" name="id" value="%s">
-			<input type="hidden" id="parentId" name="parentId" value="%s">
+			<input type="hidden" Id="Id" name="Id" value="%s">
+			<input type="hidden" Id="ParentId" name="ParentId" value="%s">
 	
 			<tr><td></td></tr>
 			<tr id="tr_type"><td>Type:</td><td id="td_type">
@@ -312,8 +322,12 @@ class MediaInfo(Resource):
 				<input type="submit" value="Save"></input>
 			</td></tr>
 		</form>
-			""" % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
-		
+			""" 
+		if mode=="new_record": 
+			mediaForm = mediaForm % (type, u"", u"", type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
+		else:
+			mediaForm = mediaForm % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
+
 		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_FORM -->", mediaForm)
@@ -361,6 +375,7 @@ class Alternatives(Resource):
 			existing = "false"
 			entry.type = request.args["type"][0]
 			entry.oldImdbId = request.args["oldImdbId"][0]
+			entry.Id = u"" #request.args["Id"][0]
 			
 			if request.args["modus"][0] == "existing":
 				entry.Path = request.args["Path"][0]
@@ -527,7 +542,7 @@ class SyncSettings (Resource):
 								<input type="hidden" name="method" value="options.saveconfig"></input>
 								<input type="hidden" name="what" value="settings_sync"></input>
 								<input type="hidden" name="section" value="paths"></input>
-								<input type="hidden" name="id" value="%s"></input>
+								<input type="hidden" name="Id" value="%s"></input>
 								<tr id="tr_entry">
 									<td width="50px">%s</td>
 									<td width="200px">%s</td>

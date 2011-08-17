@@ -12,17 +12,21 @@ $(document).ready(function(){
 	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
 	var useData = params["useData"]; 	// => true/false
 	var usePath = params["usePath"]; 	// => true/false (takes the values path/filename/extension from Rquest)
-	var id = params["id"]; 	
-	var parentId = params["parentId"];
+	var Id = params["Id"]; 	
+	var ParentId = params["ParentId"];
 	
 	//DONE SECTION
 	if (mode == "done") {
 		//window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
-		if (typeof(id) != 'undefined') {
-			window.open('/' + target + '?showSave=true&parentId=' + parentId, '_self');			
-		} else {
-			window.open('/' + target + '?showSave=true', '_self');
+		
+		var parameters = "";
+		if (typeof(ParentId)!= 'undefined') {
+			parameters = parameters +"&ParentId="+ParentId;
+		}		
+		if (typeof(Id) != 'undefined') {
+			parameters = parameters +"&Id="+Id;
 		}
+		window.open('/' + target + '?showSave=true'+parameters, '_self');
 		return;
 	
 	} else if (mode == "error") {
@@ -43,6 +47,10 @@ $(document).ready(function(){
 		
 		changeTable(type);
 		document.getElementById('type').value = params["type"];
+		if (type == "isEpisode") {
+			document.getElementById('ParentId').value = params["ParentId"];
+		}
+		
 	
 	// MANUAL EDIT OF AN EXISTING RECORD 
 	} else if (mode == "edit") {
@@ -109,8 +117,8 @@ function changeTable(table_type) {
 function fillTable(params, usePath) {
 		/* fill complete structure with data */
 		document.getElementById('type').value = params["type"];
-		document.getElementById('id2').value = params["id"]; /* debug only */
-		document.getElementById('id').value = params["id"];
+		document.getElementById('id2').value = params["Id"]; /* debug only */
+		document.getElementById('id').value = params["Id"];
 		document.getElementById('imdbid').value = params["ImdbId"];
 		document.getElementById('thetvdbid').value = params["TheTvDbId"];
 		document.getElementById('title').value = params["Title"];
@@ -176,7 +184,7 @@ function changePictures(media_type) {
 	
 	parameter["media_source"] = reply;
 	parameter["type"] = type
-	parameter["id"] = params["id"]
+	parameter["Id"] = params["Id"]
 	
 	//if (type == "isMovie") {
 	//	parameter["ImdbId"] = params["ImdbId"];

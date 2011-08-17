@@ -89,11 +89,12 @@ class WebActions(Resource):
 			
 			# add tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)
+				printl ("INSERT: " + str(key_value_dict))
+				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)				
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId=" + request.args["ParentId"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId=" + request.args["ParentId"][0])
 		
 		##
 		# edit section	
@@ -108,25 +109,25 @@ class WebActions(Resource):
 			if request.args["what"][0] == "isMovie":
 				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&Id=" + request.args["Id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies&Id=" + request.args["Id"][0])
 			
 			# edit tvshows
 			elif request.args["what"][0] == "isTvShow":
 				result = manager.updateMedia(Manager.TVSHOWS, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&Id=" + request.args["Id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&Id=" + request.args["Id"][0])
 			
 			# edit tvsshowepisodes
 			elif request.args["what"][0] == "isEpisode":
 				result = manager.updateMedia(Manager.TVSHOWSEPISODES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
 		
 		##
 		# delete section
@@ -138,7 +139,7 @@ class WebActions(Resource):
 			#	key_value_dict[key] = request.args[key][0]
 			
 			if request.args["what"][0] == "isMovie":
-				result = manager.deleteMedia(Manager.MOVIES, request.args["id"][0])
+				result = manager.deleteMedia(Manager.MOVIES, request.args["Id"][0])
 				if result:
 					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
 				else:
@@ -146,15 +147,15 @@ class WebActions(Resource):
 				
 		# delete tvshowepisodes
 			elif request.args["what"][0] == "isEpisode":
-				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["id"][0])
+				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["Id"][0])
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&parentId="+request.args["parentId"][0]+"&id=" + request.args["id"][0])
+					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
 				
 		# delete tvshow		
 			elif request.args["what"][0] == "isTvShow":
-				result = manager.deleteMedia(Manager.TVSHOWS, request.args["id"][0])
+				result = manager.deleteMedia(Manager.TVSHOWS, request.args["Id"][0])
 				if result:
 					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
 				else:
@@ -191,7 +192,7 @@ class WebActions(Resource):
 			
 			elif request.args["what"][0] == "settings_sync":
 				if request.args["section"][0] == "paths":
-					id = request.args["id"][0]
+					id = request.args["Id"][0]
 					directory = request.args["directory"][0]
 					typeFolder = request.args["type"][0]
 					enabled = request.args.has_key("enabled")
@@ -288,7 +289,7 @@ class WebActions(Resource):
 			type = request.args["type"][0]
 			media_source = request.args["media_source"][0]
 			media_type = request.args["media_type"][0]
-			id = request.args["id"][0]
+			id = request.args["Id"][0]
 
 			
 			if type == "isMovie":
