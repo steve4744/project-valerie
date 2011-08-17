@@ -86,6 +86,7 @@ def autostart(session):
 		root.putChild("vlog", File(config.plugins.pvmc.tmpfolderpath.value + 'log', defaultType="text/plain"))
 		root.putChild("elog", File('/hdd/', defaultType="text/plain"))
 		root.putChild("media", File(config.plugins.pvmc.configfolderpath.value + '/media', defaultType="text/plain"))
+		root.putChild("dumps", File(config.plugins.pvmc.tmpfolderpath.value + 'dumps', defaultType="text/plain"))
 		#root.putChild("valerie", File(config.plugins.pvmc.tmpfolderpath.value, defaultType="text/plain"))
 		
 		#Action pages without MainMenu-Entry
