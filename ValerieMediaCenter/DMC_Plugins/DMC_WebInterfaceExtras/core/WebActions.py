@@ -353,5 +353,5 @@ class WebActions(Resource):
 		##	
 		elif request.args["method"][0] == "dump_db":
 			Manager().getDbDump()
-			return WebHelper().redirectMeTo("/movies")					
+			return WebHelper().redirectMeTo("/dumps")					
 				
