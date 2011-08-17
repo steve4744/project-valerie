@@ -50,7 +50,7 @@ class databaseHandlerPICKLE(object):
 	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
 	DB_VERSION = 1
-	IDMODEAUTO = False
+	IDMODEAUTO = True
 	#temp
 	LastID_M   = 0
 	LastID_S   = 0
@@ -125,14 +125,14 @@ class databaseHandlerPICKLE(object):
 				log("Indexing Took : " + str(elapsed_time), self, 11)
 			
 			# Temporary to test ID's
-			LastID_M = 0
+			self.LastID_M = 0
 			for movieKey in self._dbMovies:
 				if movieKey != self.CONFIGKEY:
 					if self.IDMODEAUTO:
 						#key = int( str(time.time()) + str(random.randint(1000, 9999)) )
 						#printl(str(key))
-						LastID_M+=1
-						self._dbMovies[movieKey].Id = LastID_M
+						self.LastID_M+=1
+						self._dbMovies[movieKey].Id = self.LastID_M
 					else:
 						self._dbMovies[movieKey].Id = self._dbMovies[movieKey].ImdbId + str(random.randint(100, 999))
 
@@ -164,6 +164,82 @@ class databaseHandlerPICKLE(object):
 		if self._dbMovies is None:
 			log("Movies Not Loaded", self, 10)
 			self._loadMoviesDB()
+
+	# for test 
+	def getDbDump(self):
+		self._moviesCheckLoaded()
+		self._seriesCheckLoaded()
+		file = config.plugins.pvmc.tmpfolderpath.value + "/db.dump"
+		f = open(file, "w")
+		
+		f.write("-- MediaFiles - Movies --\n")
+		f.write("\n")
+		f.write("Count\tKey\tId\tParent\tTitle\n")		
+		f.write("\n")
+		cnt=0
+		s = u""
+		for key in self._dbMovies:
+			cnt += 1
+			s = str(cnt) + "\t"			
+			if key == self.CONFIGKEY:		
+				s += str(key) + "\t"
+				s += "Version " + str(self._dbMovies[key])
+				s += "\n"
+			else:
+				s += str(key) + "\t"
+				s += str(self._dbMovies[key].Id) + "\t"
+				s += str(self._dbMovies[key].ParentId) + "\t"
+				s += str(self._dbMovies[key].Title) + "\t"
+			f.write(s+"\n")
+
+		f.write("\n")
+		f.write("-- MediaFiles - Series --\n")
+		f.write("\n")
+		f.flush()
+
+		cnt=0
+		for key in self._dbSeries:
+			cnt += 1
+			s = str(cnt) + "\t"			
+			s += str(key) + "\t"
+			if key == self.CONFIGKEY:		
+				s += "Version " + str(self._dbSeries[key])
+				s += "\n"
+			else:
+				s += str(self._dbSeries[key].Id) + "\t"
+				s += str(self._dbSeries[key].ParentId) + "\t"
+				s += str(self._dbSeries[key].Title) + "\t"
+			f.write(s+"\n")
+			
+		f.write("\n")
+		f.write("-- Episodes --\n")
+		f.write("\n")
+		f.write("Count\tKey\tKey2\tKey3\tId\tParent\tTitle\n")		
+		f.write("\n")
+		f.flush()
+		
+		cnt=0
+		for key in self._dbEpisodes:
+			if key == self.CONFIGKEY:		
+				s += "Version " + str(self._dbEpisodes[key])
+				s += "\n"
+			else:
+				for season in self._dbEpisodes[key]:
+					for episode in self._dbEpisodes[key][season]:
+						cnt += 1
+						s = str(cnt) + "\t"		
+						s += str(key) + "\t"
+						s += str(season) + "\t"
+						s += str(episode) + "\t"
+						s += str(self._dbEpisodes[key][season][episode].Id) + "\t"
+						s += str(self._dbEpisodes[key][season][episode].ParentId) + "\t"
+						s += str(self._dbEpisodes[key][season][episode].Title) + "\t"
+						f.write(s+"\n")
+
+		f.write("\n")
+		f.flush()
+		
+		return True		
 
 	#used on deleteMissingFiles
 	def getMovies(self):
@@ -244,6 +320,11 @@ class databaseHandlerPICKLE(object):
 		
 	def getMovieKey(self, id):
 		log("->", self, 15)
+		if self.IDMODEAUTO:
+			_id = int(id)
+		else:
+			_id = id
+
 		self._moviesCheckLoaded()
 		start_time = time.time()
 		key = None
@@ -257,14 +338,9 @@ class databaseHandlerPICKLE(object):
 			# without indexing 0.02
 			for key in self._dbMovies:
 				if key != self.CONFIGKEY:		# only for Pickle
-					if self.IDMODEAUTO:
-						if self._dbMovies[key].Id == int(id):
-							k = key
-							break
-					else:
-						if self._dbMovies[key].Id == id:
-							k = key
-							break
+					if self._dbMovies[key].Id == _id:
+						k = key
+						break
 							
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
@@ -311,8 +387,8 @@ class databaseHandlerPICKLE(object):
 		self._moviesCheckLoaded()
 		m = media
 		if self.IDMODEAUTO:
-			LastID_M+=1
-			m.Id = LastID_M
+			self.LastID_M+=1
+			m.Id = self.LastID_M
 		else:
 			m.Id = m.ImdbId + str(random.randint(100, 999))
 		m.setMediaType(MediaInfo.MOVIE)
@@ -343,6 +419,9 @@ class databaseHandlerPICKLE(object):
 			
 	def insertMovieWithDict(self, key_value_dict):
 		log("->", self, 20)
+		if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
+			log("ImdbId not defined", self, 5)
+			return False		
 		m = MediaInfo()
 		m.setMediaType(MediaInfo.MOVIE)
 		self.fillMediaInfo(m, key_value_dict)
@@ -351,10 +430,12 @@ class databaseHandlerPICKLE(object):
 	
 	def updateMovieWithDict(self, key_value_dict):	#ID is Required
 		log("->", self, 20)
-		if not "Id" in key_value_dict:
+		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
 			log("Id not defined", self, 5)
 			return False
-		
+		if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
+			log("ImdbId not defined", self, 5)
+			return False				
 		self._moviesCheckLoaded()		
 		m = self.getMovie(key_value_dict['Id'])
 		if m is None:
@@ -438,12 +519,12 @@ class databaseHandlerPICKLE(object):
 				self.setDBVersion(records, self.DB_VERSION)
 		
 			# Temporary to test ID's
-			LastID_S = 0
+			self.LastID_S = 0
 			for key in records:
 				if key != self.CONFIGKEY:
 					if self.IDMODEAUTO:
-						LastID_S+=1
-						records[key].Id = LastID_S
+						self.LastID_S+=1
+						records[key].Id = self.LastID_S
 					else:
 						records[key].Id = records[key].TheTvDbId
 			
@@ -470,14 +551,14 @@ class databaseHandlerPICKLE(object):
 				self.setDBVersion(records, self.DB_VERSION)
 			
 			# Temporary to test ID's
-			LastID_E = 0
+			self.LastID_E = 0
 			for serieKey in records:
 				if serieKey != self.CONFIGKEY:
 					for season in records[serieKey]:
 						for episode in records[serieKey][season]:
 							if self.IDMODEAUTO:
-								LastID_E+=1
-								records[serieKey][season][episode].Id = LastID_E
+								self.LastID_E+=1
+								records[serieKey][season][episode].Id = self.LastID_E
 							else:
 								records[serieKey][season][episode].Id = str(serieKey) + str(season) + str(episode) + str(random.randint(100, 999))
 							records[serieKey][season][episode].ParentId = self._dbSeries[serieKey].Id;
@@ -562,6 +643,11 @@ class databaseHandlerPICKLE(object):
 	
 	def getSerieKey(self, id):
 		log("->", self, 15)
+		if self.IDMODEAUTO:
+			_id = int(id)
+		else:
+			_id = id
+
 		self._seriesCheckLoaded()
 		start_time = time.time()
 		k = None
@@ -575,15 +661,10 @@ class databaseHandlerPICKLE(object):
 			# without indexing 0.02
 			for key in self._dbSeries:
 				if key != self.CONFIGKEY:		# only for Pickle
-					if self.IDMODEAUTO:
-						if self._dbSeries[key].Id == int(id):
-							k = key
-							break
-					else:
-						if self._dbSeries[key].Id == id:
-							printl("result key: "+ str(key)+ "  for id:" + str(id))
-							k = key
-							break
+					if self._dbSeries[key].Id == _id:
+						printl("result key: "+ str(key)+ "  for id:" + str(_id))
+						k = key
+						break
 							
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
@@ -635,8 +716,8 @@ class databaseHandlerPICKLE(object):
 		self._seriesCheckLoaded()
 		m = media
 		if self.IDMODEAUTO:
-			LastID_S+=1
-			m.Id = LastID_S
+			self.LastID_S+=1
+			m.Id = self.LastID_S
 		else:
 			m.Id = m.TheTvDbId + str(random.randint(100, 999))
 		serieKey = m.TheTvDbId
@@ -665,6 +746,9 @@ class databaseHandlerPICKLE(object):
 	
 	def insertSerieWithDict(self, key_value_dict):
 		log("->", self, 20)
+		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+			log("TheTvDbId not defined", self, 5)
+			return False		
 		m = MediaInfo()
 		m.setMediaType(MediaInfo.SERIE)
 		self.fillMediaInfo(m, key_value_dict)
@@ -672,10 +756,13 @@ class databaseHandlerPICKLE(object):
 		
 	def updateSerieWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
-		log(str(key_value_dict))
-		if not "Id" in key_value_dict:
+		#log(str(key_value_dict))
+		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
 			log("Id not defined", self, 5)
 			return False
+		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+			log("TheTvDbId not defined", self, 5)
+			return False		
 		
 		self._seriesCheckLoaded()
 		
@@ -758,9 +845,14 @@ class databaseHandlerPICKLE(object):
 				if key != self.CONFIGKEY:
 					for season in self._dbEpisodes[key]:
 						for episode in self._dbEpisodes[key][season]:
-							printl("id:" + str(self._dbEpisodes[key][season][episode].Id)  +"parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) );
-							if self._dbEpisodes[key][season][episode].ParentId == mediaId:
-								list.append(self._dbEpisodes[key][season][episode])
+							#printl("Parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) +" Request: " + str(mediaId) );
+							if self.IDMODEAUTO:
+								if self._dbEpisodes[key][season][episode].ParentId == int(mediaId):
+									printl("id:" + str(self._dbEpisodes[key][season][episode].Id)  +" parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) +" Request: " + str(mediaId) );
+									list.append(self._dbEpisodes[key][season][episode])
+							else:
+								if self._dbEpisodes[key][season][episode].ParentId == mediaId:
+									list.append(self._dbEpisodes[key][season][episode])
 		else:				
 			for key in self._dbEpisodes:
 				if key != self.CONFIGKEY:
@@ -798,12 +890,16 @@ class databaseHandlerPICKLE(object):
 
 	def getEpisodeWithId(self, id):
 		log("->", self, 10)
+		if self.IDMODEAUTO:
+			_id = int(id)
+		else:
+			_id = id
 		self._seriesCheckLoaded()
 		for serieKey in self._dbEpisodes:
 			if serieKey != self.CONFIGKEY:
 				for season in self._dbEpisodes[serieKey]:
 					for episode in self._dbEpisodes[serieKey][season]:
-						if self._dbEpisodes[serieKey][season][episode].Id == id:	
+						if self._dbEpisodes[serieKey][season][episode].Id == _id:	
 							return self._dbEpisodes[serieKey][season][episode]
 								
 		return None
@@ -812,10 +908,10 @@ class databaseHandlerPICKLE(object):
 		log("->", self, 20)
 		self._seriesCheckLoaded()
 		m = media
-		printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ m.Filename+ m.Extension) )
+		#printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ m.Filename+ m.Extension) )
 		if self.IDMODEAUTO:
-			LastID_E+=1
-			m.Id = LastID_E
+			self.LastID_E+=1
+			m.Id = self.LastID_E
 		else:
 			m.Id = str(m.TheTvDbId) + str(m.Season) + str(m.Episode) + str(random.randint(100, 999))
 		serieKey = m.TheTvDbId
@@ -824,7 +920,7 @@ class databaseHandlerPICKLE(object):
 		m.Path = media.Path.replace("\\", "/")
 		m.Path = media.Path.replace("//", "/")
 		
-		printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ media.Filename+ media.Extension) )
+		#printl("inserting id: " +str(m.Id)+" parentid: " +str(m.ParentId) + " in: " +str(m.Path+ media.Filename+ media.Extension) )
 				
 		# Checks if the file is already in db
 		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
@@ -841,6 +937,7 @@ class databaseHandlerPICKLE(object):
 		
 		if not m.Episode in self._dbEpisodes[serieKey][m.Season]:
 			self._dbEpisodes[serieKey][m.Season][m.Episode] = m			
+			printl("inserted on _dbEpisodes: " +str(serieKey)+" : " +str(m.Season) + " : " +str(m.Episode) + " - ParentID:" +str(m.ParentId) )
 		else:
 			self._addFailedCauseOf = self._dbEpisodes[serieKey][m.Season][m.Episode]
 			return False
@@ -851,17 +948,22 @@ class databaseHandlerPICKLE(object):
 
 	def insertEpisodeWithDict(self, key_value_dict):
 		log("->", self, 20)
+		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+			log("TheTvDbId not defined", self, 5)
+			return False		
 		m = MediaInfo()
-		m.setMediaType(MediaInfo.EPISODE)
 		self.fillMediaInfo(m, key_value_dict)
 		return self.insertEpisode(m)
 
 	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
 		log("->", self, 20)
-		log(str(key_value_dict))
-		if not "Id" in key_value_dict:
+		#log(str(key_value_dict))
+		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
 			log("Id not defined", self, 5)
 			return False
+		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+			log("TheTvDbId not defined", self, 5)
+			return False		
 		
 		self._seriesCheckLoaded()
 		
@@ -877,14 +979,18 @@ class databaseHandlerPICKLE(object):
 		return True
 
 	def deleteEpisode(self, id):
-		log("->", self, 10)
+		log("->", self, 10)		
+		if self.IDMODEAUTO:
+			_id = int(id)
+		else:
+			_id = id
+			
 		self._seriesCheckLoaded()
 		for serieKey in self._dbEpisodes:
 			if serieKey != self.CONFIGKEY:
 				for season in self._dbEpisodes[serieKey]:
 					for episode in self._dbEpisodes[serieKey][season]:
-						if self._dbEpisodes[serieKey][season][episode].Id == id:	
-						
+						if self._dbEpisodes[serieKey][season][episode].Id == _id:	
 							self.EpisodesCommited = False
 							del(self._dbEpisodes[serieKey][season][episode])
 							if len(self._dbEpisodes[serieKey][season]) == 0:
@@ -1071,6 +1177,7 @@ class databaseHandlerPICKLE(object):
 		intFields = ['Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Episode']
 		if self.IDMODEAUTO:
 			intFields.append("Id")
+			intFields.append("ParentId")
 		
 		for key in key_value_dict.keys():
 			try:

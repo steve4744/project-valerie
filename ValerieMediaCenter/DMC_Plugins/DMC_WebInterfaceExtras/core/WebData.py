@@ -115,7 +115,7 @@ class WebData():
 	#
 	##
 	def getEpisodesOfTvShow (self, parentId):
-		onclick = "javascript:window.open('/episodes?ParentId=" + parentId + "', '_self');"
+		onclick = "javascript:window.open('/episodes?ParentId=" + str(parentId) + "', '_self');"
 		
 		return onclick
 	

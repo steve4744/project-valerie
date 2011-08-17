@@ -299,6 +299,9 @@ class Database(object):
 #
 #################################   MOVIES   ################################# 
 #
+	def getDbDump(self):
+		return self.dbHandler.getDbDump()
+	
 	def dbIsCommited(self):
 		return self.dbHandler.dbIsCommited()
 		

@@ -345,6 +345,10 @@ class Manager():
 #
 #################################   MOVIES   ################################# 
 #
+	# for test 
+	def getDbDump(self):
+		return self.db.getDbDump()
+		
 	def dbIsCommited(self):
 		return self.db.dbIsCommited()
 	

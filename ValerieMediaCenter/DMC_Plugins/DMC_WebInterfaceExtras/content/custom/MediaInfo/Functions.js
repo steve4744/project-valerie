@@ -26,6 +26,7 @@ $(document).ready(function(){
 		if (typeof(Id) != 'undefined') {
 			parameters = parameters +"&Id="+Id;
 		}
+		//window.alert('/' + target + '?showSave=true'+parameters);
 		window.open('/' + target + '?showSave=true'+parameters, '_self');
 		return;
 	
