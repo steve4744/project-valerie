@@ -347,4 +347,11 @@ class WebActions(Resource):
 				return WebHelper().redirectMeTo("/tvshows")
 			elif request.args["return_to"][0] == "episodes":
 				return WebHelper().redirectMeTo("/episodes")					
+		
+		##
+		# dump db to dumps - view via webif http://url:8888/dumps
+		##	
+		elif request.args["method"][0] == "dump_db":
+			Manager().getDbDump()
+			return WebHelper().redirectMeTo("/movies")					
 				
