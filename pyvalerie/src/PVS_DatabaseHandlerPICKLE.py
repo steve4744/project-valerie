@@ -169,7 +169,9 @@ class databaseHandlerPICKLE(object):
 	def getDbDump(self):
 		self._moviesCheckLoaded()
 		self._seriesCheckLoaded()
-		file = config.plugins.pvmc.tmpfolderpath.value + "/db.dump"
+		path = config.plugins.pvmc.tmpfolderpath.value + "/dumps"
+		file = path + "/db.dump"
+		os.makedirs(path)		
 		f = open(file, "w")
 		
 		f.write("-- MediaFiles - Movies --\n")
