@@ -134,14 +134,22 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		ConfigListScreen.keySave(self)
 
 class PVMC_Update(Screen):
-	skin = """
+	skinDeprecated = """
 	<screen position="center,center" size="500,380" title="Software Update">
 	<widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
 	</screen>"""
 
 	def __init__(self, session):
-		self.skin = PVMC_Update.skin
 		Screen.__init__(self, session)
+		
+		self.APILevel = getAPILevel(self)
+		printl("APILevel=" + str(self.APILevel), self)
+		
+		if self.APILevel >= 2:
+			self["API"] = DataElement()
+			
+		if self.APILevel == 1:
+			self.skin = PVMC_Update.skinDeprecated
 		
 		self.working = False
 		self.Console = Console()
@@ -153,44 +161,54 @@ class PVMC_Update(Screen):
 			"back": self.close
 		}, -1)
 		
-		self.onFirstExecBegin.append(self.update)
+		self.onLayoutFinish.append(self.setCustomTitle)
+		self.onFirstExecBegin.append(self.startUpdate)
 
+
+	def setCustomTitle(self):
+		self.setTitle(_("PVMC Update"))
+
+	def startUpdate(self):
+		time.sleep(2)
+		self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
+		
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
 	# RTV = 127 Binary not found
 	# RTV = 255 ERROR
-	def update(self):
-		
-		version, remoteUrl = Update().checkForUpdate()
-		
-		if version is None:
-			self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
-			return
-		
-		self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
-		cmd = """
-BIN=""
-ipkg > /dev/null 2>/dev/null
-if [ $? == "1" ]; then
- BIN="ipkg"
-else
- opkg > /dev/null 2>/dev/null
- if [ $? == "1" ]; then
-  BIN="opkg"
- fi
-fi
-echo "Binary: $BIN"
+	def update(self, answer):
+		if answer is True:
+			version, remoteUrl = Update().checkForUpdate()
+			if version is None:
+				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
+				return
 
-if [ $BIN != "" ]; then
- $BIN remove project-valerie
- echo "Cleaning up"
- rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie*
- $BIN install %s
-fi""" % str(remoteUrl)
-		
-		printl("cmd=" + str(cmd), self, "D")
-		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
+			self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
+			cmd = """
+				BIN=""
+				ipkg > /dev/null 2>/dev/null
+				if [ $? == "1" ]; then
+				 BIN="ipkg"
+				else
+				 opkg > /dev/null 2>/dev/null
+				 if [ $? == "1" ]; then
+				  BIN="opkg"
+				 fi
+				fi
+				echo "Binary: $BIN"
 
+				if [ $BIN != "" ]; then
+				 $BIN remove project-valerie
+				 echo "Cleaning up"
+				 rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie*
+				 $BIN install %s
+				fi""" % str(remoteUrl)
+				
+			printl("cmd=" + str(cmd), self, "D")
+			self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
+		else:
+			self.close()
+		
 	def finishupdate(self):
 		time.sleep(2)
 		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
@@ -205,6 +223,9 @@ fi""" % str(remoteUrl)
 			self.close()
 
 class PVMC_MainMenu(Screen):
+
+	ORIENTATION_V = 0
+	ORIENTATION_H = 1
 
 	ShowStillPicture = False
 
@@ -241,6 +262,34 @@ class PVMC_MainMenu(Screen):
 			printl("self.UseDreamScene=" + str(self.UseDreamScene), self)
 			if len(self.UseDreamScene) > 4:
 				self["stillpicture_usedreamscene"] = DataElement()
+				
+		if self.APILevel >= 4:
+			self.orientation = self.ORIENTATION_V
+			try:
+				orientation = DataElement().getDataPreloading(self, "ORIENTATION")
+				self["ORIENTATION"] = DataElement()
+				if orientation == "h":
+					self.orientation = self.ORIENTATION_H
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+				self.orientation = self.ORIENTATION_V
+		
+		if self.APILevel >= 4 and self.orientation == self.ORIENTATION_H:
+			from MovingLabel import MovingLabel
+			self["-2"] = MovingLabel()
+			self["-1"] = MovingLabel(self["-2"].getTimer())
+			self["0"]  = MovingLabel(self["-2"].getTimer())
+			self["+1"] = MovingLabel(self["-2"].getTimer())
+			self["+2"] = MovingLabel(self["-2"].getTimer())
+			
+			self["-3"] = Label()
+			self["+3"] = Label()
+			
+			self.translatePositionToName(-2, "-2")
+			self.translatePositionToName(-1, "-1")
+			self.translatePositionToName( 0, "0")
+			self.translatePositionToName(+1, "+1")
+			self.translatePositionToName(+2, "+2")
 		
 		if self.APILevel == 1:
 			list = []
@@ -345,7 +394,10 @@ class PVMC_MainMenu(Screen):
 		self.onFirstExecBegin.append(self.onExecRunDev)
 		
 		printl("<-", self)
+		self.onLayoutFinish.append(self.setCustomTitle)
 
+	def setCustomTitle(self):
+		self.setTitle(_("Project Valerie"))
 
 	def onExec(self):
 		if self.APILevel == 1:
@@ -510,6 +562,10 @@ class PVMC_MainMenu(Screen):
 	def up(self):
 		if self.APILevel == 1:
 			self.cancel()
+		elif self.APILevel >= 4:
+			if self.orientation == self.ORIENTATION_V:
+				self.refreshOrientationVerMenu(-1)
+		
 		elif self.APILevel >= 2:
 			self["menu"].selectPrevious()
 		return
@@ -517,6 +573,10 @@ class PVMC_MainMenu(Screen):
 	def down(self):
 		if self.APILevel == 1:
 			self.okbuttonClick()
+		elif self.APILevel >= 4:
+			if self.orientation == self.ORIENTATION_V:
+				self.refreshOrientationVerMenu(+1)
+		
 		elif self.APILevel >= 2:
 			self["menu"].selectNext()
 		return
@@ -529,6 +589,9 @@ class PVMC_MainMenu(Screen):
 					self["menuWatch"].selectNext()
 			else:
 				self["menu"].selectNext()
+		
+		if self.APILevel >= 4 and self.orientation == self.ORIENTATION_H:
+			self.refreshOrientationHorMenu(+1)
 
 	def left(self):
 		if self.APILevel == 1:
@@ -538,6 +601,136 @@ class PVMC_MainMenu(Screen):
 					self["menuWatch"].selectPrevious()
 			else:
 				self["menu"].selectPrevious()
+		
+		if self.APILevel >= 4 and self.orientation == self.ORIENTATION_H:
+			self.refreshOrientationHorMenu(-1)
+
+	def refreshOrientationVerMenu(self, value):
+		self.refreshMenu(value)
+
+	_translatePositionToName = {}
+	def translatePositionToName(self, name, value=None):
+		if value is None:
+			return self._translatePositionToName[name]
+		else:
+			self._translatePositionToName[name] = value
+	
+
+	def refreshOrientationMenu(self, value):
+		if self.orientation == self.ORIENTATION_V:
+			self.refreshOrientationVerMenu(value)
+		elif self.orientation == self.ORIENTATION_H:
+			self.refreshOrientationHorMenu(value)
+
+	def refreshOrientationHorMenu(self, value):
+		
+		if self["-2"].moving is True or self["+2"].moving is True:
+				return False
+		
+		self.refreshMenu(value)
+		currentIndex = self["menu"].index
+		content = self["menu"].list
+		count = len(content)
+		
+		print currentIndex
+		print count
+		
+		howManySteps = 10
+		doStepEveryXMs = 60
+		
+		if value == 0:
+			self[self.translatePositionToName(0)].setText(content[currentIndex][0])
+			for i in range(1,3): # 1, 2
+				targetIndex = currentIndex + i
+				if targetIndex < count:
+					self[self.translatePositionToName(+i)].setText(content[targetIndex][0])
+				else:
+					self[self.translatePositionToName(+i)].setText(content[targetIndex - count][0])
+				
+				targetIndex = currentIndex - i
+				if targetIndex >= 0:
+					self[self.translatePositionToName(-i)].setText(content[targetIndex][0])
+				else:
+					self[self.translatePositionToName(-i)].setText(content[count + targetIndex][0])
+			
+		
+		elif value == 1:
+			self[self.translatePositionToName(-1)].moveTo(self[self.translatePositionToName(-2)].getPosition(), howManySteps)
+			self[self.translatePositionToName( 0)].moveTo(self[self.translatePositionToName(-1)].getPosition(), howManySteps)
+			self[self.translatePositionToName(+1)].moveTo(self[self.translatePositionToName( 0)].getPosition(), howManySteps)
+			self[self.translatePositionToName(+2)].moveTo(self[self.translatePositionToName(+1)].getPosition(), howManySteps)
+			
+			# He has to jump | This works but leaves us with an ugly jump
+			pos = self["+3"].getPosition()
+			self[self.translatePositionToName(-2)].move(pos[0], pos[1])
+			#self[self.translatePositionToName(-2)].moveTo(pos, 1)
+			self[self.translatePositionToName(-2)].moveTo(self[self.translatePositionToName(+2)].getPosition(), howManySteps)
+			
+			# We have to change the conten of the most right
+			i = 2
+			targetIndex = currentIndex + i
+			if targetIndex < count:
+				self[self.translatePositionToName(-2)].setText(content[targetIndex][0])
+			else:
+				self[self.translatePositionToName(-2)].setText(content[targetIndex - count][0])
+			
+			rM2 = self.translatePositionToName(-2)
+			self.translatePositionToName(-2, self.translatePositionToName(-1))
+			self.translatePositionToName(-1, self.translatePositionToName( 0))
+			self.translatePositionToName( 0, self.translatePositionToName(+1))
+			self.translatePositionToName(+1, self.translatePositionToName(+2))
+			self.translatePositionToName(+2, rM2)
+			
+			self["-1"].startMoving(doStepEveryXMs)
+			self["0"].startMoving(doStepEveryXMs)
+			self["+1"].startMoving(doStepEveryXMs)
+			self["+2"].startMoving(doStepEveryXMs)
+			
+			# GroupTimer
+			self["-2"].startMoving(doStepEveryXMs)
+		
+		elif value == -1:
+			self[self.translatePositionToName(+1)].moveTo(self[self.translatePositionToName(+2)].getPosition(), howManySteps)
+			self[self.translatePositionToName( 0)].moveTo(self[self.translatePositionToName(+1)].getPosition(), howManySteps)
+			self[self.translatePositionToName(-1)].moveTo(self[self.translatePositionToName( 0)].getPosition(), howManySteps)
+			self[self.translatePositionToName(-2)].moveTo(self[self.translatePositionToName(-1)].getPosition(), howManySteps)
+			
+			# He has to jump | This works but leaves us with an ugly jump
+			pos = self["-3"].getPosition()
+			self[self.translatePositionToName(+2)].move(pos[0], pos[1])
+			#self[self.translatePositionToName(+2)].moveTo(pos, 1)
+			self[self.translatePositionToName(+2)].moveTo(self[self.translatePositionToName(-2)].getPosition(), howManySteps)
+			
+			# We have to change the conten of the most left
+			i = -2
+			targetIndex = currentIndex + i
+			if targetIndex >= 0:
+				self[self.translatePositionToName(+2)].setText(content[targetIndex][0])
+			else:
+				self[self.translatePositionToName(+2)].setText(content[count + targetIndex][0])
+			
+			rP2 = self.translatePositionToName(+2)
+			self.translatePositionToName(+2, self.translatePositionToName(+1))
+			self.translatePositionToName(+1, self.translatePositionToName( 0))
+			self.translatePositionToName( 0, self.translatePositionToName(-1))
+			self.translatePositionToName(-1, self.translatePositionToName(-2))
+			self.translatePositionToName(-2, rP2)
+			
+			self["-1"].startMoving(doStepEveryXMs)
+			self["0"].startMoving(doStepEveryXMs)
+			self["+1"].startMoving(doStepEveryXMs)
+			self["+2"].startMoving(doStepEveryXMs)
+			
+			# GroupTimer
+			self["-2"].startMoving(doStepEveryXMs)
+			
+		return True
+
+	def refreshMenu(self, value):
+		if value == 1:
+			self["menu"].selectNext()
+		elif value == -1:
+			self["menu"].selectPrevious()
 
 	def cancel(self):
 		if self.APILevel == 1:
