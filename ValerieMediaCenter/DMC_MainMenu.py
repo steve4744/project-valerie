@@ -290,6 +290,11 @@ class PVMC_MainMenu(Screen):
 			self.translatePositionToName( 0, "0")
 			self.translatePositionToName(+1, "+1")
 			self.translatePositionToName(+2, "+2")
+			
+		if self.APILevel >= 5:
+			self["infoContainer"] = Label()
+			self["infoText"] = Label()
+			self.setText("infoText", self.getInfoText())
 		
 		if self.APILevel == 1:
 			list = []
@@ -373,6 +378,7 @@ class PVMC_MainMenu(Screen):
 				"up": self.up,
 				"down": self.down,
 				"power": self.power,
+				"info":  (self.onKeyInfo, "Shows information about PVMC"),
 			}, -1)
 		
 		if self.isAutostart is False and self.APILevel >= 2:
@@ -398,7 +404,41 @@ class PVMC_MainMenu(Screen):
 
 	def setCustomTitle(self):
 		self.setTitle(_("Project Valerie"))
+		self.showInfo(False)
+	
+	def showInfo(self, visible):
+		self.isInfoHidden = visible
+		if self.APILevel >= 5:
+			printl("", self, "D")
+			if visible:
+				self["infoContainer"].show()
+				self["infoText"].show()
+			else:
+				self["infoContainer"].hide()
+				self["infoText"].hide()	
 
+	def getInfoText(self):
+		version = None
+		content = ""
+		content += "Information\n\n"
+		content += "Find out more here - http://code.google.com/p/project-valerie/\n\n"
+		content += "Autors: \t schischu65\n" 
+		content += "\t slugshot\n"
+		content += "\t DonDavici\n"
+		content += "\t Erik Fornoff\n"
+		content += "\t Zuki\n"
+		content += "\t hellmaster\n\n"
+		content += "Your current version is " + config.plugins.pvmc.version.value + " "
+		version, remoteurl = Update().checkForUpdate()
+		if version is not None:
+			behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
+			multiple = ""
+			if behind > 1:
+				multiple = "s"
+			content += (" - You are %d revision%s behind!\n") % (behind, multiple)
+	
+		return content
+				
 	def onExec(self):
 		if self.APILevel == 1:
 			self["menu"].setIndex(0)
@@ -604,6 +644,10 @@ class PVMC_MainMenu(Screen):
 		
 		if self.APILevel >= 4 and self.orientation == self.ORIENTATION_H:
 			self.refreshOrientationHorMenu(-1)
+			
+	def onKeyInfo(self):
+		printl("", self, "D")
+		self.showInfo(not self.isInfoHidden)
 
 	def refreshOrientationVerMenu(self, value):
 		self.refreshMenu(value)
@@ -726,6 +770,21 @@ class PVMC_MainMenu(Screen):
 			
 		return True
 
+	def setText(self, name, value, ignore=False, what=None):
+		try:
+			if self[name]:
+				if len(value) > 0:
+					self[name].setText(value)
+				elif ignore is False:
+					if what is None:
+						self[name].setText(_("Not available"))
+					else:
+						self[name].setText(what + ' ' + _("not available"))
+				else:
+					self[name].setText(" ")
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)	
+		
 	def refreshMenu(self, value):
 		if value == 1:
 			self["menu"].selectNext()

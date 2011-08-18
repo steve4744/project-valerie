@@ -64,7 +64,7 @@
   <screen name="PVMC_MainMenu" position="0,0" size="720,576" title=" " backgroundColor="pvBackground" flags="wfNoBorder">
   <widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="210,20" size="480,28" font="Dream;30" foregroundColor="pvForeground" halign="right" />
   <!-- params -->
-  <widget name="API" text="4" position="0,0" zPosition="0" size="1,1" />
+  <widget name="API" text="5" position="0,0" zPosition="0" size="1,1" />
   <!--widget name="ORIENTATION" text="h" position="0,0" zPosition="0" size="1,1" /-->
   <!-- visu -->
   <eLabel position="0,0" size="720,576" zPosition="1" backgroundColor="pvBackground" transparent="0" />
@@ -72,6 +72,8 @@
   <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/mainMenu.png" zPosition="2" position="0,53" size="720,262" alphatest="blend" />
   <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/bottom.png" zPosition="2" position="0,524" size="720,52" alphatest="blend" />
   <!-- content -->
+  <widget name="infoContainer" transparent="0" zPosition="8" position="63,310" size="594,200" backgroundColor="pvBackground" />
+  <widget name="infoText" transparent="1" zPosition="9" halign="left" position="73,310" size="584,200" font="Modern;15" backgroundColor="pvBackground" foregroundColor="pvForeground" />
   <widget source="menu" render="Listbox" zPosition="3" transparent="0" position="15,301" size="690,220" scrollbarMode="showOnDemand" backgroundColor="pvBackground" backgroundColorSelected="pvBackgroundSelected"  foregroundColor="pvForeground" foregroundColorSelected="pvForegroundSelected" >
     <convert type="TemplatedMultiContent">
 	{"template": [ MultiContentEntryText(pos = (0, 0), size = (690, 40), flags = RT_HALIGN_CENTER | RT_VALIGN_CENTER, text = 0) ],
@@ -93,6 +95,8 @@
     <!-- This is an invisible element, its only purpose it so we have the coordinates from where all evil originates -->
     <!--widget name="-3" transparent="1" zPosition="-2" halign="center" valign="top" position="-165,300" size="150,40" font="Dream;30" />
     <widget name="+3" transparent="1" zPosition="-2" halign="center" valign="top" position="735,300" size="150,40" font="Dream;30" /-->
+	<!-- buttons -->
+	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/info.png" zPosition="3" position="650,533" size="41,16" alphatest="blend" />
   </screen>
   <!-- PVMC_Update -->
   <screen name="PVMC_Update" position="0,0" size="720,576" title=" " backgroundColor="pvBackground" flags="wfNoBorder">

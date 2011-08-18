@@ -64,7 +64,7 @@
   <screen name="PVMC_MainMenu" position="0,0" size="1024,576" title=" " backgroundColor="pvBackground" flags="wfNoBorder">
   <widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="298,20" size="682,28" font="Dream;30" foregroundColor="pvForeground" halign="right" />
   <!-- params -->
-  <widget name="API" text="4" position="0,0" zPosition="0" size="1,1" />
+  <widget name="API" text="5" position="0,0" zPosition="0" size="1,1" />
   <!--widget name="ORIENTATION" text="h" position="0,0" zPosition="0" size="1,1" /-->
   <!-- visu -->
   <eLabel position="0,0" size="1024,576" zPosition="1" backgroundColor="pvBackground" transparent="0" />
@@ -72,12 +72,16 @@
   <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/images/mainMenu.png" zPosition="2" position="0,53" size="1024,262" alphatest="blend" />
   <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/images/bottom.png" zPosition="2" position="0,524" size="1024,52" alphatest="blend" />
   <!-- content -->
+  <widget name="infoContainer" transparent="0" zPosition="8" position="89,310" size="844,200" backgroundColor="pvBackground" />
+  <widget name="infoText" transparent="1" zPosition="9" halign="left" position="103,310" size="830,200" font="Modern;15" backgroundColor="pvBackground" foregroundColor="pvForeground" />
   <widget source="menu" render="Listbox" zPosition="3" transparent="0" position="21,301" size="981,220" scrollbarMode="showOnDemand" backgroundColor="pvBackground" backgroundColorSelected="pvBackgroundSelected"  foregroundColor="pvForeground" foregroundColorSelected="pvForegroundSelected" >
     <convert type="TemplatedMultiContent">
 	{"template": [ MultiContentEntryText(pos = (0,0), size = (981,40), flags = RT_HALIGN_CENTER | RT_VALIGN_CENTER, text = 0) ],
 	"fonts": [gFont("Dream", 30)],
 	"itemHeight": 40	}
     </convert>
+	<!-- buttons -->
+	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/buttons/info.png" zPosition="3" position="800,533" size="41,16" alphatest="blend" />
   </widget>
   <!--widget source="menu" render="Listbox" enableWrapAround="True" zPosition="9" transparent="0" position="-142,-100" size="14,10" scrollbarMode="showNever">
       <convert type="StringList"/>
