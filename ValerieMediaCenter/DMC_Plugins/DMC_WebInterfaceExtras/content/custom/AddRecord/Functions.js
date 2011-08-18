@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
 	var debug = false;
 	
 	/* parse values from URL */	
@@ -9,11 +8,11 @@ $(document).ready(function(){
 	$("#form2_type").val(params["type"]);
 	$("#form3_type").val(params["type"]);
 	
-	if (debug) {alert(params["modus"]);}
-	
-	if (params["modus"] != "new") {
-		document.getElementById('oldImdbId').value = params["oldImdbId"];
-	}
+	if (debug) {alert(params["type"]);}
+
+	//if (params["mode"] != "new") {
+///		document.getElementById('oldImdbId').value = params["oldImdbId"];
+//	}
 	
 	if (params["type"] == "isMovie") {
 		$("#header").html("Movie");
@@ -26,7 +25,8 @@ $(document).ready(function(){
 		
 	} else if (params["type"] == "isEpisode") {
 		$("#header").html("Episode");
-		document.getElementById('ParentId').value = params["ParentId"];
+		$("#ParentId").val(params["ParentId"]);
+		//document.getElementById('ParentId').value = params["ParentId"];
 		
 		//for now we romove them because thoes functions are not implemented
 		$("#form1").remove();
@@ -37,20 +37,18 @@ $(document).ready(function(){
 		$("#form1_idType").attr("name","TheTvDbId");
 		$("#form1_submit").val("by TheTvDbId");
 		*/
-	
-		
-
-		
 	} else {
 		alert("Error - no type in params");
 	}
 	
-	if (params["modus"] == "new") {
+	if (params["mode"] == "add") {
 		//nothing to do for now
 	} else {
-		fillTable(params, true);
-		document.forms["form1"].submit();
+		//fillTable(params, true);
+		//document.forms["form1"].submit();
 	}
+	//	fillTable(params, true);
+		//document.forms["form1"].submit();
 });
 
 

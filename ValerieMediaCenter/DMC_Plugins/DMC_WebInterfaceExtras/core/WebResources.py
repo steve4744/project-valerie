@@ -69,6 +69,7 @@ class Movies(Resource):
 		tableBody = u""
 		
 		entries = WebData().getData("movies")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Movies")
 		
 		for entry in entries:
 			evtEdit = WebData().getEditString(entry, "isMovie")
@@ -110,6 +111,7 @@ class TvShows(Resource):
 		tableBody = u""
 		
 		entries = WebData().getData("tvshows")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Series")
 
 		for entry in entries:
 			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.Id)
@@ -150,7 +152,8 @@ class Episodes(Resource):
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
 		
 		finalOutput = WebData().getHtmlCore("Episodes", True)
-		
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Episodes")
+
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Episodes/Header.tpl")
 		tableBody = u""
 		
@@ -234,10 +237,11 @@ class MediaInfo(Resource):
 		global utf8ToLatin
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-				
+		global Manager
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		
 		finalOutput = WebData().getHtmlCore("MediaInfo", True)
-	
-		#printl("Request: " + str(request))
 		
 		Id = None
 		ParentId = None
@@ -245,20 +249,46 @@ class MediaInfo(Resource):
 		theTvDbId = u""
 		mode = request.args["mode"][0]
 		
-		#Postback error
+		#Postback error - used for error only ... review
 		if mode=="done" or mode=="error":
 			return finalOutput
 		
 		type = request.args["type"][0]
 
-		if "Id" in request.args:
+		if mode == 'edit':
+			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Edit Media")
 			Id = request.args["Id"][0]
 			m = WebData().getData("MediaInfo_"+type, Id)
 			imdbId = m.ImdbId
 			theTvDbId = m.TheTvDbId
+		elif mode == 'addbyimdb':
+			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")
+			m = MediaInfo()
+			m.ImdbId = "";
+			m.SearchString = "";
+			if type == "isEpisode":
+				type = "isSerie" # we need to do this because Manger.syncelemnts uses this name not the name till now isTvShow
+			
+			path = "/PATH/TO/FILE/"
+			filename = "FILENAME"
+			extension = "EXT"
+			if type == "isMovie" or type == "isSerie":
+				m.ImdbId = request.args["ImdbId"][0]
+				printl("addbyimdb: "+str(request.args["ImdbId"][0]) + " " + str(type))
+				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, type)
+				m = syncData[0]
 		
+		elif mode == 'addbytitle':
+			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")	
+			mediainfo.SearchString = request.args["Title"][0]
+			results = Manager().searchAlternatives(mediainfo)			
+			
+			
+		#if type == 'isTvShow':
 		if "ParentId" in request.args:
 			ParentId = request.args["ParentId"][0]
+		else:
+			ParentId = u""
 
 		image = u""
 		backdrop = u""
@@ -271,13 +301,12 @@ class MediaInfo(Resource):
 			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_backdrop_320x180.png")
 	
 		mediaForm = u"""
-		<form action="/action" method="get">
-			<input type="hidden" name="method" value="edit">
-			<input type="hidden" name="what" value=%s>
-			<input type="hidden" name="oldImdbId" value="-1">
+		<form action="/action" method="post">
+			<input type="hidden" name="type" value=%s>
+			<input type="hidden" name="mode" value="edit">
 			<input type="hidden" Id="Id" name="Id" value="%s">
 			<input type="hidden" Id="ParentId" name="ParentId" value="%s">
-	
+			
 			<tr><td></td></tr>
 			<tr id="tr_type"><td>Type:</td><td id="td_type">
 				<input id="type" name="Type" type="text" size="10" value="%s" disabled="disabled"></input>
@@ -323,8 +352,8 @@ class MediaInfo(Resource):
 			</td></tr>
 		</form>
 			""" 
-		if mode=="new_record": 
-			mediaForm = mediaForm % (type, u"", u"", type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
+		if mode=="add": 
+			mediaForm = mediaForm % (type, u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
 		else:
 			mediaForm = mediaForm % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
 
@@ -374,16 +403,16 @@ class Alternatives(Resource):
 		for entry in entries:
 			existing = "false"
 			entry.type = request.args["type"][0]
-			entry.oldImdbId = request.args["oldImdbId"][0]
+			#entry.oldImdbId = request.args["oldImdbId"][0]
 			entry.Id = u"" #request.args["Id"][0]
 			
-			if request.args["modus"][0] == "existing":
+			if request.args["mode"][0] == "existing":
 				entry.Path = request.args["Path"][0]
 				entry.Filename = request.args["Filename"][0]
 				entry.Extension = request.args["Extension"][0]
 				existing = "true"
 		
-			evtApply = WebData().getApplyString(entry, existing)
+			evtApply = WebData().getApplyAlternativeString(entry, existing)
 			
 			tableBody += u"""   <tr>
 								<td>%s</td>
@@ -454,7 +483,7 @@ class GlobalSetting (Resource):
 			
 			tableBody += u"""
 							<form id="saveSetting" action="/action" method="get">
-								<input type="hidden" name="method" value="options.saveconfig"></input>
+								<input type="hidden" name="mode" value="options.saveconfig"></input>
 								<input type="hidden" name="what" value="settings_global"></input>
 								<input type="hidden" name="type" value="%s"></input>
 								<tr id="tr_entry">
@@ -498,7 +527,7 @@ class SyncSettings (Resource):
 		tableBody += u"""
 						<table align="left" id="settings_sync">
 								<form id="saveSetting" action="/action" method="get">
-									<input type="hidden" name="method" value="options.saveconfig"></input>
+									<input type="hidden" name="mode" value="options.saveconfig"></input>
 									<input type="hidden" name="what" value="settings_sync"></input>
 									<input type="hidden" name="section" value="filetypes"></input>
 									<input type="hidden" name="type" value="%s"></input>
@@ -539,7 +568,7 @@ class SyncSettings (Resource):
 			
 			tableBody += u"""
 							<form id="saveSetting" action="/action" method="get">
-								<input type="hidden" name="method" value="options.saveconfig"></input>
+								<input type="hidden" name="mode" value="options.saveconfig"></input>
 								<input type="hidden" name="what" value="settings_sync"></input>
 								<input type="hidden" name="section" value="paths"></input>
 								<input type="hidden" name="Id" value="%s"></input>

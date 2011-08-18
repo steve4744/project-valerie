@@ -1,4 +1,5 @@
-$(document).ready(function(){
+$(document).ready(function(){ 
+	document.title = document.title + " - Movies";
 	var params = get_params();
 	$('#main_table').dataTable( {
 		"aaSorting": [[ 1, "asc" ]],

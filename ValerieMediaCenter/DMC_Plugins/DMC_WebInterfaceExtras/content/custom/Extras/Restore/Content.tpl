@@ -8,7 +8,7 @@
 		write me :-)
 	</div>
 	
-	<form enctype="multipart/form-data" action="/action?method=restore" method="post">
+	<form enctype="multipart/form-data" action="/action?mode=restore" method="post">
 		<p>File: <input type="file" name="myFile"></p>
 		<p><input type="submit" value="start Restore ..."></p>
 	</form>

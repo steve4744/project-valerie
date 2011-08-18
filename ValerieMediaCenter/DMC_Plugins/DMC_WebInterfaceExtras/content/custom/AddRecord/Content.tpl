@@ -8,12 +8,11 @@
 
 	<div class="text">
 			<!--BY ID -->
-			<form id="form1" action="/action" method="get">
-				<input type="hidden" name="method" value="collectData">
-				<input type="hidden" name="by" value="ImdbId">
+			<form id="form1" action="/action" method="post">
+				<input id="form1_type" type="hidden" name="type" value="">
+				<input name="mode" type="hidden" value="addbyimdb">
+						
 				<input id="usepath" type="hidden" name="usePath" value="false">
-				<input id="oldImdbId" type="hidden" name="oldImdbId" value="-1">
-				<input id="form1_type" id="type" type="hidden" name="type" value="isMovie">
 				<input id="path" type="hidden" name="Path" value="">
 				<input id="filename" type="hidden" name="Filename" value="">
 				<input id="extension" type="hidden" name="Extension" value="">
@@ -29,9 +28,7 @@
 			<!--BY TITLE -->
 			<form id="form2" action="/alternatives" method="get">
 				<input id="form2_type" type="hidden" name="type" value="">
-				<input type="hidden" name="by" value="Title">
-				<input type="hidden" name="modus" value="new">
-				<input type="hidden" name="oldImdbId" value="-1">
+				<input name="mode" type="hidden" value="addbytitle">
 				<table align="left" 
 					<tr id="tr_title">
 						<td width="100px">Title:</td>
@@ -43,9 +40,9 @@
 			</form>
 			<!-- MANUAL ADD -->
 			<form id="form3" action="/mediainfo" method="get">
-				<input id="form3_type" type="hidden" name="type" value="">
-				<input type="hidden" name="mode" value="new_record">
-				<input id="ParentId" type="hidden" name="ParentId" value="">
+				<input id="form3_type" name="type" type="hidden" value="">
+				<input name="mode" type="hidden" value="add">
+				<input id="ParentId" name="ParentId" type="hidden" value="">
 				<table align="left" >
 					<tr id="tr_title">
 						<td width="100px">Information:</td>

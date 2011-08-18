@@ -40,12 +40,12 @@ class WebActions(Resource):
 		
 		printl("request: " + str(request), self)
 		printl("request.args: " + str(request.args), self)
-		printl("request.args[method]: " + str(request.args["method"]), self)
+		printl("request.args[mode]: " + str(request.args["mode"]), self)
 		
 		##
 		# extras section
 		##
-		if request.args["method"][0] == "backup":
+		if request.args["mode"][0] == "backup":
 			import zipfile, os
 
 			zipf = zipfile.ZipFile('/hdd/valerie-backup.zip', mode='w', compression=zipfile.ZIP_STORED )
@@ -55,7 +55,7 @@ class WebActions(Resource):
 
 			return WebHelper().redirectMeTo("/elog/valerie-backup.zip")	
 
-		elif request.args["method"][0] == "restore":
+		elif request.args["mode"][0] == "restore":
 			#http://webpython.codepoint.net/cgi_file_upload
 			outputStream = open(filename, '/hdd/test.zip')
 			outputStream.write(request.args['myFile'])
@@ -65,107 +65,130 @@ class WebActions(Resource):
 		##
 		# add section	
 		##
-		elif request.args["method"][0] == "add":
+		elif request.args["mode"][0] == "add":
 			# add movies
 			manager = Manager()				
 			key_value_dict = {}				
 			for key in request.args.keys():
 				key_value_dict[key] = request.args[key][0]
 			
-			if request.args["what"][0] == "isMovie":
+			if request.args["type"][0] == "isMovie":
 				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+					return WebHelper().redirectMeTo("/movies?mode=done&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies")
 			
 			# add tvshows
-			elif request.args["what"][0] == "isTvShow":
+			elif request.args["type"][0] == "isTvShow":
 				result = manager.insertMedia(Manager.TVSHOWS, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")	
+					return WebHelper().redirectMeTo("/tvshows?mode=done&showSave=true")	
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows")	
 			
 			# add tvshowepisodes
-			elif request.args["what"][0] == "isEpisode":
+			elif request.args["type"][0] == "isEpisode":
 				printl ("INSERT: " + str(key_value_dict))
 				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)				
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId=" + request.args["ParentId"][0])
+					return WebHelper().redirectMeTo("/episodes?mode=done&ParentId=" + request.args["ParentId"][0] + "&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId=" + request.args["ParentId"][0])
 		
+		elif request.args["mode"][0] == "addbyimdb":
+			redirectString = "mediainfo?"
+			redirectString += "type=" + request.args["type"][0] + "&"
+			redirectString += "mode=addbyimdb&"
+			redirectString += "ImdbId=" + request.args["ImdbId"][0]#+ "&"
+			#if request.args["oldImdbId"][0] == "-1":
+			#	redirectString += "mode=add&"
+			#else:
+			#	redirectString += "mode=change_imdbid&"
+			
+			#redirectString += "oldImdbId=" + request.args["oldImdbId"][0]
+			
+			return WebHelper().redirectMeTo(redirectString)
+			#
 		##
 		# edit section	
 		##
-		elif request.args["method"][0] == "edit":
+		elif request.args["mode"][0] == "edit":
 			# edit movies
 			manager = Manager()
 			key_value_dict = {}				
 			for key in request.args.keys():
 				key_value_dict[key] = request.args[key][0]
+			
+			id = request.args["Id"][0]
 					
-			if request.args["what"][0] == "isMovie":
+			if request.args["type"][0] == "isMovie":
 				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&Id=" + request.args["Id"][0])
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies&Id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/movies?mode=done&Id=" + id + "&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies&Id=" + request.args["Id"][0])
-			
 			# edit tvshows
-			elif request.args["what"][0] == "isTvShow":
+			elif request.args["type"][0] == "isTvShow":
 				result = manager.updateMedia(Manager.TVSHOWS, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&Id=" + request.args["Id"][0])
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows&Id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/tvshows?mode=done&Id=" + id + "&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows&Id=" + request.args["Id"][0])
 			
 			# edit tvsshowepisodes
-			elif request.args["what"][0] == "isEpisode":
+			elif request.args["type"][0] == "isEpisode":
 				result = manager.updateMedia(Manager.TVSHOWSEPISODES, key_value_dict)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
+					return WebHelper().redirectMeTo("/episodes?mode=done&Id=" + id + "&ParentId=" + request.args["ParentId"][0] + "&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
 		
 		##
 		# delete section
 		##
-		elif request.args["method"][0] == "delete":
+		elif request.args["mode"][0] == "delete":
 			manager = Manager()
-			#key_value_dict = {}				
-			#for key in request.args.keys():
-			#	key_value_dict[key] = request.args[key][0]
-			
-			if request.args["what"][0] == "isMovie":
-				result = manager.deleteMedia(Manager.MOVIES, request.args["Id"][0])
+			id = request.args["Id"][0]
+			parentId = request.args["ParentId"][0]
+			if request.args["type"][0] == "isMovie":
+				result = manager.deleteMedia(Manager.MOVIES, id)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=movies")
+					return WebHelper().redirectMeTo("/movies?mode=done&showSave=true")
+
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies")
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=error&target=movies")
+					return WebHelper().redirectMeTo("/movies?mode=error")
 				
 		# delete tvshowepisodes
-			elif request.args["what"][0] == "isEpisode":
-				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, request.args["Id"][0])
+			elif request.args["type"][0] == "isEpisode":
+				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, id)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=episodes&ParentId="+parentId)
+					return WebHelper().redirectMeTo("/episodes?mode=done&ParentId="+parentId+"&showSave=true")
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId="+request.args["ParentId"][0]+"&Id=" + request.args["Id"][0])
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId="+parentId)
+					return WebHelper().redirectMeTo("/episodes?mode=error")
 				
 		# delete tvshow		
-			elif request.args["what"][0] == "isTvShow":
-				result = manager.deleteMedia(Manager.TVSHOWS, request.args["Id"][0])
+			elif request.args["type"][0] == "isTvShow":
+				result = manager.deleteMedia(Manager.TVSHOWS, id)
 				if result:
-					return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=done&target=tvshows")
+					return WebHelper().redirectMeTo("/tvshows?mode=done&showSave=true")
 				else:
-					return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows")
+				#	return WebHelper().redirectMeTo("/mediainfo?mode=error&target=tvshows")
+					return WebHelper().redirectMeTo("/tvshows?mode=error")
 		
 		##
 		# option section
 		##
-		elif request.args["method"][0] == "options.saveconfig":
-			if request.args["what"][0] == "settings_global":
+		elif request.args["mode"][0] == "options.saveconfig":
+			if request.args["type"][0] == "settings_global":
 				name = request.args["name"][0]
 				value = "unchecked"
 				if request.args.has_key("value"):
@@ -190,7 +213,7 @@ class WebActions(Resource):
 							entry[1].value = value
 						entry[1].save()
 			
-			elif request.args["what"][0] == "settings_sync":
+			elif request.args["type"][0] == "settings_sync":
 				if request.args["section"][0] == "paths":
 					id = request.args["Id"][0]
 					directory = request.args["directory"][0]
@@ -215,76 +238,53 @@ class WebActions(Resource):
 		##
 		# collecting data
 		##	
-		elif request.args["method"][0] == "collectData":
-			if request.args["usePath"][0] == "true":
-				path = request.args["Path"][0]
-				filename = request.args["Filename"][0]
-				extension = request.args["Extension"][0]
-			else:
-				path = "/PATH/TO/FILE/"
-				filename = "FILENAME"
-				extension = "EXT"
+		#elif request.args["mode"][0] == "collectData":
 			
-			mediainfo = MediaInfo()
-			mediainfo.ImdbId = "";
-			mediainfo.SearchString = "";
-			
-			type = request.args["type"][0]
-			if type == "isEpisode":
-				type = "isSerie" # we need to do this because Manger.syncelemnts uses this name not the name till now isTvShow
-			
-			if type == "isMovie" or type == "isSerie":
-
-				if request.args["by"][0] == "ImdbId":
-					mediainfo.ImdbId = request.args["ImdbId"][0]
-					syncData = Manager().syncElement(path, filename, extension, mediainfo.ImdbId, type)
-					result = syncData[0]
-				
-				elif request.args["by"][0] == "Title":
-					mediainfo.SearchString = request.args["Title"][0]
-					results = Manager().searchAlternatives(mediainfo)
-					
-				else:
-					pass
-			
-			elif type == "TvShow":
-				return WebHelper().redirectMeTo("/")
+			#redirectString = "mediainfo?"
+			#redirectString += "type=" + request.args["type"][0] + "&"
+			#if request.args["oldImdbId"][0] == "-1":
+			#	redirectString += "mode=add&"
+			#else:
+			#	redirectString += "mode=change_imdbid&"
+			#redirectString += "ImdbId=" + request.args["ImdbId"][0]+ "&"
+			#
+			#redirectString += "oldImdbId=" + request.args["oldImdbId"][0] + "&"
+			##redirectString += "useData=true&"
+			#redirectString += "usePath=" + request.args["usePath"][0] + "&"
+			#redirectString += "TheTvDbId=" + urllib.quote(str(result.TheTvDbId)) + "&"
+			#redirectString += "Title=" + urllib.quote(str(result.Title)) + "&"
+			#redirectString += "Season= " + urllib.quote(str(result.Season)) + "&"
+			#redirectString += "Episode=" + urllib.quote(str(result.Episode)) + "&"
+			#redirectString += "Plot=" + urllib.quote(str(result.Plot))+ "&"
+			#redirectString += "Runtime=" + urllib.quote(str(result.Runtime)) + "&"
+			#redirectString += "Year=" + urllib.quote(str(result.Year)) + "&"
+			#redirectString += "Genres=" + urllib.quote(str(result.Genres)) + "&"
+			#redirectString += "Tag=" + urllib.quote(str(result.Tag)) + "&"
+			#redirectString += "Popularity=" + urllib.quote(str(result.Popularity)) + "&"
+			#redirectString += "Poster=" + urllib.quote(str(result.Poster)) + "&"
+			#redirectString += "Backdrop=" + urllib.quote(str(result.Backdrop)) + "&"			
+			#if request.args["usePath"][0] == "true":
+		#		redirectString += "Path=" + urllib.quote(str(path)) + "&"
+	#			redirectString += "Filename=" + urllib.quote(str(filename)) + "&"
+#				redirectString += "Extension=" + urllib.quote(str(extension))
 			
 			
-			redirectString = "mediainfo?"
-			redirectString += "useData=true&"
-			redirectString += "usePath=" + request.args["usePath"][0] + "&"
-			redirectString += "type=" + request.args["type"][0] + "&"
-			if request.args["oldImdbId"][0] == "-1":
-				redirectString += "mode=new_record&"
-			else:
-				redirectString += "mode=change_imdbid&"
-				redirectString += "oldImdbId=" + request.args["oldImdbId"][0] + "&"
-			redirectString += "ImdbId=" + urllib.quote(str(mediainfo.ImdbId)) + "&"
-			redirectString += "TheTvDbId=" + urllib.quote(str(result.TheTvDbId)) + "&"
-			redirectString += "Title=" + urllib.quote(str(result.Title)) + "&"
-			redirectString += "Season= " + urllib.quote(str(result.Season)) + "&"
-			redirectString += "Episode=" + urllib.quote(str(result.Episode)) + "&"
-			redirectString += "Plot=" + urllib.quote(str(result.Plot))+ "&"
-			redirectString += "Runtime=" + urllib.quote(str(result.Runtime)) + "&"
-			redirectString += "Year=" + urllib.quote(str(result.Year)) + "&"
-			redirectString += "Genres=" + urllib.quote(str(result.Genres)) + "&"
-			redirectString += "Tag=" + urllib.quote(str(result.Tag)) + "&"
-			redirectString += "Popularity=" + urllib.quote(str(result.Popularity)) + "&"
-			redirectString += "Poster=" + urllib.quote(str(result.Poster)) + "&"
-			redirectString += "Backdrop=" + urllib.quote(str(result.Backdrop)) + "&"			
-			if request.args["usePath"][0] == "true":
-				redirectString += "Path=" + urllib.quote(str(path)) + "&"
-				redirectString += "Filename=" + urllib.quote(str(filename)) + "&"
-				redirectString += "Extension=" + urllib.quote(str(extension))
-			
-			
-			return WebHelper().redirectMeTo(redirectString)
+			#return WebHelper().redirectMeTo(redirectString)
+			#
+			#if request.args["usePath"][0] == "true":
+			#	path = request.args["Path"][0]
+			#	filename = request.args["Filename"][0]
+			#	extension = request.args["Extension"][0]
+			#else:
+			#	path = "/PATH/TO/FILE/"
+			#	filename = "FILENAME"
+			#	extension = "EXT"
+			#
 		
 		##
 		# alter arts
 		##	
-		elif request.args["method"][0] == "change_arts":
+		elif request.args["mode"][0] == "change_arts":
 			manager = Manager()
 			type = request.args["type"][0]
 			media_source = request.args["media_source"][0]
@@ -337,7 +337,7 @@ class WebActions(Resource):
 		##
 		# save to db
 		##	
-		elif request.args["method"][0] == "save_changes_to_db":
+		elif request.args["mode"][0] == "save_changes_to_db":
 			manager = Manager()
 			manager.finish()
 			
@@ -351,7 +351,7 @@ class WebActions(Resource):
 		##
 		# dump db to dumps - view via webif http://url:8888/dumps
 		##	
-		elif request.args["method"][0] == "dump_db":
+		elif request.args["mode"][0] == "dump_db":
 			Manager().getDbDump()
 			return WebHelper().redirectMeTo("/dumps")					
 				

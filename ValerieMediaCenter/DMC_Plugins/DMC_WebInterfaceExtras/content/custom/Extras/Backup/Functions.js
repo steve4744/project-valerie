@@ -1,5 +1,5 @@
 $(document).ready(function() {      
 	$("#button").click(function() {
-		window.open('/action?method=backup');
+		window.open('/action?mode=backup');
 	});
 }); 

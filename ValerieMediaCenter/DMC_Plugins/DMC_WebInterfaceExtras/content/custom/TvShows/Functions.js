@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	document.title = document.title + " - Series";
 	var params = get_params();
 	var i = 1,timer;
 

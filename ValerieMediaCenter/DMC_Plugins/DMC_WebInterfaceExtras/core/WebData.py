@@ -128,41 +128,18 @@ class WebData():
 		onclick  = "javascript:window.open('/mediainfo?"
 		onclick  += urlencode({'type':type}) + "&"
 		onclick  += urlencode({'mode':"edit"}) + "&"		
-		onclick  += urlencode({'usePath':"true"}) + "&"
-		onclick  += urlencode({'Id':entry.Id}) + "&"
-		#onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
-		#onclick  += urlencode({'TheTvDbId':entry.TheTvDbId}) + "&"
-		#onclick  += urlencode({'Title':entry.Title}) + "&"
-		#onclick  += urlencode({'Season':entry.Season}) + "&"
-		#onclick  += urlencode({'Episode':entry.Episode}) + "&"
-		#onclick  += urlencode({'Plot':entry.Plot}) + "&"
-		#onclick  += urlencode({'Runtime':entry.Runtime}) + "&"
-		#onclick  += urlencode({'Year':entry.Year}) + "&"
-		#onclick  += urlencode({'Genres':entry.Genres}) + "&"
-		#onclick  += urlencode({'Tag':entry.Tag}) + "&"
-		#onclick  += urlencode({'Popularity':entry.Popularity}) + "&"
-		#onclick  += urlencode({'Poster':entry.Poster}) + "&"	
-		#onclick  += urlencode({'Backdrop':entry.Backdrop}) + "&"		
-		#onclick  += urlencode({'Path':entry.Path}) + "&"
-		#onclick  += urlencode({'Filename':entry.Filename}) + "&"
-		#onclick  += urlencode({'Extension':entry.Extension})
+		onclick  += urlencode({'Id':entry.Id})  
 		onclick  += "', '_self');"
 		
 		return onclick
 	
 	def getDeleteString (self, entry, type):
 		### <!-- build delete string -->
-		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?method=delete&what="
+		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?type="
 		onclick  += str(type) + "&"
+		onclick  += "mode=delete&"
 		onclick  += "Id=" + str(entry.Id) + "&"
-		onclick  += "ParentId=" + str(entry.ParentId) # + "&"		
-		#if (type == 'isMovie'):
-		#	onclick  += "ImdbId=" + str(entry.ImdbId)
-		#elif (type == 'isTvShow'):
-		#	onclick  += "TheTvDbId=" + str(entry.TheTvDbId)
-		#elif (type == 'isEpisode'):
-		#	onclick  += "TheTvDbId=" + str(entry.TheTvDbId) + "&Season=" + str(entry.Season) + "&Episode=" + str(entry.Episode)
-		#
+		onclick  += "ParentId=" + str(entry.ParentId)
 		onclick  += "', '_self')} else { return};"
 		
 		return onclick
@@ -175,9 +152,9 @@ class WebData():
 		### <!-- build alternatives string -->
 		onclick  = "javascript:window.open('/alternatives?"
 		onclick  += urlencode({'type':type}) + "&"
-		onclick  += urlencode({'modus':"existing"}) + "&"
+		onclick  += urlencode({'mode':"existing"}) + "&"
 		onclick  += urlencode({'by':"Title"}) + "&"
-		onclick  += urlencode({'oldImdbId':entry.ImdbId}) + "&"
+		#onclick  += urlencode({'oldImdbId':entry.ImdbId}) + "&"
 		onclick  += urlencode({'Title':entry.Title}) + "&"
 		onclick  += urlencode({'Path':entry.Path}) + "&"
 		onclick  += urlencode({'Filename':entry.Filename}) + "&"
@@ -190,13 +167,16 @@ class WebData():
 	#
 	#
 	##
-	def getApplyString (self, entry, existing):
+	def getApplyAlternativeString (self, entry, existing):
 		### <!-- build apply string -->
-		onclick  = "javascript:window.open('/addrecord?"
+		#/mediainfo?type=isMovie&mode=addbyimdb&ImdbId=tt1201607
+		#onclick  = "javascript:window.open('/addrecord?"
+		onclick  = "javascript:window.open('/mediainfo?"
 		onclick  += urlencode({'type':entry.type}) + "&"
+		onclick  += urlencode({'mode':'addbyimdb'}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
-		onclick  += urlencode({'oldImdbId':entry.oldImdbId}) + "&"
-		onclick  += urlencode({'id':entry.Id}) + "&"
+		#onclick  += urlencode({'oldImdbId':entry.oldImdbId}) + "&"
+		#onclick  += urlencode({'Id':entry.Id}) + "&"
 		
 		if existing == "true":
 			onclick  += urlencode({'usePath':"true"}) + "&"

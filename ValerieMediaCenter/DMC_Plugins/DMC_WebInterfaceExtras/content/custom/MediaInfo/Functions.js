@@ -2,12 +2,11 @@
 //MEDIAINFO
 //
 $(document).ready(function(){
-
 	var debug = false;
 	
 	/* parse values from URL */	
 	var params = get_params();
-	var mode = params["mode"];			// => done/edit/new_record/change_imdbid
+	var mode = params["mode"];			// => done/edit/add/change_imdbid
 	var target = params["target"]; 		// => movies/tvshows/episodes
 	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
 	var useData = params["useData"]; 	// => true/false
@@ -35,10 +34,10 @@ $(document).ready(function(){
 		return;
 	
 	//ADD NEW RECORD 
-	} else if (mode == "new_record") {
+	} else if (mode == "add") {
 		if (debug) {alert(mode);}
-		$('[name=method]').val("add");
-		$('[name=what]').val(type);
+		$('[name=mode]').val("add");
+		//$('[name=what]').val(type);
 		
 		if (useData == "true") {
 			fillTable(params, usePath);
@@ -51,13 +50,22 @@ $(document).ready(function(){
 		if (type == "isEpisode") {
 			document.getElementById('ParentId').value = params["ParentId"];
 		}
+	
+	} else if (mode == "addbyimdb") {
+		$('[name=mode]').val("add");
+		//$('[name=mode]').val("addbyimdb");
+		//$('[name=what]').val(type);
+
+		$("#special_features").hide();
+		changeTable(type);
+		document.getElementById('type').value = params["type"];
 		
 	
 	// MANUAL EDIT OF AN EXISTING RECORD 
 	} else if (mode == "edit") {
 		if (debug) {alert(mode);}
-		$('[name=what]').val(type);
-		$('[name=oldImdbId]').val(params["ImdbId"]);
+		//$('[name=what]').val(type);
+		//$('[name=oldImdbId]').val(params["ImdbId"]);
 
 		if (type != "isMovie") {
 			$("#special_features").hide();
@@ -71,7 +79,7 @@ $(document).ready(function(){
 	//CHANGE EXISTING RECORD BY CHANGING IMDBID
 	} else if (mode == "change_imdbid") {
 		if (debug) {alert(mode);}
-		$('[name=what]').val(type);
+		//$('[name=what]').val(type);
 		$('[name=oldImdbId]').val(params["oldImdbId"]);
 		
 		$("#special_features").hide();
@@ -153,7 +161,7 @@ function showAlternatives() {
 	if (reply == null) { return;} 
 	urlString = "/alternatives?";
 	urlString += "type=" + params["type"] + "&";
-	urlString += "modus=existing&";
+	urlString += "mode=existing&";
 	urlString += "oldImdbId=" + params["ImdbId"] + "&";
 	urlString += "Title=" + reply + "&";
 	urlString += "Path=" + params["Path"] + "&";
@@ -171,7 +179,7 @@ function changePictures(media_type) {
 	var type = params["type"];
 	var parameter = new Array();
 	
-	parameter["method"] = "change_arts";
+	parameter["mode"] = "change_arts";
 	
 	if (media_type == "poster") {
 		parameter["media_type"] = "poster";
