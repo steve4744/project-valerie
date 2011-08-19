@@ -70,6 +70,7 @@ class Plugin():
 	MENU_DEV = 14
 	
 	INFO_PLAYBACK = 100
+	INFO_SEEN = 101
 
 	name  = None
 	start = None

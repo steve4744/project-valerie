@@ -27,7 +27,7 @@ from Arts import Arts
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__common__ import log as log
-
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 import os
 
 class Manager():
@@ -342,6 +342,45 @@ class Manager():
 		printl("no element found", self)
 		return False
 	
+	def isSeen(self, primary_key):
+		if primary_key.has_key("TheTvDbId"):
+			if primary_key.has_key("Season"):
+				if primary_key.has_key("Episode"):
+					return self.isEntrySeen(primary_key)
+				else:
+				    return self.isSeasonSeen(primary_key)
+			else:
+				return self.isShowSeen(primary_key)
+		elif primary_key.has_key("ImdbId"):
+			return self.isEntrySeen(primary_key)
+		
+		return False
+	
+	
+	def isShowSeen(self, primary_key):
+		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
+	             
+		for episode in library:
+			if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+				return False
+		return True
+	
+	def isSeasonSeen(self, primary_key):
+		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
+	             
+		for episode in library:
+			if episode.Season == primary_key["Season"]:
+				if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+					return False
+		return True
+	
+	def isEntrySeen(self, primary_key):
+		plugins = getPlugins(where=Plugin.INFO_SEEN)
+		for plugin in plugins:
+			if plugin.fnc(primary_key):
+				return True
+			
+		return False
 #
 #################################   MOVIES   ################################# 
 #

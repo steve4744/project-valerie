@@ -6,7 +6,7 @@ from DMC_Library import DMC_Library
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
-
+from Components.config import *
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
@@ -29,7 +29,7 @@ class DMC_TvShowLibrary(DMC_Library):
     ###
     # Return Value is expected to be:
     # (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-    def loadLibrary(self, primaryKeyValuePair):
+    def loadLibrary(self, primaryKeyValuePair, seenPng=None, unseenPng=None):
         global Manager
         global utf8ToLatin
         if utf8ToLatin is None:
@@ -66,8 +66,15 @@ class DMC_TvShowLibrary(DMC_Library):
                 for genre in d["Genres"]:
                     if genre not in tmpGenres:
                         tmpGenres.append(genre)
+                if config.plugins.pvmc.showseenforshow.value is True:
+                    if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"]}):
+                        image = seenPng
+                    else:
+                        image = unseenPng
+                else:
+                    image = None
                 
-                parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
+                parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
             sort = (("Title", None, False), ("Popularity", "Popularity", True), )
             
             filter = [("All", (None, False), ("", )), ]
@@ -122,7 +129,12 @@ class DMC_TvShowLibrary(DMC_Library):
                     d["Resolution"]  = utf8ToLatin(episode.Resolution)
                     d["Sound"]  = utf8ToLatin(episode.Sound)
                     
-                    parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50"))
+                    if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+                        image = seenPng
+                    else:
+                        image = unseenPng
+                    
+                    parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50", image))
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))
@@ -163,7 +175,16 @@ class DMC_TvShowLibrary(DMC_Library):
                     s["Title"]  = "  Season %2d" % (season, )
                     s["Season"] = season
                     s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
-                    parsedLibrary.append((s["Title"], s, season, "50"))
+                    
+                    if config.plugins.pvmc.showseenforseason.value is True:
+                        if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Season": s["Season"]}):
+                            image = seenPng
+                        else:
+                            image = unseenPng
+                    else:
+                        image = None
+                        
+                    parsedLibrary.append((s["Title"], s, season, "50", image))
             sort = (("Title", None, False), )
             
             filter = [("All", (None, False), ("", )), ]

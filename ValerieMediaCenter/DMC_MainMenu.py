@@ -818,6 +818,8 @@ def settings():
 	s.append((_("Skin"), config.plugins.pvmc.skin, ))
 	s.append((_("On Power press"), config.plugins.pvmc.onpowerpress, ))
 	s.append((_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu, ))
+	s.append((_("Show Seen / Unseen for Shows"), config.plugins.pvmc.showseenforshow, ))
+	s.append((_("Show Seen / Unseen for Seasons"), config.plugins.pvmc.showseenforseason, ))
 	return s
 
 def settings_expert():

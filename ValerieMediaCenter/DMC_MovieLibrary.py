@@ -31,7 +31,7 @@ class DMC_MovieLibrary(DMC_Library):
     ###
     # Return Value is expected to be:
     # (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-    def loadLibrary(self, primaryKeyValuePair):
+    def loadLibrary(self, primaryKeyValuePair, seenPng= None, unseenPng=None):
         global Manager
         global utf8ToLatin
         if utf8ToLatin is None:
@@ -91,7 +91,12 @@ class DMC_MovieLibrary(DMC_Library):
                 d["Resolution"]  = utf8ToLatin(movie.Resolution)
                 d["Sound"]  = utf8ToLatin(movie.Sound)
                 
-                parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
+                if self.manager.isSeen({"ImdbId": d["ImdbId"]}):
+                    image = seenPng
+                else:
+                    image = unseenPng
+                
+                parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))

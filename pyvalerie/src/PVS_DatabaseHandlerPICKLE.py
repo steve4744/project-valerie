@@ -850,7 +850,7 @@ class databaseHandlerPICKLE(object):
 							#printl("Parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) +" Request: " + str(mediaId) );
 							if self.IDMODEAUTO:
 								if self._dbEpisodes[key][season][episode].ParentId == int(mediaId):
-									printl("id:" + str(self._dbEpisodes[key][season][episode].Id)  +" parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) +" Request: " + str(mediaId) );
+									#printl("id:" + str(self._dbEpisodes[key][season][episode].Id)  +" parentid: " + str(self._dbEpisodes[key][season][episode].ParentId) +" Request: " + str(mediaId) );
 									list.append(self._dbEpisodes[key][season][episode])
 							else:
 								if self._dbEpisodes[key][season][episode].ParentId == mediaId:

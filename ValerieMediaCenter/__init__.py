@@ -67,6 +67,8 @@ config.plugins.pvmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPa
 config.plugins.pvmc.configfolderpath    = ConfigText(default = defaultConfigFolderPath)
 config.plugins.pvmc.mediafolderpath     = ConfigText(default = defaultMediaFolderPath)
 config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderPath)
+config.plugins.pvmc.showseenforshow     = ConfigYesNo(default = False)
+config.plugins.pvmc.showseenforseason   = ConfigYesNo(default = False)
 
 config.plugins.pvmc.save()
 

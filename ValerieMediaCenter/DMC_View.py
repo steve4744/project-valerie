@@ -16,7 +16,7 @@ from DataElement import DataElement
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
-
+from Tools.LoadPixmap import LoadPixmap
 #------------------------------------------------------------------------------------------
 
 import gettext
@@ -123,6 +123,17 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		if self.APILevel >= 6:
 			self["number_key_popup"] = Label("")
 			self["number_key_popup"].hide()
+		try:
+			self.seenPng = LoadPixmap(DataElement().getDataPreloading(self, "seenPng"))
+			self["seenPng"] = DataElement()
+		except Exception, ex:
+			self.seenPng = None
+		
+		try:
+			self.unseenPng = LoadPixmap(DataElement().getDataPreloading(self, "unseenPng"))
+			self["unseenPng"] = DataElement()
+		except Exception, ex:
+			self.unseenPng = None
 		
 		self["actions"] = HelpableActionMap(self, "DMC_View", 
 		{
@@ -584,7 +595,7 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 	def _load(self, primaryKeys=None, ignoreSort=False, ignoreFilter=False):
 		print "primaryKeys", primaryKeys
 		self.currentKeyValuePair = primaryKeys
-		library = self.loadLibrary(primaryKeys)
+		library = self.loadLibrary(primaryKeys, self.seenPng, self.unseenPng)
 		self.listViewList = library[0]
 		#print self.listViewList
 		self.onEnterPrimaryKeys = library[1]
