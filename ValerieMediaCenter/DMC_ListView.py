@@ -52,12 +52,12 @@ class DMC_ListView(DMC_View):
                 self["poster"] = Pixmap()
                 self["title"] = Label()
                 if self.APILevel == 1:
-                self["otitle"] = Label()
+                        self["otitle"] = Label()
                 self["tag"] = Label()
                 self["shortDescription"] = Label()
                 if self.APILevel == 1:
-                self["director"] = Label()
-                self["writer"] = Label()
+                        self["director"] = Label()
+                        self["writer"] = Label()
                 self["genre"] = Label()
                 self["year"] = Label()
                 self["runtime"] = Label()
