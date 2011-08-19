@@ -1370,7 +1370,7 @@ class ProjectValerieSync(Screen):
 		if gSyncInfo.inProgress is True:
 			self["key_red"].setText(_("Hide"))
 			self["key_green"].setText(_("Abort"))
-			self["key_yellow"].setText(_(" "))
+			self["key_yellow"].setText("")
 		else:
 			self["key_red"].setText(_("Manage"))
 			self["key_green"].setText(_("Synchronize"))

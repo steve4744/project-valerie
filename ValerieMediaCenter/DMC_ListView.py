@@ -48,20 +48,20 @@ class DMC_ListView(DMC_View):
 		self.showiframe = Showiframe()
 		
 		DMC_View.__init__(self, session, libraryName, loadLibrary, playEntry, viewName, select, sort, filter)
-		
-		self["poster"] 				= Pixmap()
-		self["title"] 				= Label()
-		if self.APILevel == 1:
-			self["otitle"] 				= Label()
-		self["tag"] 				= Label()
-		self["shortDescription"] 	= Label()
-		if self.APILevel == 1:
-			self["director"] 			= Label()
-			self["writer"] 				= Label()
-		self["genre"] 				= Label()
-		self["year"] 				= Label()
-		self["runtime"] 			= Label()
-		
+
+                self["poster"] = Pixmap()
+                self["title"] = Label()
+                if self.APILevel == 1:
+                self["otitle"] = Label()
+                self["tag"] = Label()
+                self["shortDescription"] = Label()
+                if self.APILevel == 1:
+                self["director"] = Label()
+                self["writer"] = Label()
+                self["genre"] = Label()
+                self["year"] = Label()
+                self["runtime"] = Label()
+
 		if self.APILevel >= 2:
 			self["total"] = Label()
 			self["current"] = Label()
@@ -81,7 +81,7 @@ class DMC_ListView(DMC_View):
 
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText(_("Filter: ") + _("None"))
-		self["key_yellow"] = StaticText(_(" "))
+		self["key_yellow"] = StaticText("")
 		#self["key_blue"] = StaticText(_("View: ") + self.viewName[0])
 		self["key_blue"] = StaticText(self.viewName[0])
 		

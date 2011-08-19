@@ -63,8 +63,8 @@ class DMC_PosterView(DMC_View):
 			self["shortDescription"] = Label()
 		
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
-		self["key_green"] = StaticText(_(" "))
-		self["key_yellow"] = StaticText(_(" "))
+		self["key_green"] = StaticText("")
+		self["key_yellow"] = StaticText("")
 		#self["key_blue"] = StaticText(_("View: ") + self.viewName[0])
 		self["key_blue"] = StaticText(self.viewName[0])
 		
