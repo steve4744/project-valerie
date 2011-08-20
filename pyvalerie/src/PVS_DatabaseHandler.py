@@ -103,7 +103,11 @@ class Database(object):
 	USE_BACKUP_TYPE = DB_NONE  	# To do: will always backup to DB_PICKLE ????
 	
 	USE_INDEXES = False  		# Create indexes key/id
-	PRELOADDB   = False  		# Reload All tables on Start (default)
+	PRELOADDB   = True  		# Reload All tables on Start (default)
+	# NOTE: almost every queries to DB force to use all tables
+	#  Examples:
+	#  	 Count Records(webif)
+	#  	 checkduplicates
 	
 	CONFIGKEY  = -999999
 	
@@ -192,10 +196,8 @@ class Database(object):
 
 	def preload(self):
 		log("->", self, 10)
-		self.dbHandler.getMoviesCount()	
-		self.dbHandler.getSeriesCount()	
-		self.dbHandler.getEpisodesCount()	
-
+		self.dbHandler.loadAll()
+		
 	def deleteMissingFiles(self):
 		log("->", self, 10)
 		listMissing = []
