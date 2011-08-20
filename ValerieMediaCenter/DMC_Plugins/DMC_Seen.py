@@ -134,6 +134,7 @@ def setSeen(primary_key):
 				dbSeen["Movies"][primary_key["ImdbId"]] = {}
 				
 			dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+			saveSeenDB()
 	return
 
 
