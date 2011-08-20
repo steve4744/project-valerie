@@ -55,19 +55,21 @@ class DMC_PosterView(DMC_View):
 		self["poster_+1"] = Pixmap()
 		self["poster_+2"] = Pixmap()
 		self["poster_+3"] = Pixmap()
-		self["seen_-3"] = Pixmap()
-		self["seen_-2"] = Pixmap()
-		self["seen_-1"] = Pixmap()
-		self["seen_0"]  = Pixmap()
-		self["seen_+1"] = Pixmap()
-		self["seen_+2"] = Pixmap()
-		self["seen_+3"] = Pixmap()
 		
 		self["title"] = Label()
 		
 		if self.APILevel >= 5:
 			self["shortDescriptionContainer"] = Label()
 			self["shortDescription"] = Label()
+		
+		if self.APILevel >=7:
+			self["seen_-3"] = Pixmap()
+			self["seen_-2"] = Pixmap()
+			self["seen_-1"] = Pixmap()
+			self["seen_0"]  = Pixmap()
+			self["seen_+1"] = Pixmap()
+			self["seen_+2"] = Pixmap()
+			self["seen_+3"] = Pixmap()
 		
 		self["key_red"] = StaticText(_("Sort: ") + _("Default"))
 		self["key_green"] = StaticText("")
@@ -119,7 +121,8 @@ class DMC_PosterView(DMC_View):
 					self["backdrop"].setStillPictureToDefault()
 		
 		self.setPoster("poster_0", element["ArtPosterId"])
-		self.setPosterFromPixmax("seen_0",selection[4])
+		if self.APILevel >=7:
+			self.setPosterFromPixmap("seen_0",selection[4])
 		
 		if self.APILevel >= 2:
 			currentIndex = self["listview"].getIndex()
@@ -128,16 +131,20 @@ class DMC_PosterView(DMC_View):
 			for i in range(1,4): # 1, 2, 3
 				if currentIndex >= i:
 					self.setPoster("poster_-" + str(i), listViewList[currentIndex - i][1]["ArtPosterId"])
-					self.setPosterFromPixmax("seen_-" + str(i), listViewList[currentIndex - i][4])
+					if self.APILevel >=7:
+						self.setPosterFromPixmap("seen_-" + str(i), listViewList[currentIndex - i][4])
 				else:
 					self["poster_-" + str(i)].hide()
-					self["seen_-" + str(i)].hide()
+					if self.APILevel >=7:
+						self["seen_-" + str(i)].hide()
 				if currentIndex + i < count:
 					self.setPoster("poster_+" + str(i), listViewList[currentIndex + i][1]["ArtPosterId"])
-					self.setPosterFromPixmax("seen_+" + str(i), listViewList[currentIndex + i][4])
+					if self.APILevel >=7:
+						self.setPosterFromPixmap("seen_+" + str(i), listViewList[currentIndex + i][4])
 				else:
 					self["poster_+" + str(i)].hide()
-					self["seen_+" + str(i)].hide()
+					if self.APILevel >=7:
+						self["seen_+" + str(i)].hide()
 		
 		self.setText("title", selection[0])
 		self.setText("shortDescription", element["Plot"], what=_("Overview"))
@@ -152,7 +159,7 @@ class DMC_PosterView(DMC_View):
 				self[posterName].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + \
 					"defaultposter" + self.postersize + ".png")
 				
-	def setPosterFromPixmax(self, posterName, pixmap):
+	def setPosterFromPixmap(self, posterName, pixmap):
 		if self[posterName].instance is not None:
 			self[posterName].show()
 			self[posterName].instance.setPixmap(pixmap)

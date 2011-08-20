@@ -56,7 +56,7 @@
   </screen>
   <!-- PVMC ListView -->
   <screen name="PVMC_ListView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-    <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+    <widget name="API" text="7" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <eLabel position="88,62" size="1102,595" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="0" size="1,1" />
@@ -120,7 +120,7 @@
   </screen>
   <!-- PVMC PosterView -->
   <screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
-    <widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+    <widget name="API" text="7" position="0,0" zPosition="0" size="1,1" />
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <widget name="listview_itemsperpage" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget source="listview" render="Listbox" zPosition="3" position="-17,0" size="1,1" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">

@@ -123,18 +123,25 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		if self.APILevel >= 6:
 			self["number_key_popup"] = Label("")
 			self["number_key_popup"].hide()
-		try:
-			self.seenPng = LoadPixmap(DataElement().getDataPreloading(self, "seenPng"))
-			self["seenPng"] = DataElement()
-		except Exception, ex:
+		
+		if self.APILevel >=7:	
+			try:
+				self.seenPng = LoadPixmap(DataElement().getDataPreloading(self, "seenPng"))
+				self["seenPng"] = DataElement()
+			except Exception, ex:
+				self.seenPng = None
+		else:
 			self.seenPng = None
-		
-		try:
-			self.unseenPng = LoadPixmap(DataElement().getDataPreloading(self, "unseenPng"))
-			self["unseenPng"] = DataElement()
-		except Exception, ex:
+					
+		if self.APILevel >=7:
+			try:
+				self.unseenPng = LoadPixmap(DataElement().getDataPreloading(self, "unseenPng"))
+				self["unseenPng"] = DataElement()
+			except Exception, ex:
+				self.unseenPng = None
+		else:
 			self.unseenPng = None
-		
+			
 		self["actions"] = HelpableActionMap(self, "DMC_View", 
 		{
 			"ok":         (self.onKeyOk, ""),
