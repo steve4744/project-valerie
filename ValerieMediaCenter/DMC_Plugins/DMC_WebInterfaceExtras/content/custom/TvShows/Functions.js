@@ -11,6 +11,10 @@ $(document).ready(function(){
 		"sPaginationType": "full_numbers"
 	} );
 
+	if (params["mode"] == "error") {
+			window.alert("An Error ocurred :(  Check the log please!");
+		return;
+	}	
 	if (params["showSave"] != "true") {
 		$('#sm_save').hide();
 	}

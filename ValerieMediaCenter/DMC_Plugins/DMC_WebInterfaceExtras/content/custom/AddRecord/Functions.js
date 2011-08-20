@@ -10,10 +10,6 @@ $(document).ready(function(){
 	
 	if (debug) {alert(params["type"]);}
 
-	//if (params["mode"] != "new") {
-///		document.getElementById('oldImdbId').value = params["oldImdbId"];
-//	}
-	
 	if (params["type"] == "isMovie") {
 		$("#header").html("Movie");
 	
@@ -26,7 +22,6 @@ $(document).ready(function(){
 	} else if (params["type"] == "isEpisode") {
 		$("#header").html("Episode");
 		$("#ParentId").val(params["ParentId"]);
-		//document.getElementById('ParentId').value = params["ParentId"];
 		
 		//for now we romove them because thoes functions are not implemented
 		$("#form1").remove();
@@ -40,25 +35,5 @@ $(document).ready(function(){
 	} else {
 		alert("Error - no type in params");
 	}
-	
-	if (params["mode"] == "add") {
-		//nothing to do for now
-	} else {
-		//fillTable(params, true);
-		//document.forms["form1"].submit();
-	}
-	//	fillTable(params, true);
-		//document.forms["form1"].submit();
 });
-
-
-function fillTable(params) {
-	/* fill complete structure with data */
-	document.getElementById('form1_type').value = params["type"];
-	document.getElementById('usepath').value = params["usePath"];	
-	document.getElementById('form1_idType').value = params["ImdbId"];
-	document.getElementById('path').value = params["Path"];
-	document.getElementById('filename').value = params["Filename"];
-	document.getElementById('extension').value = params["Extension"];
-}
 

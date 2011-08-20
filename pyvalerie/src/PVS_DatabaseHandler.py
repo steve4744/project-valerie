@@ -241,9 +241,6 @@ class Database(object):
 	# @return: False if file is already in db or movie already in db, else True 
 	def add(self, media):
 		log("->", self, 10)
-		#NOT USED
-		#self.duplicateDetector = []
-		
 		#if media.MediaType == MediaInfo.FAILEDSYNC:
 		#	nextID = len(self.dbFailed2)
 		#	self.dbFailed2[nextID] = media			
@@ -297,6 +294,22 @@ class Database(object):
 			printl("Released Mutex", self, "W")
 		
 #
+#################################   MEDIAS   ################################# 
+#
+	# DML statements
+	#def insertMedia(self, media):
+	#	return self.dbHandler.insertMedia(media)
+	
+	def insertMediaWithDict(self, key_value_dict):
+		return self.dbHandler.insertMediaWithDict(key_value_dict)
+	
+	def updateMediaWithDict(self, key_value_dict):	#ID is Required
+		return self.dbHandler.updateMediaWithDict(key_value_dict)
+	
+	def deleteMedia(self, id):
+		return self.dbHandler.deleteMedia(id)
+
+#
 #################################   MOVIES   ################################# 
 #
 	def getDbDump(self):
@@ -324,22 +337,8 @@ class Database(object):
 	def getMoviesCount(self):
 		return self.dbHandler.getMoviesCount()	
 	
-	def setMoviesSeen(self, movieKey):
+	def setMoviesSeen(self, id):
 		return 	
-
-	# DML statements
-	def insertMovie(self, media):
-		return self.dbHandler.insertMovie(media)
-	
-	def insertMovieWithDict(self, key_value_dict):
-		return self.dbHandler.insertMovieWithDict(key_value_dict)
-
-	def updateMovieWithDict(self, key_value_dict):	#ID is Required
-		return self.dbHandler.updateMovieWithDict(key_value_dict)
-		
-	def deleteMovie(self, id):
-		return self.dbHandler.deleteMovie(id)
-
 #	
 #################################   SERIES   ################################# 
 #

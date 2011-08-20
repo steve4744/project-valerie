@@ -27,6 +27,7 @@
 
 import os
 import time
+import datetime
 import cPickle   as pickle
 from Components.config import config
 from   MediaInfo         import MediaInfo
@@ -50,11 +51,11 @@ class databaseHandlerPICKLE(object):
 	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
 	DB_VERSION = 1
-	IDMODEAUTO = True
+	IDMODEAUTO = True	# Tested... True
 	#temp
-	LastID_M   = 0
-	LastID_S   = 0
-	LastID_E   = 0
+	LastID_M   = 100000
+	LastID_S   = 200000
+	LastID_E   = 300000
 	
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
@@ -92,6 +93,170 @@ class databaseHandlerPICKLE(object):
 	def dbIsCommited(self):
 		return self.MoviesCommited and self.SeriesCommited and self.EpisodesCommited and self.FailedCommited
 #
+#################################   MEDIAS   ################################# 
+#
+		
+	## 
+	# DML statements
+	##
+	def insertMediaWithDict(self, key_value_dict):
+		log("->", self, 20)
+		type = key_value_dict["MediaType"]
+		
+		m = MediaInfo()
+		self.fillMediaInfo(m, key_value_dict)
+				
+		if type == 1:	# MOVIES
+			if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
+				log("ImdbId not defined", self, 5)
+				return False		
+			return self.insertMovie(m)		
+		elif type == 2:
+			if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+				log("TheTvDbId not defined", self, 5)
+				return False		
+			return self.insertSerie(m)
+		elif type == 3:
+			if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+				log("TheTvDbId not defined", self, 5)
+				return False		
+			return self.insertEpisode(m)
+		elif type == 4:
+			return False	
+			#return self.insertMusicWithDict(key_value_dict)
+			
+		return False	
+	
+	def updateMediaWithDict(self, key_value_dict):
+		log("->", self, 20)
+		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
+				log("Id not defined", self, 5)
+				return False
+		type = int(key_value_dict['Id'])//100000
+		
+		if type == 1:
+			if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
+				log("ImdbId not defined", self, 5)
+				return False				
+			self._moviesCheckLoaded()		
+			m = self.getMovie(key_value_dict['Id'])
+			if m is None:
+				log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+				return False
+		
+			self.MoviesCommited = False
+			self.fillMediaInfo(m, key_value_dict)	
+			if self.AUTOCOMMIT:
+				self.saveMovies()
+			return True
+		
+		elif type == 2:
+			if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+				log("TheTvDbId not defined", self, 5)
+				return False			
+			self._seriesCheckLoaded()
+			m = self.getSerieWithId(key_value_dict['Id'])
+			if m is None:
+				log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+				return False
+		
+			self.SeriesCommited = False
+			self.fillMediaInfo(m, key_value_dict)
+			if self.AUTOCOMMIT:
+				self.saveSeries()
+			return True
+		elif type == 3:
+			if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
+				log("TheTvDbId not defined", self, 5)
+				return False
+			self._seriesCheckLoaded()
+			m = self.getEpisodeWithId(key_value_dict['Id'])
+			if m is None:
+				log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
+				return False
+		
+			self.EpisodesCommited = False
+			self.fillMediaInfo(m, key_value_dict)
+			if self.AUTOCOMMIT:
+				self.saveEpisodes()
+			return True
+
+	def deleteMedia(self, id):
+		log("->", self, 20)
+		type = int(id)//100000
+		if type == 1:	# MOVIES			
+			self._moviesCheckLoaded()
+			key = self.getMovieKey(id)
+			if key is not None:
+				self.MoviesCommited = False
+				del(self._dbMovies[key])	
+				if self.AUTOCOMMIT:
+					self.saveMovies()
+				return True
+			else:
+				return False
+		
+		elif type == 2:
+			self._seriesCheckLoaded()
+			key = self.getSerieKey(id)		
+			if key is not None:
+
+				if key in self._dbEpisodes:
+					self.EpisodesCommited = False
+					del(self._dbEpisodes[key])
+				if key in self._dbSeries:	
+					self.SeriesCommited = False
+					del(self._dbSeries[key])
+				if self.AUTOCOMMIT:
+						self.saveEpisodes()
+						self.saveSeries()
+				return True
+			else:
+				return False
+		
+		elif type == 3:
+			if not self.deleteEpisode(id):
+				printl("Episode delete - DB Error", self)	
+				return False
+		elif type == 4:
+			pass
+			#if not self.deleteMusic(id):
+			#	printl("Music delete - DB Error", self)	
+			#	return False
+		else:
+			return None
+		return True
+		
+	
+	def deleteEpisode(self, id):
+		log("-> id: " + str(id), self, 10)		
+		if self.IDMODEAUTO:
+			_id = int(id)
+		else:
+			_id = id
+			
+		self._seriesCheckLoaded()
+		for serieKey in self._dbEpisodes:
+			if serieKey != self.CONFIGKEY:
+				for season in self._dbEpisodes[serieKey]:
+					for episode in self._dbEpisodes[serieKey][season]:
+						if self._dbEpisodes[serieKey][season][episode].Id == _id:	
+							self.EpisodesCommited = False
+							del(self._dbEpisodes[serieKey][season][episode])
+							if len(self._dbEpisodes[serieKey][season]) == 0:
+								del(self._dbEpisodes[serieKey][season])
+							if len(self._dbEpisodes[serieKey]) == 0:
+								del(self._dbEpisodes[serieKey])
+								if serieKey in self._dbSeries:
+									self.SeriesCommited = False
+									del(self._dbSeries[serieKey])
+							if self.AUTOCOMMIT:
+								self.saveSeries()
+								self.saveEpisodes()
+							return True
+		return False
+
+#
 #################################   MOVIES   ################################# 
 #
 	def _loadMoviesDB(self):
@@ -125,7 +290,6 @@ class databaseHandlerPICKLE(object):
 				log("Indexing Took : " + str(elapsed_time), self, 11)
 			
 			# Temporary to test ID's
-			self.LastID_M = 0
 			for movieKey in self._dbMovies:
 				if movieKey != self.CONFIGKEY:
 					if self.IDMODEAUTO:
@@ -170,13 +334,15 @@ class databaseHandlerPICKLE(object):
 		self._moviesCheckLoaded()
 		self._seriesCheckLoaded()
 		path = config.plugins.pvmc.tmpfolderpath.value + "/dumps"
-		file = path + "/db.dump"
-		os.makedirs(path)		
+		now = datetime.datetime.now()
+		file = path + "/db_%04d%02d%02d_%02d%02d%02d.dump" % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+		if not os.path.exists(path):
+			os.makedirs(path)		
 		f = open(file, "w")
 		
 		f.write("-- MediaFiles - Movies --\n")
 		f.write("\n")
-		f.write("Count\tKey\tId\tParent\tTitle\n")		
+		f.write("Count\tKey\t\tId\tParent\tTitle\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
@@ -417,53 +583,7 @@ class databaseHandlerPICKLE(object):
 		
 		if self.AUTOCOMMIT:
 			self.saveMovies()
-		return True
-			
-	def insertMovieWithDict(self, key_value_dict):
-		log("->", self, 20)
-		if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
-			log("ImdbId not defined", self, 5)
-			return False		
-		m = MediaInfo()
-		m.setMediaType(MediaInfo.MOVIE)
-		self.fillMediaInfo(m, key_value_dict)
-		
-		return self.insertMovie(m)
-	
-	def updateMovieWithDict(self, key_value_dict):	#ID is Required
-		log("->", self, 20)
-		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
-			log("Id not defined", self, 5)
-			return False
-		if not "ImdbId" in key_value_dict or key_value_dict['ImdbId'] == u"":
-			log("ImdbId not defined", self, 5)
-			return False				
-		self._moviesCheckLoaded()		
-		m = self.getMovie(key_value_dict['Id'])
-		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
-			return False
-		
-		self.MoviesCommited = False
-		self.fillMediaInfo(m, key_value_dict)	
-		if self.AUTOCOMMIT:
-			self.saveMovies()
-		return True
-
-	def deleteMovie(self, id):
-		log("->", self, 20)
-		self._moviesCheckLoaded()
-		key = self.getMovieKey(id)
-		
-		if key is not None:
-			self.MoviesCommited = False
-			del(self._dbMovies[key])	
-			if self.AUTOCOMMIT:
-				self.saveMovies()
-			return True
-		else:
-			return False
-
+		return True			
 #	
 #################################   SERIES   ################################# 
 #
@@ -482,29 +602,6 @@ class databaseHandlerPICKLE(object):
 			#	if key != self.CONFIGKEY:		# only for Pickle
 			#		printl(repr(self._dbSeries[key].Title))
 				
-		# Let's avoid refer to 0 as key... why this happen???
-		#	don't clean ghostfiles to create problems
-		#	
-		# FIX: GHOSTFILES
-		#if self._dbEpisodes.has_key("0"):
-		#	ghost = self._dbEpisodes["0"].values()
-		#	for season in ghost:
-		#		for episode in season.values():
-		#			self.remove(episode)
-		#	if self._dbEpisodes.has_key("0"):
-		#		del self._dbEpisodes["0"]
-		#
-		#for serie in self._dbEpisodes:
-		#	if serie != self.CONFIGKEY: #not ConfigRecord
-		#		for seasonKey in self._dbEpisodes[serie]:
-		#			season = self._dbEpisodes[serie][seasonKey]
-		#			for episodeKey in season:
-		#				episode = season[episodeKey]
-		#				if type(episode) is MediaInfo:
-		#					if not episode.isTypeEpisode():
-		#						b = self.remove(episode, isEpisode=True)
-		#						printl("RM: " + str(b), self)
-				
 		elapsed_time = time.time() - start_time
 		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
 
@@ -521,7 +618,6 @@ class databaseHandlerPICKLE(object):
 				self.setDBVersion(records, self.DB_VERSION)
 		
 			# Temporary to test ID's
-			self.LastID_S = 0
 			for key in records:
 				if key != self.CONFIGKEY:
 					if self.IDMODEAUTO:
@@ -553,7 +649,6 @@ class databaseHandlerPICKLE(object):
 				self.setDBVersion(records, self.DB_VERSION)
 			
 			# Temporary to test ID's
-			self.LastID_E = 0
 			for serieKey in records:
 				if serieKey != self.CONFIGKEY:
 					for season in records[serieKey]:
@@ -746,58 +841,6 @@ class databaseHandlerPICKLE(object):
 			self.saveSeries()
 		return True
 	
-	def insertSerieWithDict(self, key_value_dict):
-		log("->", self, 20)
-		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
-			log("TheTvDbId not defined", self, 5)
-			return False		
-		m = MediaInfo()
-		m.setMediaType(MediaInfo.SERIE)
-		self.fillMediaInfo(m, key_value_dict)
-		return self.insertSerie(m)
-		
-	def updateSerieWithDict(self, key_value_dict):		#ID is Required
-		log("->", self, 20)
-		#log(str(key_value_dict))
-		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
-			log("Id not defined", self, 5)
-			return False
-		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
-			log("TheTvDbId not defined", self, 5)
-			return False		
-		
-		self._seriesCheckLoaded()
-		
-		m = self.getSerieWithId(key_value_dict['Id'])
-		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
-			return False
-		
-		self.SeriesCommited = False
-		self.fillMediaInfo(m, key_value_dict)
-		if self.AUTOCOMMIT:
-			self.saveSeries()
-		return True
-
-	def deleteSerie(self, id):
-		log("->", self, 20)
-		self._seriesCheckLoaded()
-		key = self.getSerieKey(id)
-		
-		if key is not None:
-			if key in self._dbEpisodes:
-				self.EpisodesCommited = False
-				del(self._dbEpisodes[key])
-			if key in self._dbSeries:	
-				self.SeriesCommited = False
-				del(self._dbSeries[key])
-			if self.AUTOCOMMIT:
-					self.saveEpisodes()
-					self.saveSeries()
-			return True
-		else:
-			return False
-
 #	
 ################################   EPISODES   ################################ 
 #
@@ -948,66 +991,6 @@ class databaseHandlerPICKLE(object):
 			self.saveEpisodes()
 		return True
 
-	def insertEpisodeWithDict(self, key_value_dict):
-		log("->", self, 20)
-		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
-			log("TheTvDbId not defined", self, 5)
-			return False		
-		m = MediaInfo()
-		self.fillMediaInfo(m, key_value_dict)
-		return self.insertEpisode(m)
-
-	def updateEpisodeWithDict(self, key_value_dict):		#ID is Required
-		log("->", self, 20)
-		#log(str(key_value_dict))
-		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
-			log("Id not defined", self, 5)
-			return False
-		if not "TheTvDbId" in key_value_dict or key_value_dict['TheTvDbId'] == u"":
-			log("TheTvDbId not defined", self, 5)
-			return False		
-		
-		self._seriesCheckLoaded()
-		
-		m = self.getEpisodeWithId(key_value_dict['Id'])
-		if m is None:
-			log("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
-			return False
-		
-		self.EpisodesCommited = False
-		self.fillMediaInfo(m, key_value_dict)
-		if self.AUTOCOMMIT:
-			self.saveEpisodes()
-		return True
-
-	def deleteEpisode(self, id):
-		log("->", self, 10)		
-		if self.IDMODEAUTO:
-			_id = int(id)
-		else:
-			_id = id
-			
-		self._seriesCheckLoaded()
-		for serieKey in self._dbEpisodes:
-			if serieKey != self.CONFIGKEY:
-				for season in self._dbEpisodes[serieKey]:
-					for episode in self._dbEpisodes[serieKey][season]:
-						if self._dbEpisodes[serieKey][season][episode].Id == _id:	
-							self.EpisodesCommited = False
-							del(self._dbEpisodes[serieKey][season][episode])
-							if len(self._dbEpisodes[serieKey][season]) == 0:
-								del(self._dbEpisodes[serieKey][season])
-							if len(self._dbEpisodes[serieKey]) == 0:
-								del(self._dbEpisodes[serieKey])
-								if serieKey in self._dbSeries:
-									self.SeriesCommited = False
-									del(self._dbSeries[serieKey])
-							if self.AUTOCOMMIT:
-								self.saveSeries()
-								self.saveEpisodes()
-							return True
-		return False
-
 	def getEpisodesCount(self, mediaId=None, season=None):
 		log("->", self, 15)
 		self._seriesCheckLoaded()
@@ -1120,57 +1103,7 @@ class databaseHandlerPICKLE(object):
 				self._dbFailed.remove(entry)
 			if self.AUTOCOMMIT:
 				self.saveFailed()
-			return True
-
-#	
-#################################   TABLES   ################################# 
-#
-	def _loadTablesDB(self):
-		#printl("->", self)
-		start_time = time.time()		
-		try:
-			self._dbTables = {}
-			self._dbGroups = {}
-			self._dbGroupsItems = {}
-			if os.path.exists(self.TABLESDB):
-				fd = open(self.TABLESDB, "rb")
-				self._dbTables = pickle.load(fd)
-				fd.close()
-			
-			# Separate Tables
-			if "Groups" in self._dbTables:
-				self._dbGroups = self._dbTables["Groups"]
-			if "GroupsItems" in self._dbTables:
-				self._dbGroupsItems = self._dbTables["GroupsItems"]
-			
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-		
-		elapsed_time = time.time() - start_time
-		printl("Took (failed.db): " + str(elapsed_time), self)
-		
-		return (self._dbFailed)
-
-	def getGroups(self):
-		log("-> ", self, 15)
-		#self._seriesCheckLoaded()
-		table = self._dbTables["Groups"]
-		list = []
-		for key in table:
-			list.append(table[key])
-		return list
-	
-	def insertGroupWithDict(self, key_value_dict):
-		log("->", self, 20)
-		m = Group()
-		#m.setMediaType(MediaInfo.EPISODE)
-		#self.fillGroup(m, key_value_dict)
-		#return self.insertGroup(m)
-	
+			return True	
 
 
 ###################################  UTILS  ###################################

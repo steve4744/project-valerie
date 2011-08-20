@@ -121,6 +121,9 @@ class WebActions(Resource):
 				key_value_dict[key] = request.args[key][0]
 			
 			id = request.args["Id"][0]
+			
+			if not "Seen" in request.args:
+				key_value_dict["Seen"] = "0"
 					
 			if request.args["type"][0] == "isMovie":
 				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
@@ -172,7 +175,7 @@ class WebActions(Resource):
 					return WebHelper().redirectMeTo("/episodes?mode=done&ParentId="+parentId+"&showSave=true")
 				else:
 				#	return WebHelper().redirectMeTo("/mediainfo?mode=error&target=episodes&ParentId="+parentId)
-					return WebHelper().redirectMeTo("/episodes?mode=error")
+					return WebHelper().redirectMeTo("/episodes?mode=error&ParentId="+parentId)
 				
 		# delete tvshow		
 			elif request.args["type"][0] == "isTvShow":

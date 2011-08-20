@@ -312,9 +312,9 @@ class MediaInfo(Resource):
 				<input id="type" name="Type" type="text" size="10" value="%s" disabled="disabled"></input>
 				<input id="id2" name="id2" type="text" size="10" value="%s" disabled="disabled"></input> </td></tr> 
 			<tr id="tr_imdbid"><td>ImdbId:</td><td>
-				<input id="imdbid" name="ImdbId" type="text" size="10" value="%s"></input></td><td>(e.g. tt9000000)</td></tr>
+				<input id="imdbid" name="ImdbId" type="text" size="10" value="%s" class="requiredlabel"></input></td><td>(e.g. tt9000000)</td></tr>
 			<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td>
-				<input id="thetvdbid" name="TheTvDbId" type="text" size="10" value="%s"></input></td><td>(e.g. 999999)</td></tr>
+				<input id="thetvdbid" name="TheTvDbId" type="text" size="10" value="%s" class="requiredlabel"></input></td><td>(e.g. 999999)</td></tr>
 			<tr id="tr_title" class="small requiredlabel"><td>Title:</td><td>
 				<input id="title" name="Title" type="text" class="medium requiredfield" value="%s"></input></td><td>(e.g. my title)</td></tr>
 			<tr id="tr_tag"><td>Tag:</td><td>
@@ -345,7 +345,7 @@ class MediaInfo(Resource):
 			<tr id="tr_extension" class="requiredlabel"><td>Extension:</td><td>
 				<input class="small requiredfield"  id="extension" name="Extension" type="text" maxlength="3" value="%s"></td><td></input>(without leading . => e.g. mkv)</td></tr>		
 			<tr id="tr_seen"><td>Seen</td><td>
-				<input id="seen" name="Seen" type="checkbox" value=%s></td><td></input></td></tr>		
+				<input id="seen" name="Seen" type="checkbox" value="1" %s></td><td></input></td></tr>		
 			<tr><td>
 			<tr><td>
 				<input type="submit" value="Save"></input>
@@ -355,7 +355,11 @@ class MediaInfo(Resource):
 		if mode=="add": 
 			mediaForm = mediaForm % (type, u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
 		else:
-			mediaForm = mediaForm % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, m.Seen)
+			seenCheck = ""
+			if m.Seen == "1":
+				seenCheck = "checked"
+			
+			mediaForm = mediaForm % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
 
 		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)

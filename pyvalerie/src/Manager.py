@@ -32,13 +32,15 @@ import os
 
 class Manager():
 
-	MOVIES = 0
-	TVSHOWS = 1
+	# make ID's equal in MediaInfo & Manager, hope there is nothing hardcoded...
+	MOVIES 	= 1 #0
+	TVSHOWS = 2 #1
+	TVSHOWSEPISODES = 3 #2
+	MUSIC = 4
+
 	TVSHOWSSEASONS = 5
-	TVSHOWSEPISODES = 2
 	FAILED = 3
 	FAILED_ALL = 4
-	MUSIC = 6
 	
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
@@ -382,6 +384,28 @@ class Manager():
 			
 		return False
 #
+###############################   MEDIA FILES   ############################### 
+#
+	def insertMedia(self, type, key_value_dict):
+		key_value_dict["MediaType"] = type	
+		if not self.db.insertMediaWithDict(key_value_dict):
+			log("Insert Media - Failed", self)	
+			return False
+		return True
+			
+	def updateMedia(self, type, key_value_dict):
+		if not self.db.updateMediaWithDict(key_value_dict):
+			log("Update Media - Failed", self)	
+			return False
+		return True
+	
+	def deleteMedia(self, type, id):
+		if not self.db.deleteMedia(id):
+			log("Delete Media - Failed", self)	
+			return False
+		return True
+
+#
 #################################   MOVIES   ################################# 
 #
 	# for test 
@@ -405,86 +429,6 @@ class Manager():
 
 	def getMoviesCount(self):
 		return self.db.getMoviesCount()
-
-	def updateMedia(self, type, key_value_dict):
-		printl("", self)
-		if type == self.MOVIES:
-			if self.db.updateMovieWithDict(key_value_dict):
-				printl("Movie Update - OK", self)	
-				return True
-			else:
-				printl("Movie Update - DB Error", self)	
-				return False
-			
-		elif type == self.TVSHOWS:
-			if self.db.updateSerieWithDict(key_value_dict):
-				printl("Serie Update - OK", self)	
-				return True
-			else:
-				printl("Serie Update - DB Error", self)	
-				return False
-			
-		elif type == self.TVSHOWSEPISODES:
-			if self.db.updateEpisodeWithDict(key_value_dict):
-				printl("Episode Update - OK", self)	
-				return True
-			else:
-				printl("Episode Update - DB Error", self)	
-				return False	
-		return True
-	
-	def insertMedia(self, type, key_value_dict):
-		printl("", self)
-		newElement = MediaInfo()
-		if type == self.MOVIES:
-			if not self.db.insertMovieWithDict(key_value_dict):
-				return False
-		
-		elif type == self.TVSHOWS:
-			if not self.db.insertSerieWithDict(key_value_dict):
-				printl("Serie Insert - DB Error", self)	
-				return False
-		
-		elif type == self.TVSHOWSEPISODES:
-			if not self.db.insertEpisodeWithDict(key_value_dict):
-				printl("Episode Insert - DB Error", self)	
-				return False
-		elif type == self.MUSIC:
-			pass
-			#if not self.db.insertMusicWithDict(key_value_dict):
-			#	printl("Music Insert - DB Error", self)	
-			#	return False
-		else:
-			return None
-		
-		return True
-			
-	def deleteMedia(self, type, id):
-		printl("", self)
-		
-		if type == self.MOVIES:
-			if not self.db.deleteMovie(id):
-				printl("Episode delete - DB Error", self)	
-				return False
-		
-		elif type == self.TVSHOWS:
-			if not self.db.deleteSerie(id):
-				printl("Serie delete - DB Error", self)	
-				return False
-		
-		elif type == self.TVSHOWSEPISODES:
-			if not self.db.deleteEpisode(id):
-				printl("Episode delete - DB Error", self)	
-				return False
-		elif type == self.MUSIC:
-			pass
-			#if not self.db.deleteMusic(id):
-			#	printl("Music delete - DB Error", self)	
-			#	return False
-		else:
-			return None
-		
-		return True
 
 	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
 		printl("start changing arts 2", self)
