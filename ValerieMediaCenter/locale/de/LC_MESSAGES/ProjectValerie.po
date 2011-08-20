@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project Valerie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-17 17:09+0100\n"
+"POT-Creation-Date: 2011-08-20 09:16+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: JackDanie <JackDaniel@i-have-a-dreambox.com>\n"
 "Language-Team: IhaD <JackDaniel@i-have-a-dreambox.com>\n"
@@ -14,6 +14,293 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: /Users/JackDaniel/Übersetzungen/ValerieMediaCenter/\n"
 "X-Poedit-SearchPath-0: /Users/JackDaniel/Übersetzungen/ValerieMediaCenter\n"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:93
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:93
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:94
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:94
+msgid "Save"
+msgstr "Speichern"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:110
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:303
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:316
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:846
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:110
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:303
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:316
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:847
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:156
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:156
+msgid "Checking for updates ..."
+msgstr "Prüfe ob Aktualisierungen vorhanden sind..."
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:169
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:169
+msgid "PVMC Update"
+msgstr "PVMC Aktualisierung"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:173
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:173
+msgid ""
+"PVMC will be updated!\n"
+"Do you want to proceed now?"
+msgstr ""
+"Project Valerie muss aktualisiert werden !\n"
+"Soll das nun durchgeführt werden ?"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:183
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:183
+msgid "No update available"
+msgstr "Keine Aktualisierung verfügbar"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:186
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:186
+#, python-format
+msgid ""
+"Updating ProjectValerie to %s...\n"
+"\n"
+"\n"
+"Stay tuned :-)"
+msgstr ""
+"Aktualisiere Project Valerie auf %s ...\n"
+"\n"
+"\n"
+"Bitte warten :-)"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:214
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:214
+msgid ""
+"Enigma2 must be restarted!\n"
+"Should Enigma2 now restart?"
+msgstr ""
+"Enigma 2 muss neu gestartet werden.\n"
+"Soll Enigma 2 jetzt neu gestartet werden ?"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:301
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:310
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:319
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:343
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:301
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:310
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:319
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:343
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MovieLibrary.py:128
+msgid "Movies"
+msgstr "Filme"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:302
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:302
+msgid "TV"
+msgstr "TV"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:304
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:317
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:304
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:317
+msgid "Synchronize"
+msgstr "Synchronisieren"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:305
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:336
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:338
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:305
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:336
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:338
+msgid "Music"
+msgstr "Musik"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:311
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:311
+msgid "Series"
+msgstr "Serien"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:318
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:340
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:318
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:340
+msgid "Live TV"
+msgstr "Live TV"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:320
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:344
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:320
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:344
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_TvShowLibrary.py:230
+msgid "TV Shows"
+msgstr "Serien"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:330
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:332
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:330
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:332
+msgid "Pictures"
+msgstr "Bilder"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:348
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:350
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:348
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:350
+msgid "Videos"
+msgstr "Filme"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:354
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:356
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:354
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:356
+msgid "Programs"
+msgstr "Programme"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:360
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:362
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:360
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:362
+msgid "System"
+msgstr "System"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:406
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:406
+msgid "Project Valerie"
+msgstr "Project Valerie"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:468
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:468
+#, python-format
+msgid ""
+"A new version of MediaCenter is available for download!\n"
+"\n"
+"Version: %s"
+msgstr ""
+"Eine neue Version vom Project Valerie steht zum Download bereit.\n"
+"\n"
+"Version: %s"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:474
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:474
+msgid "revisions"
+msgstr "Versionen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:476
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:476
+msgid "revision"
+msgstr "Version"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:477
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:477
+#, python-format
+msgid "Current Version %s."
+msgstr "Aktuelle Version %s."
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:477
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:477
+#, python-format
+msgid "You are %s"
+msgstr "Du bist %s"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:477
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:477
+#, python-format
+msgid "%s behind!"
+msgstr "%s zurück !"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:526
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:525
+#, python-format
+msgid ""
+"UNEXPECTED ERROR:\n"
+"%s"
+msgstr ""
+"Unerwarteter Fehler:\n"
+"%s"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:575
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:574
+msgid ""
+"Please install the plugin \n"
+"ProjectValerieSync\n"
+" to use this feature."
+msgstr ""
+"Bitte installieren Sie das Plugin \n"
+"ProjectValerieSync\n"
+"um diese Funktion zu nutzen."
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:587
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:586
+msgid "Back"
+msgstr "Zurück"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:783
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:782
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:669
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:785
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:784
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:671
+msgid "not available"
+msgstr "nicht verfügbar"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:818
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:817
+msgid "Show wizard on next start"
+msgstr "Assistent beim nächsten Start anzeigen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:819
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:818
+msgid "Start Valerie on e2 start"
+msgstr "Project Valerie automatisch starten"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:820
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:819
+msgid "Check for updates on Valerie start"
+msgstr "Beim Start auf Updates überprüfen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:821
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:820
+msgid "Skin"
+msgstr "Benutzeroberfläche"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:822
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:821
+msgid "On Power press"
+msgstr "Funktion der Ein/Aus Taste"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:823
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:822
+msgid "Show Movie and TVShow in main menu"
+msgstr "Filme und Serien im Hauptmenü anzeigen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:828
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:829
+msgid "Valerie Config folder (Database, ...)"
+msgstr "Valerie Konfigurationsordner (Datenbank, ...)"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:829
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:830
+msgid "Valerie media folder (Poster, Backdrops)"
+msgstr "Valerie Medienordner (Poster, Hintergründe)"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:830
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:831
+msgid "Valerie tmp folder (Logs, Cache)"
+msgstr "Valerie tmp Ordner (Logs, Cache) "
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:845
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:846
+msgid "EXPERT"
+msgstr "EXPERTE"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:847
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:848
+msgid "Update"
+msgstr "Aktualisierung"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/__init__.py:53
 msgid "English"
@@ -30,14 +317,6 @@ msgstr "Sortieren:"
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_PosterView.py:65
 msgid "Default"
 msgstr "standard"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_BackdropView.py:61
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_BackdropView.py:62
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_ListView.py:84
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_PosterView.py:66
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_PosterView.py:67
-msgid " "
-msgstr ""
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_BackdropView.py:115
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_ListView.py:144
@@ -69,206 +348,13 @@ msgstr "Gesamt:"
 msgid "Pages:"
 msgstr "Seite:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:93
-msgid "Cancel"
-msgstr "Abbrechen"
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:823
+msgid "Show Seen / Unseen for Shows"
+msgstr "Gesehen/Ungesehen anzeigen für Serien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:94
-msgid "Save"
-msgstr "Speichern"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:110
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:298
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:311
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:784
-msgid "Settings"
-msgstr "Einstellungen"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:156
-msgid "Checking for updates ..."
-msgstr "Prüfe ob Aktualisierungen vorhanden sind..."
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:169
-msgid "PVMC Update"
-msgstr "PVMC Aktualisierung"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:173
-msgid ""
-"PVMC will be updated!\n"
-"Do you want to proceed now?"
-msgstr ""
-"Project Valerie muss aktualisiert werden !\n"
-"Soll das nun durchgeführt werden ?"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:183
-msgid "No update available"
-msgstr "Keine Aktualisierung verfügbar"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:186
-#, python-format
-msgid ""
-"Updating ProjectValerie to %s...\n"
-"\n"
-"\n"
-"Stay tuned :-)"
-msgstr ""
-"Aktualisiere Project Valerie auf %s ...\n"
-"\n"
-"\n"
-"Bitte warten :-)"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:214
-msgid ""
-"Enigma2 must be restarted!\n"
-"Should Enigma2 now restart?"
-msgstr ""
-"Enigma 2 muss neu gestartet werden.\n"
-"Soll Enigma 2 jetzt neu gestartet werden ?"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:296
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:305
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:314
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:338
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MovieLibrary.py:123
-msgid "Movies"
-msgstr "Filme"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:297
-msgid "TV"
-msgstr "TV"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:299
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:312
-msgid "Synchronize"
-msgstr "Synchronisieren"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:300
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:331
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:333
-msgid "Music"
-msgstr "Musik"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:306
-msgid "Series"
-msgstr "Serien"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:313
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:335
-msgid "Live TV"
-msgstr "Live TV"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:315
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:339
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_TvShowLibrary.py:209
-msgid "TV Shows"
-msgstr "Serien"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:325
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:327
-msgid "Pictures"
-msgstr "Bilder"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:343
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:345
-msgid "Videos"
-msgstr "Filme"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:349
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:351
-msgid "Programs"
-msgstr "Programme"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:355
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:357
-msgid "System"
-msgstr "System"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:400
-msgid "Project Valerie"
-msgstr "Project Valerie"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:428
-#, python-format
-msgid ""
-"A new version of MediaCenter is available for download!\n"
-"\n"
-"Version: %s"
-msgstr ""
-"Eine neue Version vom Project Valerie steht zum Download bereit.\n"
-"\n"
-"Version: %s"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:435
-#, python-format
-msgid "Current Version %s. You are %d revision%s behind!"
-msgstr "Aktuelle Version %s. Sie nutzen Version %d, es gibt %s neuere Versionen !"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:483
-#, python-format
-msgid ""
-"UNEXPECTED ERROR:\n"
-"%s"
-msgstr ""
-"Unerwarteter Fehler:\n"
-"%s"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:532
-msgid ""
-"Please install the plugin \n"
-"ProjectValerieSync\n"
-" to use this feature."
-msgstr ""
-"Bitte installieren Sie das Plugin \n"
-"ProjectValerieSync\n"
-"um diese Funktion zu nutzen."
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:544
-msgid "Back"
-msgstr "Zurück"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:756
-msgid "Show wizard on next start"
-msgstr "Assistent beim nächsten Start anzeigen"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:757
-msgid "Start Valerie on e2 start"
-msgstr "Project Valerie automatisch starten"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:758
-msgid "Check for updates on Valerie start"
-msgstr "Beim Start auf Updates überprüfen"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:759
-msgid "Skin"
-msgstr "Benutzeroberfläche"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:760
-msgid "On Power press"
-msgstr "Funktion der Ein/Aus Taste"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:761
-msgid "Show Movie and TVShow in main menu"
-msgstr "Filme und Serien im Hauptmenü anzeigen"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:766
-msgid "Valerie Config folder (Database, ...)"
-msgstr "Valerie Konfigurationsordner (Datenbank, ...)"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:767
-msgid "Valerie media folder (Poster, Backdrops)"
-msgstr "Valerie Medienordner (Poster, Hintergründe)"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:768
-msgid "Valerie tmp folder (Logs, Cache)"
-msgstr "Valerie tmp Ordner (Logs, Cache) "
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:783
-msgid "EXPERT"
-msgstr "EXPERTE"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:785
-msgid "Update"
-msgstr "Aktualisierung"
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_MainMenu.py:824
+msgid "Show Seen / Unseen for Seasons"
+msgstr "Gesehen/Ungesehen anzeigen für Episoden"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Player.py:83
 msgid "Yes, but play next episode"
@@ -298,31 +384,23 @@ msgstr "Posteransicht"
 msgid "Backdrop"
 msgstr "Hintergrund"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:373
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:384
 msgid "Select sort"
 msgstr "Sortierung auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:437
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:448
 msgid "Select filter"
 msgstr "Filter auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:477
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:488
 msgid "Select view"
 msgstr "Ansicht auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:658
-msgid "Not available"
-msgstr "Nicht verfügbar"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:660
-msgid "not available"
-msgstr "nicht verfügbar"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:676
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:687
 msgid "Not found!\n"
 msgstr "Nichts gefunden !\n"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:677
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:688
 msgid ""
 "\n"
 "\n"
@@ -332,15 +410,15 @@ msgstr ""
 "\n"
 "Bitte stellen Sie sicher, dass Ihr Laufwerk angeschlossen und eingehängt ist."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:698
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:709
 msgid "Set view as default"
 msgstr "Diese Ansicht als Standard verwenden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:705
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:716
 msgid "No plugins available"
 msgstr "Keine Erweiterungen verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:708
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_View.py:719
 msgid "Options"
 msgstr "Optionen"
 
@@ -379,29 +457,22 @@ msgid "MultiMediathek"
 msgstr "MultiMediathek"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_MyEpisodes.py:45
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:45
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:50
 msgid "No Username"
 msgstr "Kein Benutzername"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_MyEpisodes.py:46
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:46
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:51
 msgid "No Password"
 msgstr "Kein Passwort"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_MyEpisodes.py:50
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:61
 msgid "Enabled"
 msgstr "Aktiviert"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_MyEpisodes.py:51
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:62
 msgid "Username"
 msgstr "Benutzername"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_MyEpisodes.py:52
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Trakt.py:63
 msgid "Password"
 msgstr "Passwort"
 
@@ -423,6 +494,20 @@ msgstr "PicturePlayer Setup"
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_ProjectValerieSync.py:39
 msgid "Fast Sync on autostart"
 msgstr "Schnelle Synchronisation bei Autostart"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Seen.py:208
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Seen.py:209
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Seen.py:210
+msgid "Seen"
+msgstr "Gesehen"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Seen.py:211
+msgid "Mark as Seen"
+msgstr "Als gesehen markieren"
+
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_Seen.py:212
+msgid "Mark as Unseen"
+msgstr "Als ungesehen markieren"
 
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_SubtitleDownloader.py:79
 msgid "Provider"
@@ -454,16 +539,16 @@ msgstr "Untertitel herunterladen"
 msgid "trakt.tv"
 msgstr "trakt.tv"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:113
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:114
 msgid "Port"
 msgstr "Port"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:114
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:115
 msgid "use Pagination"
 msgstr "Seitenumbruch verwenden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:118
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:119
+#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerie/DMC_Plugins/DMC_WebInterface.py:120
 msgid "WebInterface"
 msgstr "Webinterface"
 
@@ -768,6 +853,10 @@ msgstr "Erledigt"
 #: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/ProjectValerieSync/sync.py:474
 msgid "Press Exit / Back"
 msgstr "Zum beenden Exit/Back betätigen"
+
+#~ msgid "Current Version %s. You are %d revision%s behind!"
+#~ msgstr ""
+#~ "Aktuelle Version %s. Sie nutzen Version %d, es gibt %s neuere Versionen !"
 
 #~ msgid "Synchronize Manager Searchpaths"
 #~ msgstr "Synchronisierungsmanager Suchpfade"

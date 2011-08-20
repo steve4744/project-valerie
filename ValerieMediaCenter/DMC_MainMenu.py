@@ -471,8 +471,10 @@ class PVMC_MainMenu(Screen):
 				behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
 				multiple = ""
 				if behind > 1:
-					multiple = "s"
-				self["version"].setText(_("Current Version %s. You are %d revision%s behind!") % (config.plugins.pvmc.version.value, behind, multiple, ))
+                                    multiple = (_("revisions"))
+                                else:
+                                    multiple = (_("revision"))
+                                self["version"].setText((_("Current Version %s.") % config.plugins.pvmc.version.value) + ' ' + (_("You are %s") % behind) + ' ' + (_("%s behind!") % multiple))
 				version = None #Hack for the moment
 			else:
 				version = None #Hack for the moment
