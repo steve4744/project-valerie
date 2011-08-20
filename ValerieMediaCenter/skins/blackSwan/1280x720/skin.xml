@@ -146,6 +146,15 @@
     <widget name="poster_+1" transparent="0" zPosition="5" position="766,337" size="195,267" alphatest="blend" />
     <widget name="poster_+2" transparent="0" zPosition="5" position="972,337" size="195,267" alphatest="blend" />
     <widget name="poster_+3" transparent="0" zPosition="5" position="1178,337" size="195,267" alphatest="blend" />
+    
+    <widget name="seenPng" zPosition="6" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/seen_poster.png" />
+    <widget name="seen_-3" transparent="0" zPosition="6" position="-94,337" size="195,267" alphatest="blend" />
+    <widget name="seen_-2" transparent="0" zPosition="6" position="112,337"  size="195,267" alphatest="blend" />
+    <widget name="seen_-1" transparent="0" zPosition="6" position="318,337" size="195,267" alphatest="blend" />
+    <widget name="seen_0"  transparent="0" zPosition="6" position="542,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+1" transparent="0" zPosition="6" position="766,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+2" transparent="0" zPosition="6" position="972,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+3" transparent="0" zPosition="6" position="1178,337" size="195,267" alphatest="blend" />
 
     <!--eLabel position="88,610" size="1102,47" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="5" position="106,623" size="26,20" alphatest="blend" />
