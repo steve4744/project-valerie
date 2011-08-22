@@ -70,6 +70,15 @@ config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderP
 config.plugins.pvmc.showseenforshow     = ConfigYesNo(default = False)
 config.plugins.pvmc.showseenforseason   = ConfigYesNo(default = False)
 
+config.plugins.pvmc.pictureplayer       = ConfigYesNo(default = True)
+config.plugins.pvmc.dvdplayer           = ConfigYesNo(default = True)
+config.plugins.pvmc.dreamnetcast        = ConfigYesNo(default = True)
+config.plugins.pvmc.lastfm              = ConfigYesNo(default = True)
+config.plugins.pvmc.mediaplayer         = ConfigYesNo(default = True)
+config.plugins.pvmc.merlinmusicplayer   = ConfigYesNo(default = True)
+config.plugins.pvmc.yttrailer           = ConfigYesNo(default = True)
+config.plugins.pvmc.multimediathek      = ConfigYesNo(default = True)
+
 config.plugins.pvmc.save()
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl

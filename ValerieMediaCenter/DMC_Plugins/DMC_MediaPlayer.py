@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-
+from Components.config import *
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 gAvailable = False
-try:
-	from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
-	gAvailable = True
-except:
-	gAvailable = False
+if config.plugins.pvmc.mediaplayer.value is True:
+	try:
+		from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
+		gAvailable = True
+	except:
+		printl("MediaPlayer not found => disabling ...", "I")
+		config.plugins.pvmc.mediaplayer.value = False
+		gAvailable = False
 
 class PVMC_MediaPlayer(MediaPlayer):
 

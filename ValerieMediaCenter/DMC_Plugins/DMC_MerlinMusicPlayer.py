@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-
+from Components.config import *
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
 gAvailable = False
-try:
-	from Plugins.Extensions.MerlinMusicPlayer.plugin import MerlinMusicPlayerFileList
-	gAvailable = True
-except Exception, ex:
-	printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
-	gAvailable = False
+if config.plugins.pvmc.merlinmusicplayer.value is True:
+	try:
+		from Plugins.Extensions.MerlinMusicPlayer.plugin import MerlinMusicPlayerFileList
+		gAvailable = True
+	except Exception, ex:
+		printl("Merlin Music Player not found => disabling ...", "I")
+		config.plugins.pvmc.merlinmusicplayer.value = False
+		gAvailable = False
 
 class PVMC_MerlinMusicPlayer(MerlinMusicPlayerFileList):
 

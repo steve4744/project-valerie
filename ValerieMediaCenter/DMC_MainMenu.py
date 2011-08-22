@@ -830,6 +830,18 @@ def settings_expert():
 	s.append((_("Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath, ))
 	s.append((_("Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath, ))
 	return s
+	
+def settings_plugins():
+	s = []
+	s.append((_("show PicturePlayer"), config.plugins.pvmc.pictureplayer, ))
+	s.append((_("show DVD Player"), config.plugins.pvmc.dvdplayer, ))
+	s.append((_("show Dreamnetcast"), config.plugins.pvmc.dreamnetcast, ))
+	s.append((_("show lastFM"), config.plugins.pvmc.lastfm, ))
+	s.append((_("show MediaPlayer"), config.plugins.pvmc.mediaplayer, ))
+	s.append((_("show MerlinMusicPlayer"), config.plugins.pvmc.merlinmusicplayer, ))
+	s.append((_("show YTTrailer"), config.plugins.pvmc.yttrailer, ))
+	s.append((_("show MultiMediathek"), config.plugins.pvmc.multimediathek, ))	
+	return s
 
 def stop_e2(session):
 	printl("->", __name__)
@@ -844,5 +856,6 @@ def stop_e2(session):
 registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
 registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("EXPERT"), fnc=settings_expert, where=Plugin.SETTINGS))
+registerPlugin(Plugin(name=_("Plugins"), fnc=settings_plugins, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
 registerPlugin(Plugin(name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True))

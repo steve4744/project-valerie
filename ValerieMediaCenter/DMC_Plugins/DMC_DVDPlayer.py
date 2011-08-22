@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-
+from Components.config import *
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 gAvailable = False
-try:
-	from Plugins.Extensions.DVDPlayer.plugin import DVDPlayer
-	gAvailable = True
-except:
-	gAvailable = False
+if config.plugins.pvmc.dvdplayer.value is True:
+	try:
+		from Plugins.Extensions.DVDPlayer.plugin import DVDPlayer
+		gAvailable = True
+	except:
+		printl("DVD Player not found => disabling ...", "I")
+		config.plugins.pvmc.dvdplayer.value = False
+		gAvailable = False
 
 class PVMC_DVDPlayer(DVDPlayer):
 
@@ -21,3 +25,5 @@ class PVMC_DVDPlayer(DVDPlayer):
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("DVDPlayer"), start=PVMC_DVDPlayer, where=Plugin.MENU_VIDEOS))
+	
+	  

@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
-
+from Components.config import *
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 gAvailable = False
-try:
-	from Plugins.Extensions.PicturePlayer.plugin import picshow as PicturePlayer
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
-	gAvailable = True
-except:
-	gAvailable = False
+if config.plugins.pvmc.pictureplayer.value is True:
+	try:
+		from Plugins.Extensions.PicturePlayer.plugin import picshow as PicturePlayer
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
+		gAvailable = True
+	except:
+		printl("PicturePlayer not found => disabling ...", "I")
+		config.plugins.pvmc.pictureplayer.value = False
+		gAvailable = False
 
 class PVMC_PicturePlayer(PicturePlayer):
 

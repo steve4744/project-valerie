@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-
+from Components.config import *
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 gAvailable = False
-try:
-	from Plugins.Extensions.MultiMediathek.plugin import MultiMediathek
-	gAvailable = True
-except:
-	gAvailable = False
+if config.plugins.pvmc.multimediathek.value is True:
+	try:
+		from Plugins.Extensions.MultiMediathek.plugin import MultiMediathek
+		gAvailable = True
+	except:
+		printl("MultiMediathek not found => disabling ...", "I")
+		config.plugins.pvmc.multimediathek.value = False
+		gAvailable = False
 
 class PVMC_MultiMediathek(MultiMediathek):
 

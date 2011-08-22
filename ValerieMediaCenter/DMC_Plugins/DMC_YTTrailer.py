@@ -2,7 +2,7 @@
 
 # Wrapper for the YYTrailer Plugin by Dr Best
 # Allows to start the plugin directly from the librarys
-
+from Components.config import *
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
@@ -29,13 +29,14 @@ localeInit()
 language.addCallback(localeInit)
 
 gAvailable = False
-try:
-	from Plugins.Extensions.YTTrailer.plugin import YTTrailer
-	gAvailable = True
-except Exception, ex:
-	printl("DMC_YTTrailer::isAvailable Is not available", None, "E")
-	printl("DMC_YTTrailer::isAvailable Exception: " + str(ex), None, "E")
-	gAvailable = False
+if config.plugins.pvmc.yttrailer.value is True:
+	try:
+		from Plugins.Extensions.YTTrailer.plugin import YTTrailer
+		gAvailable = True
+	except Exception, ex:
+		printl("YTTrailer not found => disabling ...", "I")
+		config.plugins.pvmc.yttrailer.value = False
+		gAvailable = False
 
 def start(session, args):
 	if args.has_key("Title"):
