@@ -39,8 +39,8 @@ class Manager():
 	MUSIC = 4
 
 	TVSHOWSSEASONS = 5
-	FAILED = 3
-	FAILED_ALL = 4
+	FAILED = 6
+	FAILED_ALL = 7
 	
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
