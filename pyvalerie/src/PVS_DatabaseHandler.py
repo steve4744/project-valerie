@@ -226,16 +226,8 @@ class Database(object):
 
 	def remove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
 		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
-		if media.isTypeMovie() or is_Movie:
-			return self.dbHandler.deleteMovie(media.Id)
 
-		if media.isTypeSerie() or is_Serie:
-			return self.dbHandler.deleteSerie(media.Id) 
-			
-		if media.isTypeEpisode() or is_Episode:
-			return self.dbHandler.deleteEpisode(media.Id)
-			
-		return False
+		return self.dbHandler.deleteMedia(media.Id)
 	
 	##
 	# Adds media files to the db
