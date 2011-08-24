@@ -56,8 +56,20 @@ class DMC_NewestEpisodes(DMC_Library):
         episodes = self.manager.getAll(Manager.TVSHOWSEPISODES)
     
         for episode in episodes:
+            # Yeah its a bit supersufficial as date is already in it
+            # But will allow the view to sort the list
+            # avoid crash if Null Values    
+            yy=episode.Year
+            mm=episode.Month
+            dd=episode.Day
+            if yy is None:
+                yy=1971
+            if mm is None:
+                mm=1
+            if dd is None:
+                dd=1
             fileCreationValidTime = False
-            epDate = date(episode.Year,episode.Month,episode.Day)
+            epDate = date(yy,mm,dd)
             if self.checkFileCreationDate:
                 try:
                     creation = os.stat(utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)).st_mtime
@@ -103,18 +115,6 @@ class DMC_NewestEpisodes(DMC_Library):
                 d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
                 d["Resolution"]  = utf8ToLatin(episode.Resolution)
                 d["Sound"]  = utf8ToLatin(episode.Sound)
-                # Yeah its a bit supersufficial as date is already in it
-                # But will allow the view to sort the list
-                # avoid crash if Null Values
-                yy=episode.Year
-                mm=episode.Month
-                dd=episode.Day
-                if yy is None:
-                    yy=0
-                if mm is None:
-                    mm=0
-                if dd is None:
-                    dd=0
                 d["Date"]    = yy*10000 + mm*100 + dd
                 
                 if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
