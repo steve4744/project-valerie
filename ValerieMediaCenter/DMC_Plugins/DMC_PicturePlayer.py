@@ -3,18 +3,19 @@ from Components.config import *
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
+config.plugins.pvmc.plugins.pictureplayer = ConfigSubsection()
+config.plugins.pvmc.plugins.pictureplayer.show = ConfigYesNo(default = True)
+
 gAvailable = False
-if config.plugins.pvmc.pictureplayer.value is True:
-	try:
-		from Plugins.Extensions.PicturePlayer.plugin import picshow as PicturePlayer
-		from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
-		from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
-		from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
-		gAvailable = True
-	except:
-		printl("PicturePlayer not found => disabling ...", "I")
-		config.plugins.pvmc.pictureplayer.value = False
-		gAvailable = False
+try:
+	from Plugins.Extensions.PicturePlayer.plugin import picshow as PicturePlayer
+	from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
+	from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
+	from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
+	gAvailable = True
+except:
+	printl("PicturePlayer not found", "I")
+	gAvailable = False
 
 class PVMC_PicturePlayer(PicturePlayer):
 
@@ -69,5 +70,13 @@ class PVMC_PicturePlayerSetup(PicturePlayerSetup):
 #	def setCustomTitle(self):
 #		self.setTitle(_("PicturePlayer ThumbView"))
 
+def settings():
+	s = []
+	s.append((_("Show"), config.plugins.pvmc.plugins.pictureplayer.show, ))
+	return s
+
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("PicturePlayer"), start=PVMC_PicturePlayer, where=Plugin.MENU_PICTURES))
+	p = []
+	p.append(Plugin(name=_("PicturePlayer"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(name=_("PicturePlayer"), start=PVMC_PicturePlayer, where=Plugin.MENU_PICTURES))
+	registerPlugin(p)

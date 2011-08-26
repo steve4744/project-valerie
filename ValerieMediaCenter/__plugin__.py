@@ -12,17 +12,6 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 gPlugins = []
 
 def loadPlugins(dir, imp):
-	plugins = {
-				"DMC_PicturePlayer": config.plugins.pvmc.pictureplayer.value,
-				"DMC_DVDPlayer": config.plugins.pvmc.dvdplayer.value,
-				"DMC_DreamNetcast": config.plugins.pvmc.dreamnetcast.value,
-				"DMC_LastFM": config.plugins.pvmc.lastfm.value,
-				"DMC_MediaPlayer": config.plugins.pvmc.mediaplayer.value,
-				"DMC_MerlinMusicPlayer": config.plugins.pvmc.merlinmusicplayer.value,
-				"DMC_MultiMediathek": config.plugins.pvmc.multimediathek.value,
-				"DMC_YTTrailer": config.plugins.pvmc.yttrailer.value
-			  }
-	
 	files = []
 	#go through all files and generate list
 	for p in os.listdir(dir):
@@ -30,34 +19,25 @@ def loadPlugins(dir, imp):
 	#make entries unique
 	files = set(files)
 	
-	#start the import only if there is a __init__ in the filelist
-	if "__init__.py" in files or "__init__.pyo" in files or "__init__.pyc" in files:
-		#printl("INIT FOUND", "I")
-		for f in os.listdir(dir):
-			file = os.path.join(dir, f)
-			if os.path.isfile(file):
-				pos = f.find(".py")
-				if pos > 0:
-					f = f[:pos]
-					#printl("f: " + str(f), __name__)
-					if f in plugins:
-						#printl("FOUND", "I")
-						if plugins[f] == True:
-							try:
-								m = __import__(imp + f)
-							except Exception, ex:
-								printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
-								printl("\tf: " + str(f), __name__, "I")
-					else:
-						#printl("not in list", "I")
-						try:
-							m = __import__(imp + f)
-						except Exception, ex:
-							printl("Information(" + str(type(ex)) + "): " + str(ex), __name__, "I")
-							printl("\tf: " + str(f), __name__, "I")
-	else:
-		printl("no __init__ file found", "E")
-								
+	alreadyLoaded = []
+	del(alreadyLoaded[:])
+	
+	for f in os.listdir(dir):
+		file = os.path.join(dir, f)
+		if os.path.isfile(file):
+			pos = f.find(".py")
+			if pos > 0:
+				f = f[:pos]
+				#printl("f: " + str(f), __name__)
+				if f in alreadyLoaded: #Dont load multiple times if py pyc and pyo exists
+					continue
+				try:
+					m = __import__(imp + f)
+					alreadyLoaded.append(f)
+				except Exception, ex:
+					printl("Information (" + str(type(ex)) + "): " + str(ex), __name__, "I")
+					printl("\tf: " + str(f), __name__, "I")
+
 def registerPlugin(plugin):
 	#printl("name=" + str(plugin.name) + " where=" + str(plugin.where), __name__)
 	ps = []
@@ -80,8 +60,13 @@ def getPlugins(where=None):
 				list.append(plugin)
 		return list
 
-class Plugin():
+def getPlugin(name, where):
+	for plugin in gPlugins:
+			if plugin.name == name and plugin.where == where:
+				return plugin
+	return None
 
+class Plugin():
 	MENU_MAIN = 1
 	MENU_PICTURES = 2
 	MENU_MUSIC = 3
@@ -104,13 +89,18 @@ class Plugin():
 	INFO_SEEN = 101
 
 	name  = None
+	desvc = None
 	start = None
 	fnc   = None
 	where = None
 	supportStillPicture = False
 
-	def __init__(self, name=None, start=None, fnc=None, where=None, supportStillPicture=False):
+	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False):
 		self.name = name
+		if desc is None:
+			self.desc = self.name
+		else:
+			self.desc = desc
 		self.start = start
 		self.fnc = fnc
 		self.where = where

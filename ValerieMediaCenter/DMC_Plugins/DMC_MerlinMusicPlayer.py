@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 from Components.config import *
+from Components.config import ConfigSubsection
+from Components.config import ConfigYesNo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
 
+config.plugins.pvmc.plugins.merlinmusicplayer = ConfigSubsection()
+config.plugins.pvmc.plugins.merlinmusicplayer.show = ConfigYesNo(default = True)
+
 gAvailable = False
-if config.plugins.pvmc.merlinmusicplayer.value is True:
-	try:
-		from Plugins.Extensions.MerlinMusicPlayer.plugin import MerlinMusicPlayerFileList
-		gAvailable = True
-	except Exception, ex:
-		printl("Merlin Music Player not found => disabling ...", "I")
-		config.plugins.pvmc.merlinmusicplayer.value = False
-		gAvailable = False
+try:
+	from Plugins.Extensions.MerlinMusicPlayer.plugin import MerlinMusicPlayerFileList
+	gAvailable = True
+except Exception, ex:
+	printl("Merlin Music Player not found", "I")
+	gAvailable = False
+	MerlinMusicPlayerFileList = object
 
 class PVMC_MerlinMusicPlayer(MerlinMusicPlayerFileList):
 
@@ -25,7 +29,13 @@ class PVMC_MerlinMusicPlayer(MerlinMusicPlayerFileList):
 		# If no own screen os provided, use the one of the plugin
 		self.skinName = "MerlinMusicPlayerFileList"
 
+def settings():
+	s = []
+	s.append((_("Show"), config.plugins.pvmc.plugins.merlinmusicplayer.show, ))
+	return s
+
 if gAvailable is True:
 	p = []
+	p.append(Plugin(name=_("MerlinMusicPlayer"), fnc=settings, where=Plugin.SETTINGS))
 	p.append(Plugin(name=_("MerlinMusicPlayer"), start=PVMC_MerlinMusicPlayer, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)

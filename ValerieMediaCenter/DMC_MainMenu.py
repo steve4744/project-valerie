@@ -32,7 +32,7 @@ from DMC_Global import getBoxtype, getAPILevel, Update, loadFonts
 from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
 
-from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
+from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugin, getPlugins, Plugin, registerPlugin
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 #------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 				pluginSettingsList = plugin.fnc()
 				for pluginSetting in pluginSettingsList:
 					if len(plugin.name) > 0:
-						text = "[%s] %s" % (plugin.name, pluginSetting[0], )
+						text = "[%s] %s" % (plugin.desc, pluginSetting[0], )
 					else:
 						text = "%s" % (pluginSetting[0], )
 					self.list.append(getConfigListEntry(text, pluginSetting[1]))
@@ -451,6 +451,9 @@ class PVMC_MainMenu(Screen):
 				self["showiframe"].setStillPicture(self.UseDreamScene, True, False, True)
 			else:
 				printl("Using DreamScene failed", self, "W")
+		
+		if self.APILevel >= 4:
+			self.refreshOrientationMenu(0)
 
 	def onExecStartScript(self):
 		printl("->", self)
@@ -585,13 +588,23 @@ class PVMC_MainMenu(Screen):
 							l = []
 							l.append(("< " + _("Back"), Plugin.MENU_MAIN, "", "50"))
 							for plugin in s:
-								l.append((plugin.name, plugin, "", "50"))
+								settings = getPlugin(plugin.name, Plugin.SETTINGS)
+								show = True
+								if settings is not None:
+									settings = settings.fnc()
+									for setting in settings:
+										if setting[0] == _("Show"):
+											show = setting[1].value
+								if show: 
+									l.append((plugin.desc, plugin, "", "50"))
 							self["menu"].setList(l)
 							self["menu"].setIndex(1)
+							self.refreshOrientationMenu(0)
 						elif type(s) is int:
 							if s == Plugin.MENU_MAIN:
 								self["menu"].setList(self.menu_main_list)
 								self["menu"].setIndex(self.menu_main_list_index)
+								self.refreshOrientationMenu(0)
 						elif type(s) is not str:
 							if s.supportStillPicture is False:
 								if self.APILevel >= 2 and self.ShowStillPicture is True:
@@ -830,18 +843,6 @@ def settings_expert():
 	s.append((_("Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath, ))
 	s.append((_("Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath, ))
 	return s
-	
-def settings_plugins():
-	s = []
-	s.append((_("show PicturePlayer"), config.plugins.pvmc.pictureplayer, ))
-	s.append((_("show DVD Player"), config.plugins.pvmc.dvdplayer, ))
-	s.append((_("show Dreamnetcast"), config.plugins.pvmc.dreamnetcast, ))
-	s.append((_("show lastFM"), config.plugins.pvmc.lastfm, ))
-	s.append((_("show MediaPlayer"), config.plugins.pvmc.mediaplayer, ))
-	s.append((_("show MerlinMusicPlayer"), config.plugins.pvmc.merlinmusicplayer, ))
-	s.append((_("show YTTrailer"), config.plugins.pvmc.yttrailer, ))
-	s.append((_("show MultiMediathek"), config.plugins.pvmc.multimediathek, ))	
-	return s
 
 def stop_e2(session):
 	printl("->", __name__)
@@ -856,6 +857,5 @@ def stop_e2(session):
 registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
 registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("EXPERT"), fnc=settings_expert, where=Plugin.SETTINGS))
-registerPlugin(Plugin(name=_("Plugins"), fnc=settings_plugins, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True))
 registerPlugin(Plugin(name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True))

@@ -2,6 +2,10 @@
 
 import os
 
+from Components.config import *
+from Components.config import ConfigSubsection
+from Components.config import ConfigYesNo
+
 from Plugins.Extensions.ProjectValerie.DMC_Library import DMC_Library
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
@@ -13,6 +17,9 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 Manager = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
+
+config.plugins.pvmc.plugins.jamendo = ConfigSubsection()
+config.plugins.pvmc.plugins.jamendo.show = ConfigYesNo(default = False)
 
 gAvailable = True
 
@@ -211,6 +218,14 @@ class DMC_JamendoLibrary(DMC_Library):
         args["title"]   = entry["Title"]
         return args
 
+def settings():
+	s = []
+	s.append((_("Show"), config.plugins.pvmc.plugins.jamendo.show, ))
+	return s
+
 if gAvailable is True:
-	#registerPlugin(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_MUSIC))
-	#registerPlugin(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_DEV))
+	p = []
+	p.append(Plugin(name=_("Jamendo"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_MUSIC))
+	#p.append(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_DEV))
+	registerPlugin(p)

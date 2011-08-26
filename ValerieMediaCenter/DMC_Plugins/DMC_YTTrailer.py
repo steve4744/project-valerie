@@ -24,24 +24,21 @@ def _(txt):
 		t = gettext.gettext(txt)
 	return t
 
-
 localeInit()
 language.addCallback(localeInit)
 
 gAvailable = False
-if config.plugins.pvmc.yttrailer.value is True:
-	try:
-		from Plugins.Extensions.YTTrailer.plugin import YTTrailer
-		gAvailable = True
-	except Exception, ex:
-		printl("YTTrailer not found => disabling ...", "I")
-		config.plugins.pvmc.yttrailer.value = False
-		gAvailable = False
+try:
+	from Plugins.Extensions.YTTrailer.plugin import YTTrailer
+	gAvailable = True
+except Exception, ex:
+	printl("YTTrailer not found", "I")
+	gAvailable = False
 
 def start(session, args):
 	if args.has_key("Title"):
 		ytTrailer = YTTrailer(session)
 		ytTrailer.showTrailer(args["Title"])
-	
+
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("View Trailer (YTTrailer by Dr. Best)"), fnc=start, where=Plugin.MENU_MOVIES_PLUGINS))
+	registerPlugin(Plugin(name=_("YTTrailer"), desc=_("View Trailer (YTTrailer by Dr. Best)"), fnc=start, where=Plugin.MENU_MOVIES_PLUGINS))

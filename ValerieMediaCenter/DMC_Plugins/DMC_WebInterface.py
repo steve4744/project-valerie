@@ -112,7 +112,7 @@ def autostart(session):
 def settings():
 	s = []
 	s.append((_("Port"), config.plugins.pvmc.plugins.webinterface.port, ))
-	s.append((_("use Pagination"), config.plugins.pvmc.plugins.webinterface.usepagination, ))
+	s.append((_("Use Pagination"), config.plugins.pvmc.plugins.webinterface.usepagination, ))
 	return s
 
 if gAvailable is True:

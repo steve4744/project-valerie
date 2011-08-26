@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 from Components.config import *
+from Components.config import ConfigSubsection
+from Components.config import ConfigYesNo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
+config.plugins.pvmc.plugins.mediaplayer = ConfigSubsection()
+config.plugins.pvmc.plugins.mediaplayer.show = ConfigYesNo(default = True)
+
 gAvailable = False
-if config.plugins.pvmc.mediaplayer.value is True:
-	try:
-		from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
-		gAvailable = True
-	except:
-		printl("MediaPlayer not found => disabling ...", "I")
-		config.plugins.pvmc.mediaplayer.value = False
-		gAvailable = False
+try:
+	from Plugins.Extensions.MediaPlayer.plugin import MediaPlayer
+	gAvailable = True
+except:
+	printl("MediaPlayer not found", "I")
+	gAvailable = False
 
 class PVMC_MediaPlayer(MediaPlayer):
 
@@ -23,8 +26,14 @@ class PVMC_MediaPlayer(MediaPlayer):
 		# If no own screen os provided, use the one of the plugin
 		self.skinName = "MediaPlayer"
 
+def settings():
+	s = []
+	s.append((_("Show"), config.plugins.pvmc.plugins.mediaplayer.show, ))
+	return s
+
 if gAvailable is True:
 	p = []
+	p.append(Plugin(name=_("MediaPlayer"), fnc=settings, where=Plugin.SETTINGS))
 	p.append(Plugin(name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_VIDEOS))
 	p.append(Plugin(name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)
