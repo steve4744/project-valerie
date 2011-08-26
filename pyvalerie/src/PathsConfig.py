@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from threading import Lock
 
@@ -6,6 +7,8 @@ from Components.config import config
 from Xml2Dict import Xml2Dict
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+
+#------------------------------------------------------------------------------------------
 
 gInstance = None
 gMutex = Lock()
@@ -96,6 +99,7 @@ class PathsConfig(Xml2Dict):
 				pathsList.append({"directory": path, "usefolder": useFolder, "enabled": enabled, "type": folderType})
 		
 		_dict["xml"]["searchpaths"]["searchpath"] = pathsList
+		print _dict["xml"]
 		
 		fconf.close()
 		return _dict

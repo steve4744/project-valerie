@@ -29,6 +29,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
+from   Config import SyncConfig
 from   FailedEntry import FailedEntry
 from   Manager import Manager
 from   MediaInfo import MediaInfo
@@ -412,21 +413,8 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		printl("element: " + str(element), self)
 		self.list = []
 		try:
-			defaultLang = "en"
-			defaultDelete = False
-			fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "r")
-			for path in fconf.readlines(): 
-				path = path.strip()
-				p = path.split('=')
-				key = p[0]
-				if len(p) > 1:
-					value = p[1]
-				if key == "local":
-					defaultLang = value
-				elif key == "delete":
-					if value == "true":
-						defaultDelete = True
-			fconf.close()
+			defaultLang = SyncConfig().getInstance().get("local")
+			defaultDelete = SyncConfig().getInstance().get("delete")
 			
 			self.local = ConfigSelection(default=defaultLang, choices = ["en", "de", "it", "es", "fr", "pt"])
 			self.list.append(getConfigListEntry(_("Language"), self.local))
@@ -449,22 +437,9 @@ class ProjectValerieSyncSettingsConfSettings(Screen, ConfigListScreen):
 		printl("self.local.value: " + str(self.local.value), self)
 		printl("self.deleteIfNotFound.value: " + str(self.deleteIfNotFound.value), self)
 		
-		conf = []
-		fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "r")
-		for path in fconf.readlines(): 
-			path = path.strip()
-			p = path.split('=')
-			key = p[0]
-			if key is not None and key != "local" and key != "delete":
-				conf.append(path)
-		fconf.close()
-		
-		fconf = open(config.plugins.pvmc.configfolderpath.value + "valerie.conf", "w")
-		for entry in conf:
-			fconf.write(entry + "\n")
-		fconf.write("local=" + self.local.value + "\n")
-		fconf.write("delete=" + str(self.deleteIfNotFound.value).lower() + "\n")
-		fconf.close()
+		SyncConfig().getInstance().set("local", self.local.value)
+		SyncConfig().getInstance().set("delete", self.deleteIfNotFound.value)
+		SyncConfig().getInstance().save()
 		self.close()
 
 	def cancel(self):

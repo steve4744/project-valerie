@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<paths>
+ <searchpaths>
+  <searchpath>
+   <enable>true</enable>
+   <directory>/media</directory>
+   <type>MOVIE_AND_TV</type>
+   <usefolder>false</usefolder>
+  </searchpath>
+ </searchpaths>
+<paths>

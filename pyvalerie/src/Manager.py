@@ -17,7 +17,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import Blacklist
-import Config
 from   PVS_DatabaseHandler import Database
 from   MediaInfo import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
@@ -48,7 +47,6 @@ class Manager():
 	def __init__(self):
 		printl("->", self)
 		try:
-			Config.load()
 			self.db = Database().getInstance()
 			replace.load()
 		except Exception, ex:
@@ -56,7 +54,6 @@ class Manager():
 			from Plugins.Extensions.ProjectValerieSync.sync import checkDefaults
 			checkDefaults()
 			
-			Config.load()
 			self.db = Database().getInstance()
 			replace.load()
 

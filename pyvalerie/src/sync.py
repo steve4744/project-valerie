@@ -31,7 +31,7 @@ from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from   Arts import Arts
 import Blacklist
-import Config
+from   Config import SyncConfig
 from   PVS_DatabaseHandler import Database
 import DirectoryScanner
 from   FailedEntry import FailedEntry
@@ -136,17 +136,6 @@ def checkDefaults():
 	###
 	
 	try:
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "valerie.conf", __name__)
-		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "valerie.conf") is False:
-			printl("Check valerie.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"valerie.conf", config.plugins.pvmc.configfolderpath.value + "valerie.conf")
-			printl("\t- Created", __name__)
-		else:
-			printl("\t- OK", __name__)
-	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
-	
-	try:
 		printl("Check " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__)
 		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "pre.conf") is False:
 			printl("Check pre.conf - Missing -> Downloading", __name__)
@@ -226,8 +215,6 @@ class pyvalerie(Thread):
 		self.doAbort = False
 		
 		self.output(_("Loading Config"))
-		
-		Config.load()
 		Blacklist.load()
 		printl(str(len(Blacklist.get())) +" entrys")
 			   
@@ -238,7 +225,7 @@ class pyvalerie(Thread):
 		
 		#db.reload()
 		db.clearFailed()
-		if self.mode != self.FAST and Config.getBoolean("delete") is True:
+		if self.mode != self.FAST and SyncConfig().getInstance().get("delete") is True:
 			db.deleteMissingFiles()
 		
 		if self.mode != self.FAST:
@@ -507,7 +494,7 @@ class Sync():
 			if tmp is not None:
 				elementInfo = tmp
 			
-			userLang = Config.getString("local")
+			userLang = SyncConfig().getInstance().get("local")
 			if userLang != u"en":
 				tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
 				if tmp is not None:
@@ -539,7 +526,7 @@ class Sync():
 			if tmp is not None:
 				elementInfo = tmp
 				
-			userLang = Config.getString("local")
+			userLang = SyncConfig().getInstance().get("local")
 			if userLang != u"en":
 				tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
 				if tmp is not None:

@@ -20,6 +20,13 @@ class Xml2Dict():
 		self.xmlDom = minidom.parse(self.configFile)
 		return True
 
+	def printPretty(self):
+		xml = self.xmlDom.toprettyxml(encoding="utf-8")
+		# fix toprettyxml newline bug
+		fix = re.compile(r'((?<=>)(\n[\t]*)(?=[^<\t]))|(?<=[^>\t])(\n[\t]*)(?=<)')
+		xml = re.sub(fix, '', xml)
+		print xml
+
 	def save(self):
 		fileHandler = open(self.configFile, "wb")
 		xml = self.xmlDom.toprettyxml(encoding="utf-8")
