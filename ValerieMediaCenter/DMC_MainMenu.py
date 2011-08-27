@@ -831,6 +831,7 @@ def settings():
 	s.append((_("Show wizard on next start"), config.plugins.pvmc.showwizard, ))
 	s.append((_("Start Valerie on e2 start"), config.plugins.pvmc.autostart, ))
 	s.append((_("Check for updates on Valerie start"), config.plugins.pvmc.checkforupdate, ))
+	s.append((_("Check for updates of type"), config.plugins.pvmc.updatetype, ))
 	s.append((_("Skin"), config.plugins.pvmc.skin, ))
 	s.append((_("On Power press"), config.plugins.pvmc.onpowerpress, ))
 	s.append((_("Show Movie and TVShow in main menu"), config.plugins.pvmc.showmovieandtvinmainmenu, ))
