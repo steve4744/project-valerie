@@ -262,7 +262,8 @@ class PVMC_MainMenu(Screen):
 			printl("self.UseDreamScene=" + str(self.UseDreamScene), self)
 			if len(self.UseDreamScene) > 4:
 				self["stillpicture_usedreamscene"] = DataElement()
-				
+		
+		self.orientation = self.ORIENTATION_V
 		if self.APILevel >= 4:
 			self.orientation = self.ORIENTATION_V
 			try:

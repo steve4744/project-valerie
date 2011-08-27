@@ -89,7 +89,7 @@ class Plugin():
 	INFO_SEEN = 101
 
 	name  = None
-	desvc = None
+	desc = None
 	start = None
 	fnc   = None
 	where = None

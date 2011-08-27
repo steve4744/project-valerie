@@ -233,19 +233,10 @@ class E2Control():
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		printl("<-", self)
 
-##
-#
-##
 class Update():
-	##
-	#
-	##
 	def __init__(self):
 		pass
-	
-	##
-	#
-	##
+
 	def checkForUpdate(self):
 		box = getBoxtype()
 		printl("box=" + str(box), self)
