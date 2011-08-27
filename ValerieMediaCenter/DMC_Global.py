@@ -138,6 +138,8 @@ def getBoxtype():
 		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
 		version = file.readline().strip()
 		file.close()
+	else:
+		version = "duckbox"
 	
 	return (manu, model, arch, version)
 	
@@ -249,22 +251,23 @@ class Update():
 			f = opener.open(self.url)
 			#f = urllib2.urlopen(self.url)
 			html = f.read()
-			dom = parseString(html)
-			update = dom.getElementsByTagName("update")[0]
-			stb = update.getElementsByTagName("stb")[0]
-			version = stb.getElementsByTagName("version")[0]
-			remoteversion = version.childNodes[0].data
-			urls = stb.getElementsByTagName("url")
-			self.remoteurl = ""
-			for url in urls:
-				if url.getAttribute("arch") == box[2]:
-					if url.getAttribute("version") is None or url.getAttribute("version") == box[3]:
-						self.remoteurl = url.childNodes[0].data
+			from Plugins.Extensions.ProjectValerieSync.Xml2Dict import Xml2Dict
+			updateXml = Xml2Dict("")
+			updateXml.parse(html)
+			updateXmlDict = updateXml.get()
+			print updateXmlDict
+			updateType = config.plugins.pvmc.updatetype.value.lower()
+			for update in updateXmlDict["valerie"]["updates"]["update"]:
+				if update["type"] == updateType and update["system"] == "stb":
+					if update["arch"] == box[2] and update["subarch"] == box[3]:
+						remoteversion = str(update["revision"].replace("rev", "r"))
+						remoteurl = str(update["url"])
+						break
 			
-			printl("""Version: %s - URL: %s""" % (remoteversion, self.remoteurl), self)
+			printl("""Version: %s - URL: %s""" % (remoteversion, remoteurl), self)
 			
-			if config.plugins.pvmc.version.value != remoteversion and self.remoteurl != "":
-				return (remoteversion, self.remoteurl, )
+			if config.plugins.pvmc.version.value != remoteversion and remoteurl != "":
+				return (remoteversion, remoteurl, )
 		
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")

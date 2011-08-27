@@ -45,7 +45,7 @@ defaultConfigFolderPath = "/hdd/valerie/"
 defaultMediaFolderPath  = defaultConfigFolderPath + "media/"
 defaultTmpFolderPath    = "/tmp/valerie/"
 defaultSkin             = "blackSwan"
-defaultURL              = "http://www.duckbox.info/valerie/"
+defaultURL              = "http://val.duckbox.info/"
 defaultUpdateXML        = "update.php"
 
 config.plugins.pvmc = ConfigSubsection()
@@ -54,6 +54,7 @@ config.plugins.pvmc.language          = ConfigSelection(default="EN", choices = 
 config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
 config.plugins.pvmc.checkforupdate    = ConfigSelection(default = "Passive", choices = ["Active", "Passive", "Off", ])
+config.plugins.pvmc.updatetype        = ConfigSelection(default = "Release", choices = ["Release", "Nightly", ])
 
 config.plugins.pvmc.showmovieandtvinmainmenu    = ConfigYesNo(default = False)
 config.plugins.pvmc.onpowerpress      = ConfigSelection(default="DeepStandby", choices = ["DeepStandby", "Standby", ])
@@ -78,6 +79,7 @@ printl("__init__:: language="       + str(config.plugins.pvmc.language.value))
 printl("__init__:: showwizard="     + str(config.plugins.pvmc.showwizard.value))
 printl("__init__:: autostart="      + str(config.plugins.pvmc.autostart.value))
 printl("__init__:: checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value))
+printl("__init__:: updatetype="     + str(config.plugins.pvmc.updatetype.value))
 printl("__init__:: uselocal=" + str(config.plugins.pvmc.uselocal.value))
 
 skins = []
