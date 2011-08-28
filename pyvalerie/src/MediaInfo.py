@@ -298,26 +298,24 @@ class MediaInfo(object):
 	def parseNfo(self, name):
 		try:
 			printl("About to read from nfo-file: " + name + u".nfo", self, "I")
-			f = Utf8.Utf8(name + u".nfo", "r")
-			lines = f.read()
-			if lines is not None:
+			nfoFile = name + u".nfo"
+			printl("nfoFile =>" + str(nfoFile), self, "I")
+			fnfo = open(nfoFile,'r')
+			lines = fnfo.readlines()
+			for line in lines:
 				printl("Checking type of file...", self, "I")
-				lines = lines.split(u"\n")
-				if len(lines) > 1:
-					lines[1] = lines[1].strip()
-					if lines[1].startswith("<movie") or lines[1].startswith("<episodedetails>"):
-						printl("Found xbmc-style nfo...", self, "I")
-						self.isXbmcNfo = True
-						f.close()
-						return self.parseNfoXbmc(lines)
-					else:
-						printl("Might be IMDb-ID nfo...", self, "I")
-						f.close()
-						return self.getImdbIdFromNfo(lines)
+				printl("line => " + line, self, "I")
+				line = line.strip()
+				if line.startswith("<movie") or line.startswith("<episodedetails>") or line.startswith("<?xml version"):
+					printl("Found xbmc-style nfo...", self, "I")
+					self.isXbmcNfo = True
+					fnfo.close()
+					return self.parseNfoXbmc(lines)
 				else:
-					f.close()
-					return None
-			f.close()
+					printl("Might be IMDb-ID nfo...", self, "I")
+					fnfo.close()
+					return self.getImdbIdFromNfo(lines)
+			fnfo.close()
 			return None
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
