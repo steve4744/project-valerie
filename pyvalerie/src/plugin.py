@@ -557,7 +557,7 @@ class ProjectValerieSyncSettings(Screen):
 					# Delete also failed.db...
 					self.remove(config.plugins.pvmc.configfolderpath.value + "failed.db") 
 					
-					Manager().reload()
+					#Manager().reload() not implemented anymore
 					
 					self.session.open(MessageBox,_("Database successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)
 				except:
