@@ -191,7 +191,8 @@ class WebActions(Resource):
 		# option section
 		##
 		elif request.args["mode"][0] == "options.saveconfig":
-			if request.args["type"][0] == "settings_global":
+			printl("argument => mode = options.saveconfig", self, "I")	
+			if request.args["what"][0] == "settings_global":
 				name = request.args["name"][0]
 				value = "unchecked"
 				if request.args.has_key("value"):
@@ -216,8 +217,10 @@ class WebActions(Resource):
 							entry[1].value = value
 						entry[1].save()
 			
-			elif request.args["type"][0] == "settings_sync":
+			elif request.args["what"][0] == "settings_sync":
+				printl("argument => what = settings_sync", self, "I")
 				if request.args["section"][0] == "paths":
+					printl("argument => section = path", self, "I")
 					id = request.args["Id"][0]
 					directory = request.args["directory"][0]
 					typeFolder = request.args["type"][0]
@@ -231,6 +234,7 @@ class WebActions(Resource):
 					PathsConfig().getInstance().save()
 				
 				elif request.args["section"][0] == "filetypes":
+					printl("argument => section = filetypes", self, "I")
 					value = request.args["value"][0]
 					from Plugins.Extensions.ProjectValerieSync.PathsConfig import PathsConfig
 					PathsConfig().getInstance().setFileTypes(value.split("|"))
