@@ -35,7 +35,7 @@ language.addCallback(localeInit)
 
 gAvailable = False
 try:
-	from TraktAPI import TraktAPI 
+	from DMC_TraktExtras.TraktAPI import TraktAPI 
 	gAvailable = True
 except:
 	gAvailable = False

@@ -35,7 +35,7 @@ language.addCallback(localeInit)
 
 gAvailable = False
 try:
-	from MyEpisodesAPI import MyEpisodesAPI 
+	from DMC_MyEpisodesExtras.MyEpisodesAPI import MyEpisodesAPI 
 	gAvailable = True
 except:
 	gAvailable = False
