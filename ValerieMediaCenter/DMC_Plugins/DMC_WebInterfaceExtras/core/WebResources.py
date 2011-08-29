@@ -491,7 +491,7 @@ class GlobalSetting (Resource):
 								<input type="hidden" name="what" value="settings_global"></input>
 								<input type="hidden" name="type" value="%s"></input>
 								<tr id="tr_entry">
-									<td width="300px">%s:</td>
+									<td width="550px">%s:</td>
 									<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
 									<td width="200px">%s</td>
 									<td width="70px"><input type="submit" value="save"></input></td>
@@ -538,7 +538,7 @@ class SyncSettings (Resource):
 									<tr id="tr_entry">
 										<td width="100px">%s:</td>
 										<td width="0px"><input id="name" name="name" type="hidden" size="50" value="%s"></input></td>
-										<td width="200px">%s</td>
+										<td width="700px">%s</td>
 										<td width="70px"><input type="submit" value="save"></input></td>
 									</tr>
 								</form>
@@ -554,7 +554,7 @@ class SyncSettings (Resource):
 		tableBody += u"""<table align="left" id="settings_sync_sub">"""
 		tableBody += u"""<tr>
 							<td width="100px">Enabled</td>
-							<td width="200px">Directory</td>
+							<td width="5100px">Directory</td>
 							<td width="50px">Type</td>
 							<td width="50px">UseFolder</td>
 							<td width="70px"></td>
