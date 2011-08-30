@@ -83,11 +83,6 @@ def info_playback(d, flags):
 		gtrakt.setTheTvDbId(d["thetvdb"])
 	if d.has_key("season") and d.has_key("episode"):
 		gtrakt.setSeasonAndEpisode(d["season"], d["episode"])
-	if d.has_key("status"):
-		if d["status"] == "playing":
-			gtrakt.setStatus(TraktAPI.STATUS_WATCHING)
-		elif d["status"] == "stopped":
-			gtrakt.setStatus(TraktAPI.STATUS_WATCHED)
 	if d.has_key("type"):
 		if d["type"] == "movie":
 			gtrakt.setType(TraktAPI.TYPE_MOVIE)
@@ -97,6 +92,15 @@ def info_playback(d, flags):
 		gtrakt.setProgress(d["progress"])
 	if d.has_key("duration"):
 		gtrakt.setDuration(d["duration"])
+	
+	if d.has_key("status"):
+		# send status updates only if state has changed
+		if d["status"] == gtrakt.getStatus():
+			return;
+		if d["status"] == "playing":
+			gtrakt.setStatus(TraktAPI.STATUS_WATCHING)
+		elif d["status"] == "stopped":
+			gtrakt.setStatus(TraktAPI.STATUS_WATCHED)
 	
 	if config.plugins.pvmc.plugins.trakt.enabled.value is True:
 		gtrakt.setUsernameAndPassword(config.plugins.pvmc.plugins.trakt.username.value, config.plugins.pvmc.plugins.trakt.password.value)
