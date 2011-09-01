@@ -3,7 +3,7 @@
 //
 
 /*GLOBAL*/
-var debug = true;
+var debug = false;
 
 /*FUNCTIONS*/
 $(document).ready(function(){
