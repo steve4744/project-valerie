@@ -251,7 +251,7 @@ class Update():
 			f = opener.open(self.url)
 			#f = urllib2.urlopen(self.url)
 			html = f.read()
-			from Plugins.Extensions.ProjectValerieSync.Xml2Dict import Xml2Dict
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
 			updateXml = Xml2Dict("")
 			updateXml.parse(html)
 			updateXmlDict = updateXml.get()

@@ -40,7 +40,7 @@ config.plugins.pvmc.plugins.backgrounddbloader.autoload = ConfigYesNo(default = 
 
 class BackgroundDbLoader(Thread):
 	def run(self):
-		from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		m = Manager()
 
 def autostart(session):

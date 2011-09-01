@@ -567,7 +567,7 @@ class PVMC_MainMenu(Screen):
 				elif selection[1] == "PVMC_Sync":
 					isInstalled = False
 					try:
-						from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
+						from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
 						isInstalled = True
 					except Exception, ex:
 						isInstalled = False

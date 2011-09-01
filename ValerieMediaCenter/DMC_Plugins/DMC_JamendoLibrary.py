@@ -40,9 +40,9 @@ class DMC_JamendoLibrary(DMC_Library):
     def loadLibrary(self, primaryKeyValuePair):
         global utf8ToLatin
         if utf8ToLatin is None:
-            from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-        from Plugins.Extensions.ProjectValerieSync.WebGrabber import getFile
-        from Plugins.Extensions.ProjectValerieSync.Xml2Dict import Xml2Dict
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+        from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.WebGrabber import getFile
+        from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
         
         # Diplay all TVShows
         if primaryKeyValuePair is None:
@@ -154,9 +154,9 @@ class DMC_JamendoLibrary(DMC_Library):
     def getPlaybackList(self, entry):
         global utf8ToLatin
         if utf8ToLatin is None:
-            from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-        from Plugins.Extensions.ProjectValerieSync.WebGrabber import getFile
-        from Plugins.Extensions.ProjectValerieSync.Xml2Dict import Xml2Dict
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+        from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.WebGrabber import getFile
+        from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
         
         playbackList = []
         if entry.has_key("JamendoId"):

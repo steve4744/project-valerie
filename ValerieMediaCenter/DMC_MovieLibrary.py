@@ -22,7 +22,7 @@ class DMC_MovieLibrary(DMC_Library):
         printl ("->", self)
         global Manager
         if Manager is None:
-            from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
             printl ("Manager Imported")
         
         self.manager = Manager()
@@ -35,7 +35,7 @@ class DMC_MovieLibrary(DMC_Library):
         global Manager
         global utf8ToLatin
         if utf8ToLatin is None:
-            from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
         
         # Diplay all TVShows
         if primaryKeyValuePair is None:

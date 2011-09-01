@@ -40,11 +40,11 @@ def settings():
 	return s
 
 def autostartPlugin(session):
-	from Plugins.Extensions.ProjectValerieSync.plugin import autostart
+	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import autostart
 	autostart(session)
 
 def startPlugin(session):
-	from Plugins.Extensions.ProjectValerieSync.plugin import ProjectValerieSync
+	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
 	session.open(ProjectValerieSync)
 
 registerPlugin(Plugin(name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))

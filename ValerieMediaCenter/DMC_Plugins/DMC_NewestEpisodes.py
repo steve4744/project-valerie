@@ -51,7 +51,7 @@ class DMC_NewestEpisodes(DMC_Library):
     def __init__(self, session):
         global Manager
         if Manager is None:
-            from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
         
         self.manager = Manager()
         DMC_Library.__init__(self, session, "tv shows")
@@ -64,7 +64,7 @@ class DMC_NewestEpisodes(DMC_Library):
         global Manager
         global utf8ToLatin
         if utf8ToLatin is None:
-            from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+            from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
         
         start_time = time.time()
         
