@@ -83,7 +83,14 @@ class MediaForm(Resource):
 		# ADDBYIMDB MODE
 		#######################
 		elif currentMode == 'showAddByImdbForm':
-			nextMode = "alterMediaInDb"
+			if "Id" in request.args:
+				if request.args["Id"][0] == "":
+					nextMode = "addMediaToDb"
+				else:
+					nextMode = "alterMediaInDb"
+			else:
+				nextMode = "addMediaToDb"
+				
 			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")
 			m = MediaInfo()
 			m.ImdbId = "";
@@ -153,6 +160,9 @@ class MediaForm(Resource):
 			if m.Seen == "1":
 				seenCheck = "checked"
 			printl("nextMode = " + nextMode, self, "W")
+			
+			if m.ParentId == None:
+				m.ParentId = u""
 
 			mediaForm = mediaForm % (type, nextMode, Id, m.ParentId, type, Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self._getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
 

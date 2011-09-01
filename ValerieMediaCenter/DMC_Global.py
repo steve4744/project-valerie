@@ -238,7 +238,7 @@ class E2Control():
 class Update():
 	def __init__(self):
 		pass
-
+		
 	def checkForUpdate(self):
 		box = getBoxtype()
 		printl("box=" + str(box), self)
@@ -272,3 +272,45 @@ class Update():
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
 		return (None, None, )
+		
+	def getLatestRevisionByType(self, type):
+		box = getBoxtype()
+		printl("box=" + str(box), self)
+		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
+		printl("Checking URL: " + str(self.url), self) 
+		try:
+			opener = urllib2.build_opener()
+			box = getBoxtype()
+			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
+			f = opener.open(self.url)
+			html = f.read()
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
+			updateXml = Xml2Dict("")
+			updateXml.parse(html)
+			updateXmlDict = updateXml.get()
+			revision = ""
+			print updateXmlDict
+			for update in updateXmlDict["valerie"]["updates"]["update"]:
+				if update["type"] == type and update["system"] == "stb":
+					if update["arch"] == box[2] and update["subarch"] == box[3]:
+						revision = str(update["revision"].replace("rev", "r"))
+						break
+			
+			printl("Revision: " + revision, self, "I")
+
+			return revision
+		
+		except Exception, e:
+			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
+		return (None, None, )
+		
+	def getCurrentUpdateType(self):
+		updateType = config.plugins.pvmc.updatetype.value.lower()
+		
+		return updateType
+		
+	def getInstalledRevision(self):
+		installedRevision = config.plugins.pvmc.version.value
+		
+		return installedRevision
+		

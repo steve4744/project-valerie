@@ -42,24 +42,27 @@ class Home(Resource):
 			
 		finalOutput = WebHelper().getHtmlCore("Home")
 		
-		currentVersion = config.plugins.pvmc.version.value
+		currentVersion = Update().getInstalledRevision()
 		movieCount = str(Manager().getMoviesCount())
 		tvShowCount = str(Manager().getSeriesCount())
 		episodeCount = str(Manager().getEpisodesCount())
-				
-		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", currentVersion)
+		
+		updateType = Update().getCurrentUpdateType()
+		latestStable = Update().getLatestRevisionByType("release")
+		latestNightly = Update().getLatestRevisionByType("nightly")
 		
 		finalOutput = finalOutput.replace("<!-- MOVIE_COUNT -->", movieCount)
 		finalOutput = finalOutput.replace("<!-- TVSHOW_COUNT -->", tvShowCount)
 		finalOutput = finalOutput.replace("<!-- EPISODE_COUNT -->", episodeCount)
 		
-		updateNeeded = Update().checkForUpdate()[0]
-		
-		if (updateNeeded is None):
-			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", " (no Update needed)")
-		else:
-			finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", "(found new version " + updateNeeded + ")")
-		
+		revisionText = """	<br>
+							Your update type => %s.<br>
+							The latest stable release => %s.<br>
+							The latest nightly release => %s. <br>		
+		""" % (updateType, latestStable, latestNightly)
+
+		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", "Your installed revision => " + currentVersion)
+		finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", revisionText)
 		
 		return utf8ToLatin(finalOutput)
 

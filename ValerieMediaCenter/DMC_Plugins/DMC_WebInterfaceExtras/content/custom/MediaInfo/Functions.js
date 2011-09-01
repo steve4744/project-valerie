@@ -52,8 +52,8 @@ $(document).ready(function(){
 	//ADD NEW RECORD WITH DATA
 	} else if (mode == "showAddByImdbForm") {
 		$("#special_features").hide();
-		$('[name=Id]').val(params["id"]);
-		$('[name=Id2]').val(params["id"]);
+		$('[name=Id]').val(Id);
+		$('[name=Id2]').val(Id);
 		
 		changeTable(type);
 		
