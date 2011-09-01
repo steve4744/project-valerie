@@ -1628,7 +1628,7 @@ class databaseHandlerPICKLE(object):
 	def _checkForPreDbUpates(self, database):
 			version = config.plugins.pvmc.version.value
 			version = int(version.replace("r", ""))
-			if version >= 0: #change before commit
+			if version >= 969: #change before commit
 				printl("NEW", self, "W")
 				self._modifyPickleDB(database, "Plugins.Extensions.ProjectValerieSync", "Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras")
 			else:
