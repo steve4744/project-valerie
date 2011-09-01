@@ -1,5 +1,10 @@
-from Components.config import config
+##############################################################################
+# THIS FILE HAS ALL CLASSES AND FUNCTION THAT ARE NEEDED FOR THE WEBIF
+# TO PROVIDE CLICKABLE MAIN-ACTIONS
+##############################################################################
 
+from urllib import urlencode
+from Components.config import config
 from twisted.web.resource import Resource
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
@@ -16,19 +21,26 @@ MediaInfo = None
 MobileImdbComProvider = None
 # --- LAZY IMPORTS ---
 
-##
-#
-##
+##########################
+# CLASS:
+##########################
 class Home(Resource):
+
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		global Manager
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		if Manager is None:
-			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 			
-		finalOutput = WebData().getHtmlCore("Home")
+		finalOutput = WebHelper().getHtmlCore("Home")
 		
 		currentVersion = config.plugins.pvmc.version.value
 		movieCount = str(Manager().getMoviesCount())
@@ -51,19 +63,25 @@ class Home(Resource):
 		
 		return utf8ToLatin(finalOutput)
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Movies(Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global MediaInfo
 		global utf8ToLatin
 		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 				
-		finalOutput = WebData().getHtmlCore("Movies", True)
+		finalOutput = WebHelper().getHtmlCore("Movies", True)
 			
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Movies/Header.tpl")
 		tableBody = u""
@@ -72,8 +90,8 @@ class Movies(Resource):
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Movies")
 		
 		for entry in entries:
-			evtEdit = WebData().getEditString(entry, "isMovie")
-			evtDelete = WebData().getDeleteString(entry, "isMovie")
+			evtEdit = self._editMovie(entry, "isMovie")
+			evtDelete = self._deleteMovie(entry, "isMovie")
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -92,20 +110,47 @@ class Movies(Resource):
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
 	
 		return utf8ToLatin(finalOutput)
+		
+	############################################
+	def _editMovie (self, entry, type):
+		onclick  = "javascript:window.open('/mediaForm?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
+		onclick  += urlencode({'Id':entry.Id})  
+		onclick  += "', '_self');"
+		
+		return onclick
+	############################################
+	def _deleteMovie (self, entry, type):
+		onclick = "javascript:if (confirm('Are you sure to delete the selected record?'))"
+		onclick += "{window.open('/action?type="
+		onclick += str(type) + "&"
+		onclick += "mode=deleteMediaFromDb&"
+		onclick += "Id=" + str(entry.Id) + "&"
+		onclick += "ParentId=" + str(entry.ParentId)
+		onclick += "', '_self')} else { return};"
+		
+		return onclick
 
-##
-#
-##
+##########################
+# CLASS:
+##########################
 class TvShows(Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global MediaInfo
 		global utf8ToLatin
 		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 	
-		finalOutput = WebData().getHtmlCore("TvShows", True)
+		finalOutput = WebHelper().getHtmlCore("TvShows", True)
 			
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/TvShows/Header.tpl")
 		tableBody = u""
@@ -114,10 +159,10 @@ class TvShows(Resource):
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Series")
 
 		for entry in entries:
-			evtShowEpisodes = WebData().getEpisodesOfTvShow(entry.Id)
-			evtEdit = WebData().getEditString(entry, "isTvShow")
-			evtAddEpisode = WebData().getAddEpisodeString(entry, "isEpisode")
-			evtDelete = WebData().getDeleteString(entry, "isTvShow") 
+			evtShowEpisodes = self._getEpisodesOfTvShow(entry.Id)
+			evtEdit = self._editTvShow(entry, "isTvShow")
+			evtAddEpisode = self._addEpisode(entry, "isEpisode")
+			evtDelete = self._deleteTvShow(entry, "isTvShow") 
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -138,20 +183,60 @@ class TvShows(Resource):
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
 	
 		return utf8ToLatin(finalOutput)
-
-##
-#
-##
+		
+	#############################################
+	def _getEpisodesOfTvShow (self, parentId):
+		onclick = "javascript:window.open('/episodes?ParentId=" + str(parentId) + "', '_self');"
+		
+		return onclick
+	#############################################
+	def _editTvShow (self, entry, type):
+		onclick  = "javascript:window.open('/mediaForm?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
+		onclick  += urlencode({'Id':entry.Id})  
+		onclick  += "', '_self');"
+		
+		return onclick
+	#############################################
+	def _addEpisode	(self, entry, type):
+		onclick  = "javascript:window.open('/addRecord?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'ParentId':entry.Id}) # + "&"
+		onclick  += "', '_self');"
+		
+		return onclick	
+	#############################################
+	def _deleteTvShow (self, entry, type):
+		onclick = "javascript:if (confirm('Are you sure to delete the selected record?'))"
+		onclick += "{window.open('/action?type="
+		onclick += str(type) + "&"
+		onclick += "mode=deleteMediaFromDb&"
+		onclick += "Id=" + str(entry.Id) + "&"
+		onclick += "ParentId=" + str(entry.ParentId)
+		onclick += "', '_self')} else { return};"
+		
+		return onclick
+		
+##########################
+# CLASS:
+##########################
 class Episodes(Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global MediaInfo
 		global utf8ToLatin
 		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Episodes", True)
+		finalOutput = WebHelper().getHtmlCore("Episodes", True)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Episodes")
 
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Episodes/Header.tpl")
@@ -162,8 +247,8 @@ class Episodes(Resource):
 		entries = WebData().getData("EpisodesOfSerie", ParentId)
 		
 		for entry in entries:
-			evtEdit = WebData().getEditString(entry, "isEpisode")
-			evtDelete = WebData().getDeleteString(entry, "isEpisode")
+			evtEdit = self._editEpisode(entry, "isEpisode")
+			evtDelete = self._deleteEpisode(entry, "isEpisode")
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -185,20 +270,46 @@ class Episodes(Resource):
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
 	
 		return utf8ToLatin(finalOutput)
+
+	########################################
+	def _editEpisode (self, entry, type):
+		onclick  = "javascript:window.open('/mediaForm?"
+		onclick  += urlencode({'type':type}) + "&"
+		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
+		onclick  += urlencode({'Id':entry.Id})  
+		onclick  += "', '_self');"
+		
+		return onclick
+	########################################
+	def _deleteEpisode (self, entry, type):
+		onclick = "javascript:if (confirm('Are you sure to delete the selected record?')) {window.open('/action?type="
+		onclick  += str(type) + "&"
+		onclick  += "mode=deleteMediaFromDb&"
+		onclick  += "Id=" + str(entry.Id) + "&"
+		onclick  += "ParentId=" + str(entry.ParentId)
+		onclick  += "', '_self')} else { return};"
+		
+		return onclick
 	
-##
-#
-##
+##########################
+# CLASS:
+##########################
 class Failed(Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global MediaInfo
 		global utf8ToLatin
 		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 				
-		finalOutput = WebData().getHtmlCore("Failed", True)
+		finalOutput = WebHelper().getHtmlCore("Failed", True)
 
 		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Failed/Header.tpl")
 		tableBody = u""
@@ -226,251 +337,43 @@ class Failed(Resource):
 	
 		return utf8ToLatin(finalOutput)
 
-##
-#
-##
-class MediaInfo(Resource):
-	def render_GET(self, request):
-		global MediaInfo
-		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
-		global utf8ToLatin
-		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-		global Manager
-		if Manager is None:
-			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
-		
-		finalOutput = WebData().getHtmlCore("MediaInfo", True)
-		
-		Id = None
-		ParentId = None
-		imdbId = u""
-		theTvDbId = u""
-		mode = request.args["mode"][0]
-		
-		#Postback error - used for error only ... review
-		if mode=="done" or mode=="error":
-			return finalOutput
-		
-		type = request.args["type"][0]
 
-		if mode == 'edit':
-			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Edit Media")
-			Id = request.args["Id"][0]
-			m = WebData().getData("MediaInfo_"+type, Id)
-			imdbId = m.ImdbId
-			theTvDbId = m.TheTvDbId
-		elif mode == 'addbyimdb':
-			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")
-			m = MediaInfo()
-			m.ImdbId = "";
-			m.SearchString = "";
-			if type == "isEpisode":
-				type = "isSerie" # we need to do this because Manger.syncelemnts uses this name not the name till now isTvShow
-			
-			path = "/PATH/TO/FILE/"
-			filename = "FILENAME"
-			extension = "EXT"
-			if type == "isMovie" or type == "isSerie":
-				m.ImdbId = request.args["ImdbId"][0]
-				printl("addbyimdb: "+str(request.args["ImdbId"][0]) + " " + str(type))
-				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, type)
-				m = syncData[0]
 		
-		elif mode == 'addbytitle':
-			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")	
-			mediainfo.SearchString = request.args["Title"][0]
-			results = Manager().searchAlternatives(mediainfo)			
-			
-			
-		#if type == 'isTvShow':
-		if "ParentId" in request.args:
-			ParentId = request.args["ParentId"][0]
-		else:
-			ParentId = u""
-
-		image = u""
-		backdrop = u""
-		if type == "isMovie":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + imdbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + imdbId + "_backdrop_320x180.png")
-			
-		elif type == "isTvShow" or type == "isEpisode":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_backdrop_320x180.png")
-	
-		mediaForm = u"""
-		<form action="/action" method="post">
-			<input type="hidden" name="type" value=%s>
-			<input type="hidden" name="mode" value="edit">
-			<input type="hidden" Id="Id" name="Id" value="%s">
-			<input type="hidden" Id="ParentId" name="ParentId" value="%s">
-			
-			<tr><td></td></tr>
-			<tr id="tr_type"><td>Type:</td><td id="td_type">
-				<input id="type" name="Type" type="text" size="10" value="%s" disabled="disabled"></input>
-				<input id="id2" name="id2" type="text" size="10" value="%s" disabled="disabled"></input> </td></tr> 
-			<tr id="tr_imdbid"><td>ImdbId:</td><td>
-				<input id="imdbid" name="ImdbId" type="text" size="10" value="%s" class="requiredlabel"></input></td><td>(e.g. tt9000000)</td></tr>
-			<tr id="tr_thetvdbid"><td>TheTvDbId:</td><td>
-				<input id="thetvdbid" name="TheTvDbId" type="text" size="10" value="%s" class="requiredlabel"></input></td><td>(e.g. 999999)</td></tr>
-			<tr id="tr_title" class="small requiredlabel"><td>Title:</td><td>
-				<input id="title" name="Title" type="text" class="medium requiredfield" value="%s"></input></td><td>(e.g. my title)</td></tr>
-			<tr id="tr_tag"><td>Tag:</td><td>
-				<input id="tag" name="Tag" type="text" value="%s" class="medium"></input></td><td>(e.g.my tag)</td></tr>
-			<tr id="tr_season"><td>Season:</td><td>
-				<input id="season" name="Season" type="text"  maxlength="2" value="%s" class="small"></input></td><td>(e.g. 01)</td></tr>
-			<tr id="tr_episode"><td>Episode:</td><td>
-				<input id="episode" name="Episode" type="text" maxlength="3" value="%s" class="small"></input></td><td>(e.g. 01)</td></tr>
-			<tr id="tr_plot"><td>Plot:</td><td>
-				<textarea id="plot" name="Plot" cols="50" rows="15" class="medium">%s</textarea></td><td>(e.g. story description)</td></tr>
-			<tr id="tr_runtime"><td>Runtime:</td><td>
-				<input id="runtime" name="Runtime" type="text" value="%s" class="small"></input></td><td>(e.g. 90)</td></tr>
-			<tr id="tr_year"><td>Year:</td><td>
-				<input id="year" name="Year" type="text" maxlength="4" value="%s" class="small"></td><td></input>(e.g. 2011)</td></tr>
-			<tr id="tr_genres"><td>Genres:</td><td>
-				<input id="genres" name="Genres" type="text" value="%s" class="medium"></input></td><td>(e.g. Action|Thriller)</td></tr>
-			<tr id="tr_popularity"><td>Popularity:</td><td>
-				<!--<input id="popularity" name="Popularity" type="text" value=""></input></td><td>(e.g. 9)-->				
-				<select id="popularity" name="Popularity" class="small">	
-				%s			
-				</select>
-				</td></tr>
-				
-			<tr id="tr_path"><td>Path:</td><td>
-				<input class="medium requiredfield" id="path" name="Path" type="text" value="%s"></td><td></input>(e.g. /some/where/on/my/box/)</td></tr>
-			<tr id="tr_filename"><td>Filename:</td><td>
-				<input class="medium requiredfield"  id="filename" name="Filename" type="text" value="%s"></td><td></input>(e.g. my filename)</td></tr>
-			<tr id="tr_extension" class="requiredlabel"><td>Extension:</td><td>
-				<input class="small requiredfield"  id="extension" name="Extension" type="text" maxlength="3" value="%s"></td><td></input>(without leading . => e.g. mkv)</td></tr>		
-			<tr id="tr_seen"><td>Seen</td><td>
-				<input id="seen" name="Seen" type="checkbox" value="1" %s></td><td></input></td></tr>		
-			<tr><td>
-			<tr><td>
-				<input type="submit" value="Save"></input>
-			</td></tr>
-		</form>
-			""" 
-		if mode=="add": 
-			mediaForm = mediaForm % (type, u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
-		else:
-			seenCheck = ""
-			if m.Seen == "1":
-				seenCheck = "checked"
-			
-			mediaForm = mediaForm % (type, m.Id, m.ParentId, type, m.Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self.getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
-
-		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
-		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)
-		finalOutput = finalOutput.replace("<!-- CUSTOM_FORM -->", mediaForm)
-	
-		return utf8ToLatin(finalOutput)
-
-	def getPopularity(self, value):
-		str = u""
-		str += """<option value="">-- Select --</option>"""
-		for i in range(1,11):
-			if i==value:
-				str += """<option value="%d" selected="yes">%d</option>""" % (i,i)
-			else:
-				str += """<option value="%d">%d</option>""" % (i,i)
-		return str
-##
-#
-##
-class Alternatives(Resource):
-	def render_GET(self, request):
-		global utf8ToLatin
-		global MediaInfo
-		global MobileImdbComProvider
-		
-		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-		if MediaInfo is None:
-			from Plugins.Extensions.ProjectValerieSync.MediaInfo import MediaInfo
-		if MobileImdbComProvider is None:
-			from Plugins.Extensions.ProjectValerieSync.MobileImdbComProvider import MobileImdbComProvider
-				
-		finalOutput = WebData().getHtmlCore("Alternatives", True)
-		
-		tableHeader = WebHelper().readFileContent(u"/DMC_Plugins/DMC_WebInterfaceExtras/content/custom/Alternatives/Header.tpl")
-		tableBody = u""
-		
-		mediainfo = MediaInfo()
-		mediainfo.ImdbId = "";
-		mediainfo.SearchString = "";
-
-		mediainfo.SearchString = request.args["Title"][0]
-		entries = MobileImdbComProvider().getAlternatives(mediainfo)
-		
-		for entry in entries:
-			existing = "false"
-			entry.type = request.args["type"][0]
-			#entry.oldImdbId = request.args["oldImdbId"][0]
-			entry.Id = u"" #request.args["Id"][0]
-			
-			if request.args["mode"][0] == "existing":
-				entry.Path = request.args["Path"][0]
-				entry.Filename = request.args["Filename"][0]
-				entry.Extension = request.args["Extension"][0]
-				existing = "true"
-		
-			evtApply = WebData().getApplyAlternativeString(entry, existing)
-			
-			tableBody += u"""   <tr>
-								<td>%s</td>
-								<td><a href=http://www.imdb.com/title/%s/ target="_blank">%s</a></td>
-								<td>%s</td>
-								<td>%s</td>
-								<td>
-									<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/apply.png" alt="apply" title="apply" /></a>
-								</td>
-								</tr>
-						""" % (entry.Year, entry.ImdbId, entry.ImdbId, utf8ToLatin(entry.Title), entry.IsTVSeries, evtApply)
-			
-		
-		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
-		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
-		
-		return utf8ToLatin(finalOutput)
-		
-##
-#
-##		
-class AddRecord (Resource):
-	def render_GET(self, request):
-		global utf8ToLatin
-		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
-		
-		finalOutput = WebData().getHtmlCore("AddRecord", True)
-	
-		return utf8ToLatin(finalOutput)	
-		
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Options (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Options")
+		finalOutput = WebHelper().getHtmlCore("Options")
 				
 		return utf8ToLatin(finalOutput)
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class GlobalSetting (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 				
-		finalOutput = WebData().getHtmlCore("Options" , True, "Global")
+		finalOutput = WebHelper().getHtmlCore("Options" , True, "Global")
 		
 		tableBody = self.buildTableGlobal("options.global")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_GLOBAL -->", tableBody)
@@ -501,16 +404,22 @@ class GlobalSetting (Resource):
 		
 		return tableBody
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class SyncSettings (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Options" , True, "Sync")
+		finalOutput = WebHelper().getHtmlCore("Options" , True, "Sync")
 						
 		tableBody = self.buildTableSyncFileTypes("options.sync")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC_FILETYPES -->", tableBody)
@@ -591,80 +500,117 @@ class SyncSettings (Resource):
 		
 		return tableBody
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Logs (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Logs")
+		finalOutput = WebHelper().getHtmlCore("Logs")
 	
 		return utf8ToLatin(finalOutput)	
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Valerie (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Logs" , False, "Valerie")
+		finalOutput = WebHelper().getHtmlCore("Logs" , False, "Valerie")
 	
 		return utf8ToLatin(finalOutput)	
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Enigma (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 				
-		finalOutput = WebData().getHtmlCore("Logs" , False, "Enigma")
+		finalOutput = WebHelper().getHtmlCore("Logs" , False, "Enigma")
 	
 		return utf8ToLatin(finalOutput)		
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Extras (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Extras")
+		finalOutput = WebHelper().getHtmlCore("Extras")
 	
 		return utf8ToLatin(finalOutput)
-##
-#
-##		
+		
+##########################
+# CLASS:
+##########################		
 class Backup (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 				
-		finalOutput = WebData().getHtmlCore("Extras" , True, "Backup")
+		finalOutput = WebHelper().getHtmlCore("Extras" , True, "Backup")
 	
 		return utf8ToLatin(finalOutput)	
 
-##
-#
-##		
+##########################
+# CLASS:
+##########################		
 class Restore (Resource):
 	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
 		global utf8ToLatin
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
-		finalOutput = WebData().getHtmlCore("Extras" , True, "Restore")
+		finalOutput = WebHelper().getHtmlCore("Extras" , True, "Restore")
 	
 		return utf8ToLatin(finalOutput)
 		

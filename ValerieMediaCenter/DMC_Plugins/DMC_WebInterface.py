@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from threading import Thread
+from threading import Thread #TODO CHECK IF NEEDED ?????
 
 from Components.config import config
 from Components.config import ConfigInteger
@@ -9,8 +8,8 @@ from Components.config import ConfigYesNo
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
-from DMC_WebInterfaceExtras.core import WebActions
-from DMC_WebInterfaceExtras.core import WebResources
+from DMC_WebInterfaceExtras.core import WebMainActions
+from DMC_WebInterfaceExtras.core import WebSubActions
 
 from Components.Language import language
 import gettext
@@ -63,21 +62,26 @@ config.plugins.pvmc.plugins.webinterface.usepagination = ConfigYesNo(default = T
 def autostart(session):
 	global utf8ToLatin
 	if utf8ToLatin is None:
-		from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 	
 	try:
 		root = Resource()
 		
-		#Dynamic Pages
-		root.putChild("", WebResources.Home())
-		root.putChild("movies", WebResources.Movies())
-		root.putChild("tvshows", WebResources.TvShows())
-		root.putChild("failed", WebResources.Failed())
-		root.putChild("extras", WebResources.Extras())
-		root.putChild("options", WebResources.Options())
-		root.putChild("logs", WebResources.Logs())
-		root.putChild("valerie", WebResources.Valerie())
-		root.putChild("enigma", WebResources.Enigma())
+		#Dynamic Pages Main => WebMainActions
+		root.putChild("", WebMainActions.Home())
+		root.putChild("movies", WebMainActions.Movies())
+		root.putChild("tvshows", WebMainActions.TvShows())
+		root.putChild("episodes", WebMainActions.Episodes())
+		root.putChild("failed", WebMainActions.Failed())
+		root.putChild("extras", WebMainActions.Extras())
+		root.putChild("options", WebMainActions.Options())
+		root.putChild("logs", WebMainActions.Logs())
+		root.putChild("valerie", WebMainActions.Valerie())
+		root.putChild("enigma", WebMainActions.Enigma())
+		root.putChild("globalSettings", WebMainActions.GlobalSetting())
+		root.putChild("syncSettings", WebMainActions.SyncSettings())
+		root.putChild("backup", WebMainActions.Backup())
+		root.putChild("restore", WebMainActions.Restore())
 		
 		#Static Pages, CSS, JS
 		root.putChild("content", File(utf8ToLatin(config.plugins.pvmc.pluginfolderpath.value + u"/DMC_Plugins/DMC_WebInterfaceExtras/content"), defaultType="text/plain"))
@@ -87,21 +91,13 @@ def autostart(session):
 		root.putChild("elog", File('/hdd/', defaultType="text/plain"))
 		root.putChild("media", File(config.plugins.pvmc.configfolderpath.value + '/media', defaultType="text/plain"))
 		root.putChild("dumps", File(config.plugins.pvmc.tmpfolderpath.value + 'dumps', defaultType="text/plain"))
-		#root.putChild("valerie", File(config.plugins.pvmc.tmpfolderpath.value, defaultType="text/plain"))
 		
-		#Action pages without MainMenu-Entry
-		root.putChild("action", WebActions.WebActions())
-		root.putChild("mediainfo", WebResources.MediaInfo())
-		root.putChild("episodes", WebResources.Episodes())
-		root.putChild("addrecord", WebResources.AddRecord())
-		root.putChild("alternatives", WebResources.Alternatives())
-		
-		#Action pages in SubMenu
-		root.putChild("globalSettings", WebResources.GlobalSetting())
-		root.putChild("syncSettings", WebResources.SyncSettings())
-		root.putChild("backup", WebResources.Backup())
-		root.putChild("restore", WebResources.Restore())
-		
+		#Action pages without MainMenu-Entry => WebSubActions
+		root.putChild("action", WebSubActions.MediaActions())
+		root.putChild("mediaForm", WebSubActions.MediaForm())
+		root.putChild("addRecord", WebSubActions.AddRecord())
+		root.putChild("alternatives", WebSubActions.Alternatives())	
+		root.putChild("functions", WebSubActions.WebFunctions())
 		
 		site = Site(root)
 		port = config.plugins.pvmc.plugins.webinterface.port.value

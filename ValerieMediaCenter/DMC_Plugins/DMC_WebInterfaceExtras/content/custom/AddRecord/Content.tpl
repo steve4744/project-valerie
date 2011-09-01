@@ -8,14 +8,13 @@
 
 	<div class="text">
 			<!--BY ID -->
-			<form id="form1" action="/action" method="post">
+			<form id="form1" action="/mediaForm" method="get">
 				<input id="form1_type" type="hidden" name="type" value="">
-				<input name="mode" type="hidden" value="addbyimdb">
-						
-				<input id="usepath" type="hidden" name="usePath" value="false">
+				<input name="mode" type="hidden" value="showAddByImdbForm">
 				<input id="path" type="hidden" name="Path" value="">
 				<input id="filename" type="hidden" name="Filename" value="">
 				<input id="extension" type="hidden" name="Extension" value="">
+
 				<table align="left" >
 					<tr id="tr_imdbid">
 						<td id="form1_idName" width="100px">ImdbId:</td>
@@ -28,20 +27,19 @@
 			<!--BY TITLE -->
 			<form id="form2" action="/alternatives" method="get">
 				<input id="form2_type" type="hidden" name="type" value="">
-				<input name="mode" type="hidden" value="addbytitle">
 				<table align="left" 
 					<tr id="tr_title">
 						<td width="100px">Title:</td>
-						<td width="400px"><input id="title" name="Title" type="text" size="50"></input></td>
+						<td width="400px"><input id="title" name="searchString" type="text" size="50"></input></td>
 						<td width="100px">(e.g. my title)</td>
 						<td width="70px"><input type="submit" value="by Title"></input></td>
 					</tr>
 				</table>
 			</form>
 			<!-- MANUAL ADD -->
-			<form id="form3" action="/mediainfo" method="get">
+			<form id="form3" action="/mediaForm" method="get">
 				<input id="form3_type" name="type" type="hidden" value="">
-				<input name="mode" type="hidden" value="add">
+				<input name="mode" type="hidden" value="showManualAddForm">
 				<input id="ParentId" name="ParentId" type="hidden" value="">
 				<table align="left" >
 					<tr id="tr_title">

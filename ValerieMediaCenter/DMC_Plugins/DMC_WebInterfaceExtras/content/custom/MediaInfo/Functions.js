@@ -1,22 +1,25 @@
 //
 //MEDIAINFO
 //
+
+/*GLOBAL*/
+var debug = true;
+
+/*FUNCTIONS*/
 $(document).ready(function(){
-	var debug = false;
 	
 	/* parse values from URL */	
 	var params = get_params();
-	var mode = params["mode"];			// => done/edit/add/change_imdbid
-	var target = params["target"]; 		// => movies/tvshows/episodes
+	var mode = params["mode"];			// => done/edit/add/addbyimdb/change_imdbid
 	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
-	var useData = params["useData"]; 	// => true/false
-	var usePath = params["usePath"]; 	// => true/false (takes the values path/filename/extension from Rquest)
 	var Id = params["Id"]; 	
 	var ParentId = params["ParentId"];
+
+	if (debug) {alert("area => mediainfo/function.js \nfnc => document ready " + "\nmode => " + mode + "\nId => " + Id + "\nParentId => " + ParentId + "\ntype => " + type);}
 	
 	//DONE SECTION
-	if (mode == "done") {
-		//window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
+	if (mode == "showDoneForm") {
+		window.alert("Changes have been sent. Please note that you have to save to database after finishing your changes!");
 		
 		var parameters = "";
 		if (typeof(ParentId)!= 'undefined') {
@@ -25,24 +28,19 @@ $(document).ready(function(){
 		if (typeof(Id) != 'undefined') {
 			parameters = parameters +"&Id="+Id;
 		}
-		//window.alert('/' + target + '?showSave=true'+parameters);
-		window.open('/' + target + '?showSave=true'+parameters, '_self');
+
+		url = '/' + target + '?showSave=true'+parameters;
+		if (debug) {alert("area => mediainfo/function.js \nfnc => document ready " + "\nurl => " + url);}
+		window.open(url, '_self');
 		return;
 	
-	} else if (mode == "error") {
+	} else if (mode == "showErrorForm") {
 		window.alert("An Error ocurred :(  Check the log please!");
 		return;
 	
-	//ADD NEW RECORD 
-	} else if (mode == "add") {
+	//ADD NEW RECORD MANUAL
+	} else if (mode == "showManualAddForm") {
 		if (debug) {alert(mode);}
-		$('[name=mode]').val("add");
-		//$('[name=what]').val(type);
-		
-		if (useData == "true") {
-			fillTable(params, usePath);
-		}
-		
 		$("#special_features").hide();
 		
 		changeTable(type);
@@ -51,27 +49,20 @@ $(document).ready(function(){
 			document.getElementById('ParentId').value = params["ParentId"];
 		}
 	
-	} else if (mode == "addbyimdb") {
-		$('[name=mode]').val("add");
-		//$('[name=mode]').val("addbyimdb");
-		//$('[name=what]').val(type);
-
+	//ADD NEW RECORD WITH DATA
+	} else if (mode == "showAddByImdbForm") {
 		$("#special_features").hide();
+		$('[name=Id]').val(params["id"]);
+		$('[name=Id2]').val(params["id"]);
+		
 		changeTable(type);
-		document.getElementById('type').value = params["type"];
 		
 	
 	// MANUAL EDIT OF AN EXISTING RECORD 
-	} else if (mode == "edit") {
-		if (debug) {alert(mode);}
-		//$('[name=what]').val(type);
-		//$('[name=oldImdbId]').val(params["ImdbId"]);
-
+	} else if (mode == "showEditForm") {
 		if (type != "isMovie") {
 			$("#special_features").hide();
 		}
-		
-		/*fillTable(params, usePath);*/
 		changeTable(type);
 		
 		$("#tr_imdbid").hide();
@@ -97,6 +88,9 @@ $(document).ready(function(){
 
 
 function changeTable(table_type) {
+	
+	if (debug) {alert("area => mediainfo/function.js \nfnc => changeTable " + "\ntable_type => " + table_type);}
+	
 	if (table_type == "isMovie") {
 		$('#tr_season').remove();
 		$('#tr_episode').remove();
@@ -124,62 +118,81 @@ function changeTable(table_type) {
 }
 
 function fillTable(params, usePath) {
-		/* fill complete structure with data */
-		document.getElementById('type').value = params["type"];
-		document.getElementById('id2').value = params["Id"]; /* debug only */
-		document.getElementById('id').value = params["Id"];
-		document.getElementById('imdbid').value = params["ImdbId"];
-		document.getElementById('thetvdbid').value = params["TheTvDbId"];
-		document.getElementById('title').value = params["Title"];
-		document.getElementById('season').value = params["Season"];
-		document.getElementById('episode').value = params["Episode"];
-		document.getElementById('plot').value = params["Plot"];
-		document.getElementById('runtime').value = params["Runtime"];
-		document.getElementById('year').value = params["Year"];
-		document.getElementById('genres').value = params["Genres"];
-		document.getElementById('tag').value = params["Tag"];
-		document.getElementById('popularity').value = params["Popularity"];
-		if (usePath == "true") {
-			document.getElementById('path').value = params["Path"];
-			document.getElementById('filename').value = params["Filename"];
-			document.getElementById('extension').value = params["Extension"];
-		}
+	alert("i am still used")
+	
+	if (debug) {alert("area => mediainfo/function.js \nfnc => fillTable (functions.js) " + "\nparams => " + params + "\nusePath" + usePath);}
+	
+	/* fill complete structure with data */
+	document.getElementById('type').value = params["type"];
+	document.getElementById('id2').value = params["Id"]; /* debug only */
+	document.getElementById('id').value = params["Id"];
+	document.getElementById('imdbid').value = params["ImdbId"];
+	document.getElementById('thetvdbid').value = params["TheTvDbId"];
+	document.getElementById('title').value = params["Title"];
+	document.getElementById('season').value = params["Season"];
+	document.getElementById('episode').value = params["Episode"];
+	document.getElementById('plot').value = params["Plot"];
+	document.getElementById('runtime').value = params["Runtime"];
+	document.getElementById('year').value = params["Year"];
+	document.getElementById('genres').value = params["Genres"];
+	document.getElementById('tag').value = params["Tag"];
+	document.getElementById('popularity').value = params["Popularity"];
+	if (usePath == "true") {
+		document.getElementById('path').value = params["Path"];
+		document.getElementById('filename').value = params["Filename"];
+		document.getElementById('extension').value = params["Extension"];
+	}
 
-		if (params["type"] == "isMovie") {
-			$("#duck_img").attr("src","/media/" + params["ImdbId"] + "_poster_195x267.png");
-			$("#duck_backdrop_img").attr("src","/media/" + params["ImdbId"] + "_backdrop_320x180.png");
-			
-		} else if (params["type"] == "isTvShow" || params["type"] == "isEpisode") {
-			$("#duck_img").attr("src","/media/" + params["TheTvDbId"] + "_poster_195x267.png");
-			$("#duck_backdrop_img").attr("src","/media/" + params["TheTvDbId"] + "_backdrop_320x180.png");
-		}
+	if (params["type"] == "isMovie") {
+		$("#duck_img").attr("src","/media/" + params["ImdbId"] + "_poster_195x267.png");
+		$("#duck_backdrop_img").attr("src","/media/" + params["ImdbId"] + "_backdrop_320x180.png");
+		
+	} else if (params["type"] == "isTvShow" || params["type"] == "isEpisode") {
+		$("#duck_img").attr("src","/media/" + params["TheTvDbId"] + "_poster_195x267.png");
+		$("#duck_backdrop_img").attr("src","/media/" + params["TheTvDbId"] + "_backdrop_320x180.png");
+	}
 }
 
 function showAlternatives() {
-	var params = get_params();
-	var reply = prompt("Please specify your search string.", params["Title"]);
+	if (debug) {alert("area => mediainfo/function.js \nfnc => showAlternatives " + "\nparams => none");}
+	
+	var reply = prompt("Please specify your search string or enter ImdbID e.g. tt1234567.", document.getElementById('title').value);
 	if (reply == null) { return;} 
-	urlString = "/alternatives?";
-	urlString += "type=" + params["type"] + "&";
-	urlString += "mode=existing&";
-	urlString += "oldImdbId=" + params["ImdbId"] + "&";
-	urlString += "Title=" + reply + "&";
-	urlString += "Path=" + params["Path"] + "&";
-	urlString += "Filename=" + params["Filename"] + "&";
-	urlString += "Extension=" + params["Extension"];
-
+	
+	/*if imdbid is provided skip searching for alternatives and fill data in mediainfo form*/
+	if (reply.length == 9 & reply.match("tt") != null) {
+		urlString = "/mediaForm?";
+		urlString += "id=" + document.getElementById('id2').value + "&";
+		urlString += "type=isMovie&";
+		urlString += "mode=showAddByImdbForm&";
+		urlString += "ImdbId=" + reply;
+		if (debug) {alert("area => mediainfo/function.js \nfnc => showAlternatives " + "\nurlString => " + urlString);}
+	} else {
+		urlString = "/alternatives?";
+		urlString += "type=" + document.getElementById('type').value + "&";
+		urlString += "Id=" + document.getElementById('id2').value + "&";
+		urlString += "searchString=" + reply + "&";
+		urlString += "Path=" + document.getElementById('path').value + "&";
+		urlString += "Filename=" + document.getElementById('filename').value + "&";
+		urlString += "Extension=" + document.getElementById('extension').value;
+		if (debug) {alert("area => mediainfo/function.js \nfnc => showAlternatives " + "\nurlString => " + urlString);}
+	}
 	window.open(urlString, '_self');
 }
 
 function changePictures(media_type) {
-	var reply = prompt("Please specify URL or PATH to the picture.", "user://http://my.url or user:///path/to/picture");
-	//var reply = prompt("Please specify URL or PATH to the picture.", "user://http://img138.imageshack.us/img138/7311/iamlegendposter02.jpg");
+	if (debug) {alert("area => mediainfo/function.js \nfnc => changePictures " + "\nmedia_type => " + media_type);}
 	
+	if (!debug) {
+		var reply = prompt("Please specify URL or PATH to the picture.", "user://http://my.url or user:///path/to/picture");
+	} else {
+		var reply = prompt("Please specify URL or PATH to the picture.", "user://http://img138.imageshack.us/img138/7311/iamlegendposter02.jpg");
+	}
 	var params = get_params();
 	var type = params["type"];
 	var parameter = new Array();
 	
-	parameter["mode"] = "change_arts";
+	parameter["mode"] = "changeMediaArts";
 	
 	if (media_type == "poster") {
 		parameter["media_type"] = "poster";
@@ -215,6 +228,7 @@ function changePictures(media_type) {
 	for (param in parameter) {
 		data += param + "=" +  encodeURIComponent(parameter[param]) + "&";
 	}
+	if (debug) {alert("area => mediainfo/function.js \nfnc => changePictures " + "\ndata => " + data);}
 
 	$.ajax({
 		url: "/action",
@@ -228,6 +242,4 @@ function changePictures(media_type) {
 			}
 		}
 	});
-
  }
- 
