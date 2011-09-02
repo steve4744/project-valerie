@@ -475,10 +475,10 @@ class PVMC_MainMenu(Screen):
 				behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
 				multiple = ""
 				if behind > 1:
-                                    multiple = (_("revisions"))
-                                else:
-                                    multiple = (_("revision"))
-                                self["version"].setText((_("Current Version %s.") % config.plugins.pvmc.version.value) + ' ' + (_("You are %s") % behind) + ' ' + (_("%s behind!") % multiple))
+					multiple = (_("revisions"))
+				else:
+					multiple = (_("revision"))
+				self["version"].setText((_("Current Version %s.") % config.plugins.pvmc.version.value) + ' ' + (_("You are %s") % behind) + ' ' + (_("%s behind!") % multiple))
 				version = None #Hack for the moment
 			else:
 				version = None #Hack for the moment
@@ -528,7 +528,7 @@ class PVMC_MainMenu(Screen):
 	def Error(self, error):
 		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error), MessageBox.TYPE_INFO)
 
-	def showStillPicture(self):
+	def showStillPicture(self, unused=None):
 		return
 
 	def okbuttonClick(self):
