@@ -64,6 +64,19 @@ def findSkin():
 				return  entry[1]
 	except Exception, ex:
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin", "W")
+		#Maybe OpenPli
+		try:
+			import skin
+			for key in skin.dom_screens.keys():
+				printl("key=" + str(key), "findSkin", "D")
+				printl("\tpath=" + str(skin.dom_screens[key][1]), "findSkin", "D")
+				printl("\telem=" + str(skin.dom_screens[key][0]), "findSkin", "D")
+				if skin.dom_screens[key][1].startswith(config.plugins.pvmc.skinfolderpath.value):
+					printl("element=" + str(skin.dom_screens[key][0]), "findSkin")
+					return  skin.dom_screens[key][0]
+		except Exception, ex:
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin", "W")
+	
 	printl("element=None", "findSkin")
 	return None
 
