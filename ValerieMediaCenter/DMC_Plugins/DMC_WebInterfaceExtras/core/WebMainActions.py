@@ -392,7 +392,7 @@ class GlobalSetting (Resource):
 			configType, tag = WebHelper().prepareTable(value, entry[1])
 			
 			tableBody += u"""
-							<form id="saveSetting" action="/action" method="get">
+							<form id="saveSetting" action="/function" method="get">
 								<input type="hidden" name="mode" value="options.saveconfig"></input>
 								<input type="hidden" name="what" value="settings_global"></input>
 								<input type="hidden" name="type" value="%s"></input>
@@ -442,7 +442,7 @@ class SyncSettings (Resource):
 		
 		tableBody += u"""
 						<table align="left" id="settings_sync">
-								<form id="saveSetting" action="/action" method="get">
+								<form id="saveSetting" action="/function" method="get">
 									<input type="hidden" name="mode" value="options.saveconfig"></input>
 									<input type="hidden" name="what" value="settings_sync"></input>
 									<input type="hidden" name="section" value="filetypes"></input>
@@ -483,7 +483,7 @@ class SyncSettings (Resource):
 			
 			
 			tableBody += u"""
-							<form id="saveSetting" action="/action" method="get">
+							<form id="saveSetting" action="/function" method="get">
 								<input type="hidden" name="mode" value="options.saveconfig"></input>
 								<input type="hidden" name="what" value="settings_sync"></input>
 								<input type="hidden" name="section" value="paths"></input>

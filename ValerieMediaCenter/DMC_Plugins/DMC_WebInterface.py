@@ -97,7 +97,7 @@ def autostart(session):
 		root.putChild("mediaForm", WebSubActions.MediaForm())
 		root.putChild("addRecord", WebSubActions.AddRecord())
 		root.putChild("alternatives", WebSubActions.Alternatives())	
-		root.putChild("functions", WebSubActions.WebFunctions())
+		root.putChild("function", WebSubActions.WebFunctions())
 		
 		site = Site(root)
 		port = config.plugins.pvmc.plugins.webinterface.port.value

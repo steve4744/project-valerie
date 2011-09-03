@@ -550,7 +550,7 @@ class WebFunctions(Resource):
 		#				request.args["what"][0]				== "settings_global" | "settings_sync"
 		##########################
 		if request.args["mode"][0] == "options.saveconfig":
-			printl(self + " => mode (options.saveconfig)", self, "I")	
+			printl("mode (options.saveconfig)", self, "I")	
 			
 			what = request.args["what"][0]
 			
@@ -611,7 +611,7 @@ class WebFunctions(Resource):
 		# Argument: 	request.args["mode"][0] == "dumpDb"
 		##########################
 		elif request.args["mode"][0] == "dumpDb":
-			printl(self + " => mode (dumpDb)", self, "I")
+			printl("mode (dumpDb)", self, "I")
 			
 			Manager().getDbDump()
 			return WebHelper().redirectMeTo("/dumps")	
@@ -621,7 +621,7 @@ class WebFunctions(Resource):
 		# Argument: 	request.args["mode"][0] 			== "backupValerie"
 		##########################
 		elif request.args["mode"][0] == "backupValerie":
-			printl(self + " => mode (backupValerie)", self, "I")
+			printl("mode (backupValerie)", self, "I")
 			
 			import zipfile, os
 
@@ -638,7 +638,7 @@ class WebFunctions(Resource):
 		# Information:	http://webpython.codepoint.net/cgi_file_upload
 		##########################
 		elif request.args["mode"][0] == "restoreValerie":
-			printl(self + " => mode (restoreValerie)", self, "I")
+			printl("mode (restoreValerie)", self, "I")
 
 			outputStream = open(filename, '/hdd/test.zip')
 			outputStream.write(request.args['myFile'])
