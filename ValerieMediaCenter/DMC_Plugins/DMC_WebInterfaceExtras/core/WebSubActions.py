@@ -112,10 +112,16 @@ class MediaForm(Resource):
 			else:
 				extension = "EXT"
 
-			if type == "isMovie" or type == "isSerie":
+			if type == "isMovie":
 				m.ImdbId = request.args["ImdbId"][0]
 				printl("showAddByImdbForm: "+str(request.args["ImdbId"][0]) + " " + str(type))
-				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, type)
+				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, False)
+				m = syncData[0]
+			
+			if type == "isSerie":
+				m.ImdbId = request.args["ImdbId"][0]
+				printl("showAddByImdbForm: "+str(request.args["ImdbId"][0]) + " " + str(type))
+				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, True)
 				m = syncData[0]
 		
 		#######################
@@ -338,7 +344,7 @@ class MediaActions(Resource):
 			
 			# add movies
 			if type == "isMovie":
-				printl ("INSERT TVSHOW : " + str(key_value_dict), self, "I")
+				printl ("INSERT MOVIE : " + str(key_value_dict), self, "I")
 				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
 				if result:
 					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&showSave=true")
