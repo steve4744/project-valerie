@@ -69,6 +69,8 @@ def printl2(string, parent=None, type="I"):
 		print '\033[1;33m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'
 	elif type == "S":
 		print '\033[1;32m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'
+	elif type == "D":
+		print '\033[1;21m' + "[Valerie] " + str(type) + "  " + str(out) + '\033[1;m'	
 	else:
 		print "[Valerie] " + str(type) + "  " + str(out)
 	now = datetime.datetime.now()

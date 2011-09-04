@@ -51,8 +51,8 @@ from Components.config import config
 
 import Config
 import DirectoryScanner
-from   FailedEntry       import FailedEntry
-from   MediaInfo         import MediaInfo
+from FailedEntry import FailedEntry
+from MediaInfo import MediaInfo
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl

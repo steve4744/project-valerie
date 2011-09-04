@@ -75,7 +75,7 @@ class MediaForm(Resource):
 			nextMode = "alterMediaInDb"
 			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Edit Media")
 			Id = request.args["Id"][0]
-			m = WebData().getData("MediaInfo_"+type, Id)
+			m = self._getMediaDetails(type, int(Id))
 			imdbId = m.ImdbId
 			theTvDbId = m.TheTvDbId
 		
@@ -83,11 +83,14 @@ class MediaForm(Resource):
 		# ADDBYIMDB MODE
 		#######################
 		elif currentMode == 'showAddByImdbForm':
+			fileData = None
 			if "Id" in request.args:
 				if request.args["Id"][0] == "":
 					nextMode = "addMediaToDb"
 				else:
+					printl("ID => " + request.args["Id"][0], self, "D")
 					nextMode = "alterMediaInDb"
+					fileData = self._getMediaDetails(type, int(request.args["Id"][0]))
 			else:
 				nextMode = "addMediaToDb"
 				
@@ -98,20 +101,15 @@ class MediaForm(Resource):
 			if type == "isEpisode":
 				type = "isSerie" # we need to do this because Manger.syncelemnts uses this name not the name till now isTvShow
 			
-			
-			if "Path" in request.args:
-				path = request.args["Path"][0]
+			if fileData is not None:
+				path = fileData.Path
+				filename = fileData.Filename
+				extension = fileData.Extension
 			else:
-				path = "/PATH/TO/FILE/"
-			if "Filename" in request.args:
-				filename = request.args["Filename"][0]
-			else:
-				filename = "FILENAME"
-			if "Extension" in request.args:
-				extension = request.args["Extension"][0]
-			else:
-				extension = "EXT"
-
+				path = u"test"
+				filename = u"test"
+				extension = u"test"
+				
 			if type == "isMovie":
 				m.ImdbId = request.args["ImdbId"][0]
 				printl("showAddByImdbForm: "+str(request.args["ImdbId"][0]) + " " + str(type))
@@ -187,6 +185,10 @@ class MediaForm(Resource):
 			else:
 				str += """<option value="%d">%d</option>""" % (i,i)
 		return str
+		
+	def _getMediaDetails(self, type, Id):
+		data = WebData().getData("MediaInfo_" + type, Id)
+		return data
 
 ##########################
 # CLASS:
@@ -272,10 +274,7 @@ class Alternatives(Resource):
 		onclick  += urlencode({'type':entry.type}) + "&"
 		onclick  += urlencode({'mode':'showAddByImdbForm'}) + "&"
 		onclick  += urlencode({'ImdbId':entry.ImdbId}) + "&"
-		onclick  += urlencode({'Id':entry.Id}) + "&"
-		onclick  += urlencode({'Path':entry.Path}) + "&"
-		onclick  += urlencode({'Filename':entry.Filename}) + "&"
-		onclick  += urlencode({'Extension':entry.Extension})
+		onclick  += urlencode({'Id':entry.Id})
 		onclick  += "', '_self');"
 		
 		return onclick

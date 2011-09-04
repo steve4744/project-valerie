@@ -162,7 +162,7 @@ function showAlternatives() {
 	/*if imdbid is provided skip searching for alternatives and fill data in mediainfo form*/
 	if (reply.length == 9 & reply.match("tt") != null) {
 		urlString = "/mediaForm?";
-		urlString += "id=" + document.getElementById('id2').value + "&";
+		urlString += "Id=" + document.getElementById('id2').value + "&";
 		urlString += "type=isMovie&";
 		urlString += "mode=showAddByImdbForm&";
 		urlString += "ImdbId=" + reply;
@@ -171,10 +171,7 @@ function showAlternatives() {
 		urlString = "/alternatives?";
 		urlString += "type=" + document.getElementById('type').value + "&";
 		urlString += "Id=" + document.getElementById('id2').value + "&";
-		urlString += "searchString=" + reply + "&";
-		urlString += "Path=" + document.getElementById('path').value + "&";
-		urlString += "Filename=" + document.getElementById('filename').value + "&";
-		urlString += "Extension=" + document.getElementById('extension').value;
+		urlString += "searchString=" + reply;
 		if (debug) {alert("area => mediainfo/function.js \nfnc => showAlternatives " + "\nurlString => " + urlString);}
 	}
 	window.open(urlString, '_self');
