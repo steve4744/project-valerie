@@ -85,11 +85,11 @@ class DMC_NewestEpisodes(DMC_Library):
             yy=episode.Year
             mm=episode.Month
             dd=episode.Day
-            if yy is None:
+            if yy is None or yy == -1:
                 yy=1971
-            if mm is None:
+            if mm is None or mm == -1:
                 mm=1
-            if dd is None:
+            if dd is None or dd == -1:
                 dd=1
             fileCreationValidTime = False
             epDate = date(yy,mm,dd)
