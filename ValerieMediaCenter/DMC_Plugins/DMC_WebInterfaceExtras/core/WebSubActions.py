@@ -11,6 +11,8 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebData import WebData
 from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_WebInterfaceExtras.core.WebHelper import WebHelper
+
+import os
 #------------------------------------------------------------------------------------------
 
 # +++ LAZY IMPORTS +++
@@ -76,8 +78,6 @@ class MediaForm(Resource):
 			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Edit Media")
 			Id = request.args["Id"][0]
 			m = self._getMediaDetails(type, int(Id))
-			imdbId = m.ImdbId
-			theTvDbId = m.TheTvDbId
 		
 		#######################
 		# ADDBYIMDB MODE
@@ -143,13 +143,29 @@ class MediaForm(Resource):
 
 		image = u""
 		backdrop = u""
+		mediaFolderPath = config.plugins.pvmc.mediafolderpath.value
 		if type == "isMovie":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + imdbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + imdbId + "_backdrop_320x180.png")
+			if os.path.isfile(mediaFolderPath + m.ImdbId + "_poster_195x267.png"):
+				image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_poster_195x267.png")
+			else:
+				image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (m.ImdbId)
+			
+			if os.path.isfile(mediaFolderPath + m.ImdbId + "_backdrop_320x180.png"):
+				backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_backdrop_320x180.png")
+			else:
+				backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (m.ImdbId)
+			
 			
 		elif type == "isTvShow" or type == "isEpisode":
-			image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_poster_195x267.png")
-			backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + theTvDbId + "_backdrop_320x180.png")
+			if os.path.isfile(mediaFolderPath + m.TheTvDbId + "_poster_195x267.png"):
+				image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_poster_195x267.png")
+			else:
+				image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (m.TheTvDbId)
+			
+			if os.path.isfile(mediaFolderPath + m.TheTvDbId + "_backdrop_320x180.png"):			
+				backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_backdrop_320x180.png")
+			else:
+				backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (m.TheTvDbId)
 		
 		mediaForm = WebHelper().getHtmlForm("mediaForm")
 		
