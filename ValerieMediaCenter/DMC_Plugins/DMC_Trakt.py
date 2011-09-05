@@ -96,11 +96,14 @@ def info_playback(d, flags):
 	if d.has_key("status"):
 		# send status updates only if state has changed
 		if d["status"] == gtrakt.getStatus():
-			return;
+			return
 		if d["status"] == "playing":
 			gtrakt.setStatus(TraktAPI.STATUS_WATCHING)
 		elif d["status"] == "stopped":
 			gtrakt.setStatus(TraktAPI.STATUS_WATCHED)
+	else:
+		# do not send progress updates without status change
+		return
 	
 	if config.plugins.pvmc.plugins.trakt.enabled.value is True:
 		gtrakt.setUsernameAndPassword(config.plugins.pvmc.plugins.trakt.username.value, config.plugins.pvmc.plugins.trakt.password.value)
