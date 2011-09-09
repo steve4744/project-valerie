@@ -90,9 +90,9 @@ class DMC_SubtitleDownloader(ChoiceBox):
 		global Manager
 		global utf8ToLatin
 		if Manager is None:
-			from Plugins.Extensions.ProjectValerieSync.Manager import Manager
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		if utf8ToLatin is None:
-			from Plugins.Extensions.ProjectValerieSync.Utf8 import utf8ToLatin
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		self.session = session
 		self.service = config.plugins.pvmc.plugins.subdown.provider.value
 		self.language_1 = config.plugins.pvmc.plugins.subdown.language1.value
