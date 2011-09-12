@@ -93,10 +93,10 @@ def saveSeenDB():
 		print '-'*60
 
 def _seenCheckLoaded():
-	#log("->", self, 10)
+	#printl("->", self, 10)
 	global dbSeen
 	if dbSeen is None:
-		log("SeenDB Not Loaded", None, 10)
+		printl("SeenDB Not Loaded", None, 10)
 		_loadSeenDB()
 
 def isSeen(primary_key):

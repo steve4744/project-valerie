@@ -25,7 +25,6 @@ from   sync import Sync
 from Arts import Arts
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from Plugins.Extensions.ProjectValerie.__common__ import log as log
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 import os
 
@@ -386,19 +385,19 @@ class Manager():
 	def insertMedia(self, type, key_value_dict):
 		key_value_dict["MediaType"] = type	
 		if not self.db.insertMediaWithDict(key_value_dict):
-			log("Insert Media - Failed", self)	
+			printl("Insert Media - Failed", self)	
 			return False
 		return True
 			
 	def updateMedia(self, type, key_value_dict):
 		if not self.db.updateMediaWithDict(key_value_dict):
-			log("Update Media - Failed", self)	
+			printl("Update Media - Failed", self)	
 			return False
 		return True
 	
 	def deleteMedia(self, type, id):
 		if not self.db.deleteMedia(id):
-			log("Delete Media - Failed", self)	
+			printl("Delete Media - Failed", self)	
 			return False
 		return True
 
@@ -525,7 +524,7 @@ class Manager():
 ###################################  UTILS  ###################################
 #
 	def convertNullValues(self, record):
-		log("->", self, 10)
+		printl("->", self, 10)
 		if record.Year is None:
 			record.Year = u""
 		if record.Month is None:

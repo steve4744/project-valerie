@@ -71,6 +71,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 	ShowStillPicture = False
 
 	def __init__(self, session):
+		printl("->", self, "S")
 		from Components.Sources.StaticText import StaticText
 		Screen.__init__(self, session)
 		
@@ -110,7 +111,7 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		self.setTitle(_("Settings"))
 
 	def initConfigList(self, element=None):
-		printl("", self)
+		printl("->", self, "S")
 		try:
 			self.list = []
 			plugins = getPlugins(where=Plugin.SETTINGS)
@@ -128,9 +129,10 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 	def ok(self):
-		printl("", self)
+		printl("->", self, "S")
 
 	def keySave(self):
+		printl("->", self, "S")
 		ConfigListScreen.keySave(self)
 
 class PVMC_Update(Screen):
@@ -140,6 +142,7 @@ class PVMC_Update(Screen):
 	</screen>"""
 
 	def __init__(self, session):
+		printl("->", self, "S")
 		Screen.__init__(self, session)
 		
 		self.APILevel = getAPILevel(self)
@@ -169,6 +172,7 @@ class PVMC_Update(Screen):
 		self.setTitle(_("PVMC Update"))
 
 	def startUpdate(self):
+		printl("->", self, "S")
 		time.sleep(2)
 		self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
 		
@@ -177,6 +181,7 @@ class PVMC_Update(Screen):
 	# RTV = 127 Binary not found
 	# RTV = 255 ERROR
 	def update(self, answer):
+		printl("->", self, "S")
 		if answer is True:
 			version, remoteUrl = Update().checkForUpdate()
 			if version is None:
@@ -210,13 +215,16 @@ fi""" % str(remoteUrl)
 			self.close()
 		
 	def finishupdate(self):
+		printl("->", self, "S")
 		time.sleep(2)
 		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
 
 	def callback(self, answer=None):
+		printl("->", self, "S")
 		self.close()
 
 	def e2restart(self, answer):
+		printl("->", self, "S")
 		if answer is True:
 			quitMainloop(3)
 		else:
@@ -230,7 +238,7 @@ class PVMC_MainMenu(Screen):
 	ShowStillPicture = False
 
 	def __init__(self, isAutostart, session):
-		printl("-> isAutostart=" + str(isAutostart), self)
+		printl("-> isAutostart=" + str(isAutostart), self, "S")
 		
 		Screen.__init__(self, session)
 		self.isAutostart = isAutostart
@@ -408,6 +416,7 @@ class PVMC_MainMenu(Screen):
 		self.showInfo(False)
 	
 	def showInfo(self, visible):
+		printl("->", self, "S")
 		self.isInfoHidden = visible
 		if self.APILevel >= 5:
 			printl("", self, "D")
@@ -419,6 +428,7 @@ class PVMC_MainMenu(Screen):
 				self["infoText"].hide()	
 
 	def getInfoText(self):
+		printl("->", self, "S")
 		version = None
 		content = ""
 		content += "Information\n\n"
@@ -441,6 +451,7 @@ class PVMC_MainMenu(Screen):
 		return content
 				
 	def onExec(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			self["menu"].setIndex(0)
 		elif self.APILevel >= 2:
@@ -457,7 +468,7 @@ class PVMC_MainMenu(Screen):
 			self.refreshOrientationMenu(0)
 
 	def onExecStartScript(self):
-		printl("->", self)
+		printl("->", self, "S")
 		
 		version = None
 		
@@ -490,6 +501,7 @@ class PVMC_MainMenu(Screen):
 		printl("<-",self)
 
 	def onExecRunDev(self):
+		printl("->", self, "S")
 		plugins = getPlugins(where=Plugin.MENU_DEV)
 		for s in plugins:
 			if s.start is not None:
@@ -498,7 +510,7 @@ class PVMC_MainMenu(Screen):
 				s.fnc(self.session)
 
 	def runAutostart(self):
-		printl("->", self)
+		printl("->", self, "S")
 		try:
 			import os
 			os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "start.sh")
@@ -509,10 +521,9 @@ class PVMC_MainMenu(Screen):
 		plugins = getPlugins(where=Plugin.AUTOSTART)
 		for plugin in plugins:
 			plugin.fnc(self.session)
-		
-		printl("<-", self)
 
 	def power(self):
+		printl("->", self, "S")
 		import Screens.Standby
 		if config.plugins.pvmc.onpowerpress.value == "Standby":
 			self.session.open(Screens.Standby.Standby)
@@ -520,19 +531,22 @@ class PVMC_MainMenu(Screen):
 			self.session.open(Screens.Standby.TryQuitMainloop, 1)
 
 	def startUpdate(self, answer=None):
+		printl("->", self, "S")
 		if answer is not None and answer is True:
 			self.session.open(PVMC_Update)
 		else:
 			self.runAutostart()
 
 	def Error(self, error):
+		printl("->", self, "S")
 		self.session.open(MessageBox,_("UNEXPECTED ERROR:\n%s") % (error), MessageBox.TYPE_INFO)
 
 	def showStillPicture(self, unused=None):
+		printl("->", self, "S")
 		return
 
 	def okbuttonClick(self):
-		printl("", self)
+		printl("->", self, "S")
 		
 		if self.APILevel == 1 and self.Watch == True:
 			selection = self["menuWatch"].getCurrent()
@@ -616,6 +630,7 @@ class PVMC_MainMenu(Screen):
 								s.fnc(self.session)
 
 	def up(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			self.cancel()
 		elif self.APILevel >= 4:
@@ -627,6 +642,7 @@ class PVMC_MainMenu(Screen):
 		return
 
 	def down(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			self.okbuttonClick()
 		elif self.APILevel >= 4:
@@ -638,6 +654,7 @@ class PVMC_MainMenu(Screen):
 		return
 
 	def right(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			if self.Watch == True:
 				self["menuWatch"].selectNext()
@@ -650,6 +667,7 @@ class PVMC_MainMenu(Screen):
 			self.refreshOrientationHorMenu(+1)
 
 	def left(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			if self.Watch == True:
 				self["menuWatch"].selectPrevious()
@@ -662,14 +680,16 @@ class PVMC_MainMenu(Screen):
 			self.refreshOrientationHorMenu(-1)
 			
 	def onKeyInfo(self):
-		printl("", self, "D")
+		printl("->", self, "S")
 		self.showInfo(not self.isInfoHidden)
 
 	def refreshOrientationVerMenu(self, value):
+		printl("->", self, "S")
 		self.refreshMenu(value)
 
 	_translatePositionToName = {}
 	def translatePositionToName(self, name, value=None):
+		printl("->", self, "S")
 		if value is None:
 			return self._translatePositionToName[name]
 		else:
@@ -677,13 +697,14 @@ class PVMC_MainMenu(Screen):
 	
 
 	def refreshOrientationMenu(self, value):
+		printl("->", self, "S")
 		if self.orientation == self.ORIENTATION_V:
 			self.refreshOrientationVerMenu(value)
 		elif self.orientation == self.ORIENTATION_H:
 			self.refreshOrientationHorMenu(value)
 
 	def refreshOrientationHorMenu(self, value):
-		
+		printl("->", self, "S")
 		if self["-2"].moving is True or self["+2"].moving is True:
 				return False
 		
@@ -787,6 +808,7 @@ class PVMC_MainMenu(Screen):
 		return True
 
 	def setText(self, name, value, ignore=False, what=None):
+		printl("->", self, "S")
 		try:
 			if self[name]:
 				if len(value) > 0:
@@ -802,12 +824,14 @@ class PVMC_MainMenu(Screen):
 			printl("Exception: " + str(ex), self)	
 		
 	def refreshMenu(self, value):
+		printl("->", self, "S")
 		if value == 1:
 			self["menu"].selectNext()
 		elif value == -1:
 			self["menu"].selectPrevious()
 
 	def cancel(self):
+		printl("->", self, "S")
 		if self.APILevel == 1:
 			if self.Watch == True:
 				self["menuWatch"].setIndex(0)
@@ -816,6 +840,7 @@ class PVMC_MainMenu(Screen):
 		return
 
 	def Exit(self):
+		printl("->", self, "S")
 		if self.APILevel >= 2 and self.ShowStillPicture is True:
 			self["showiframe"].finishStillPicture()
 		printl("self.oldService=" + str(self.oldService), self)
@@ -847,14 +872,13 @@ def settings_expert():
 	return s
 
 def stop_e2(session):
-	printl("->", __name__)
+	printl("->", __name__, "S")
 	try:
 		import os
 		os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "stop.sh")
 		os.system("/bin/sh " + config.plugins.pvmc.configfolderpath.value + "stop.sh")
 	except Exception, e:
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-	printl("<-", __name__)
 
 registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
 registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))

@@ -22,8 +22,6 @@ import replace
 import Utf8
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-from Plugins.Extensions.ProjectValerie.__common__ import log
-
 #------------------------------------------------------------------------------------------
 
 ## WORKAROUND
@@ -457,9 +455,9 @@ class MediaInfo(object):
 		### Replacements PRE
 		printl("[pre] - " + str(self.SearchString), self)
 		for replacement in replace.replacements(u"pre"):
-			#log("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
+			#printl("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
-			log("\t" + str(self.SearchString), self)
+			printl("\t" + str(self.SearchString), self)
 		
 		printl(":-1: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		

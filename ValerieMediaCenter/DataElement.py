@@ -6,7 +6,6 @@ from Components.Renderer.Renderer import Renderer
 from Components.config import *
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-
 #------------------------------------------------------------------------------------------
 
 class eDataElement(eWidget):
@@ -40,7 +39,7 @@ class DataElement(Renderer):
 				if attrib == "text":
 					self.setData(value)
 		else:
-			printl("self.skinAttributes is None!!!", self, "E")
+			printl("self.skinAttributes is None!!!", self, "W")
 
 	def getDataPreloading(self, screen, name):
 		if type(screen) is str:
@@ -60,7 +59,7 @@ class DataElement(Renderer):
 									return child.get('text')
 		except Exception, ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-			
+			printl("maybe openPLI, trying ...", self , "H")
 			#Maybe OpenPli
 			try:
 				myscreen, path = skin.dom_screens.get(skinName, (None,None))

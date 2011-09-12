@@ -1,40 +1,41 @@
 # -*- coding: utf-8 -*-
-
-from   os import makedirs, environ, popen, system
 import sys
 import traceback
 import urllib2
-from twisted.web.microdom import parseString
 
 from enigma import addFont
+from os import makedirs, environ, popen, system
+from twisted.web.microdom import parseString
 from Components.config import config
-
 from DataElement import DataElement
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-
 #------------------------------------------------------------------------------------------
 
 def getAPILevel(parent):
+	printl("(in DMC_Global)", "getAPILevel", "S")
 	APILevel = 1
 	try:
 		APILevel = int(DataElement().getDataPreloading(parent, "API"))
 	except Exception, ex:
-		printl("Exception(" + str(type(ex)) + "): " + str(ex), __name__, "E")
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "-> getAPILevel", "E")
 		APILevel = 1
 	return APILevel
 
 #------------------------------------------------------------------------------------------
 
 def registerFont(file, name, scale, replacement):
-	printl("Loading Font: %s as %s" % (file, name, ))
+	printl("(in DMC_Global)", "registerFont", "S")
+	printl("Loading Font: %s as %s" % (file, name, ), "registerFont -> ")
 	try:
 		addFont(file, name, scale, replacement)
 	except Exception, ex: #probably just openpli
-		printl("Exception(" + str(type(ex)) + "): " + str(ex), "DMC_MainMenu::", "W")
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "registerFont -> ", "W")
+		printl("maybe openPLI, trying ...", "registerFont ->", "H")
 		addFont(file, name, scale, replacement, 0)
 
 def loadFonts():
+	printl("(in DMC_Global)", "loadFonts", "S")
 	try:
 		APILevel = int(DataElement().getDataPreloading("PVMC_FontLoader", "API"))
 	except:
@@ -56,33 +57,36 @@ def loadFonts():
 #------------------------------------------------------------------------------------------
 
 def findSkin():
+	printl("(in DMC_Global)", "findSkin", "S")
 	try:
 		import skin
 		for entry in skin.dom_skins:
 			if entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
-				printl("element=" + str( entry[1]), "findSkin")
+				printl("element=" + str( entry[1]), "findSkin -> ")
 				return  entry[1]
 	except Exception, ex:
-		printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin", "W")
+		printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin -> ", "W")
+		printl("maybe openPLI, trying ...", "findSkin ->", "H")
 		#Maybe OpenPli
 		try:
 			import skin
 			for key in skin.dom_screens.keys():
-				printl("key=" + str(key), "findSkin", "D")
-				printl("\tpath=" + str(skin.dom_screens[key][1]), "findSkin", "D")
-				printl("\telem=" + str(skin.dom_screens[key][0]), "findSkin", "D")
+				printl("key=" + str(key), "findSkin")
+				printl("\tpath=" + str(skin.dom_screens[key][1]), "findSkin -> ")
+				printl("\telem=" + str(skin.dom_screens[key][0]), "findSkin -> ")
 				if skin.dom_screens[key][1].startswith(config.plugins.pvmc.skinfolderpath.value):
-					printl("element=" + str(skin.dom_screens[key][0]), "findSkin")
+					printl("element=" + str(skin.dom_screens[key][0]), "findSkin -> ")
 					return  skin.dom_screens[key][0]
 		except Exception, ex:
-			printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin", "W")
+			printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin -> ", "E")
 	
-	printl("element=None", "findSkin")
+	printl("nothing found (element=None)", "findSkin -> ", "E")
 	return None
 
 #------------------------------------------------------------------------------------------
 
 def getBoxtype():
+	printl("(in DMC_Global)", "getBoxtype", "S")
 	file = open("/proc/stb/info/model", "r")
 	box = file.readline().strip()
 	file.close()
@@ -158,14 +162,18 @@ def getBoxtype():
 	
 #------------------------------------------------------------------------------------------
 
+
+
 class Showiframe():
 	def __init__(self):
+		printl("->", self, "S")
 		try:
 			self.load()
 		except Exception, ex: 
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 	def load(self):
+		printl("->", self, "S")
 		sys.path.append(config.plugins.pvmc.pluginfolderpath.value + "prebuild")
 		try:
 			self.ctypes = __import__("_ctypes")
@@ -179,37 +187,38 @@ class Showiframe():
 		if getBoxtype()[0] == "Azbox":
 			libname = "libshowiframe.az.so.0.0.0"
 		
-		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self, "D")
+		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self, "I")
 		self.showiframe = self.ctypes.dlopen(config.plugins.pvmc.pluginfolderpath.value + libname)
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
 		except Exception, ex: 
-			printl("self.ctypes.dlsym - FAILED!!!", self, "W")
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+			printl("self.ctypes.dlsym - FAILED!!! trying next ...", self, "W")
 			try:
 				self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
 				self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
 			except Exception, ex2: 
-				printl("self.ctypes.dlsym - FAILED AGAIN !!!", self, "E")
 				printl("Exception(" + str(type(ex2)) + "): " + str(ex2), self, "E")
+				printl("self.ctypes.dlsym - FAILED AGAIN !!!", self, "E")
 				return False
 		return True
 
-	def  showStillpicture(self, pic):
+	def showStillpicture(self, pic):
+		printl("->", self, "S")
 		if self.ctypes is not None:
 			self.ctypes.call_function(self.showSinglePic, (pic, ))
 
 	def finishStillPicture(self):
+		printl("->", self, "S")
 		if self.ctypes is not None:
 			self.ctypes.call_function(self.finishShowSinglePic, ())
-			#dlclose(self.showiframe)
 
-#------------------------------------------------------------------------------------------
+			#------------------------------------------------------------------------------------------
 
 class E2Control():
 	def __init__(self):
-		printl("->", self)
+		printl("->", self, "S")
 		
 		try:
 			makedirs(config.plugins.pvmc.configfolderpath.value)
@@ -250,16 +259,17 @@ class E2Control():
 
 class Update():
 	def __init__(self):
-		pass
+		printl("->", self, "S")
+		
 		
 	def checkForUpdate(self):
+		printl("->", self, "S")
 		box = getBoxtype()
 		printl("box=" + str(box), self)
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 		printl("Checking URL: " + str(self.url), self) 
 		try:
 			opener = urllib2.build_opener()
-			box = getBoxtype()
 			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
 			f = opener.open(self.url)
 			#f = urllib2.urlopen(self.url)
@@ -287,13 +297,13 @@ class Update():
 		return (None, None, )
 		
 	def getLatestRevisionByType(self, type):
+		printl("->", self, "S")
 		box = getBoxtype()
 		printl("box=" + str(box), self)
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 		printl("Checking URL: " + str(self.url), self) 
 		try:
 			opener = urllib2.build_opener()
-			box = getBoxtype()
 			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
 			f = opener.open(self.url)
 			html = f.read()
@@ -318,12 +328,16 @@ class Update():
 		return (None, None, )
 		
 	def getCurrentUpdateType(self):
+		printl("->", self, "S")
 		updateType = config.plugins.pvmc.updatetype.value.lower()
+		printl("Update type: " + updateType, self, "I")
 		
 		return updateType
 		
 	def getInstalledRevision(self):
+		printl("->", self, "S")
 		installedRevision = config.plugins.pvmc.version.value
+		printl("Installed Revision: " + installedRevision, self, "I")
 		
 		return installedRevision
 		

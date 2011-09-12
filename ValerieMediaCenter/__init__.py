@@ -18,24 +18,13 @@ from Components.config import ConfigPassword
 import Plugins.Plugin
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 
-#Cannot import printl2 here cause cofnig.pvmc not ready
-#from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+#Cannot import log here cause config.pvmc not ready
 from Plugins.Extensions.ProjectValerie.__plugin__ import loadPlugins
 from Plugins.Extensions.ProjectValerie.DMC_Global import findSkin
 
 #------------------------------------------------------------------------------------------
 
-print "[valerie] I  __init__:: Init Valerie"
-
-# On Dreamboxes the default encoding should already be uft8
-# But on other boxes it may be latin-1 so set it here, and hopefully this will
-# not crash anything for those boxes
-# By the way this crashes the e2 crashelogs ;-) funny isn't it? ;-)
-#IMPORTANT: In order to check if this is still nedded I will deactivate this.
-#defaultEncoding = "utf-8"
-#reload(sys)
-#sys.setdefaultencoding(defaultEncoding)
-#print "[valerie] I  __init__:: Default encoding set to: " + defaultEncoding
+print "[PVMC STARTING] I  __init__:: Init Valerie"
 
 # the currentVersion should be renewed every major update
 currentVersion          = "r001"
@@ -80,7 +69,7 @@ printl("__init__:: showwizard="     + str(config.plugins.pvmc.showwizard.value))
 printl("__init__:: autostart="      + str(config.plugins.pvmc.autostart.value))
 printl("__init__:: checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value))
 printl("__init__:: updatetype="     + str(config.plugins.pvmc.updatetype.value))
-printl("__init__:: uselocal=" + str(config.plugins.pvmc.uselocal.value))
+printl("__init__:: uselocal=" 		 + str(config.plugins.pvmc.uselocal.value))
 
 skins = []
 try:

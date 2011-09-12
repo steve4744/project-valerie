@@ -19,7 +19,7 @@ def autostart(reason, **kwargs):
 	
 	if kwargs.has_key("session"):
 		gSessionPV = kwargs["session"]
-	printl("Reason: %s - %s" % (str(reason), str(type(gSessionPV))), __name__, "E")
+	printl(" Reason: %s - %s" % (str(reason), str(type(gSessionPV))), __name__, "H")
 	
 	#from DMC_Global import E2Control
 	#if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
