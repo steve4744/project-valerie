@@ -142,7 +142,7 @@ class DMC_TvShowLibrary(DMC_Library):
             filter = [("All", (None, False), ("", )), ]
             
             return (parsedLibrary, ("play", "TheTvDbId", "Season", "Episode", ), dict({ \
-                'TheTvDbId': episode.TheTvDbId, \
+                'TheTvDbId': primaryKeyValuePair["TheTvDbId"], \
                 }), primaryKeyValuePair, sort, filter)
         
         # Display the Seasons Menu
