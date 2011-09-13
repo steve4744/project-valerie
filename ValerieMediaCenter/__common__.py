@@ -24,6 +24,8 @@ VERB_ERROR       = 1  # "E" shows error
 VERB_WARNING     = 2  # "W" shows warning
 VERB_STARTING    = 3  # "S" shows started functions/classes etc.
 VERB_HIGHLIGHT   = 4  # "H" shows important hightlights to have better overview if somehtings really happening or not
+VERB_ADDITIONAL  = 5  # "A" shows additional information for better debugging
+VERB_CLOSING	 = 6  # "C" shows closing functions/classes etc.
 VERB_DEFAULT     = 10 # "I" default verbose level when not specified
 VERB_TOLOG       = 20 # " " max verbose level that shows up in normal log
 
@@ -31,6 +33,9 @@ VERB_TOLOG       = 20 # " " max verbose level that shows up in normal log
 # 
 ##
 def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
+	############
+	debugMode = config.plugins.pvmc.debugMode.value
+	############
 	type = "I"
 	
 	if verbLevel == "E":
@@ -48,6 +53,14 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 	elif verbLevel == "H":
 		verbLevel = 4
 		type = "H"
+		
+	elif verbLevel == "A":
+		verbLevel = 5
+		type = "A"
+	
+	elif verbLevel == "C":
+		verbLevel = 6
+		type = "C"
 	
 	elif verbLevel == "I":
 		verbLevel = 10
@@ -75,12 +88,20 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 		print '\033[1;33m' + "[PVMC] " + "W" + "  " + str(out) + '\033[1;m'
 		writeToLog(type, out)
 	
-	elif verbLevel == VERB_STARTING:
-		print '\033[1;32m' + "[PVMC] " + "S" + "  " + str(out) + '\033[1;m'
+	elif verbLevel == VERB_STARTING and debugMode == "High": #only in debugMode high
+		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "S" + "  " + str(out) + '\033[1;m'
 		writeToLog(type, out)
 	
-	elif verbLevel == VERB_HIGHLIGHT:
-		print '\033[1;35m' + "[PVMC] " + "H" + "  " + str(out) + '\033[1;m'	
+	elif verbLevel == VERB_HIGHLIGHT and debugMode == "High": #only in debugMode high
+		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;37m' + "H" + "  " + str(out) + '\033[1;m'	
+		writeToLog(type, out)
+	
+	elif verbLevel == VERB_ADDITIONAL and debugMode == "High": #only in debugMode high
+		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "A" + "  " + str(out) + '\033[1;m'	
+		writeToLog(type, out)
+		
+	elif verbLevel == VERB_CLOSING and debugMode == "High": #only in debugMode high
+		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "C" + "  " + str(out) + '\033[1;m'	
 		writeToLog(type, out)
 	
 	elif verbLevel <= VERB_TOLOG:

@@ -44,6 +44,7 @@ config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
 config.plugins.pvmc.checkforupdate    = ConfigSelection(default = "Passive", choices = ["Active", "Passive", "Off", ])
 config.plugins.pvmc.updatetype        = ConfigSelection(default = "Release", choices = ["Release", "Nightly", ])
+config.plugins.pvmc.debugMode         = ConfigSelection(default="Normal", choices = ["High", "Normal", ])
 
 config.plugins.pvmc.showmovieandtvinmainmenu    = ConfigYesNo(default = False)
 config.plugins.pvmc.onpowerpress      = ConfigSelection(default="DeepStandby", choices = ["DeepStandby", "Standby", ])
@@ -69,7 +70,8 @@ printl("__init__:: showwizard="     + str(config.plugins.pvmc.showwizard.value))
 printl("__init__:: autostart="      + str(config.plugins.pvmc.autostart.value))
 printl("__init__:: checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value))
 printl("__init__:: updatetype="     + str(config.plugins.pvmc.updatetype.value))
-printl("__init__:: uselocal=" 		 + str(config.plugins.pvmc.uselocal.value))
+printl("__init__:: uselocal=" 		+ str(config.plugins.pvmc.uselocal.value))
+printl("__init__:: debugMode=" 		+ str(config.plugins.pvmc.debugMode.value))
 
 skins = []
 try:
@@ -119,7 +121,8 @@ if skinLoaded == False:
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin
 
-loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
+#TODO THIS IS NOT NEEDED RIGHT? 
+#loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
 loadPlugins(config.plugins.pvmc.pluginfolderpath.value + "/DMC_Plugins", "Plugins.Extensions.ProjectValerie.DMC_Plugins.")
 
 config.plugins.pvmc.save()

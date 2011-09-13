@@ -84,86 +84,6 @@ def findSkin():
 	return None
 
 #------------------------------------------------------------------------------------------
-
-def getBoxtype():
-	printl("(in DMC_Global)", "getBoxtype", "S")
-	file = open("/proc/stb/info/model", "r")
-	box = file.readline().strip()
-	file.close()
-	manu = "Unknown"
-	model = box #"UNKNOWN" # Fallback to internal string
-	arch = "sh4" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
-	version = ""
-	if box == "ufs910":
-		manu = "Kathrein"
-		model = "UFS-910"
-		arch = "sh4"
-	elif box == "ufs912":
-		manu = "Kathrein"
-		model = "UFS-912"
-		arch = "sh4"
-	elif box == "ufs922":
-		manu = "Kathrein"
-		model = "UFS-922"
-		arch = "sh4"
-	elif box == "tf7700hdpvr":
-		manu = "Topfield"
-		model = "HDPVR-7700"
-		arch = "sh4"
-	elif box == "dm800":
-		manu = "Dreambox"
-		model = "800"
-		arch = "mipsel"
-	elif box == "dm800se":
-		manu = "Dreambox"
-		model = "800se"
-		arch = "mipsel"
-	elif box == "dm8000":
-		manu = "Dreambox"
-		model = "8000"
-		arch = "mipsel"
-	elif box == "dm500hd":
-		manu = "Dreambox"
-		model = "500hd"
-		arch = "mipsel" 
-	elif box == "dm7025":
-		manu = "Dreambox" 
-		model = "7025"
-		arch = "mipsel"  
-	elif box == "elite":
-		manu = "Azbox"
-		model = "Elite"
-		arch = "mipsel"
-	elif box == "premium":
-		manu = "Azbox"
-		model = "Premium"
-		arch = "mipsel"
-	elif box == "premium+":
-		manu = "Azbox"
-		model = "Premium+"
-		arch = "mipsel"
-	elif box == "cuberevo-mini":
-		manu = "Cubarevo"
-		model = "Mini"
-		arch = "sh4"
-	elif box == "hdbox":
-		manu = "Fortis"
-		model = "HdBox"
-		arch = "sh4"
-	
-	if arch == "mipsel":
-		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
-		version = file.readline().strip()
-		file.close()
-	else:
-		version = "duckbox"
-	
-	return (manu, model, arch, version)
-	
-#------------------------------------------------------------------------------------------
-
-
-
 class Showiframe():
 	def __init__(self):
 		printl("->", self, "S")
@@ -184,7 +104,8 @@ class Showiframe():
 			return False
 		
 		libname = "libshowiframe.so.0.0.0"
-		if getBoxtype()[0] == "Azbox":
+		update = Update()
+		if update.getBoxtype()[0] == "Azbox":
 			libname = "libshowiframe.az.so.0.0.0"
 		
 		printl("LIB_PATH=" + str(config.plugins.pvmc.pluginfolderpath.value) + libname, self, "I")
@@ -214,7 +135,7 @@ class Showiframe():
 		if self.ctypes is not None:
 			self.ctypes.call_function(self.finishShowSinglePic, ())
 
-			#------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------
 
 class E2Control():
 	def __init__(self):
@@ -234,8 +155,8 @@ class E2Control():
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		
 		self.close()
-		
-		box = getBoxtype()
+		update = Update()
+		box = update.getBoxtype()
 		environ['BOXSYSTEM'] = "MANUFACTOR="+box[0]+";MODEL="+box[1]+";"
 		s = config.plugins.pvmc.pluginfolderpath.value + "e2control"
 		printl(s, self, "D")
@@ -257,87 +178,200 @@ class E2Control():
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 		printl("<-", self)
 
-class Update():
+#------------------------------------------------------------------------------------------
+class Update(object):
+	
+	updateType = None
+	installedRevision = None
+	latestRevision = None
+	revisionUrl = None
+	boxType = None
+	updateXmlDict = None
+	
+	def __new__(type, *args):
+		if not '_the_instance' in type.__dict__:
+			type._the_instance = object.__new__(type)
+		return type._the_instance
+	
 	def __init__(self):
+		if not '_ready' in dir(self):
+			self.preLoadData()
+		self._ready = True
+
+	def preLoadData(self):
 		printl("->", self, "S")
-		
+		self._setBoxtype()
+		self._setInstalledRevision()
+		self._setCurrentUpdateType()
+		self._setUpdateXmlDict()
+		self._setLatestRevisionAndUrl()
+		printl("<-", self, "C")
 		
 	def checkForUpdate(self):
 		printl("->", self, "S")
-		box = getBoxtype()
-		printl("box=" + str(box), self)
-		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
-		printl("Checking URL: " + str(self.url), self) 
-		try:
-			opener = urllib2.build_opener()
-			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
-			f = opener.open(self.url)
-			#f = urllib2.urlopen(self.url)
-			html = f.read()
-			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
-			updateXml = Xml2Dict("")
-			updateXml.parse(html)
-			updateXmlDict = updateXml.get()
-			print updateXmlDict
-			updateType = config.plugins.pvmc.updatetype.value.lower()
-			for update in updateXmlDict["valerie"]["updates"]["update"]:
-				if update["type"] == updateType and update["system"] == "stb":
-					if update["arch"] == box[2] and update["subarch"] == box[3]:
-						remoteversion = str(update["revision"].replace("rev", "r"))
-						remoteurl = str(update["url"])
-						break
-			
-			printl("""Version: %s - URL: %s""" % (remoteversion, remoteurl), self)
-			
-			if config.plugins.pvmc.version.value != remoteversion and remoteurl != "":
-				return (remoteversion, remoteurl, )
 		
-		except Exception, e:
-			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
-		return (None, None, )
+		installedRevision = self.getInstalledRevision()
+		latestRevision = self.getLatestRevision()
+		revisionUrl = self.getRevisionUrl()
 		
-	def getLatestRevisionByType(self, type):
+		if installedRevision != latestRevision and revisionUrl != "":
+			printl("<-", self, "C")
+			return (latestRevision, revisionUrl, )
+		else:
+			printl("<-", self, "C")
+			return (None, None, )
+	
+	# SETTER	
+	def _setBoxtype(self):
 		printl("->", self, "S")
-		box = getBoxtype()
-		printl("box=" + str(box), self)
+		file = open("/proc/stb/info/model", "r")
+		box = file.readline().strip()
+		file.close()
+		manu = "Unknown"
+		model = box #"UNKNOWN" # Fallback to internal string
+		arch = "sh4" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
+		version = ""
+		if box == "ufs910":
+			manu = "Kathrein"
+			model = "UFS-910"
+			arch = "sh4"
+		elif box == "ufs912":
+			manu = "Kathrein"
+			model = "UFS-912"
+			arch = "sh4"
+		elif box == "ufs922":
+			manu = "Kathrein"
+			model = "UFS-922"
+			arch = "sh4"
+		elif box == "tf7700hdpvr":
+			manu = "Topfield"
+			model = "HDPVR-7700"
+			arch = "sh4"
+		elif box == "dm800":
+			manu = "Dreambox"
+			model = "800"
+			arch = "mipsel"
+		elif box == "dm800se":
+			manu = "Dreambox"
+			model = "800se"
+			arch = "mipsel"
+		elif box == "dm8000":
+			manu = "Dreambox"
+			model = "8000"
+			arch = "mipsel"
+		elif box == "dm500hd":
+			manu = "Dreambox"
+			model = "500hd"
+			arch = "mipsel" 
+		elif box == "dm7025":
+			manu = "Dreambox" 
+			model = "7025"
+			arch = "mipsel"  
+		elif box == "elite":
+			manu = "Azbox"
+			model = "Elite"
+			arch = "mipsel"
+		elif box == "premium":
+			manu = "Azbox"
+			model = "Premium"
+			arch = "mipsel"
+		elif box == "premium+":
+			manu = "Azbox"
+			model = "Premium+"
+			arch = "mipsel"
+		elif box == "cuberevo-mini":
+			manu = "Cubarevo"
+			model = "Mini"
+			arch = "sh4"
+		elif box == "hdbox":
+			manu = "Fortis"
+			model = "HdBox"
+			arch = "sh4"
+		
+		if arch == "mipsel":
+			file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
+			version = file.readline().strip()
+			file.close()
+		else:
+			version = "duckbox"
+		
+		self.boxType = (manu, model, arch, version)
+		printl("<-", self, "C")
+
+	def _setInstalledRevision(self):
+		printl("->", self, "S")
+		self.installedRevision = config.plugins.pvmc.version.value
+		printl("<-", self, "C")
+
+	def _setCurrentUpdateType(self):	
+		printl("->", self, "S")
+		self.updateType = config.plugins.pvmc.updatetype.value.lower()
+		printl("<-", self, "C")
+	
+	def _setUpdateXmlDict(self):
+		printl("->", self, "S")
+		boxType = self.getBoxtype()
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 		printl("Checking URL: " + str(self.url), self) 
 		try:
 			opener = urllib2.build_opener()
-			opener.addheaders = [('User-agent', 'urllib2_val_' + box[1] + '_' + box[2] + '_' + box[3])]
+			opener.addheaders = [('User-agent', 'urllib2_val_' + boxType[1] + '_' + boxType[2] + '_' + boxType[3])]
 			f = opener.open(self.url)
 			html = f.read()
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
 			updateXml = Xml2Dict("")
 			updateXml.parse(html)
-			updateXmlDict = updateXml.get()
-			revision = ""
-			print updateXmlDict
-			for update in updateXmlDict["valerie"]["updates"]["update"]:
-				if update["type"] == type and update["system"] == "stb":
-					if update["arch"] == box[2] and update["subarch"] == box[3]:
-						revision = str(update["revision"].replace("rev", "r"))
-						break
-			
-			printl("Revision: " + revision, self, "I")
-
-			return revision
-		
+			self.updateXmlDict = updateXml.get()
 		except Exception, e:
 			printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
-		return (None, None, )
-		
+		printl("<-", self, "C")	
+	
+	def _setLatestRevisionAndUrl(self):
+		printl("->", self, "S")
+		boxType = self.getBoxtype()
+		updateXmlDict = self.getUpdateXmlDict()
+		updateType = self.getCurrentUpdateType()
+		for update in updateXmlDict["valerie"]["updates"]["update"]:
+			if update["type"] == updateType and update["system"] == "stb":
+				if update["arch"] == boxType[2] and update["subarch"] == boxType[3]:
+					self.latestRevision = str(update["revision"].replace("rev", "r"))
+					self.revisionUrl = str(update["url"])
+		printl("<-", self, "C")
+	
+	# GETTER
 	def getCurrentUpdateType(self):
 		printl("->", self, "S")
-		updateType = config.plugins.pvmc.updatetype.value.lower()
-		printl("Update type: " + updateType, self, "I")
-		
-		return updateType
-		
+		printl("updateType = " + str(self.updateType), self, "H")
+		printl("<-", self, "C")
+		return str(self.updateType)
+	
 	def getInstalledRevision(self):
 		printl("->", self, "S")
-		installedRevision = config.plugins.pvmc.version.value
-		printl("Installed Revision: " + installedRevision, self, "I")
+		printl("installedRevision = " + str(self.installedRevision), self, "H")
+		printl("<-", self, "C")
+		return str(self.installedRevision)
+	
+	def getBoxtype(self):
+		printl("->", self, "S")
+		printl("boxtype = " + str(self.boxType), self, "H")
+		printl("<-", self, "C")
+		return self.boxType
+	
+	def getUpdateXmlDict(self):
+		printl("->", self, "S")
+		printl("updateXmlDict = " + str(self.updateXmlDict), self, "H")
+		printl("<-", self, "C")
+		return self.updateXmlDict
 		
-		return installedRevision
-		
+	def getLatestRevision(self):
+		printl("->", self, "S")
+		printl("latestRevision = " + str(self.latestRevision), self, "H")
+		printl("<-", self, "C")
+		return str(self.latestRevision)
+
+	def getRevisionUrl(self):
+		printl("->", self, "S")
+		printl("revisionUrl = " + str(self.revisionUrl), self, "H")
+		printl("<-", self, "C")
+		return str(self.revisionUrl)
+	

@@ -48,8 +48,7 @@ class Home(Resource):
 		episodeCount = str(Manager().getEpisodesCount())
 		
 		updateType = Update().getCurrentUpdateType()
-		latestStable = Update().getLatestRevisionByType("release")
-		latestNightly = Update().getLatestRevisionByType("nightly")
+		latestRevision = Update().getLatestRevision()
 		
 		finalOutput = finalOutput.replace("<!-- MOVIE_COUNT -->", movieCount)
 		finalOutput = finalOutput.replace("<!-- TVSHOW_COUNT -->", tvShowCount)
@@ -57,9 +56,8 @@ class Home(Resource):
 		
 		revisionText = """	<br>
 							Your update type => %s.<br>
-							The latest stable release => %s.<br>
-							The latest nightly release => %s. <br>		
-		""" % (updateType, latestStable, latestNightly)
+							The latest release for your update type is %s.<br>
+		""" % (updateType, latestRevision)
 
 		finalOutput = finalOutput.replace("<!-- CURRENT_VERSION -->", "Your installed revision => " + currentVersion)
 		finalOutput = finalOutput.replace("<!-- LATEST_VERSION -->", revisionText)

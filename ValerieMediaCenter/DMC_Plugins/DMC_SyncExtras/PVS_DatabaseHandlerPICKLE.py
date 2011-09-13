@@ -167,7 +167,7 @@ class databaseHandlerPICKLE(object):
 	def _mediaFilesCheckLoaded(self):
 		printl("->", self, "S")
 		if self._dbMediaFiles is None:
-			printl("Media Files Not Loaded", self)
+			printl("Media database not loaded yet. Loading ... ", self, "H")
 			self._loadMediaFilesDB()
 		
 	## 
@@ -548,7 +548,7 @@ class databaseHandlerPICKLE(object):
 	def _moviesCheckLoaded(self):
 		printl("->", self, "S")
 		if self._dbMovies is None:
-			printl("Movies Not Loaded", self, 10)
+			printl("Movies database not loaded yet. Loading ... ", self, "H")
 			self._loadMoviesDB()
 
 	# for test 
@@ -902,6 +902,7 @@ class databaseHandlerPICKLE(object):
 	def _seriesCheckLoaded(self):
 		printl("->", self, "S")
 		if self._dbSeries is None:
+			printl("TvShows database not loaded yet. Loading ... ", self, "H")
 			self._loadSeriesEpisodesDB()
 
 	#								    #	
@@ -1639,11 +1640,11 @@ class databaseHandlerPICKLE(object):
 		version = config.plugins.pvmc.version.value
 		version = int(version.replace("r", ""))
 		#this part can be removed after a while when there is nobody anymore that uses revision under 969
-		if version >= 968: 
-			printl("found NEW STYLE", self, "H")
+		if version >= 0: 
+			printl("altering " + database + " to new style", self, "H")
 			self._modifyPickleDB(database, "Plugins.Extensions.ProjectValerieSync", "Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras")
 		else:
-			printl("found OLD STYLE", self, "H")
+			printl("altering " + database + " to old style", self, "H")
 			self._modifyPickleDB(database, "Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras", "Plugins.Extensions.ProjectValerieSync")
 		#part over		
 	

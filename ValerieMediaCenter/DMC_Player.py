@@ -12,7 +12,7 @@ from Tools.Directories import resolveFilename, fileExists, pathExists, createDir
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
-from Plugins.Extensions.ProjectValerie.DMC_Global import getBoxtype
+from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 
 #------------------------------------------------------------------------------------------
 
@@ -322,7 +322,9 @@ class PVMC_Player(MoviePlayer):
 		print "doSeek", seekable
 		if seekable is None:
 			return
-		if getBoxtype()[2] == "sh4":
+		update = Update().getInstance()
+		boxtype = update.getBoxtype()
+		if boxtype[2] == "sh4":
 			tenSec = 90000 * 10 #10sec
 			pts -= tenSec #10sec before
 			if pts >= tenSec:

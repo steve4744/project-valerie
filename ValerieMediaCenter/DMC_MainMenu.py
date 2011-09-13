@@ -27,7 +27,7 @@ from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from DataElement import DataElement
-from DMC_Global import getBoxtype, getAPILevel, Update, loadFonts
+from DMC_Global import getAPILevel, Update, loadFonts
 
 from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
@@ -183,7 +183,8 @@ class PVMC_Update(Screen):
 	def update(self, answer):
 		printl("->", self, "S")
 		if answer is True:
-			version, remoteUrl = Update().checkForUpdate()
+			update = Update()
+			version, remoteUrl = update.checkForUpdate()
 			if version is None:
 				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
 				return
@@ -440,7 +441,8 @@ class PVMC_MainMenu(Screen):
 		content += "\t Zuki\n"
 		content += "\t hellmaster\n\n"
 		content += "Your current version is " + config.plugins.pvmc.version.value + " "
-		version, remoteurl = Update().checkForUpdate()
+		update = Update()
+		version, remoteUrl = update.checkForUpdate()
 		if version is not None:
 			behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
 			multiple = ""
@@ -473,7 +475,8 @@ class PVMC_MainMenu(Screen):
 		version = None
 		
 		if config.plugins.pvmc.checkforupdate.value != "Off":
-			version, remoteurl = Update().checkForUpdate()
+			update = Update()
+			version, remoteUrl = update.checkForUpdate()
 		
 		printl("version=" + str(version), self)
 		
@@ -869,6 +872,7 @@ def settings_expert():
 	s.append((_("Valerie Config folder (Database, ...)"), config.plugins.pvmc.configfolderpath, ))
 	s.append((_("Valerie media folder (Poster, Backdrops)"), config.plugins.pvmc.mediafolderpath, ))
 	s.append((_("Valerie tmp folder (Logs, Cache)"), config.plugins.pvmc.tmpfolderpath, ))
+	s.append((_("Valerie debug mode"), config.plugins.pvmc.debugMode, ))
 	return s
 
 def stop_e2(session):

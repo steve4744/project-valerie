@@ -4,7 +4,7 @@ from enigma import eWidget, eLabel, eCanvas, eRect, eServiceReference, iPlayable
 from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
-from DMC_Global import getBoxtype, Showiframe
+from DMC_Global import Showiframe, Update
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
@@ -89,7 +89,9 @@ class StillPicture(Renderer, InfoBarBase):
 		printl("", self)
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
-			if getBoxtype()[2] != "sh4" and service and service.seek():
+			update = Update().getInstance()
+			boxtype = update.getBoxtype
+			if boxtype[2] != "sh4" and service and service.seek():
 				service.seek().seekTo(0)
 			else:
 				self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)
