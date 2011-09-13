@@ -322,8 +322,7 @@ class PVMC_Player(MoviePlayer):
 		print "doSeek", seekable
 		if seekable is None:
 			return
-		update = Update().getInstance()
-		boxtype = update.getBoxtype()
+		boxtype = Update().getBoxtype()
 		if boxtype[2] == "sh4":
 			tenSec = 90000 * 10 #10sec
 			pts -= tenSec #10sec before

@@ -183,8 +183,7 @@ class PVMC_Update(Screen):
 	def update(self, answer):
 		printl("->", self, "S")
 		if answer is True:
-			update = Update()
-			version, remoteUrl = update.checkForUpdate()
+			version, remoteUrl = Update().checkForUpdate()
 			if version is None:
 				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
 				return
@@ -441,8 +440,7 @@ class PVMC_MainMenu(Screen):
 		content += "\t Zuki\n"
 		content += "\t hellmaster\n\n"
 		content += "Your current version is " + config.plugins.pvmc.version.value + " "
-		update = Update()
-		version, remoteUrl = update.checkForUpdate()
+		version, remoteUrl = Update().checkForUpdate()
 		if version is not None:
 			behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
 			multiple = ""
@@ -475,8 +473,7 @@ class PVMC_MainMenu(Screen):
 		version = None
 		
 		if config.plugins.pvmc.checkforupdate.value != "Off":
-			update = Update()
-			version, remoteUrl = update.checkForUpdate()
+			version, remoteUrl = Update().checkForUpdate()
 		
 		printl("version=" + str(version), self)
 		

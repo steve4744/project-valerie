@@ -89,8 +89,7 @@ class StillPicture(Renderer, InfoBarBase):
 		printl("", self)
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
-			update = Update().getInstance()
-			boxtype = update.getBoxtype
+			boxtype = Update().getBoxtype()
 			if boxtype[2] != "sh4" and service and service.seek():
 				service.seek().seekTo(0)
 			else:
