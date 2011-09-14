@@ -1,7 +1,7 @@
 $(document).ready(function(){
+	document.title = document.title + " - Failed";
 	var params = get_params();
 	$('#main_table').dataTable( {
-		"sScrollY": 768,
 		"aaSorting": [[ 1, "asc" ]],
 		<!-- PAGINATION_FLAG -->
 		"bJQueryUI": true,
