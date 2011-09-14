@@ -318,14 +318,6 @@ class Failed(Resource):
 		entries = WebData().getData("failed")
 		
 		for entry in entries:
-			##
-			# Todo should be escaped not changed ;-)
-			# leads to a javascript error if ' or " is in the string
-			##
-			if type(entry) == MediaInfo:
-				entry.Plot = WebData().cleanStrings(entry.Plot)
-				entry.Tag = WebData().cleanStrings(entry.Tag)
-
 			tableBody += u"""   <tr>
 								<td>%s</td>
 								<td>%s</td>
