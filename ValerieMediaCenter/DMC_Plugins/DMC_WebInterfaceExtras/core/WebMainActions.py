@@ -321,9 +321,8 @@ class Failed(Resource):
 			tableBody += u"""   <tr>
 								<td>%s</td>
 								<td>%s</td>
-								<td>%s</td>
 							    </tr>
-						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.CauseStr, entry.Description)
+						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.syncFailedCause)
 				
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
