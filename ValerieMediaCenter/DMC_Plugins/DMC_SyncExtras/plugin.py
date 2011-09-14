@@ -30,7 +30,7 @@ from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from   Config import SyncConfig
-from   FailedEntry import FailedEntry
+#from   FailedEntry import FailedEntry
 from   Manager import Manager
 from   MediaInfo import MediaInfo
 from   PathsConfig import PathsConfig
@@ -1168,13 +1168,17 @@ class ProjectValerieSyncManager(Screen):
 		entries = self.manager.getAll(type, param)
 		if type == Manager.FAILED:
 			for entry in entries:
-				if entry.Cause != FailedEntry.ALREADY_IN_DB:
-					list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
-								Utf8.utf8ToLatin(entry.CauseStr), entry), )
+				list.append((Utf8.utf8ToLatin(entry.Title) + " - " + Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+						Utf8.utf8ToLatin(entry.syncFailedCause), entry), )
+			#	if entry.Cause != FailedEntry.ALREADY_IN_DB:
+			#		list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+			#					Utf8.utf8ToLatin(entry.CauseStr), entry), )
 		elif type == Manager.FAILED_ALL:
 			for entry in entries:
-				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
-							Utf8.utf8ToLatin(entry.CauseStr), entry), )
+				list.append((Utf8.utf8ToLatin(entry.Title) + " - " + Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+						Utf8.utf8ToLatin(entry.syncFailedCause), entry), )
+#				list.append((Utf8.utf8ToLatin(entry.Filename) + "." + Utf8.utf8ToLatin(entry.Extension), 
+#							Utf8.utf8ToLatin(entry.CauseStr), entry), )
 		elif type == Manager.TVSHOWS:
 			for entry in entries:
 				list.append((Utf8.utf8ToLatin(entry.Title), 

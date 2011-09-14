@@ -51,7 +51,7 @@ from Components.config import config
 
 import Config
 import DirectoryScanner
-from FailedEntry import FailedEntry
+#from FailedEntry import FailedEntry
 from MediaInfo import MediaInfo
 import Utf8
 
@@ -232,7 +232,7 @@ class Database(object):
 		printl("->", self, "S")
 		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
 
-		return self.dbHandler.deleteMedia(media.Id)
+		return self.dbHandler.deleteMedia(media.MediaType, media.Id)
 	
 	##
 	# Adds media files to the db
@@ -265,6 +265,9 @@ class Database(object):
 		elif media.isTypeEpisode():
 			return self.dbHandler.insertEpisode(media)
 
+		elif media.MediaType==MediaInfo.FAILEDSYNC:
+			return self.dbHandler.insertMedia(media)
+
 		return True
 
 	def save(self):
@@ -279,11 +282,11 @@ class Database(object):
 			# will be the backup
 			#self.savePickel() 
 			
+			self.dbHandler.saveMediaFiles()
 			self.dbHandler.saveMovies()
 			self.dbHandler.saveSeries()
 			self.dbHandler.saveEpisodes()
-			self.dbHandler.saveFailed()
-			#self.dbHandler.saveFailed2(self.dbFailed2)
+			
 			return True
 		except Exception, ex:
 			printl("Failed Save! Ex: " + str(ex), __name__, "E")
@@ -307,9 +310,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.updateMediaWithDict(key_value_dict)
 	
-	def deleteMedia(self, id):
+	def deleteMedia(self, type, id):
 		printl("->", self, "S")
-		return self.dbHandler.deleteMedia(id)
+		return self.dbHandler.deleteMedia(type, id)
 
 #
 #################################   MOVIES   ################################# 
@@ -442,32 +445,28 @@ class Database(object):
 #
 	def getFailed(self):
 		printl("->", self, "S")
-		return self.dbHandler.getFailed()
+		return self.dbHandler.getMediaValues(MediaInfo.FAILEDSYNC)
 
 	def clearFailed(self):
 		printl("->", self, "S")
 		return self.dbHandler.deleteFailed()
 
-	def addFailed(self, entry):
-		printl("->", self, "S")
-		return self.dbHandler.insertFailed(entry)
+	#def addFailed(self, entry):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.insertFailed(entry)
 
-	def removeFailed(self, entry):
-		printl("->", self, "S")
-		return self.dbHandler.deleteFailed(entry)
-
-	def getAddFailedCauseOf(self):
-		printl("->", self, "S")
-		try:
-			cause = self.dbHandler._addFailedCauseOf
-			if cause is None:
-				return u"Error retriving Cause of Failed (cause Null)"
-			self.dbHandler._addFailedCauseOf = None
-			return cause.Path + u"/" + cause.Filename + u"." + cause.Extension
-		except Exception, ex:
-			printl("Error retriving Cause of Failed: "+ str(ex), self, "W")
-			return u"Error retriving Cause of Failed"
-				
+	#def getAddFailedCauseOf(self):
+	#	printl("->", self, "S")
+	#	try:
+	#		cause = self.dbHandler._addFailedCauseOf
+	#		if cause is None:
+	#			return u"Error retriving Cause of Failed (cause Null)"
+	#		self.dbHandler._addFailedCauseOf = None
+	#		return cause.Path + u"/" + cause.Filename + u"." + cause.Extension
+	#	except Exception, ex:
+	#		printl("Error retriving Cause of Failed: "+ str(ex), self, "W")
+	#		return u"Error retriving Cause of Failed"
+	#			
 	
 #
 ###################################  UTILS  ###################################

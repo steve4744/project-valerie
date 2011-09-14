@@ -34,7 +34,7 @@ import Blacklist
 from   Config import SyncConfig
 from   PVS_DatabaseHandler import Database
 import DirectoryScanner
-from   FailedEntry import FailedEntry
+#from   FailedEntry import FailedEntry
 from   GoogleProvider import GoogleProvider
 from   LocalImdbProvider import LocalImdbProvider
 from   MediaInfo         import MediaInfo
@@ -406,10 +406,10 @@ class pyvalerie(Thread):
 						tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 						if tmp is None:
 							printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
-							db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
-							#result.failedCause = cause
-							#elementInfo.syncStatus = MediaInfo.FAILEDSYNC
-							#db.add(elementInfo)
+							#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
+							elementInfo.MediaType = MediaInfo.FAILEDSYNC
+							elementInfo.syncFailedCause = u"Nothing Found"# cause
+							db.add(elementInfo)
 							continue
 						elementInfo = tmp
 						printl("Finally about to sync element... ", self, "I")
@@ -431,14 +431,14 @@ class pyvalerie(Thread):
 										result.Title, result.Year)
 									printl("my_title " + result.Title, self, "I")
 							else:
-								cause = db.getAddFailedCauseOf()
-								db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,
-									cause))
-								#result.failedCause = cause
-								#result.MediaType = MediaInfo.FAILED
-								#db.add(result)
+								#cause = db.getAddFailedCauseOf()
+								#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,cause))
+								#if result.syncFailedCause == u"":
+								#	result.syncFailedCause = "DB Insert Error ??"
+								result.MediaType = MediaInfo.FAILEDSYNC
+								db.add(result)
 								
-								printl("Title already in db", self, "W")
+								#printl("DB Insert Error ??", self, "W")
 					
 					#self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
 					#printl("(" + str(i) + "/" + str(elementListFileCounter) + ")", self)

@@ -153,8 +153,8 @@ class Manager():
 			printl("oldElement=" + str(oldElement), self)
 			if type(oldElement) is MediaInfo:
 				printl("RM " + str(self.db.remove(oldElement)), self)
-			else:
-				self.db.removeFailed(oldElement)
+			#else:
+			#	self.db.removeFailed(oldElement)
 		
 		if newElement is not None:
 			if len(newElement) == 2:
@@ -176,10 +176,10 @@ class Manager():
 				if b and blacklist:
 					Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
 					Blacklist.save()
-			else:
-				self.db.removeFailed(oldElement)
-				Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
-				Blacklist.save()
+			#else:
+			#	self.db.removeFailed(oldElement)
+			#	Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
+			#	Blacklist.save()
 
 	def getElementByUsingPrimaryKey(self, type, primary_key):
 		printl("", self)
@@ -390,13 +390,14 @@ class Manager():
 		return True
 			
 	def updateMedia(self, type, key_value_dict):
+		key_value_dict["MediaType"] = type
 		if not self.db.updateMediaWithDict(key_value_dict):
 			printl("Update Media - Failed", self)	
 			return False
 		return True
 	
 	def deleteMedia(self, type, id):
-		if not self.db.deleteMedia(id):
+		if not self.db.deleteMedia(type, id):
 			printl("Delete Media - Failed", self)	
 			return False
 		return True
@@ -507,18 +508,6 @@ class Manager():
 #	
 #################################   FAILED   ################################# 
 #
-	# Pass throught functions	
-	def getFailed(self):
-		return self.db.getFailed()
-
-	#def clearFailed(self):
-	#	return self.db.deleteFailed()
-
-	#def addFailed(self, entry):
-	#	return self.db.insertFailed(entry)
-
-	#def removeFailed(self, entry):
-	#	return self.db.deleteFailed(entry)
 
 #
 ###################################  UTILS  ###################################
