@@ -75,7 +75,7 @@ class MediaInfo(object):
 	Day   = -1
 	ImdbIdNull     = u"tt0000000"
 	ImdbId        = ImdbIdNull
-	TheTvDbIdNull = u"0"
+	TheTvDbIdNull = u""
 	TheTvDbId     = TheTvDbIdNull
 	TmDbIdNull    = u"0"
 	TmDbId        = TmDbIdNull

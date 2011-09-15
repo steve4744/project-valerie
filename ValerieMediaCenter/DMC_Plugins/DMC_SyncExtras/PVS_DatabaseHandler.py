@@ -137,9 +137,9 @@ class Database(object):
 	def __str__(self):
 		printl("->", self, "S")	
 		try:
-			rtv = unicode(self.getMoviesCount()) + \
+			rtv = unicode(self.getMediaCount(MediaInfo.MOVIE)) + \
 					u" " + \
-					unicode(self.getSeriesCount) + \
+					unicode(self.getMediaCount(MediaInfo.SERIE)) + \
 					u" " + \
 					unicode(self.getEpisodesCount())
 			return Utf8.utf8ToLatin(rtv)
@@ -149,22 +149,22 @@ class Database(object):
 
 	def importDataToSql (self):
 		printl("->", self, "S")
-		try:
-			printl("Importing Data", self)
-			#self.preload()	# Load from PICKLE
-			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
-			#dbHandlerSql 	= databaseHandlerSQL().getInstance("ImportDataToSql")
-			self.dbHandler.overwriteDB(dbHandlerPickle.getMovies(),dbHandlerPickle.getSeries(),dbHandlerPickle.getSeriesEpisodes())
-			
-			self.save()  	# save to Database SQL
-			try:
-				pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
-			except Exception, ex:
-				printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
-		except Exception, ex:
-			printl("Failed Import to SQL! Reloading Pickles Ex: " + str(ex), __name__, "E")
-			self.dbHandler = databaseHandlerPICKLE().getInstance()
-			#self.reload()	# Load from PICKLE
+		#try:
+		#	printl("Importing Data", self)
+		#	#self.preload()	# Load from PICKLE
+		#	dbHandlerPickle = databaseHandlerPICKLE().getInstance()
+		#	#dbHandlerSql 	= databaseHandlerSQL().getInstance("ImportDataToSql")
+		#	self.dbHandler.overwriteDB(dbHandlerPickle.get_Movies(),dbHandlerPickle.get_Series(),dbHandlerPickle.get_SeriesEpisodes())
+		#	
+		#	self.save()  	# save to Database SQL
+		#	try:
+		#		pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
+		#	except Exception, ex:
+		#		printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
+		#except Exception, ex:
+		#	printl("Failed Import to SQL! Reloading Pickles Ex: " + str(ex), __name__, "E")
+		#	self.dbHandler = databaseHandlerPICKLE().getInstance()
+		#	#self.reload()	# Load from PICKLE
 			
 
 	def setDBType(self, version):
@@ -209,21 +209,17 @@ class Database(object):
 		
 	def deleteMissingFiles(self):
 		printl("->", self, "S")
-		listMissing = []
-		
-		movies = self.getMoviesValues()
-		for m in movies:
-			path = m.Path + u"/" + m.Filename + u"." + m.Extension
-			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-				listMissing.append(m)
-	
-		episodes = self.getEpisodes()
+		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.MOVIE) )
+		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.EPISODE) )
+		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.FAILEDSYNC) )
 
-		for m in episodes:
+	def _verifyAndDeleteMissingFiles(self, records):
+		listMissing = []
+		for m in records:
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 				listMissing.append(m)
-		
+                                
 		printl("Missing: " + str(len(listMissing)), self)
 		for m in listMissing:
 			self.remove(m)
@@ -237,38 +233,10 @@ class Database(object):
 	##
 	# Adds media files to the db
 	# @param media: The media file
-	# @return: False if file is already in db or movie already in db, else True 
+	# @return: mediaID in exist/inserted  or  -1 in case of error
 	def add(self, media):
 		printl("->", self, "S")
-		#if media.MediaType == MediaInfo.FAILEDSYNC:
-		#	nextID = len(self.dbFailed2)
-		#	self.dbFailed2[nextID] = media			
-
-		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
-		if media.isTypeSerie():
-			return self.dbHandler.insertSerie(media)
-
-		media.Path = media.Path.replace("\\", "/")
-		# Checks if the file is already in db
-		if self.checkDuplicate(media.Path, media.Filename, media.Extension) is not None:
-			# This should never happen, this means that the same file is already in the db
-			# But is a failure describtion here necessary ?
-			return False
-		
-		#NOT USED
-		#pth = media.Path + "/" + media.Filename + "." + media.Extension
-		#self.duplicateDetector.append(pth)
-		
-		if media.isTypeMovie():
-			return self.dbHandler.insertMovie(media)
-
-		elif media.isTypeEpisode():
-			return self.dbHandler.insertEpisode(media)
-
-		elif media.MediaType==MediaInfo.FAILEDSYNC:
-			return self.dbHandler.insertMedia(media)
-
-		return True
+		return self.dbHandler.insertMedia(media)
 
 	def save(self):
 		printl("->", self, "S")
@@ -283,10 +251,7 @@ class Database(object):
 			#self.savePickel() 
 			
 			self.dbHandler.saveMediaFiles()
-			self.dbHandler.saveMovies()
-			self.dbHandler.saveSeries()
-			self.dbHandler.saveEpisodes()
-			
+		
 			return True
 		except Exception, ex:
 			printl("Failed Save! Ex: " + str(ex), __name__, "E")
@@ -298,10 +263,13 @@ class Database(object):
 #
 #################################   MEDIAS   ################################# 
 #
+	def getMediaValues(self, type, order=None, firstRecord=0, numberOfRecords=9999999):
+		printl("->", self, "S")
+		return self.dbHandler.getMediaValues(type, order, firstRecord, numberOfRecords)
+
+	#
 	# DML statements
-	#def insertMedia(self, media):
-	#	return self.dbHandler.insertMedia(media)
-	
+	#	
 	def insertMediaWithDict(self, key_value_dict):
 		printl("->", self, "S")
 		return self.dbHandler.insertMediaWithDict(key_value_dict)
@@ -324,27 +292,22 @@ class Database(object):
 	def dbIsCommited(self):
 		printl("->", self, "S")
 		return self.dbHandler.dbIsCommited()
-		
-	def getMovies(self):
-		printl("->", self, "S")
-		return self.dbHandler.getMovies()
 
-	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+	def getMediaWithId(self, id):
 		printl("->", self, "S")
-		return self.dbHandler.getMoviesValues(order, firstRecord, numberOfRecords)	
+		return self.dbHandler.getMediaWithId(id)
 
-	def getMovie(self, id):
+	def getMediaWithImdbId(self, imdbid):
 		printl("->", self, "S")
-		return self.dbHandler.getMovie(id)
+		return self.dbHandler.getMediaWithImdbId(imdbid)
 
-	def getMoviesWithImdbId(self, imdbId):
+	def getMediaWithTheTvDbId(self, thetvdbid):
 		printl("->", self, "S")
-		movieKey = self.dbHandler.getMovieKeyWithImdbId(imdbId)
-		return self.dbHandler.getMoviesWithKey(movieKey)
+		return self.dbHandler.getMediaWithTheTvDbId(thetvdbid)
 
-	def getMoviesCount(self):
+	def getMediaCount(self, type):
 		printl("->", self, "S")
-		return self.dbHandler.getMoviesCount()	
+		return self.dbHandler.getMediaCount(type)	
 	
 	def setMoviesSeen(self, id):
 		printl("->", self, "S")
@@ -352,93 +315,41 @@ class Database(object):
 #	
 #################################   SERIES   ################################# 
 #
-	def getSeries(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		printl("->", self, "S")
-		return self.dbHandler.getSeries(order, firstRecord, numberOfRecords)
-		
-	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		printl("->", self, "S")
-		return self.getSeries(order, firstRecord, numberOfRecords).values()
-		
-	def getSeriesWithKey(self, serieKey):
-		printl("->", self, "S")
-		return self.dbHandler.getSeriesWithKey(serieKey)	
-
-	def getSeriesWithTheTvDbId(self, theTvDbId):
-		printl("->", self, "S")
-		Id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getSerieWithId(Id)	
-		
-	def getSeriesCount(self):
-		printl("->", self, "S")
-		return self.dbHandler.getSeriesCount()
-	#	
-	######################   SEASONS   ######################
-	#
-	def getSeriesSeasons(self, serieKey):
-		printl("->", self, "S")	
-		return self.dbHandler.getSeriesSeasons(serieKey)				
-	
 	def getEpisodesCount(self, mediaId=None, season=None):
-		printl("->", self, "S")
 		return self.dbHandler.getEpisodesCount(mediaId, season)
-		
-	def getSerie(self, id):
-		printl("->", self, "S")
-		return self.dbHandler.getSerieWithId(id)
 	
 	# DML statements
 	def insertSerie(self, media):
 		printl("->", self, "S")
 		return self.dbHandler.insertSerie(media)
 
-	def insertSerieWithDict(self, key_value_dict):
-		printl("->", self, "S")
-		return self.dbHandler.insertSerieWithDict(key_value_dict)
-
-	def updateSerieWithDict(self, key_value_dict):		#ID is Required
-		printl("->", self, "S")
-		return self.dbHandler.updateSerieWithDict(key_value_dict)
-
-	def deleteSerie(self, id):
-		printl("->", self, "S")
-		return self.dbHandler.deleteSerie(id)
+	#def insertSerieWithDict(self, key_value_dict):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.insertSerieWithDict(key_value_dict)
+	#
+	#def updateSerieWithDict(self, key_value_dict):		#ID is Required
+	#	printl("->", self, "S")
+	#	return self.dbHandler.updateSerieWithDict(key_value_dict)
+	#
+	#def deleteSerie(self, id):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.deleteSerie(id)
 
 #	
 ################################   EPISODES   ################################ 
 #
-	def getEpisodes(self, Id=None):
-		printl("->", self, "S")
-		return self.dbHandler.getEpisodes(Id)
-		
-	def getEpisodesWithKey(self, serieKey=None, season=None):
-		printl("->", self, "S")
-		return self.dbHandler.getEpisodesWithKey(serieKey, season)
-
-	def getEpisodesWithTheTvDbId(self, theTvDbId, season=None):
-		printl("->", self, "S")
-		Id = self.dbHandler.getSeriesIdWithTheTvDbId(theTvDbId)
-		return self.dbHandler.getEpisodes(Id, season)
-	
 	def getEpisode(self, id):
 		printl("->", self, "S")
-		return self.dbHandler.getEpisodeWithId(id)
+		return self.dbHandler.getMediaWithId(id)
 
-	def insertEpisode(self, media):
+	def getEpisodes(self, mediaId=None):
 		printl("->", self, "S")
-		return self.dbHandler.insertEpisode(media)
-	
-	def insertEpisodeWithDict(self, key_value_dict):
+		return self.dbHandler.getEpisodes(mediaId)
+	#TODO: CONVERT TO ID	
+	def getEpisodesWithTheTvDbId(self, theTvDbId, season=None):
 		printl("->", self, "S")
-		return self.dbHandler.insertEpisodeWithDict(key_value_dict)
-
-	def updateEpisodeWithDict(self, key_value_dict):	#ID is Required
-		printl("->", self, "S")
-		return self.dbHandler.updateEpisodeWithDict(key_value_dict)
-
-	def deleteEpisode(self, id):
-		printl("->", self, "S")
-		return self.dbHandler.deleteEpisode(id)
+		Id = self.dbHandler.getMediaWithTheTvDbId(theTvDbId).Id
+		return self.dbHandler.getEpisodes(Id, season)
 	
 #	
 #################################   FAILED   ################################# 
@@ -451,23 +362,6 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.deleteFailed()
 
-	#def addFailed(self, entry):
-	#	printl("->", self, "S")
-	#	return self.dbHandler.insertFailed(entry)
-
-	#def getAddFailedCauseOf(self):
-	#	printl("->", self, "S")
-	#	try:
-	#		cause = self.dbHandler._addFailedCauseOf
-	#		if cause is None:
-	#			return u"Error retriving Cause of Failed (cause Null)"
-	#		self.dbHandler._addFailedCauseOf = None
-	#		return cause.Path + u"/" + cause.Filename + u"." + cause.Extension
-	#	except Exception, ex:
-	#		printl("Error retriving Cause of Failed: "+ str(ex), self, "W")
-	#		return u"Error retriving Cause of Failed"
-	#			
-	
 #
 ###################################  UTILS  ###################################
 #
@@ -478,15 +372,13 @@ class Database(object):
 	# @param extension: utf-8 
 	# @return: True if already in db, False if not
 	def checkDuplicate(self, path, filename, extension):
-		printl("->", self, "S")
-		return self.dbHandler.checkDuplicate(path, filename, extension)
+		#printl("->", self, "S")
+		return self.dbHandler.checkDuplicateMF(path, filename, extension)
 
 	def transformGenres(self):
 		printl("->", self, "S")
 		self.dbHandler.transformGenres()
-			
-
-
+	
 #	
 ############################################################################## 
 #

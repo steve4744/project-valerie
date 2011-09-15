@@ -68,14 +68,15 @@ class Manager():
 		printl("type=" + str(type) + " param=" + str(param), self)
 					
 		if type == self.MOVIES:
-			return self.db.getMoviesValues()
+			return self.getMoviesValues()
 					
 		elif type == self.TVSHOWS:
-			return self.db.getSeriesValues()
+			return self.getSeriesValues()
 			
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
+                                ### todo: CONVERT TO ID, don't use tvdbid
 				list = self.db.getEpisodesWithTheTvDbId(param)
 			else:
 				list = self.db.getEpisodes()
@@ -189,12 +190,12 @@ class Manager():
 		if type == self.MOVIES and primary_key.has_key("imdbid"):
 			printl("is_Movie found", self)
 			imdbid = primary_key["imdbid"]
-			element = self.db.getMoviesWithImdbId(imdbid)
+			element = self.db.getMediaWithImdbId(imdbid)
 		
 		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
 			printl("is_TvShow found", self)
 			thetvdbid = primary_key["thetvdbid"]
-			element = self.db.getSeriesWithTheTvDbId(thetvdbid)
+			element = self.db.getMediaWithTheTvDbId(thetvdbid)
 		
 		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
 			printl("is_Episode found", self)
@@ -202,10 +203,6 @@ class Manager():
 			season = int(primary_key["season"])
 			episode = int(primary_key["episode"])
 			printl("Looking up episode", self, "D")
-			#print self.db._dbEpisodes.has_key(thetvdbid)
-			#print self.db._dbEpisodes[thetvdbid]
-			#print self.db._dbEpisodes[thetvdbid].has_key(season)
-			#print self.db._dbEpisodes[thetvdbid][season].has_key(episode)
 			element = self.db.getSeriesEpisode(thetvdbid, season, episode)
 		
 		return element
@@ -221,69 +218,7 @@ class Manager():
 	#		return True
 	#	return False
 	
-	#not used anymore - Passed to DB Layer because it will be diferent for sql
-	#def fillElement(self, newElement, key_value_dict):
-	#	printl("", self)
-	#	for key in key_value_dict.keys():
-	#		if key == "Title":
-	#			newElement.Title = key_value_dict[key]
-	#		elif key == "Year":
-	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-	#				value = None
-	#			else:
-	#				value = int(key_value_dict[key])
-	#			newElement.Year = value
-	#		elif key == "Month":
-	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-	#				value = None
-	#			else:
-	#				value = int(key_value_dict[key])
-	#			newElement.Month = value
-	#		elif key == "Day":
-	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-	#				value = None
-	#			else:
-	#				value = int(key_value_dict[key])
-	#			newElement.Day = value
-	#		elif key == "ImdbId":
-	#			newElement.ImdbId = key_value_dict[key]
-	#		elif key == "TheTvDbId":
-	#			newElement.TheTvDbId = key_value_dict[key]
-	#		elif key == "TmDbId":
-	#			newElement.TmDbId = key_value_dict[key]
-	#		elif key == "Runtime":
-	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-	#				value = None
-	#			else:
-	#				value = int(key_value_dict[key])
-	#			newElement.Runtime = value
-	#		elif Resolution
-	#		elif Sound
-	#		elif key == "Plot":
-	#			newElement.Plot = key_value_dict[key]
-	#		elif key == "Genres":
-	#			newElement.Genres = key_value_dict[key]
-	#		elif key == "Tag":
-	#			newElement.Tag = key_value_dict[key]
-	#		elif key == "Popularity":
-	#			if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
-	#				value = None
-	#			else:
-	#				value = int(key_value_dict[key])
-	#			newElement.Popularity = value
-	#		elif key == "Season":
-	#			newElement.Season = int(key_value_dict[key])
-	#		elif key == "Episode":
-	#			newElement.Episode = int(key_value_dict[key])
-	#		
-	#		elif key == "Path":
-	#			newElement.Path = key_value_dict[key]
-	#		elif key == "Filename":
-	#			newElement.Filename = key_value_dict[key]
-	#		elif key == "Extension":
-	#			newElement.Extension = key_value_dict[key]
-	#	return newElement
-
+	
 	#not used anymore - replacement: update media
 	#def replaceByUsingPrimaryKey(self, type, primary_key, key_value_dict):
 	#		printl("", self)
@@ -416,29 +351,26 @@ class Manager():
 	# uncomment if necessary
 	
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getMoviesValues(order, firstRecord, numberOfRecords)
+		return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
 
 	def getMovie(self, id):
-		return self.db.getMovie(id)
-
-	#def getMoviesPkWithImdb(self, imdbId):
-	#	return self.db.getMovieKeyWithImdb(imdbId)
+		return self.db.getMediaWithId(id)
 
 	def getMoviesCount(self):
-		return self.db.getMoviesCount()
+		return self.db.getMediaCount(MediaInfo.MOVIE)
 
 	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
 		printl("start changing arts 2", self)
 		m = None
 		if type == self.MOVIES:
-			m = self.db.getMovie(id)
+			m = self.db.getMediaWithId(id)
 		elif type == self.TVSHOWS:
-			m = self.db.getSerie(id)		
+			m = self.db.getMediaWithId(id)		
 		elif type == self.TVSHOWSEPISODES:
-			m = self.db.getEpisode(id)
+			m = self.db.getMediaWithId(id)
 		elif type == self.MUSIC:
 			pass
-			#m = self.db.getMusic(id)
+			#m = self.db.getMediaWithId(id)
 			return False
 		else:
 			return None				
@@ -465,39 +397,22 @@ class Manager():
 #
 	# Pass throught functions
 	# uncomment if necessary
-	
+		
 	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getSeriesValues(order, firstRecord, numberOfRecords)
+		return self.db.getMediaValues(MediaInfo.SERIE, order, firstRecord, numberOfRecords)
 	
 	def getSerie(self, id):
-		return self.db.getSerie(id)
+		return self.db.getMediaWithId(id)
 
 	def getSeriesWithTheTvDbId(self, theTvDbId):
-		return self.db.getSeriesWithTheTvDbId(theTvDbId)
+		return self.db.getMediaWithTheTvDbId(theTvDbId)
 		
-	#def getSeriesEpisode(self, serieKey, season, episode):
-	#	return self.db.getSeriesEpisode(serieKey, season, episode)		
-	#def getSeriesSeasons(self, serieKey):			
-	#	return self.db.getSeriesSeasons(serieKey)				
-
 	def getSeriesCount(self):
-		return self.db.getSeriesCount()
+		return self.db.getMediaCount(MediaInfo.SERIE)
+		
 
-	#def getSeasonsCountWithTheTvDbId(self, theTvDbId):
-	#	return self.db.getSeasonsCountWithTheTvDbId(theTvDbId)
-	#def getSeasonsCount(self, mediaId):
-	#	return self.db.getSeasonsCount(mediaId)	
-	#def getEpisodesCountWithTheTvDbId(self, theTvDbId, season):
-	#	return self.db.getEpisodesCountWithTheTvDbId(serieKey, season)
-	
 	def getEpisodes(self, id):
 		return self.db.getEpisodes(id)
-			
-#	def getSeriesEpisodes(self, serieKey=None, season=None):
-#		return self.db.getSeriesEpisodes(serieKey, season)
-	
-#	def getSeriesEpisodesWithTheTvDbId(self, theTvDbId, season=None):
-#		return self.db.getSeriesEpisodesWithTheTvDbId(theTvDbId, season)
 	
 	def getEpisodesCount(self, mediaId=None, season=None):
 		return self.db.getEpisodesCount(mediaId, season)
@@ -513,10 +428,4 @@ class Manager():
 #
 ###################################  UTILS  ###################################
 #
-	def convertNullValues(self, record):
-		printl("->", self, 10)
-		if record.Year is None:
-			record.Year = u""
-		if record.Month is None:
-			record.Month = u""
-		return record
+	

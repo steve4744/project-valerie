@@ -327,19 +327,21 @@ class pyvalerie(Thread):
 					if (filename + u"." + extension) in Blacklist.get():
 						printl("File blacklisted", self)
 						continue
-					
+					#printl("testing 1", self)
+						
 					alreadyInDb = db.checkDuplicate(path, filename, extension)
 					if alreadyInDb is not None:
 						self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
 						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
 						
+						#printl("testing 2", self)
 						if Arts().isMissing(alreadyInDb):
 							#self.output("Downloading missing poster")
 							tmp = None
 							if alreadyInDb.isTypeMovie():
 								tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
 							elif alreadyInDb.isTypeEpisode():
-								tvshow = db.getSeriesWithTheTvDbId(alreadyInDb.TheTvDbId)
+								tvshow = db.getMediaWithTheTvDbId(alreadyInDb.TheTvDbId)
 								#printl(str(tvshow.SeasonPoster), self, "E")
 								tvshow.SeasonPoster.clear() # Make sure that there are no residues
 								tmp = TheTvDbProvider().getArtByTheTvDbId(tvshow)
@@ -419,8 +421,9 @@ class pyvalerie(Thread):
 						results = (elementInfo, )
 					
 					if results is not None:
+						printl("results: "+str(results), self)
 						for result in results:
-							if db.add(result):
+							if db.add(result) >= 0:
 								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
 									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
