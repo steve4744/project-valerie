@@ -95,6 +95,7 @@ class MediaInfo(object):
 	Episode = -1
 	EpisodeText = u""	 # for example: Episode Number:Special / Pilot (not numbered)
 	syncStatus  = 0
+	syncErrNo = 0
 	syncFailedCause = u""
 	Seen = 0
 	SeenDate = u""

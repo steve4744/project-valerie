@@ -60,10 +60,6 @@ class Manager():
 		printl("", self)
 		self.db.save()
 
-	#def reload(self):
-	#	printl("", self)
-	#	self.db.reload()
-
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)
 					
@@ -76,7 +72,7 @@ class Manager():
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
-                                ### todo: CONVERT TO ID, don't use tvdbid
+				### todo: CONVERT TO ID, don't use tvdbid
 				list = self.db.getEpisodesWithTheTvDbId(param)
 			else:
 				list = self.db.getEpisodes()
@@ -206,53 +202,6 @@ class Manager():
 			element = self.db.getSeriesEpisode(thetvdbid, season, episode)
 		
 		return element
-
-	#not used anymorE
-	#def removeByUsingPrimaryKey(self, type, primary_key):
-	#	printl("", self)
-	#	printl("type=" + str(type), self)
-	#	printl("primary_key=" + str(primary_key), self)
-	#	element = self.getElementByUsingPrimaryKey(type, primary_key)
-	#	if element is not None:
-	#		self.remove(element, False)
-	#		return True
-	#	return False
-	
-	
-	#not used anymore - replacement: update media
-	#def replaceByUsingPrimaryKey(self, type, primary_key, key_value_dict):
-	#		printl("", self)
-	#	element = self.getElementByUsingPrimaryKey(type, primary_key)
-	#	if element is not None:
-	#		newElement = element.copy()
-	#		newElement = self.fillElement(newElement, key_value_dict)
-	#		self.replace(element, (newElement, ))
-	#		return newElement
-	#	return None
-
-	#not used anymore - replacement: insert media
-	#def addByUsingPrimaryKey(self, type, primary_key, key_value_dict):
-	#	printl("", self)
-	#	newElement = MediaInfo()
-	#	if type == self.MOVIES and primary_key.has_key("imdbid"):
-	#		newElement.ImdbId = primary_key["imdbid"]
-	#		newElement.setMediaType(MediaInfo.MOVIE)
-	#	
-	#	elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
-	#		newElement.TheTvDbId = primary_key["thetvdbid"]
-	#		newElement.setMediaType(MediaInfo.SERIE)
-	#	
-	#	elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
-	#		newElement.TheTvDbId = primary_key["thetvdbid"]
-	#		newElement.Season = primary_key["season"]
-	#		newElement.Episode = primary_key["episode"]
-	#		newElement.setMediaType(MediaInfo.EPISODE)
-	#	else:
-	#		return None
-	#	
-	#	newElement = self.fillElement(newElement, key_value_dict)
-	#	self.replace(None, (newElement, ))
-	#	return newElement
 	
 	def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
 		printl("start changing arts", self)
@@ -289,10 +238,13 @@ class Manager():
 		
 		return False
 	
-	
+#
+##########################  SEEN - not in dbHandler  ########################## 
+#
+
 	def isShowSeen(self, primary_key):
 		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
-	             
+		
 		for episode in library:
 			if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
 				return False
@@ -300,7 +252,7 @@ class Manager():
 	
 	def isSeasonSeen(self, primary_key):
 		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
-	             
+		
 		for episode in library:
 			if episode.Season == primary_key["Season"]:
 				if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
@@ -340,16 +292,15 @@ class Manager():
 #
 #################################   MOVIES   ################################# 
 #
+	# Pass throught functions
+
 	# for test 
 	def getDbDump(self):
 		return self.db.getDbDump()
 		
 	def dbIsCommited(self):
 		return self.db.dbIsCommited()
-	
-	# Pass throught functions
-	# uncomment if necessary
-	
+		
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
 
@@ -396,7 +347,6 @@ class Manager():
 #################################   SERIES   ################################# 
 #
 	# Pass throught functions
-	# uncomment if necessary
 		
 	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMediaValues(MediaInfo.SERIE, order, firstRecord, numberOfRecords)
@@ -410,7 +360,6 @@ class Manager():
 	def getSeriesCount(self):
 		return self.db.getMediaCount(MediaInfo.SERIE)
 		
-
 	def getEpisodes(self, id):
 		return self.db.getEpisodes(id)
 	

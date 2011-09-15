@@ -54,6 +54,9 @@ class databaseHandlerPICKLE(object):
 	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
+	CONVERTING = False
+	_ConvertPos = 0
+	_ConvertMax = 0
 	DB_VERSION_MEDIAFILES = 1
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
@@ -82,6 +85,7 @@ class databaseHandlerPICKLE(object):
 
 	_dbGroups	= None
 	_dbGroupsItems	= None
+	
 
 	def __init__(self):
 		printl("->", self, "S")
@@ -174,7 +178,7 @@ class databaseHandlerPICKLE(object):
 		maxKey = max(records.keys(), key=int) + 1
 		if (maxKey<=0):
 			maxKey = 1
-		printl("NextKey: " +str(maxKey) , self, "I")
+		printl("NextKey: " +str(maxKey) , self, "H")
 		return maxKey
 		
 	# Waiting for _db dict
@@ -197,7 +201,7 @@ class databaseHandlerPICKLE(object):
 			printl("an error as ocurred: "+str(ex), self, "E")
 		finally:	
 			gMutex_Id.release()
-			printl("Released Mutex for NextId: "+str(nextId), self, "I")
+			printl("Released Mutex for NextId: "+str(nextId), self, "H")
 		return nextId
 		
 	## 
@@ -221,16 +225,16 @@ class databaseHandlerPICKLE(object):
 			for key in self._dbMediaFiles:
 				if self._checkKeyValid(key):		# only for Pickle
 					if self._dbMediaFiles[key].Id == _id:
-						printl("result key: "+ str(key)+ "  for id:" + str(_id))
 						k = key
 						break
 							
+		printl("result key: "+ str(k)+ "  for id:" + str(_id),self, "A")
 		#elapsed_time = time.time() - start_time
 		#printl("Took: " + str(elapsed_time), self)
 		return k
 	
 	def _getMediaKeyWithImdbId(self, imdbid):
-		printl("->", self, "S")
+		#printl("->", self, "S")
 		
 		self._mediaFilesCheckLoaded()
 		#start_time = time.time()
@@ -246,9 +250,10 @@ class databaseHandlerPICKLE(object):
 			for key in self._dbMediaFiles:
 				if self._checkKeyValid(key):		# only for Pickle
 					if self._dbMediaFiles[key].ImdbId == imdbid:
-						printl("result key: "+ str(key)+ "  for imdbid:" + str(imdbid))
 						k = key
 						break
+		
+		printl("result key: "+ str(k)+ "  for imdbid:" + str(imdbid), self, "A")
 							
 		#elapsed_time = time.time() - start_time
 		#printl("Took: " + str(elapsed_time), self)
@@ -256,7 +261,7 @@ class databaseHandlerPICKLE(object):
 	
 	# !!! WARNING !!! Will return the first Record, it's possible to have episodes with same tvdbid
 	def _getMediaKeyWithTheTvDbId(self, thetvdbid, mediaType=None):
-		printl("->", self, "S")
+		#printl("->", self, "S")
 		
 		self._mediaFilesCheckLoaded()
 		#start_time = time.time()
@@ -273,11 +278,11 @@ class databaseHandlerPICKLE(object):
 				if self._checkKeyValid(key):		# only for Pickle					
 					if self._dbMediaFiles[key].TheTvDbId == thetvdbid:
 						if mediaType is None:
-							printl("result key: "+ str(key)+ "  for thetvdbid:" + str(thetvdbid))
+							printl("result key: "+ str(key)+ "  for thetvdbid:" + str(thetvdbid), self, "H")
 							k = key
 							break
 						elif self._dbMediaFiles[key].MediaType == mediaType:
-							printl("result key: "+ str(key)+ "  for thetvdbid: " + str(thetvdbid) + " with mediaType: " + str(mediaType))
+							printl("result key: "+ str(key)+ "  for thetvdbid: " + str(thetvdbid) + " with mediaType: " + str(mediaType), self, "H")
 							k = key
 							break
 							
@@ -453,7 +458,7 @@ class databaseHandlerPICKLE(object):
 		if media.isTypeEpisode():
 			serieId = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 			if serieId is None:
-				serieId = insertFakeSerie(media.TheTvDbId)
+				serieId = self.insertFakeSerie(media.TheTvDbId)
 			
 		key = self._getNextKey(self._dbMediaFiles)
 		m = media
@@ -501,7 +506,6 @@ class databaseHandlerPICKLE(object):
 		#Not working for "change Type"
 		type = key_value_dict["MediaType"]
 		
-		#if type == MediaInfo.FAILEDSYNC or type == MediaInfo.MOVIE or type == MediaInfo.MUSIC:
 		self._mediaFilesCheckLoaded()		
 		key = self._getMediaKeyWithId(key_value_dict['Id'])
 		m = self._getMediaWithKey(key)
@@ -605,7 +609,7 @@ class databaseHandlerPICKLE(object):
 		f.write("-- MediaFiles  -  Movies     --\n")
 		f.write("-------------------------------\n")
 		f.write("\n")
-		f.write("Count\tKey   \tId   \tImdb   \t\tTheTvDbId\tTitle\n")		
+		f.write("Count\tKey   \tId   \tImdb   \t\tTheTvDb\tTitle\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
@@ -627,7 +631,7 @@ class databaseHandlerPICKLE(object):
 		f.write("-- MediaFiles  -  Series     --\n")
 		f.write("-------------------------------\n")
 		f.write("\n")
-		f.write("Count\tKey   \tId   \tImdb   \t\tTheTvDbId\tTitle\n")		
+		f.write("Count\tKey   \tId   \tImdb   \t\tTheTvDb\tTitle\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
@@ -649,7 +653,7 @@ class databaseHandlerPICKLE(object):
 		f.write("-- MediaFiles  -  Episodes   --\n")
 		f.write("-------------------------------\n")
 		f.write("\n")
-		f.write("Count\tKey  \tId   \tParent\tSeason\tEpisode\tImdb    \t\tTheTvDbId\tTitle\n")		
+		f.write("Count\tKey  \tId   \tParent\tSeason\tEpisode\tImdb    \tTheTvDbId\tTitle\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
@@ -810,11 +814,6 @@ class databaseHandlerPICKLE(object):
 			self._dbEpisodes = self._getAllEpisodes()
 			if self.USE_INDEXES:
 				self.createSeriesIndexes()
-			
-			#printl("3 --------------------------------")			
-			#for key in self._dbSeries:
-			#	if key != self.CONFIGKEY:		# only for Pickle
-			#		printl(repr(self._dbSeries[key].Title))
 				
 		elapsed_time = time.time() - start_time
 		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
@@ -889,20 +888,6 @@ class databaseHandlerPICKLE(object):
 			printl("TvShows database not loaded yet. Loading ... ", self, "H")
 			self._loadSeriesEpisodesDB()
 
-	#								    #	
-	#   PUBLIC FUNCTIONS	# # # # # # # # # # # # # # # # # # # # # # # 
-	#								    #	
-	
-	
-	
-#	
-################################   EPISODES   ################################ 
-#
-
-#	
-#################################   FAILED   ################################# 
-#
-
 ###################################  UTILS  ###################################
 
 	def fillMediaInfo(self, m, key_value_dict):
@@ -973,7 +958,7 @@ class databaseHandlerPICKLE(object):
 		records[self.CONFIGKEY] = version
 		printl("DB version set to "+ str(version))
 
-############################    UPGRADE FAILED    #############################		
+############################  UPGRADE MEDIAFILES  #############################		
 	def _upgradeMediaFiles(self, records):
 		#printl("->", self, "S")
 		currentDBVersion = self.getDBVersion(records)
@@ -988,9 +973,8 @@ class databaseHandlerPICKLE(object):
 				if updateToVersion==1:
 					self._upgrade_MF_1(records)
 					self.setDBVersion(records, updateToVersion)
-					pass
 				elif updateToVersion==2:
-					pass
+					self._upgrade_MF_2()
 				elif updateToVersion==3:
 					pass
 				elif updateToVersion==4:
@@ -1003,19 +987,33 @@ class databaseHandlerPICKLE(object):
 			self.saveMediaFiles()
 	
 	def _upgrade_MF_1(self, records):
+		
 		self._moviesCheckLoaded()
+		self._seriesCheckLoaded()
+		self._ConvertMax += len(self._dbMovies)
+		self._ConvertMax += len(self._dbSeries)
+		for serieKey in self._dbEpisodes:
+			if self._checkKeyValid(serieKey):
+				for season in self._dbEpisodes[serieKey]:
+					for episode in self._dbEpisodes[serieKey][season]:
+						self._ConvertMax += 1
+		
+		self._ConvertPos = 0
+		self.CONVERTING = True		
+		
 		for rec in self._dbMovies.values():			
 			if type(rec) is MediaInfo:
 				if rec.TheTvDbId == u"0":
 					rec.TheTvDbId = u""
 				self.insertMedia(rec)
+				self._ConvertPos += 1
 
-		self._seriesCheckLoaded()
 		for rec in self._dbSeries.values():			
 			if type(rec) is MediaInfo:
 				#if rec.TheTvDbId == u"0":
 				#	rec.TheTvDbId = u""
 				self.insertMedia(rec)
+				self._ConvertPos += 1
 					
 		for serieKey in self._dbEpisodes:
 			if self._checkKeyValid(serieKey):
@@ -1044,10 +1042,21 @@ class databaseHandlerPICKLE(object):
 							
 						rec.ParentId = self._dbMediaFiles[key].Id
 						self.insertMedia(rec)
+						self._ConvertPos += 1
+		self.CONVERTING = False
+	
+	def convertGetMax(self):
+		return self._ConvertMax
+
+	def convertGetPos(self):
+		return self._ConvertPos
 				
 					
-	def _upgrade_MF_2(self, records):
-		pass	
+	def _upgrade_MF_2(self):
+		os.rename(self.MOVIESDB,   self.MOVIESDB +'.'+ str(time.time()))	
+		os.rename(self.TVSHOWSDB,  self.TVSHOWSDB +'.'+ str(time.time()))	
+		os.rename(self.EPISODESDB, self.EPISODESDB +'.'+ str(time.time()))	
+		os.rename(self.FAILEDDB,   self.FAILEDDB   +'.'+ str(time.time()))	
 		
 ############################    UPGRADE MOVIES    #############################
 	def _upgradeMovies(self, records):
@@ -1209,16 +1218,6 @@ class databaseHandlerPICKLE(object):
 			print '-'*60
 
 #########################################################################
-		#self.doTest_DuplicateTestDB()
-		#printl("TEST 1 ************************************************", self)
-		#self.doTest_Speed()
-		#printl("TEST 2 ************************************************", self)
-		#self.doTest_Speed()
-		#printl("TEST 3 ************************************************", self)
-		#self.doTest_Speed()
-		#printl("TEST 4 ************************************************", self)
-		#self.doTest_Speed()
-		#printl("TEST 5 ************************************************", self)
 		
 	def doTest_DuplicateTestDB(self):
 		printl("->", self, "S")

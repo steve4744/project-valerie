@@ -219,7 +219,7 @@ class Database(object):
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
 				listMissing.append(m)
-                                
+			
 		printl("Missing: " + str(len(listMissing)), self)
 		for m in listMissing:
 			self.remove(m)
@@ -245,8 +245,6 @@ class Database(object):
 		gDatabaseMutex.acquire()
 		try:
 			printl("Acquired Mutex", self, 4)
-			# Always safe pickel as this increses fastsync a lot
-			
 			# will be the backup
 			#self.savePickel() 
 			
@@ -323,18 +321,6 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.insertSerie(media)
 
-	#def insertSerieWithDict(self, key_value_dict):
-	#	printl("->", self, "S")
-	#	return self.dbHandler.insertSerieWithDict(key_value_dict)
-	#
-	#def updateSerieWithDict(self, key_value_dict):		#ID is Required
-	#	printl("->", self, "S")
-	#	return self.dbHandler.updateSerieWithDict(key_value_dict)
-	#
-	#def deleteSerie(self, id):
-	#	printl("->", self, "S")
-	#	return self.dbHandler.deleteSerie(id)
-
 #	
 ################################   EPISODES   ################################ 
 #
@@ -382,28 +368,6 @@ class Database(object):
 #	
 ############################################################################## 
 #
-	# NOT USED ???
-	#def searchDeleted(self):
-	#	printl("->", self, 10)
-	#	movies = self.getMovies()
-	#
-	#	for key in movies:
-	#		m = movies[key]
-	#		path = m.Path + u"/" + m.Filename + u"." + m.Extension
-	#		if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-	#			printl(":-( " + Utf8.utf8ToLatin(path), self)
-	#	
-	#	series = self.getSeries()
-	#	episodes = self.episodesGet()
-	#	for key in series:
-	#		if key in episodes:
-	#			for season in episodes[key]:
-	#				for episode in episodes[key][season]:
-	#					m = episodes[key][season][episode]
-	#					path = m.Path + u"/" + m.Filename + u"." + m.Extension
-	#					if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-	#						printl(":-( " + Utf8.utf8ToLatin(path), self)
-
 	#not tested
 	#self.idxMoviesByImdb = {}
 	#self.idxSeriesByTheTvDb = {}
