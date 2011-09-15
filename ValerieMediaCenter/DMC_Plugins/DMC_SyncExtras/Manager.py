@@ -12,7 +12,8 @@
 #
 #   v2 - 18/07/2011 - Zuki - Added Counters for Movies/Series
 #
-#   v
+#   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
+#			     Changes to webif/sync by Don 	
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

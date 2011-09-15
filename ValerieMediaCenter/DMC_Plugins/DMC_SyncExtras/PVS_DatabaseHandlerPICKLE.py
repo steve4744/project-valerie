@@ -16,7 +16,8 @@
 #   v2 - 16/07/2011 - Zuki - upgrade database is now working
 #			     DB Patch 1 will update fields MediaInfo.MediaType
 #
-#   v
+#   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
+#			     Changes to webif/sync by Don 	
 #
 #   v
 #
@@ -50,8 +51,6 @@ class databaseHandlerPICKLE(object):
 	TVSHOWSDB  = DB_PATH + "tvshows.db"
 	EPISODESDB = DB_PATH + "episodes.db"
 
-
-	TESTDB     = DB_PATH + "test.db"
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
 	CONVERTING = False
@@ -76,16 +75,11 @@ class databaseHandlerPICKLE(object):
 	LastID_S   = 200000
 	LastID_E   = 300000
 	LastID_MF  = 500000
-	
-	
+		
 	_dbMovies	= None
 	_dbSeries	= None
 	_dbEpisodes	= None	
 	_dbFailed	= None
-
-	_dbGroups	= None
-	_dbGroupsItems	= None
-	
 
 	def __init__(self):
 		printl("->", self, "S")
@@ -1216,88 +1210,4 @@ class databaseHandlerPICKLE(object):
 			import sys, traceback
 			traceback.print_exc(file=sys.stdout)
 			print '-'*60
-
-#########################################################################
-		
-	def doTest_DuplicateTestDB(self):
-		printl("->", self, "S")
-		start_time = time.time()
-		if os.path.exists(self.TESTDB):
-			fd = open(self.TESTDB, "rb")
-			records = pickle.load(fd)
-			fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Read Took (TESTDB): " + str(elapsed_time), self)
-
-		cnt=0			
-		db2 = {}
-		start_time = time.time()
-		for key in records:
-			db2[cnt] = records[key]
-			cnt+=1
-		for key in records:
-			db2[cnt] = records[key]
-			cnt+=1
-		elapsed_time = time.time() - start_time
-		printl("final DB: "+str(cnt)+" records. Took: " + str(elapsed_time), self)
-
-		start_time = time.time()
-		fd = open(self.TESTDB, "wb")
-		pickle.dump(db2, fd, pickle.HIGHEST_PROTOCOL)
-		fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Write New TestDB. Took : " + str(elapsed_time), self)
-		
-	def doTest_Speed(self):
-		printl("->", self, "S")
-		start_time = time.time()
-		if os.path.exists(self.TESTDB):
-			fd = open(self.TESTDB, "rb")
-			records = pickle.load(fd)
-			fd.close()
-		elapsed_time = time.time() - start_time
-		printl("Read test.db with " +str(len(records))+" records. Took: " + str(elapsed_time), self)
-
-		start_time = time.time()
-		cnt=0
-		for key in records:
-			records[key].Id = "blab1341414141cvbgdfghdfg24123123123la"
-			cnt+=1
-		elapsed_time = time.time() - start_time
-		printl("change "+str(cnt)+" records, Took : " + str(elapsed_time), self)
-
-		start_time = time.time()
-		cnt=0
-		for key in records:
-			if records.has_key(key):
-				records[key].Id = "blab1341414141cvbgdfghdfg24123123123lb"
-				cnt+=1
-		elapsed_time = time.time() - start_time
-		printl("Change "+str(cnt)+" records, using -Has_key- Took : " + str(elapsed_time), self)
-
-		start_time = time.time()
-		cnt=0
-		for key in records:
-			if key in records:
-				records[key].Id = "blab1341414141cvbgdfghdfg24123123123lc"
-				cnt+=1
-		elapsed_time = time.time() - start_time
-		printl("Change "+str(cnt)+" records, using -key in- Took : " + str(elapsed_time), self)
-
-		dbTest = {}
-		start_time = time.time()
-		cnt=0
-		for key in records:
-			dbTest[key] = records[key]
-			cnt+=1
-			
-		elapsed_time = time.time() - start_time
-		printl("Duplicate "+str(cnt)+" records, Took : " + str(elapsed_time), self)
-
-		for key in records:
-			if records[key].ImdbId == "tt99009900":
-				records[key].Id = "blab1341414141cvbgdfghdfg24123123123lb"
-				cnt+=1
-		elapsed_time = time.time() - start_time
-		printl("Query "+str(cnt)+" records, using -if equal- Took : " + str(elapsed_time), self)
 

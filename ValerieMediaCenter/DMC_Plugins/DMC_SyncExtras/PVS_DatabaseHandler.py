@@ -15,30 +15,13 @@
 #			 - Added Database requests to 
 #   v2 18/07/2011 - Zuki - Added Counters for Movies/Series
 #   v3 21/07/2011 - Zuki - Added new functions to access Series/Episodes 
+#   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
+#			     Changes to webif/sync by Don 	
 ##
 ################################################################################
 # Function			Parameters		Return
 ################################################################################
-# getMovies						dict of MediaInfo
-# getMoviesValues					list of MediaInfo 
-# getMoviesWithKey		movieKey		MediaInfo
-# getMoviesPkWithImdb		ImdbID			ID
-# getMoviesCount					Count
-#
-# getSeries						dict of MediaInfo
-# getSeriesValues					list of MediaInfo
-# getSeriesWithKey		serieKey		MediaInfo
-# getSeriesPkWithTheTvDb	theTvDbId		ID
-# getSeriesSeasons		serieKey		dict of MediaInfo
-# getSeriesEpisodes		serieKey=None		list of MediaInfo
-#				season=None
-# getSeriesEpisode		serieKey,season,episode	MediaInfo
-# getSeriesCount					Count
-# getSeriesCountSeasons		serieKey		Count
-# getEpisodesCount		mediaId,season		Count
-#
-# seriesDeleteCascadeOfSerie	serieKey		Boolean
-#
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import cPickle   as pickle
