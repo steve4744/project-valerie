@@ -99,6 +99,7 @@ class MediaInfo(object):
 	syncFailedCause = u""
 	Seen = 0
 	SeenDate = u""
+	ShowUp = 1		# Show in List
 	
 	Poster   = u""
 	Backdrop = u""

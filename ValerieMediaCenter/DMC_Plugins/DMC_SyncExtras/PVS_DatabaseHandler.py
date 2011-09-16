@@ -248,6 +248,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.getMediaValues(type, order, firstRecord, numberOfRecords)
 
+	def getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.dbHandler.getMediaValuesForFolder(type, path, order, firstRecord, numberOfRecords)
+	
 	#
 	# DML statements
 	#	

@@ -350,6 +350,9 @@ class databaseHandlerPICKLE(object):
 	def getMediaValues(self, mediaType, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self._getMediaValuesWithFilter(mediaType, None, None, None, order, firstRecord, numberOfRecords)
 	
+	def getMediaValuesForFolder(self, mediaType, path, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self._getMediaValuesWithFilter(mediaType, None, None, path, order, firstRecord, numberOfRecords)
+	
 	def _getMediaValuesWithFilter(self, mediaType, parentId=None, season=None, path=None, order=None, firstRecord=0, numberOfRecords=9999999):
 		#printl("-> parentId:"+str(parentId) + " season:" + str(season), self, "S")
 		printl("->", self, "S")
@@ -377,7 +380,7 @@ class databaseHandlerPICKLE(object):
 						listToSort.append(self._dbMediaFiles[key])
 					
 					elif season is None:
-						#printl("compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId)+"*")
+						printl("compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId)+"*")
 						#printl("compare*"+str(type(self._dbMediaFiles[key].ParentId))+"*"+str(type(parentId))+"*")
 						if self._dbMediaFiles[key].ParentId == int(parentId):
 							#printl("--compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId))

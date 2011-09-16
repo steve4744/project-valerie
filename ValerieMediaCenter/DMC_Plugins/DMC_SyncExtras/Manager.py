@@ -293,6 +293,9 @@ class Manager():
 	def getMediaPaths(self):
 		return self.db.getMediaPaths()
 	
+	def getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMediaValuesForFolder(type, path, order=None, firstRecord=0, numberOfRecords=9999999)
+	
 #
 #################################   MOVIES   ################################# 
 #
