@@ -1047,10 +1047,10 @@ class databaseHandlerPICKLE(object):
 				
 					
 	def _upgrade_MF_2(self):
-		os.rename(self.MOVIESDB,   self.MOVIESDB +'.'+ str(time.time()))	
-		os.rename(self.TVSHOWSDB,  self.TVSHOWSDB +'.'+ str(time.time()))	
-		os.rename(self.EPISODESDB, self.EPISODESDB +'.'+ str(time.time()))	
-		os.rename(self.FAILEDDB,   self.FAILEDDB   +'.'+ str(time.time()))	
+		os.rename(self.MOVIESDB,   self.MOVIESDB   +'.old')	
+		os.rename(self.TVSHOWSDB,  self.TVSHOWSDB  +'.old')	
+		os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
+		os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
 		
 ############################    UPGRADE MOVIES    #############################
 	def _upgradeMovies(self, records):
