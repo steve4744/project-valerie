@@ -263,6 +263,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.deleteMedia(type, id)
 
+	def getMediaPaths(self):
+		return self.dbHandler.getMediaPaths()
+
 #
 #################################   MOVIES   ################################# 
 #

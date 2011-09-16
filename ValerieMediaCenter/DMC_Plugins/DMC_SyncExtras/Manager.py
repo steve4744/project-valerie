@@ -289,7 +289,10 @@ class Manager():
 			printl("Delete Media - Failed", self)	
 			return False
 		return True
-
+	
+	def getMediaPaths(self):
+		return self.db.getMediaPaths()
+	
 #
 #################################   MOVIES   ################################# 
 #

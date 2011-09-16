@@ -348,9 +348,9 @@ class databaseHandlerPICKLE(object):
 		return newList # return always a copy, user don't use db
 
 	def getMediaValues(self, mediaType, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self._getMediaValuesWithFilter(mediaType, None, None, order, firstRecord, numberOfRecords)
+		return self._getMediaValuesWithFilter(mediaType, None, None, None, order, firstRecord, numberOfRecords)
 	
-	def _getMediaValuesWithFilter(self, mediaType, parentId=None, season=None, order=None, firstRecord=0, numberOfRecords=9999999):
+	def _getMediaValuesWithFilter(self, mediaType, parentId=None, season=None, path=None, order=None, firstRecord=0, numberOfRecords=9999999):
 		#printl("-> parentId:"+str(parentId) + " season:" + str(season), self, "S")
 		printl("->", self, "S")
 		if order is None:
@@ -369,6 +369,10 @@ class databaseHandlerPICKLE(object):
 			if self._checkKeyValid(key):
 				if self._dbMediaFiles[key].getMediaType() == mediaType:
 					
+					if path is not None:
+						if self._dbMediaFiles[key].Path == path:
+							listToSort.append(self._dbMediaFiles[key])
+					# maybe it repeat....
 					if parentId is None and season is None:
 						listToSort.append(self._dbMediaFiles[key])
 					
@@ -418,6 +422,23 @@ class databaseHandlerPICKLE(object):
 		printl("->", self, "S")
 		self._mediaFilesCheckLoaded()
 		return len(self._getMediaFiles(mediaType))
+
+	#for folderlist
+	def getMediaPaths(self):
+		printl("->", self, "S")
+		list	= []
+		
+		self._mediaFilesCheckLoaded()
+		start_time = time.time()
+		for key in self._dbMediaFiles:
+			if self._checkKeyValid(key):
+				if not self._dbMediaFiles[key].Path in list:
+					list.append (self._dbMediaFiles[key].Path)
+
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+		return list # return always a copy, user don't use db
+
 
 	def getEpisodesCount(self, parentId=None, season=None):
 		printl("->", self, "S")
@@ -743,6 +764,12 @@ class databaseHandlerPICKLE(object):
 						f.write(s+"\n")
 
 		f.write("\n")
+		f.flush()
+		
+		f.write("-- MEDIA PATHS --\n")
+		f.write("-- MEDIA PATHS --\n")
+		f.write("-- MEDIA PATHS --\n")
+		f.write(str(self.getMediaPaths())) 
 		f.flush()
 		
 		return True			
