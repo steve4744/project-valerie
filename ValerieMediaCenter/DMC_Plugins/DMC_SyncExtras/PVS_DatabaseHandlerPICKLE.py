@@ -380,7 +380,7 @@ class databaseHandlerPICKLE(object):
 						listToSort.append(self._dbMediaFiles[key])
 					
 					elif season is None:
-						printl("compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId)+"*")
+						#printl("compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId)+"*")
 						#printl("compare*"+str(type(self._dbMediaFiles[key].ParentId))+"*"+str(type(parentId))+"*")
 						if self._dbMediaFiles[key].ParentId == int(parentId):
 							#printl("--compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId))
