@@ -167,17 +167,6 @@ def checkDefaults():
 			printl("\t- OK", __name__)
 	except Exception, ex:
 		printl("Exception: " + str(ex), __name__)
-	
-	try:
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "paths.conf", __name__)
-		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "paths.conf") is False:
-			printl("Check paths.conf - Missing -> Downloading", __name__)
-			WebGrabber.getFile(DEFAULTURL+"paths.conf", config.plugins.pvmc.configfolderpath.value + "paths.conf")
-			printl("\t- Created", __name__)
-		else:
-			printl("\t- OK", __name__)
-	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
 
 def getStringShrinked(value):
 	dif = 16 - len(value)

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+import WebGrabber
 
 from threading import Lock
-
 from Components.config import config
-
 from Xml2Dict import Xml2Dict
-
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
-
 #------------------------------------------------------------------------------------------
 
 gInstance = None
@@ -49,10 +47,6 @@ class PathsConfig(Xml2Dict):
 		
 		# Its loaded so lets walk through the dict and fix errors
 		
-		# Adding ifo and iso extensions, this can be removed @01.09.2011
-		self._dict["xml"]["filetypes"]["filetype"].append(u"ifo")
-		self._dict["xml"]["filetypes"]["filetype"].append(u"iso")
-		
 		# making sure that no duplicates exist
 		self._dict["xml"]["filetypes"]["filetype"] = list(set(self._dict["xml"]["filetypes"]["filetype"]))
 		
@@ -66,43 +60,74 @@ class PathsConfig(Xml2Dict):
 		
 		if save:
 			self.save()
+			
+	def checkPathXml(self):
+		printl(" -> ", "checkPathXml", "S")
+		DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
+		try:
+			printl("Check " + config.plugins.pvmc.configfolderpath.value + "paths.xml", __name__)
+			if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "paths.xml") is False:
+				printl("Check paths.xml - Missing -> Downloading", __name__)
+				WebGrabber.getFile(DEFAULTURL+"paths.xml", config.plugins.pvmc.configfolderpath.value + "paths.xml")
+				printl("\t- Created", __name__)
+			else:
+				printl("\t- OK", __name__)
+		except Exception, ex:
+			printl("Exception: " + str(ex), __name__)
+		
+		printl(" <- ", "checkPathXml", "C")
 
 	def loadOldPathsConf(self):
-		_dict = {}
-		_dict["xml"] = {}
-		_dict["xml"]["filetypes"] = {}
-		_dict["xml"]["searchpaths"] = {}
-		
-		fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
-		_dict["xml"]["filetypes"]["filetype"] = fconf.readline().strip().split("|")
-		
-		pathsList = []
-		for path in fconf.readlines(): 
-			path = path.strip()
-			p = path.split('|')
-			path = p[0]
+		try:
+			_dict = {}
+			_dict["xml"] = {}
+			_dict["xml"]["filetypes"] = {}
+			_dict["xml"]["searchpaths"] = {}
 			
-			folderType = u"MOVIE_AND_TV"
-			if len(p) > 1:
-				folderType = p[1]
+			fconf = open(config.plugins.pvmc.configfolderpath.value + "paths.conf", "r")
+			_dict["xml"]["filetypes"]["filetype"] = fconf.readline().strip().split("|")
 			
-			useFolder = False
-			if len(p) > 2 and p[2] == u"FOLDERNAME":
-				useFolder = True
-			
-			if len(path) > 0:
-				enabled = True
-				if path[0] == '#':
-					enabled = False
-					path = path[1:]
+			pathsList = []
+			for path in fconf.readlines(): 
+				path = path.strip()
+				p = path.split('|')
+				path = p[0]
 				
-				pathsList.append({"directory": path, "usefolder": useFolder, "enabled": enabled, "type": folderType})
+				folderType = u"MOVIE_AND_TV"
+				if len(p) > 1:
+					folderType = p[1]
+				
+				useFolder = False
+				if len(p) > 2 and p[2] == u"FOLDERNAME":
+					useFolder = True
+				
+				if len(path) > 0:
+					enabled = True
+					if path[0] == '#':
+						enabled = False
+						path = path[1:]
+					
+					pathsList.append({"directory": path, "usefolder": useFolder, "enabled": enabled, "type": folderType})
+			
+			_dict["xml"]["searchpaths"]["searchpath"] = pathsList
+			print _dict["xml"]
+			
+			fconf.close()
+			return _dict
 		
-		_dict["xml"]["searchpaths"]["searchpath"] = pathsList
-		print _dict["xml"]
-		
-		fconf.close()
-		return _dict
+		except Exception, ex:
+			printl("no paths.xml or paths.conf found ...", self, "H")
+			printl("trying to repair ...", self, "H")
+			self.checkPathXml()
+			printl("retrying to load ...", self, "H")
+			Xml2Dict.__init__(self, config.plugins.pvmc.configfolderpath.value + "paths.xml")
+			
+			if Xml2Dict.load(self):
+				printl("reloading worked", self, "H")
+				_dict = Xml2Dict.get(self)
+				return _dict
+			else:
+				printl("something went wrong", self, "E")
 
 	def save(self):
 		Xml2Dict.set(self, self._dict)

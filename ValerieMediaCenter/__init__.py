@@ -81,13 +81,14 @@ try:
 except Exception, ex:
 	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
 	skins.append(defaultSkin)
-#config.plugins.pvmc.skin              = ConfigText(default = defaultSkin)
+
 config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
 config.plugins.pvmc.url               = ConfigText(default = defaultURL)
 config.plugins.pvmc.updatexml         = ConfigText(default = defaultUpdateXML)
 
 config.plugins.pvmc.plugins = ConfigSubsection()
 
+# TODO COULD BE DELETED IN MY POINT OF VIEW
 # We updated to a newer version, so redisplay wizard
 if config.plugins.pvmc.version.value != currentVersion:
 	config.plugins.pvmc.showwizard.value = True

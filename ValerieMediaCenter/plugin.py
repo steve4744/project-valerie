@@ -21,13 +21,6 @@ def autostart(reason, **kwargs):
 		gSessionPV = kwargs["session"]
 	printl(" Reason: %s - %s" % (str(reason), str(type(gSessionPV))), __name__, "H")
 	
-	#from DMC_Global import E2Control
-	#if gReasonPV == 0 and gSessionPV != None and gE2Control == None:
-	#	gE2Control = E2Control()
-	#elif gReasonPV == 1 and gE2Control != None:
-#		gE2Control.stop()
-	#	gE2Control = None
-	
 	if gSessionPV is not None:
 		plugins = []
 		if reason == 0: #Start
@@ -39,6 +32,7 @@ def autostart(reason, **kwargs):
 		
 		for plugin in plugins:
 			plugin.fnc(gSessionPV)
+			
 
 def PVMC_Wizard(*args, **kwargs):
 	import DMC_Wizard
