@@ -1,11 +1,31 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<paths>
- <searchpaths>
-  <searchpath>
-   <enable>true</enable>
-   <directory>/media</directory>
-   <type>MOVIE_AND_TV</type>
-   <usefolder>false</usefolder>
-  </searchpath>
- </searchpaths>
-<paths>
+<?xml version="1.0" encoding="utf-8"?>
+<xml>
+	<searchpaths>
+		<searchpath>
+			<directory>/media</directory>
+			<usefolder>bFalse</usefolder>
+			<enabled>bTrue</enabled>
+			<type>MOVIE_AND_TV</type>
+		</searchpath>
+		<searchpath>
+			<directory>/hdd</directory>
+			<usefolder>bFalse</usefolder>
+			<enabled>bTrue</enabled>
+			<type>MOVIE_AND_TV</type>
+		</searchpath>
+		<searchpath>
+			<directory>/mnt</directory>
+			<usefolder>bFalse</usefolder>
+			<enabled>bTrue</enabled>
+			<type>MOVIE_AND_TV</type>
+		</searchpath>
+	</searchpaths>
+	<filetypes>
+		<filetype>ts</filetype>
+		<filetype>mkv</filetype>
+		<filetype>iso</filetype>
+		<filetype>avi</filetype>
+		<filetype>m2ts</filetype>
+		<filetype>ifo</filetype>
+	</filetypes>
+</xml>
