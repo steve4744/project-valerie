@@ -30,7 +30,7 @@ import datetime
 import cPickle as pickle
 import Genres
 import random
-
+import copy
 from Components.config import config
 from MediaInfo         import MediaInfo
 
@@ -56,7 +56,7 @@ class databaseHandlerPICKLE(object):
 	CONVERTING = False
 	_ConvertPos = 0
 	_ConvertMax = 0
-	DB_VERSION_MEDIAFILES = 1
+	DB_VERSION_MEDIAFILES = 2
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
@@ -284,7 +284,7 @@ class databaseHandlerPICKLE(object):
 		#printl("Took: " + str(elapsed_time), self)
 		return k
 
-	# always return a copy, never the directly with record
+	# may return directly the record, it's private
 	def _getMediaWithKey(self, key):
 		#printl("->", self, "S")
 		printl("->  for key: "+str(key), self)
@@ -301,9 +301,10 @@ class databaseHandlerPICKLE(object):
 		self._mediaFilesCheckLoaded()
 		element = None
 		key = self._getMediaKeyWithId(id)
+			
 		if key is not None:
-			element = self._dbMediaFiles[key] #.copy() 
-		
+			element = copy.copy(self._dbMediaFiles[key]) ###.copy()
+			
 		return element
 
 	# always return a copy, never the directly with record
@@ -313,7 +314,7 @@ class databaseHandlerPICKLE(object):
 		element = None
 		key = self._getMediaKeyWithImdbId(imdbid)
 		if key is not None:
-			element = self._dbMediaFiles[key] #.copy()
+			element = copy.copy(self._dbMediaFiles[key])###.copy()
 		
 		return element
 
@@ -325,11 +326,11 @@ class databaseHandlerPICKLE(object):
 		element = None
 		key = self._getMediaKeyWithTheTvDbId(thetvdbid)
 		if key is not None:
-			element = self._dbMediaFiles[key] #.copy()
+			element = copy.copy(self._dbMediaFiles[key]) ###.copy()
 		
 		return element
 	
-	def _getMediaFiles(self, mediaType): # for dump only
+	def _getMediaFiles(self, mediaType=None, statusOk=True): # for dump only
 		printl("->", self, "S")
 		newList	= {}
 		
@@ -339,23 +340,31 @@ class databaseHandlerPICKLE(object):
 		for key in self._dbMediaFiles:
 			if self._checkKeyValid(key):
 				#printl("compare*"+str(self._dbMediaFiles[key].getMediaType())+"*"+str(mediaType))
+				# check media type
+				if mediaType is not None and self._dbMediaFiles[key].getMediaType() != mediaType:
+					continue
+				#check Status
+				if statusOk and not self._dbMediaFiles[key].isStatusOk():
+					continue
+				if not statusOk and self._dbMediaFiles[key].isStatusOk():
+					continue
 						
-				if self._dbMediaFiles[key].getMediaType() == mediaType:
-					newList[key] = self._dbMediaFiles[key]
+				newList[key] = self._dbMediaFiles[key]
 
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
 		return newList # return always a copy, user don't use db
 
-	def getMediaValues(self, mediaType, order=None, firstRecord=0, numberOfRecords=9999999):
+	def getMediaValues(self, mediaType=None, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self._getMediaValuesWithFilter(mediaType, None, None, None, order, firstRecord, numberOfRecords)
 	
 	def getMediaValuesForFolder(self, mediaType, path, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self._getMediaValuesWithFilter(mediaType, None, None, path, order, firstRecord, numberOfRecords)
 	
-	def _getMediaValuesWithFilter(self, mediaType, parentId=None, season=None, path=None, order=None, firstRecord=0, numberOfRecords=9999999):
+	def _getMediaValuesWithFilter(self, mediaType=None, parentId=None, season=None, path=None, order=None, firstRecord=0, numberOfRecords=9999999, statusOk=True):
 		#printl("-> parentId:"+str(parentId) + " season:" + str(season), self, "S")
-		printl("->", self, "S")
+		printl("-> mediaType:"+str(mediaType) + " statusOk:" + str(statusOk), self, "S")
+		#printl("->", self, "S")
 		if order is None:
 			order = self.ORDER_TITLE
 		listToSort   = []
@@ -370,21 +379,25 @@ class databaseHandlerPICKLE(object):
 	
 		for key in self._dbMediaFiles:
 			if self._checkKeyValid(key):
-				if self._dbMediaFiles[key].getMediaType() == mediaType:
-					
-					if path is not None:
-						if self._dbMediaFiles[key].Path == path:
-							listToSort.append(self._dbMediaFiles[key])
-					# maybe it repeat....
-					if parentId is None and season is None:
+				# check media type
+				if mediaType is not None and self._dbMediaFiles[key].getMediaType() != mediaType:
+					continue
+				#check Status
+				if statusOk and not self._dbMediaFiles[key].isStatusOk():
+					continue
+				if not statusOk and self._dbMediaFiles[key].isStatusOk():
+					continue
+				#ADD Item	
+				if path is not None:
+					if self._dbMediaFiles[key].Path == path:
 						listToSort.append(self._dbMediaFiles[key])
-					
-					elif season is None:
-						#printl("compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId)+"*")
-						#printl("compare*"+str(type(self._dbMediaFiles[key].ParentId))+"*"+str(type(parentId))+"*")
-						if self._dbMediaFiles[key].ParentId == int(parentId):
-							#printl("--compare*"+str(self._dbMediaFiles[key].ParentId)+"*"+str(parentId))
-							listToSort.append(self._dbMediaFiles[key])
+				# maybe it repeat....
+				if parentId is None and season is None:
+					listToSort.append(self._dbMediaFiles[key])
+
+				elif season is None:
+					if self._dbMediaFiles[key].ParentId == int(parentId):
+						listToSort.append(self._dbMediaFiles[key])
 						
 		#printl("1 --------------------------------")
 		#print (str(listToSort))
@@ -414,7 +427,7 @@ class databaseHandlerPICKLE(object):
 				if recCount >= numberOfRecords:
 					break
 		#printl("3 --------------------------------")
-		#print (str(listSorted))					
+		#print (str(listToReturn))					
 
 		elapsed_time = time.time() - start_time		
 		printl("Took: " + str(elapsed_time), self)
@@ -488,10 +501,17 @@ class databaseHandlerPICKLE(object):
 		#m.setMediaType(MediaInfo.MOVIE)
 		#movieKey = media.Id
 		# Checks if the file is already in db
-		if self.checkDuplicateMF(media.Path, media.Filename, media.Extension) is not None:
-			printl("Media Insert - Already exists", self)	
-		#	self._addFailedCauseOf = self._dbMovies[movieKey]
-			return -1
+		ret = self.checkDuplicateMF(m.Path, m.Filename, m.Extension)
+		if ret["reason"] == 1: # exist
+			#printl("Media Insert - Duplicate Found :" + str(ret["mediafile"].Path) + "/" + str(ret["mediafile"].Filename) + "." + str(ret["mediafile"].Extension), self)	
+			m2 = ret["mediafile"]
+			return m2.Id
+		elif ret["reason"] == 2: # exist on other path, change record path
+			m2 = ret["mediafile"]			
+			printl("Media Insert - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
+			m2.Path = m.Path
+			m2.MediaStatus = MediaInfo.STATUS_OK
+			return m2.Id
 		
 		if not key in self._dbMediaFiles:
 			self.MediaFilesCommited = False
@@ -522,7 +542,7 @@ class databaseHandlerPICKLE(object):
 				printl("Id not defined", self, 5)
 				return False
 		#Not working for "change Type"
-		type = key_value_dict["MediaType"]
+		#type = key_value_dict["MediaType"]
 		
 		self._mediaFilesCheckLoaded()		
 		key = self._getMediaKeyWithId(key_value_dict['Id'])
@@ -561,13 +581,42 @@ class databaseHandlerPICKLE(object):
 		
 		return False
 	
-	def deleteFailed(self): # for sync
-		records = self._getMediaFiles(MediaInfo.FAILEDSYNC)
-		for key in records:
-			del(self._dbMediaFiles[key])	
-			if self.AUTOCOMMIT:
-				self.saveMediaFiles()
-		return True	
+	def getMediaFailedValues(self):	
+		return self._getMediaValuesWithFilter(None, None, None, None, None, 0, 9999999, False)
+	
+	#def deleteMediaFilesNotOk(self): # for sync - ALL mediafiles with status not ok
+	#	for key in self._dbMediaFiles:
+	#		if self._checkKeyValid(key):
+	#			if self._dbMediaFiles[key].isStatusOk() != 0:#err
+	#				self.deleteMedia(None, self._dbMediaFiles[key].Id)
+	#	if self.AUTOCOMMIT:
+	#		self.saveMediaFiles()
+	#	return True	
+
+	def getMediaFailedCount(self):
+		printl("->", self, "S")
+		self._mediaFilesCheckLoaded()
+		return len(self.getMediaFailedValues())
+		
+	def markAsMissing(self, id):
+		printl("->", self, "S")
+		
+		self._mediaFilesCheckLoaded()		
+		key = self._getMediaKeyWithId(id)
+		m = self._getMediaWithKey(key)
+		
+		if m is None:
+			printl("Media not found on DB [Id:"+ str(id) +"]", self, 5)
+			return False
+	
+		self.MediaFilesCommited = False
+		m.MediaStatus = MediaInfo.STATUS_FILEMISSING
+		m.syncErrNo  = 1 #ERR MissingFile
+		m.syncFailedCause = u"File missing"
+		self._dbMediaFiles[key] = m
+		if self.AUTOCOMMIT:
+			self.saveMediaFiles()
+		return True
 
 	# for debug 
 	def getDbDump(self):
@@ -605,19 +654,23 @@ class databaseHandlerPICKLE(object):
 		f.write("-- MediaFiles - Failed Items --\n")
 		f.write("-------------------------------\n")
 		f.write("\n")
-		f.write("Count\tKey   \tId   \tTitle\tFilename\tFailed Cause\n")		
+		f.write("Count\tKey   \tId   \tParent\tType  \tStatus \tErr No\tTitle\t\tFilename\t\tFailed Cause\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
-		records = self._getMediaFiles(MediaInfo.FAILEDSYNC)
+		records = self._getMediaFiles(None, False)
 		for key in records:
 			cnt += 1
 			s = str(cnt) + "\t"			
 			if self._checkKeyValid(key):	
 				s += str(key) + "\t"
 				s += str(records[key].Id) + "\t"
-				s += str(records[key].Title) + "\t"
-				s += str(records[key].Filename) + "\t"
+				s += str(records[key].ParentId) + "\t"
+				s += str(records[key].MediaType) + "\t"
+				s += str(records[key].MediaStatus) + "\t"
+				s += str(records[key].syncErrNo) + "\t"
+				s += str(records[key].Title) + "\t\t"
+				s += str(records[key].Filename) + "\t\t"
 				s += str(records[key].syncFailedCause) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
@@ -934,12 +987,21 @@ class databaseHandlerPICKLE(object):
 				printl("Key error: "+ str(key) + " Ex: " + str(ex), self)
 
 	def checkDuplicateMF(self, path, filename, extension):
+		# Return: 	0 - notFound
+		#			
+		#
 		#printl("->", self, "S")
 		self._mediaFilesCheckLoaded()
+		ret = {}
+		ret["reason"] 	= -1
+		ret["mediafile"]= None
+		# 0
+		# 1 FILE_EXIST
+		# 2 FILE_EXIST_ONDIFFERENTFOLDER
 		
 		# do not validate null path's
 		if path is None and filename is None and extension is None:
-			return None
+			return ret
 		
 		for key in self._dbMediaFiles:
 			if self._checkKeyValid(key):		# only for Pickle
@@ -947,8 +1009,16 @@ class databaseHandlerPICKLE(object):
 				# only if mediafile as no childs
 				if m.MediaType != MediaInfo.SERIE:
 					if m.Path == path and m.Filename == filename and m.Extension == extension:
-						return self._dbMediaFiles[key]
-		return None
+						ret["reason"] = 1
+						ret["mediafile"]= m
+						return ret
+					if m.Filename == filename and m.Extension == extension:
+						ret["reason"] = 2
+						ret["mediafile"]= m
+						return ret
+		#not found
+		ret["reason"] = 0
+		return ret
 	
 	def transformGenres(self):
 		printl("->", self, "S")
@@ -999,8 +1069,10 @@ class databaseHandlerPICKLE(object):
 					self.setDBVersion(records, updateToVersion)
 				elif updateToVersion==2:
 					self._upgrade_MF_2()
+					self.setDBVersion(records, updateToVersion)
 				elif updateToVersion==3:
-					pass
+					self._upgrade_MF_3()
+#					self.setDBVersion(records, updateToVersion)
 				elif updateToVersion==4:
 					pass
 				elif updateToVersion==5:
@@ -1075,8 +1147,13 @@ class databaseHandlerPICKLE(object):
 	def convertGetPos(self):
 		return self._ConvertPos
 				
-					
 	def _upgrade_MF_2(self):
+		#delete old failed items, not used #FAILEDSYNC = 0
+		records = self._getMediaFiles(0)
+		for key in records:
+			del(self._dbMediaFiles[key])	
+			
+	def _upgrade_MF_3(self):
 		os.rename(self.MOVIESDB,   self.MOVIESDB   +'.old')	
 		os.rename(self.TVSHOWSDB,  self.TVSHOWSDB  +'.old')	
 		os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	

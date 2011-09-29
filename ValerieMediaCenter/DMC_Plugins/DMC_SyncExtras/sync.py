@@ -45,6 +45,7 @@ from   TheMovieDbProvider import TheMovieDbProvider
 from   TheTvDbProvider import TheTvDbProvider
 import Utf8
 import WebGrabber
+import copy
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
@@ -212,8 +213,8 @@ class pyvalerie(Thread):
 
 		db = Database().getInstance()
 		
-		#db.reload()
-		db.clearFailed()
+		#db.clearFailed()
+		
 		if self.mode != self.FAST and SyncConfig().getInstance().get("delete") is True:
 			db.deleteMissingFiles()
 		
@@ -318,19 +319,36 @@ class pyvalerie(Thread):
 						continue
 					#printl("testing 1", self)
 						
-					alreadyInDb = db.checkDuplicate(path, filename, extension)
-					if alreadyInDb is not None:
+					retCheckDuplicate= db.checkDuplicate(path, filename, extension)
+					mediaInDb = retCheckDuplicate["mediafile"]
+					if mediaInDb is not None:
+						if retCheckDuplicate["reason"] == 1: # exist
+							m2 = retCheckDuplicate["mediafile"]
+							#printl("Sync - Duplicate Found :" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
+							
+						elif retCheckDuplicate["reason"] == 2: # exist on other path, change record path
+							m2 = retCheckDuplicate["mediafile"]
+							printl("Sync - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)
+							key_value_dict = {}
+							key_value_dict["Id"] = m2.Id
+							key_value_dict["Path"] = path
+							key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
+							key_value_dict["syncErrNo"]    = 0
+							key_value_dict["syncFailedCause"] = u""
+							if not db.updateMediaWithDict(key_value_dict):
+								printl("Sync - Update Media - Failed", self)	
+					
+							
 						self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
-						#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.DUPLICATE_FILE))
 						
 						#printl("testing 2", self)
-						if Arts().isMissing(alreadyInDb):
+						if Arts().isMissing(mediaInDb):
 							#self.output("Downloading missing poster")
 							tmp = None
-							if alreadyInDb.isTypeMovie():
-								tmp = TheMovieDbProvider().getArtByImdbId(alreadyInDb)
-							elif alreadyInDb.isTypeEpisode():
-								tvshow = db.getMediaWithTheTvDbId(alreadyInDb.TheTvDbId)
+							if mediaInDb.isTypeMovie():
+								tmp = TheMovieDbProvider().getArtByImdbId(mediaInDb)
+							elif mediaInDb.isTypeEpisode():
+								tvshow = db.getMediaWithTheTvDbId(mediaInDb.TheTvDbId)
 								#printl(str(tvshow.SeasonPoster), self, "E")
 								tvshow.SeasonPoster.clear() # Make sure that there are no residues
 								tmp = TheTvDbProvider().getArtByTheTvDbId(tvshow)
@@ -340,15 +358,15 @@ class pyvalerie(Thread):
 							if tmp is not None:
 								Arts().download(tmp)
 								
-								if alreadyInDb.isTypeMovie():
-									self.info(str(alreadyInDb.ImdbId) + "_poster_" + posterSize + ".png", 
+								if mediaInDb.isTypeMovie():
+									self.info(str(mediaInDb.ImdbId) + "_poster_" + posterSize + ".png", 
 										"", "")
-								elif alreadyInDb.isTypeSerie() or alreadyInDb.isTypeEpisode():
-									self.info(str(alreadyInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
+								elif mediaInDb.isTypeSerie() or mediaInDb.isTypeEpisode():
+									self.info(str(mediaInDb.TheTvDbId) + "_poster_" + posterSize + ".png", 
 										"", "")
 								del tmp
 						
-						del alreadyInDb
+						del mediaInDb
 						continue
 					
 					outStr = "(" + str(i) + "/" + str(elementListFileCounter)  + ")"
@@ -398,8 +416,11 @@ class pyvalerie(Thread):
 						if tmp is None:
 							printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
 							#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
-							elementInfo.MediaType = MediaInfo.FAILEDSYNC
-							elementInfo.syncFailedCause = u"Nothing Found"# cause
+							#elementInfo.MediaType = MediaInfo.FAILEDSYNC
+							elementInfo.MediaType = MediaInfo.MOVIE # avoid create serie
+							elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
+							elementInfo.syncErrNo   = 3
+							elementInfo.syncFailedCause = u"Info Not Found"# cause
 							db.add(elementInfo)
 							continue
 						elementInfo = tmp
@@ -412,7 +433,7 @@ class pyvalerie(Thread):
 					if results is not None:
 						printl("results: "+str(results), self)
 						for result in results:
-							if db.add(result) >= 0:
+							if db.add(result):
 								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
 									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
@@ -423,6 +444,8 @@ class pyvalerie(Thread):
 										result.Title, result.Year)
 									printl("my_title " + result.Title, self, "I")
 							else:
+								# ??????
+								
 								#cause = db.getAddFailedCauseOf()
 								#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.ALREADY_IN_DB,cause))
 								#if result.syncFailedCause == u"":
@@ -537,7 +560,7 @@ class Sync():
 				elementInfo = tmp
 				Arts().download(elementInfo)
 					
-			elementInfoe = elementInfo.copy()
+			elementInfoe = copy.copy(elementInfo) #.copy()
 			
 			elementInfoe.setMediaType(MediaInfo.EPISODE)
 			

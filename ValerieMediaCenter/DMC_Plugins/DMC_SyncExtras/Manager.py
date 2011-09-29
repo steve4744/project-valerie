@@ -380,7 +380,11 @@ class Manager():
 #################################   FAILED   ################################# 
 #
 	def getFailed(self):
-		return self.db.getFailed() 
+		return self.db.getFailed()
+		
+	def getFailedCount(self):
+		return self.db.getFailedCount()
+		
 #
 ###################################  UTILS  ###################################
 #

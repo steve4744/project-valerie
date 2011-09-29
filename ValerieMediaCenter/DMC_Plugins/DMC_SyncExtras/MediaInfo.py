@@ -43,15 +43,23 @@ class MediaInfo(object):
 	EPISODE = 3
 	MUSIC   = 4
 	
-	FAILEDSYNC = 0
+	#MediaStatus
+	STATUS_OK 	    = 0
+	STATUS_FILEMISSING  = 1
+	STATUS_INFONOTFOUND = 3
+	#not used, now use mediaatatus
+	#FAILEDSYNC = 0
 
 	RecordStatus = REC_NEW  
 	
 	Id = None	# Unique Key
 			# if IDMODE=AUTO initialized with unique key
 			# else   dbMovies:ImdbID   dbSeries/dbEpisodes:TheTvdbId
-	ParentId = None # For Episodes initialized with Serie or Movie 
-	MediaType = None # Not Used - only after db version 2 of Pickle
+	ParentId     = None # For Episodes initialized with Serie or Movie 
+	MediaType    = None 
+	MediaTypeOld = None # the old type for updates
+	MediaStatus  = STATUS_OK   # for failed items
+	
 	isMovie   = False
 	isSerie   = False
 	isEpisode = False
@@ -123,46 +131,46 @@ class MediaInfo(object):
 		except Exception, ex:
 			printls("Exception (ef): " + str(ex), self, "E")
 
-	def copy(self):
-		try:
-			m = MediaInfo(self.Path, self.Filename, self.Extension)
-			
-			m.Alternatives = self.Alternatives
-			m.Directors    = self.Directors
-			m.Writers      = self.Writers
-			m.Genres       = self.Genres
-			m.Runtime      = self.Runtime
-			m.Tag          = self.Tag
-			m.Popularity   = self.Popularity
-			m.Plot         = self.Plot
-			
-			m.Id           = self.Id
-			m.ImdbId       = self.ImdbId
-			m.isXbmcNfo    = self.isXbmcNfo
-			m.TheTvDbId    = self.TheTvDbId
-			m.Title        = self.Title
-			m.Year         = self.Year
-			m.Month        = self.Month
-			m.Day          = self.Day
-			m.Resolution   = self.Resolution
-			m.Sound        = self.Sound
-			m.isMovie      = self.isMovie
-			m.isSerie      = self.isSerie
-			m.isEpisode    = self.isEpisode
-			m.Poster       = self.Poster
-			m.Backdrop     = self.Backdrop
-			m.Season       = self.Season
-			m.Episode      = self.Episode
-			m.SearchString = self.SearchString
-			m.MediaType    = self.MediaType
-			m.RecordStatus = self.RecordStatus
-			
-			# Make sure that this is not copied
-			m.SeasonPoster.clear()
-			
-		except Exception, ex:
-			printl("Exception (ef): " + str(ex), self, "E")
-		return m
+	#def copy(self):
+	#	try:
+	#		m = MediaInfo(self.Path, self.Filename, self.Extension)
+	#		
+	#		m.Alternatives = self.Alternatives
+	#		m.Directors    = self.Directors
+	#		m.Writers      = self.Writers
+	#		m.Genres       = self.Genres
+	#		m.Runtime      = self.Runtime
+	#		m.Tag          = self.Tag
+	#		m.Popularity   = self.Popularity
+	#		m.Plot         = self.Plot
+	#		
+	#		m.Id           = self.Id
+	#		m.ImdbId       = self.ImdbId
+	#		m.isXbmcNfo    = self.isXbmcNfo
+	#		m.TheTvDbId    = self.TheTvDbId
+	#		m.Title        = self.Title
+	#		m.Year         = self.Year
+	#		m.Month        = self.Month
+	#		m.Day          = self.Day
+	#		m.Resolution   = self.Resolution
+	#		m.Sound        = self.Sound
+	#		m.isMovie      = self.isMovie
+	#		m.isSerie      = self.isSerie
+	#		m.isEpisode    = self.isEpisode
+	#		m.Poster       = self.Poster
+	#		m.Backdrop     = self.Backdrop
+	#		m.Season       = self.Season
+	#		m.Episode      = self.Episode
+	#		m.SearchString = self.SearchString
+	#		m.MediaType    = self.MediaType
+	#		m.RecordStatus = self.RecordStatus
+	#		
+	#		# Make sure that this is not copied
+	#		m.SeasonPoster.clear()
+	#		
+	#	except Exception, ex:
+	#		printl("Exception (ef): " + str(ex), self, "E")
+	#	return m
 
 	def isEnigma2Recording(self, name):
 		try:
@@ -1083,5 +1091,5 @@ class MediaInfo(object):
 	def isTypeEpisode(self):
 		return (self.getMediaType()==self.EPISODE)
 		
-		
-		
+	def isStatusOk(self):
+		return (self.MediaStatus==self.STATUS_OK)

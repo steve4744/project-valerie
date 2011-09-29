@@ -192,20 +192,18 @@ class Database(object):
 		
 	def deleteMissingFiles(self):
 		printl("->", self, "S")
-		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.MOVIE) )
-		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.EPISODE) )
-		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues(MediaInfo.FAILEDSYNC) )
+		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues() )
 
 	def _verifyAndDeleteMissingFiles(self, records):
-		listMissing = []
 		for m in records:
+			# don't verify series, will remaian with episodes count =0 is needed
+			if m.isTypeSerie():
+				continue
 			path = m.Path + u"/" + m.Filename + u"." + m.Extension
+			#printl("path: " + path, self)
 			if os.path.exists(Utf8.utf8ToLatin(path)) is False:
-				listMissing.append(m)
-			
-		printl("Missing: " + str(len(listMissing)), self)
-		for m in listMissing:
-			self.remove(m)
+				self.dbHandler.markAsMissing(m.Id) 
+		#printl("Missing: " + str(len(listMissing)), self)
 
 	def remove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
 		printl("->", self, "S")
@@ -331,11 +329,16 @@ class Database(object):
 #
 	def getFailed(self):
 		printl("->", self, "S")
-		return self.dbHandler.getMediaValues(MediaInfo.FAILEDSYNC)
-
-	def clearFailed(self):
+		return self.dbHandler.getMediaFailedValues()
+		
+	def getFailedCount(self):
 		printl("->", self, "S")
-		return self.dbHandler.deleteFailed()
+		return self.dbHandler.getMediaFailedCount()
+	
+
+	#def clearFailed(self):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.deleteMediaFilesNotOk()
 
 #
 ###################################  UTILS  ###################################
