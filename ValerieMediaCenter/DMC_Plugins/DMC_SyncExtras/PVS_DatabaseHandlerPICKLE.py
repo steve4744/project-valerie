@@ -1289,7 +1289,7 @@ class databaseHandlerPICKLE(object):
 		version = config.plugins.pvmc.version.value
 		version = int(version.replace("r", ""))
 		#this part can be removed after a while when there is nobody anymore that uses revision under 969
-		if version >= 0: 
+		if version >= 968: 
 			printl("altering " + database + " to new style", self, "H")
 			self._modifyPickleDB(database, "Plugins.Extensions.ProjectValerieSync", "Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras")
 		else:
