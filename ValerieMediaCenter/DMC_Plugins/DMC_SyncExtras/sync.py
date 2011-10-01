@@ -339,7 +339,8 @@ class pyvalerie(Thread):
 								printl("Sync - Update Media - Failed", self)	
 					
 							
-						self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
+						# take lots of time to write on screen, we have the progressbar
+						#self.output("Already in db [ " + Utf8.utf8ToLatin(filename) + " ]")
 						
 						#printl("testing 2", self)
 						if Arts().isMissing(mediaInDb):

@@ -38,6 +38,7 @@ class MediaInfo(object):
 	REC_FROM_DB = 3
 
 	#MediaType
+	UNKNOWN = 0
 	MOVIE   = 1
 	SERIE   = 2
 	EPISODE = 3
@@ -1068,6 +1069,8 @@ class MediaInfo(object):
 				self.MediaType = self.MOVIE
 			elif self.isEpisode:
 				self.MediaType = self.EPISODE
+		if self.MediaType is None:
+				self.MediaType = self.UNKNOWN
 		return self.MediaType
 	
 	def setMediaType(self, value):
