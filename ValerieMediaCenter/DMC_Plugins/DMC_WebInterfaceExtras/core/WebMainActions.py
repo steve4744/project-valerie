@@ -316,21 +316,40 @@ class Failed(Resource):
 		tableBody = u""
 		
 		entries = WebData().getData("failed")
-		
+
 		for entry in entries:
+			evtEdit = self._editFailed(entry)
+		
 			tableBody += u"""   <tr>
 								<td>%s</td>
 								<td>%s</td>
-								<td>%s</td>
+								<td>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
+								</td>
 							    </tr>
-						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.syncFailedCause, "")
+						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.syncFailedCause, evtEdit)
 				
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
 	
 		return utf8ToLatin(finalOutput)
-
-
+		
+	############################################
+	def _editFailed (self, entry):
+		onclick  = "javascript:window.open('/mediaForm?"
+		
+		if entry.isTypeMovie():
+			onclick  += urlencode({'type':"isMovie"}) + "&"
+		elif entry.isTypeEpisode():
+			onclick  += urlencode({'type':"isEpisode"}) + "&"
+		else:
+			onclick  += urlencode({'type':"unknown"}) + "&"
+		
+		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
+		onclick  += urlencode({'Id':entry.Id})  
+		onclick  += "', '_self');"
+		
+		return onclick
 		
 ##########################
 # CLASS:

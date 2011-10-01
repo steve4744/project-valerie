@@ -16,18 +16,19 @@
 #			     Changes to webif/sync by Don 	
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
+import os
 import Blacklist
+import replace
+
 from   PVS_DatabaseHandler import Database
 from   MediaInfo import MediaInfo
 from   MobileImdbComProvider import MobileImdbComProvider
-import replace
-from   sync import Sync
+
+from sync import Sync
 from Arts import Arts
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
-import os
 
 class Manager():
 
@@ -381,6 +382,9 @@ class Manager():
 #
 	def getFailed(self):
 		return self.db.getFailed()
+		
+	def getFailedItem(self, id):
+		return self.db.getMediaWithId(id)
 		
 	def getFailedCount(self):
 		return self.db.getFailedCount()
