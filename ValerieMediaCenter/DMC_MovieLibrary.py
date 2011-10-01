@@ -41,8 +41,8 @@ class DMC_MovieLibrary(DMC_Library):
         if primaryKeyValuePair is None:
             parsedLibrary = []
             #library = self.manager.get-All(Manager.MOVIES)
-	    library = self.manager.getMoviesValues()
-	    
+            library = self.manager.getMoviesValues()
+            
             tmpAbc = []
             tmpGenres = []
             for movie in library:
@@ -53,6 +53,7 @@ class DMC_MovieLibrary(DMC_Library):
                 d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
                 d["Title"]   = "  " + utf8ToLatin(movie.Title)
                 if d["Title"][2].upper() not in tmpAbc:
+                    printl("Crashtest: d[Title]=" + str(d["Title"]), self, "I")
                     tmpAbc.append(d["Title"][2].upper())
                 d["Tag"]     = utf8ToLatin(movie.Tag)
                 d["Year"]    = movie.Year
@@ -77,7 +78,7 @@ class DMC_MovieLibrary(DMC_Library):
                 if self.checkFileCreationDate:
                     d["Creation"] = 0
                     try:
-			d["Creation"] = os.stat(d["Path"]).st_mtime
+                        d["Creation"] = os.stat(d["Path"]).st_mtime
                     except Exception, ex:
                         printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
                         d["Creation"] = 0
