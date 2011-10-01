@@ -141,10 +141,10 @@ class DMC_Library(Screen):
         
         if playbackPath.lower().endswith(u"ifo"): # DVD
             isDVD = True
-            dvdFilelist.append(playbackPath.replace(u"/VIDEO_TS.IFO", "").strip())
+            dvdFilelist.append(str(playbackPath.replace(u"/VIDEO_TS.IFO", "").strip()))
         elif playbackPath.lower().endswith(u"iso"): # DVD
             isDVD = True
-            dvdFilelist.append(playbackPath)
+            dvdFilelist.append(str(playbackPath))
         return (isDVD, dvdFilelist, dvdDevice, )
 
     # playbacks a dvd by callinf dvdplayer plugin
