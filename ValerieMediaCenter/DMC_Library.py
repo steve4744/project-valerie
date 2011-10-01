@@ -170,7 +170,7 @@ class DMC_Library(Screen):
             self.session.openWithCallback(self.leaveMoviePlayer, PVMC_Player, playbackList, self.notifyNextEntry, flags=flags)
 
     # After calling this the view should auto reappear
-    def leaveMoviePlayer(self, flags): 
+    def leaveMoviePlayer(self, flags={}): 
         self.notifyEntryStopped(flags)
         
         self.session.nav.playService(None) 
