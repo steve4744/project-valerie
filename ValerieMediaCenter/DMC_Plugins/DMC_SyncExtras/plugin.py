@@ -488,8 +488,6 @@ class ProjectValerieSyncSettings(Screen):
 		list.append((_("Delete database"), "delDb"))
 		list.append((_("Reset filter"), "resetFl"))
 		
-		Screen.__init__(self, session)
-		
 		self["settingsMenu"] = MenuList(list)
 		self["ProjectValerieSyncSettingsActionMap"] = ActionMap(["SetupActions", "ColorActions"],
 		{
