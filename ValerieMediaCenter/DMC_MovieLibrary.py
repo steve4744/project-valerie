@@ -52,8 +52,8 @@ class DMC_MovieLibrary(DMC_Library):
                 
                 d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
                 d["Title"]   = "  " + utf8ToLatin(movie.Title)
+                printl("Crashtest: d[Title]=" + str(d["Title"]), self, "I")
                 if d["Title"][2].upper() not in tmpAbc:
-                    printl("Crashtest: d[Title]=" + str(d["Title"]), self, "I")
                     tmpAbc.append(d["Title"][2].upper())
                 d["Tag"]     = utf8ToLatin(movie.Tag)
                 d["Year"]    = movie.Year
