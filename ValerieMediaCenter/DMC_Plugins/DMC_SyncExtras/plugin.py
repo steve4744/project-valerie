@@ -554,7 +554,9 @@ class ProjectValerieSyncSettings(Screen):
 					self.remove(config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin")
 					# Delete also failed.db...
 					self.remove(config.plugins.pvmc.configfolderpath.value + "failed.db") 
-					
+					#
+					self.remove(config.plugins.pvmc.configfolderpath.value + "mediafiles.db") 
+
 					#Manager().reload() not implemented anymore
 					
 					self.session.open(MessageBox,_("Database successfully deleted..."), MessageBox.TYPE_INFO, timeout=3)

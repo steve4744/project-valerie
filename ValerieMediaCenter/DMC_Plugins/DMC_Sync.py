@@ -557,6 +557,8 @@ class ProjectValerieSyncSettings(Screen):
 					self.remove(config.plugins.pvmc.configfolderpath.value + "fastcrawl.bin")
 					# Delete also failed.db...
 					self.remove(config.plugins.pvmc.configfolderpath.value + "failed.db") 
+					#
+					self.remove(config.plugins.pvmc.configfolderpath.value + "mediafiles.db") 
 					
 					Manager().reload()
 					
