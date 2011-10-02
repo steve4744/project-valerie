@@ -611,8 +611,10 @@ class databaseHandlerPICKLE(object):
 	
 		self.MediaFilesCommited = False
 		m.MediaStatus = MediaInfo.STATUS_FILEMISSING
-		m.syncErrNo  = 1 #ERR MissingFile
-		m.syncFailedCause = u"File missing"
+		# File already on DB, no error on sync, don't overide
+		#m.syncStatus  = 0 
+		#m.syncErrNo   = 0
+		m.syncFailedCause = u"File missing" # temporary
 		self._dbMediaFiles[key] = m
 		if self.AUTOCOMMIT:
 			self.saveMediaFiles()

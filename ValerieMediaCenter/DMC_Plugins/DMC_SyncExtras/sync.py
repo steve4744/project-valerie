@@ -324,19 +324,24 @@ class pyvalerie(Thread):
 					if mediaInDb is not None:
 						if retCheckDuplicate["reason"] == 1: # exist
 							m2 = retCheckDuplicate["mediafile"]
-							#printl("Sync - Duplicate Found :" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
-							
+							if m2.syncErrNo == 0:
+								#printl("Sync - Duplicate Found :" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
+								key_value_dict = {}
+								key_value_dict["Id"] = m2.Id
+								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
+								#key_value_dict["syncErrNo"]    = 0
+								key_value_dict["syncFailedCause"] = u""
+								if not db.updateMediaWithDict(key_value_dict):
+									printl("Sync - Update Media 1 - Failed", self)	
+								
 						elif retCheckDuplicate["reason"] == 2: # exist on other path, change record path
 							m2 = retCheckDuplicate["mediafile"]
 							printl("Sync - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)
 							key_value_dict = {}
 							key_value_dict["Id"] = m2.Id
 							key_value_dict["Path"] = path
-							key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
-							key_value_dict["syncErrNo"]    = 0
-							key_value_dict["syncFailedCause"] = u""
 							if not db.updateMediaWithDict(key_value_dict):
-								printl("Sync - Update Media - Failed", self)	
+								printl("Sync - Update Media 2 - Failed", self)	
 					
 							
 						# take lots of time to write on screen, we have the progressbar
@@ -418,7 +423,7 @@ class pyvalerie(Thread):
 							printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
 							#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
 							#elementInfo.MediaType = MediaInfo.FAILEDSYNC
-							elementInfo.MediaType = MediaInfo.MOVIE # avoid create serie
+							elementInfo.MediaType = MediaInfo.UNKNOWN # avoid create serie
 							elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
 							elementInfo.syncErrNo   = 3
 							elementInfo.syncFailedCause = u"Info Not Found"# cause
@@ -434,6 +439,9 @@ class pyvalerie(Thread):
 					if results is not None:
 						printl("results: "+str(results), self)
 						for result in results:
+							result.MediaStatus = MediaInfo.STATUS_OK
+							result.syncErrNo   = 0
+							result.syncFailedCause = u""
 							if db.add(result):
 								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
