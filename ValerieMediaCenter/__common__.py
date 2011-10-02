@@ -25,7 +25,7 @@ VERB_WARNING     = 2  # "W" shows warning
 VERB_STARTING    = 3  # "S" shows started functions/classes etc.
 VERB_HIGHLIGHT   = 4  # "H" shows important hightlights to have better overview if somehtings really happening or not
 VERB_ADDITIONAL  = 5  # "A" shows additional information for better debugging
-VERB_CLOSING	 = 6  # "C" shows closing functions/classes etc.
+VERB_CLOSING     = 6  # "C" shows closing functions/classes etc.
 VERB_DEFAULT     = 10 # "I" default verbose level when not specified
 VERB_TOLOG       = 20 # " " max verbose level that shows up in normal log
 
@@ -88,6 +88,9 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 		print '\033[1;33m' + "[PVMC] " + "W" + "  " + str(out) + '\033[1;m'
 		writeToLog(type, out)
 	
+	if debugMode == "Silent":
+		return
+	
 	elif verbLevel == VERB_STARTING and debugMode == "High": #only in debugMode high
 		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "S" + "  " + str(out) + '\033[1;m'
 		writeToLog(type, out)
@@ -111,7 +114,7 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 	elif verbLevel > VERB_TOLOG:
 		print '\033[0;36m' + "[PVMC] " + "only onScreen" + "  " + str(out) + '\033[1;m'
 
-		
+
 def writeToLog(type, out):
 	global gLogFile
 
