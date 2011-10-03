@@ -60,12 +60,12 @@
     <widget name="backdrop" position="0,0" zPosition="0" size="1280,720" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <eLabel position="88,62" size="1102,595" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="0" size="1,1" />
-    <widget name="seenPng" zPosition="6" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/seen.png" />
-    <widget name="unseenPng" zPosition="6" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/unseen.png" />
+    <widget name="seenPng" zPosition="6" position="0,0" size="46,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/seen.png" />
+    <widget name="unseenPng" zPosition="6" position="0,0" size="46,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/unseen.png" />
     <widget source="listview" render="Listbox" zPosition="3" position="106,181" size="391,390" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">
       <convert type="TemplatedMultiContent">
-            {"template": [ MultiContentEntryText(pos = (32,0), size = (341,32), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-            MultiContentEntryPixmapAlphaTest(pos = (0, 0), size = (32, 32), png = 4) ],
+            {"template": [ MultiContentEntryText(pos = (46,0), size = (327,32), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+            MultiContentEntryPixmapAlphaTest(pos = (0,0), size = (46,32), png = 4) ],
             "fonts": [gFont("Modern", 20)],
             "itemHeight": 32,
             "scrollbarMode": "showNever"
@@ -73,50 +73,50 @@
         </convert>
     </widget>
     <eLabel position="106,577" size="391,35" zPosition="4" backgroundColor="#10303030" transparent="0" />
-    <widget name="current" transparent="1" zPosition="5" halign="left" valign="center" position="124,577" size="248,35" font="Modern;17" foregroundColor="#ffffff" />
-    <widget name="total" transparent="1" zPosition="5" halign="right" valign="center" position="231,577" size="248,35" font="Modern;17" foregroundColor="#ffffff" />
-    <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,75" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="title" transparent="1" zPosition="5" halign="left" position="106,125" size="1066,47" font="Modern;37" foregroundColor="#ffffff" />
-    <widget name="tag" transparent="1" zPosition="5" halign="left" position="-17,-125" size="444,32" font="Modern;20" foregroundColor="#ffffff" />
+    <widget name="current" transparent="0" zPosition="5" halign="left" valign="center" position="124,577" size="248,35" font="Modern;17" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget name="total" transparent="0" zPosition="5" halign="right" valign="center" position="231,577" size="248,35" font="Modern;17" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget source="Title" render="Label" transparent="0" zPosition="5" halign="left" position="106,75" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" backgroundColor="#20404040" />
+    <widget name="title" transparent="0" zPosition="5" halign="left" position="106,125" size="1066,47" font="Modern;37" foregroundColor="#ffffff" backgroundColor="#20404040" />
+    <widget name="tag" transparent="0" zPosition="5" halign="left" position="-17,-125" size="444,32" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#20404040" />
     <eLabel position="513,181" size="663,431" zPosition="4" backgroundColor="#10303030" transparent="0" />
-    <widget name="star0" transparent="1" zPosition="6" position="803,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star1" transparent="1" zPosition="6" position="833,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star2" transparent="1" zPosition="6" position="864,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star3" transparent="1" zPosition="6" position="894,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star4" transparent="1" zPosition="6" position="924,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star5" transparent="1" zPosition="6" position="954,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star6" transparent="1" zPosition="6" position="984,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star7" transparent="1" zPosition="6" position="1015,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star8" transparent="1" zPosition="6" position="1045,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="star9" transparent="1" zPosition="6" position="1075,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" />
-    <widget name="nostar0" transparent="1" zPosition="5" position="803,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar1" transparent="1" zPosition="5" position="833,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar2" transparent="1" zPosition="5" position="864,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar3" transparent="1" zPosition="5" position="894,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar4" transparent="1" zPosition="5" position="924,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar5" transparent="1" zPosition="5" position="954,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar6" transparent="1" zPosition="5" position="984,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar7" transparent="1" zPosition="5" position="1015,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar8" transparent="1" zPosition="5" position="1045,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
-    <widget name="nostar9" transparent="1" zPosition="5" position="1075,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" />
+    <widget name="star0" transparent="0" zPosition="6" position="803,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star1" transparent="0" zPosition="6" position="833,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star2" transparent="0" zPosition="6" position="864,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star3" transparent="0" zPosition="6" position="894,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star4" transparent="0" zPosition="6" position="924,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star5" transparent="0" zPosition="6" position="954,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star6" transparent="0" zPosition="6" position="984,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star7" transparent="0" zPosition="6" position="1015,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star8" transparent="0" zPosition="6" position="1045,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="star9" transparent="0" zPosition="6" position="1075,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/Star.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar0" transparent="0" zPosition="5" position="803,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar1" transparent="0" zPosition="5" position="833,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar2" transparent="0" zPosition="5" position="864,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar3" transparent="0" zPosition="5" position="894,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar4" transparent="0" zPosition="5" position="924,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar5" transparent="0" zPosition="5" position="954,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar6" transparent="0" zPosition="5" position="984,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar7" transparent="0" zPosition="5" position="1015,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar8" transparent="0" zPosition="5" position="1045,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
+    <widget name="nostar9" transparent="0" zPosition="5" position="1075,577" size="30,30" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/NoStar.png" alphatest="on" backgroundColor="#10303030" />
     <widget name="poster" transparent="0" zPosition="5" position="520,186" size="195,267" alphatest="blend" />
-    <widget name="quality" transparent="1" zPosition="5" halign="left" position="517,462" size="97,30" font="Modern;20" foregroundColor="#ffffff" />
-    <widget name="year" transparent="1" zPosition="5" halign="right" position="615,462" size="97,30" font="Modern;20" foregroundColor="#ffffff" />
-    <widget name="sound" transparent="1" zPosition="5" halign="left" position="517,492" size="97,30" font="Modern;20" foregroundColor="#ffffff" />
-    <widget name="runtime" transparent="1" zPosition="5" halign="right" position="615,492" size="97,30" font="Modern;20" foregroundColor="#ffffff" />
-    <widget name="genre" transparent="1" zPosition="5" halign="right" position="517,522" size="195,90" font="Modern;20" foregroundColor="#ffffff" />
+    <widget name="quality" transparent="0" zPosition="5" halign="left" position="517,462" size="97,30" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget name="year" transparent="0" zPosition="5" halign="right" position="615,462" size="97,30" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget name="sound" transparent="0" zPosition="5" halign="left" position="517,492" size="97,30" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget name="runtime" transparent="0" zPosition="5" halign="right" position="615,492" size="97,30" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#10303030" />
+    <widget name="genre" transparent="0" zPosition="5" halign="right" position="517,522" size="195,90" font="Modern;20" foregroundColor="#ffffff" backgroundColor="#10303030" />
     <eLabel position="720,181" size="1,431" zPosition="4" backgroundColor="#20404040" transparent="0" />
-    <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="block" position="727,186" size="442,385" font="Modern;18" foregroundColor="#ffffff" />
+    <widget name="shortDescription" text="" transparent="0" zPosition="5" halign="block" position="727,186" size="442,385" font="Modern;18" foregroundColor="#ffffff" backgroundColor="#10303030"/>
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="5" position="106,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="5" position="373,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="5" position="640,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="5" position="906,623" size="26,20" alphatest="blend" />
-    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
     
-    <widget name="number_key_popup" zPosition="9" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
+    <widget name="number_key_popup" zPosition="10" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
   </screen>
   <!-- PVMC PosterView -->
   <screen name="PVMC_PosterView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
@@ -135,8 +135,8 @@
     <!--eLabel position="88,213" size="1102,443" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
     <eLabel position="0,213" size="1280,443" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <!--eLabel position="88,213" size="1102,118" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
-    <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,226" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="title" transparent="1" zPosition="5" halign="left" position="106,276" size="1066,47" font="Modern;37" foregroundColor="#ffffff" />
+    <widget source="Title" render="Label" transparent="0" zPosition="5" halign="left" position="106,226" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" backgroundColor="#20404040" />
+    <widget name="title" transparent="0" zPosition="5" halign="left" position="106,276" size="1066,47" font="Modern;37" foregroundColor="#ffffff" backgroundColor="#20404040" />
 
     <eLabel position="524,325" size="231,292" zPosition="4" backgroundColor="#6ca4c5" transparent="0" />
     <widget name="poster_-3" transparent="0" zPosition="5" position="-94,337" size="195,267" alphatest="blend" />
@@ -147,7 +147,7 @@
     <widget name="poster_+2" transparent="0" zPosition="5" position="972,337" size="195,267" alphatest="blend" />
     <widget name="poster_+3" transparent="0" zPosition="5" position="1178,337" size="195,267" alphatest="blend" />
     
-    <widget name="seenPng" zPosition="6" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/seen_poster.png" />
+    <widget name="seenPng" zPosition="6" position="0,0" size="56,40" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1280x720/images/seen_poster.png" />
     <widget name="seen_-3" transparent="0" zPosition="6" position="-94,337" size="195,267" alphatest="blend" />
     <widget name="seen_-2" transparent="0" zPosition="6" position="112,337"  size="195,267" alphatest="blend" />
     <widget name="seen_-1" transparent="0" zPosition="6" position="318,337" size="195,267" alphatest="blend" />
@@ -161,15 +161,15 @@
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="5" position="373,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="5" position="640,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="5" position="906,623" size="26,20" alphatest="blend" />
-    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
     
     <widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="112,325" size="1056,292" backgroundColor="#00404040" />
-    <widget name="shortDescription" transparent="1" zPosition="9" halign="left" position="129,337" size="1038,267" font="Modern;18" foregroundColor="#ffffff" />
+    <widget name="shortDescription" transparent="0" zPosition="9" halign="left" position="129,337" size="1038,267" font="Modern;18" foregroundColor="#ffffff"  backgroundColor="#00404040" />
     
-    <widget name="number_key_popup" zPosition="9" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
+    <widget name="number_key_popup" zPosition="10" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
   </screen>
   <!-- PVMC BackdropView -->
   <screen name="PVMC_BackdropView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
@@ -188,25 +188,25 @@
     <!--eLabel position="88,213" size="1102,118" zPosition="1" backgroundColor="#20404040" transparent="0" /-->
 
     <eLabel position="88,62" size="1102,62" zPosition="4" backgroundColor="#20404040" transparent="0" />
-    <widget source="Title" render="Label" transparent="1" zPosition="5" halign="left" position="106,65" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" />
+    <widget source="Title" render="Label" transparent="0" zPosition="5" halign="left" position="106,65" size="1066,50" font="Modern;37" foregroundColor="#6ca4c5" backgroundColor="#20404040" />
 
     <eLabel position="88,562" size="1102,95" zPosition="4" backgroundColor="#20404040" transparent="0" />
-    <widget name="title" transparent="1" zPosition="5" valign="top" halign="left" position="106,562" size="1066,60" font="Modern;37" foregroundColor="#ffffff" />
+    <widget name="title" transparent="0" zPosition="5" valign="top" halign="left" position="106,562" size="1066,60" font="Modern;37" foregroundColor="#ffffff" backgroundColor="#20404040" />
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="5" position="106,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="5" position="373,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_yellow.png" zPosition="5" position="640,623" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_blue.png" zPosition="5" position="906,623" size="26,20" alphatest="blend" />
-    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
-    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
+    <widget source="key_red" render="Label" position="142,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_green" render="Label" position="408,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_yellow" render="Label" position="675,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
+    <widget source="key_blue" render="Label" position="942,613" zPosition="5" size="231,37" font="Modern;22" halign="left" valign="top" transparent="0" backgroundColor="#20404040" />
     
     <widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="88,325" size="1102,287" backgroundColor="#20404040" />
-    <widget name="cnt_title" transparent="1" zPosition="9" halign="left" position="320,330" size="853,47" font="Modern;37" foregroundColor="#ffffff" />
+    <widget name="cnt_title" transparent="0" zPosition="9" halign="left" position="320,330" size="853,47" font="Modern;37" foregroundColor="#ffffff" backgroundColor="#20404040" />
     <widget name="cnt_poster"  transparent="0" zPosition="9" position="106,341" size="195,267" alphatest="blend" />
-    <widget name="cnt_shortDescription" transparent="1" zPosition="9" halign="left" position="320,387" size="853,217" font="Modern;18" foregroundColor="#ffffff" />
+    <widget name="cnt_shortDescription" transparent="0" zPosition="9" halign="left" position="320,387" size="853,217" font="Modern;18" foregroundColor="#ffffff" backgroundColor="#20404040" />
     
-    <widget name="number_key_popup" zPosition="9" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
+    <widget name="number_key_popup" zPosition="10" halign="center" valign="center" position="551,297" size="177,125" font="Modern;75" foregroundColor="#ffffff" backgroundColor="#20404040" />
   </screen>
   <!-- PVMC_MessageBoxInfo -->
   <screen name="PVMC_MessageBoxInfo" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
