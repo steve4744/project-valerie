@@ -153,7 +153,7 @@ def getHtml(url, cache=True):
 	
 	return decodedHtml
 
-def getText(url, cache=True): 
+def getText(url, cache=True, fixurl=True): 
 	try:
 		if cache:
 			utfPage = checkCache(url)
@@ -165,13 +165,16 @@ def getText(url, cache=True):
 				page = None
 				kwargs = {}
 				try:
+					fixedurl = Utf8.utf8ToLatin(url)
+					if fixurl:
+						fixedurl = url_fix(Utf8.utf8ToLatin(url))
 					opener = urllib2.build_opener()
 					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
 					if version_info[1] >= 6:
-						page = opener.open(url_fix(Utf8.utf8ToLatin(url)), timeout=10)
+						page = opener.open(fixedurl, timeout=10)
 					else:
 						socket.setdefaulttimeout(10)
-						page = opener.open(url_fix(Utf8.utf8ToLatin(url)))
+						page = opener.open(fixedurl)
 				
 				except IOError, ex:
 					printl("IOError: " +  str(ex), __name__)
@@ -180,7 +183,7 @@ def getText(url, cache=True):
 				if page is not None:
 					rawPage = page.read()
 					contenttype = page.headers['Content-type']
-					print contenttype
+					#print contenttype
 					if contenttype.find("charset=") >= 0:
 						encoding = page.headers['Content-type'].split('charset=')[1] # iso-8859-1
 						utfPage = rawPage.decode(encoding).encode('utf-8')
