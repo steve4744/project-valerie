@@ -1008,13 +1008,43 @@ class databaseHandlerPICKLE(object):
 		for key in self._dbMediaFiles:
 			if self._checkKeyValid(key):		# only for Pickle
 				m = self._dbMediaFiles[key]
+
+					
 				# only if mediafile as no childs
 				if m.MediaType != MediaInfo.SERIE:
 					if m.Path == path and m.Filename == filename and m.Extension == extension:
 						ret["reason"] = 1
 						ret["mediafile"]= m
 						return ret
-					if m.Filename == filename and m.Extension == extension:
+					# DVD ??
+					if m.Extension.lower() == u"ifo":
+						dirs = m.Path.split(u"/")
+						dirs2 = path.split(u"/")
+						dvdName  = dirs[len(dirs) - 2]					
+						dvdName2 = dirs2[len(dirs2) - 2]					
+						dvdPath  = m.Path[:-len(dvdName) - 9]	#  - /VIDEO_TS
+						dvdPath2 = path[:-len(dvdName2) - 9]	#  - /VIDEO_TS
+						#printl("DVD Path: " + str(m.Path), self)
+						#printl("dvdName: " + str(dvdName), self)
+						#printl("dvdPath: " + str(dvdPath), self)
+						#printl("dvdName2: " + str(dvdName2), self)
+						#printl("dvdPath2: " + str(dvdPath2), self)
+						#DVD Path: /mnt/net/STORAGE2/Cirque du Soleil/11 - La Nouba (disc 2)/VIDEO_TS
+						#DVD Path: /mnt/net/STORAGE2/Cirque du Soleil_/11 - La Nouba (disc 2)/VIDEO_TS
+						#dvdName: 11 - La Nouba (disco 2)
+						#dvdPath: /mnt/net/STORAGE2/Cirque du Soleil/
+						#Duplicate Found on other path:/mnt/net/STORAGE2/Cirque du Soleil/11 - La Nouba (disco 2)/VIDEO_TS/VIDEO_TS.IFO
+						if dvdPath == dvdPath2 and dvdName == dvdName2:
+							ret["reason"] = 1
+							ret["mediafile"]= m
+							return ret
+						
+						if dvdName == dvdName2:
+							ret["reason"] = 2
+							ret["mediafile"]= m
+							return ret
+						
+					elif m.Filename == filename and m.Extension == extension:
 						ret["reason"] = 2
 						ret["mediafile"]= m
 						return ret

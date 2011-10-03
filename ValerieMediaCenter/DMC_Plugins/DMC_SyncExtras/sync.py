@@ -336,12 +336,16 @@ class pyvalerie(Thread):
 								
 						elif retCheckDuplicate["reason"] == 2: # exist on other path, change record path
 							m2 = retCheckDuplicate["mediafile"]
-							printl("Sync - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)
-							key_value_dict = {}
-							key_value_dict["Id"] = m2.Id
-							key_value_dict["Path"] = path
-							if not db.updateMediaWithDict(key_value_dict):
-								printl("Sync - Update Media 2 - Failed", self)	
+							if m2.syncErrNo == 0:
+								printl("Sync - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)
+								key_value_dict = {}
+								key_value_dict["Id"] = m2.Id
+								key_value_dict["Path"] = path
+								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
+								#key_value_dict["syncErrNo"]    = 0
+								key_value_dict["syncFailedCause"] = u""
+								if not db.updateMediaWithDict(key_value_dict):
+									printl("Sync - Update Media 2 - Failed", self)	
 					
 							
 						# take lots of time to write on screen, we have the progressbar
