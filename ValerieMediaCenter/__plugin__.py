@@ -58,6 +58,9 @@ def getPlugins(where=None):
 		for plugin in gPlugins:
 			if plugin.where == where:
 				list.append(plugin)
+		
+		list.sort(key=lambda x: x.weight)
+		print list
 		return list
 
 def getPlugin(name, where):
@@ -85,6 +88,9 @@ class Plugin():
 	STOP_E2 = 13
 	MENU_DEV = 14
 	
+	WAKEUP = 15
+	AUTOSTART_DELAYED = 16
+	
 	INFO_PLAYBACK = 100
 	INFO_SEEN = 101
 
@@ -93,9 +99,10 @@ class Plugin():
 	start = None
 	fnc   = None
 	where = None
+	weight = 0
 	supportStillPicture = False
 
-	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False):
+	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False, weight=0):
 		self.name = name
 		if desc is None:
 			self.desc = self.name
@@ -104,4 +111,5 @@ class Plugin():
 		self.start = start
 		self.fnc = fnc
 		self.where = where
+		self.weight = weight
 		self.supportStillPicture = supportStillPicture

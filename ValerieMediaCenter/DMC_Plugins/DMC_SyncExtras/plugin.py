@@ -622,6 +622,7 @@ class ProjectValerieSyncInfo():
 	year = None
 
 	inProgress = False
+	isFinished = False
 	
 	session = None
 	
@@ -634,6 +635,7 @@ class ProjectValerieSyncInfo():
 				return False
 			self.reset()
 			
+			isFinished = False
 			self.inProgress = True
 			self.setOutput(None)
 			self.thread = pyvalerie(self.setOutput, self.setProgress, self.setRange, self.setInfo, self.finished, type)
@@ -724,6 +726,7 @@ class ProjectValerieSyncInfo():
 	def finished(self, successfully):
 		try:
 			self.inProgress = False
+			self.isFinished = True
 			self.outputInstance.notifyStatus()
 			if self.outputInstance is None:
 				self.session.open(ProjectValerieSyncFinished)
@@ -1266,8 +1269,14 @@ class ProjectValerieSync(Screen):
 		
 	ShowStillPicture = False
 
-	def __init__(self, session, args = None):
+	def __init__(self, session, autoSync=False):
 		Screen.__init__(self, session)
+		
+		self.session = session
+		
+		self.autoSync = autoSync
+		printl("Session: " + str(self.session), self, "H")
+		printl("AutoSync: " + str(self.autoSync), self, "H")
 		
 		self.APILevel = getAPILevel(self)
 		printl("APILevel=" + str(self.APILevel), self)
@@ -1333,6 +1342,17 @@ class ProjectValerieSync(Screen):
 		printl("gSyncInfo.inProgress: " + str(gSyncInfo.inProgress), self)
 		if gSyncInfo.inProgress is False:
 			self.checkDefaults()
+		
+		if self.autoSync:
+			self.delayedTimer = eTimer()
+			self.delayedTimer.callback.append(self.startupDelayed)
+			self.delayedTimer.start(5000)
+
+	def startupDelayed(self):
+		printl("->", self, "H")
+		self.delayedTimer.stop()
+		self.gofast()
+		printl("<-", self, "H")
 
 	def checkDefaults(self):
 		SyncCheckDefaults()
@@ -1343,7 +1363,6 @@ class ProjectValerieSync(Screen):
 		Screen.close(self)
 
 	def notifyStatus(self):
-		
 		global gSyncInfo
 		printl("inProgress:" + str(gSyncInfo.inProgress), self, "D")
 		if gSyncInfo.inProgress is True:
@@ -1354,6 +1373,17 @@ class ProjectValerieSync(Screen):
 			self["key_red"].setText(_("Manage"))
 			self["key_green"].setText(_("Synchronize"))
 			self["key_yellow"].setText(_("Fast Synchronize"))
+			
+			if self.autoSync and gSyncInfo.isFinished is True:
+				self.delayedTimer = eTimer()
+				self.delayedTimer.callback.append(self.closeDelayed)
+				self.delayedTimer.start(5000)
+
+	def closeDelayed(self):
+		printl("->", self, "H")
+		self.delayedTimer.stop()
+		self.close()
+		printl("<-", self, "H")
 
 	def menu(self):
 		global gSyncInfo
@@ -1410,10 +1440,3 @@ class ProjectValerieSync(Screen):
 			self["year"].setText(str(year))
 		else:
 			self["year"].setText("")
-
-def main(session, **kwargs):
-	session.open(ProjectValerieSync)
-
-#def Plugins(**kwargs):
-#	return PluginDescriptor(name="ProjectValerieSync", description="syncs", where = PluginDescriptor.WHERE_PLUGINMENU, fnc=main)
-	#return PluginDescriptor(name="ProjectValerieSync", description="syncs", where = PluginDescriptor.WHERE_WIZARD, fnc=main)

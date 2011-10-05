@@ -27,7 +27,7 @@ from Screens.ServiceInfo import ServiceInfoList, ServiceInfoListEntry
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 from DataElement import DataElement
-from DMC_Global import getAPILevel, Update, loadFonts
+from DMC_Global import getAPILevel, Update, loadFonts, PowerManagement
 
 from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
@@ -451,7 +451,7 @@ class PVMC_MainMenu(Screen):
 		return content
 				
 	def onExec(self):
-		printl("->", self, "S")
+		printl("->", self, "H")
 		if self.APILevel == 1:
 			self["menu"].setIndex(0)
 		elif self.APILevel >= 2:
@@ -466,9 +466,11 @@ class PVMC_MainMenu(Screen):
 		
 		if self.APILevel >= 4:
 			self.refreshOrientationMenu(0)
+		
+		printl("<-", self, "H")
 
 	def onExecStartScript(self):
-		printl("->", self, "S")
+		printl("->", self, "H")
 		
 		version = None
 		
@@ -498,19 +500,21 @@ class PVMC_MainMenu(Screen):
 			# If the update dialog is being shown, dont run autostart.
 			# If the user dont want an update the autostart will be initialised by messagebox callback
 			self.runAutostart()
-		printl("<-",self)
+		
+		printl("<-", self, "H")
 
 	def onExecRunDev(self):
-		printl("->", self, "S")
+		printl("->", self, "H")
 		plugins = getPlugins(where=Plugin.MENU_DEV)
 		for s in plugins:
 			if s.start is not None:
 				self.session.open(s.start)
 			elif s.fnc is not None:
 				s.fnc(self.session)
+		printl("<-", self, "H")
 
 	def runAutostart(self):
-		printl("->", self, "S")
+		printl("->", self, "H")
 		try:
 			import os
 			os.system("chmod 777 " + config.plugins.pvmc.configfolderpath.value + "start.sh")
@@ -521,14 +525,30 @@ class PVMC_MainMenu(Screen):
 		plugins = getPlugins(where=Plugin.AUTOSTART)
 		for plugin in plugins:
 			plugin.fnc(self.session)
+		
+		self.delayedTimer = eTimer()
+		self.delayedTimer.callback.append(self.runAutostartDelayed)
+		self.delayedTimer.start(5000)
+		
+		printl("<-", self, "H")
+
+	def runAutostartDelayed(self):
+		printl("->", self, "H")
+		
+		self.delayedTimer.stop()
+		
+		plugins = getPlugins(where=Plugin.AUTOSTART_DELAYED)
+		for p in plugins:
+			if p.start is not None:
+				self.session.open(p.start)
+			elif p.fnc is not None:
+				p.fnc(self.session)
+		
+		printl("<-", self, "H")
 
 	def power(self):
 		printl("->", self, "S")
-		import Screens.Standby
-		if config.plugins.pvmc.onpowerpress.value == "Standby":
-			self.session.open(Screens.Standby.Standby)
-		else:
-			self.session.open(Screens.Standby.TryQuitMainloop, 1)
+		PowerManagement(self.session).standby()
 
 	def startUpdate(self, answer=None):
 		printl("->", self, "S")

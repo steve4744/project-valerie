@@ -374,4 +374,16 @@ class Update(object):
 		printl("revisionUrl = " + str(self.revisionUrl), self, "H")
 		printl("<-", self, "C")
 		return str(self.revisionUrl)
-	
+
+
+class PowerManagement():
+	def __init__(self, session):
+		self.session = session
+
+	def standby(self):
+		printl("->", self, "S")
+		import Screens.Standby
+		if config.plugins.pvmc.onpowerpress.value == "Standby":
+			self.session.open(Screens.Standby.Standby)
+		else:
+			self.session.open(Screens.Standby.TryQuitMainloop, 1)
