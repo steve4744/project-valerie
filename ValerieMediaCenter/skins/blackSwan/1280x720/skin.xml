@@ -2,12 +2,6 @@
   <output id="0">
     <resolution xres="1280" yres="720" bpp="32" />
   </output>
-  <colors>
-    <color name="ptransparent" value="#ff000000" />
-    <color name="pwhite" value="#00FFFFFF" />
-    <color name="pgrey" value="#a0424242" />
-    <color name="pbright_blue" value="#6ca4c5" />
-  </colors>
   <screen name="PVMC_FontLoader" position="0,0" size="1,1" title=" ">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget name="COUNT" text="1" position="0,0" zPosition="0" size="1,1" />
@@ -30,13 +24,13 @@
     <!--widget name="languagetext" transparent="1" zPosition="1" position="55,268" size="94,30" font="Regular;17"/-->
   </screen>
   <!-- PVMC Main Menu -->
-  <screen name="PVMC_MainMenu" position="0,0" size="1280,720" title=" " backgroundColor="ptransparent" flags="wfNoBorder">
+  <screen name="PVMC_MainMenu" position="0,0" size="1280,720" title=" " backgroundColor="#ff000000" flags="wfNoBorder">
     <widget name="API" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget name="stillpicture_usedreamscene" text="/hdd/valerie/dreamscene/blackSwan.mp4" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="1280,720" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/background.m1v" />
-    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="106,75" size="1066,68" font="Modern;50" backgroundColor="ptransparent" foregroundColor="pbright_blue" transparent="1" />
-    <widget name="version" zPosition="1" halign="center" valign="top" position="106,137" size="1066,37" backgroundColor="ptransparent" foregroundColor="pgrey" font="Modern;25" transparent="1" />
-    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="373,250" size="533,500" scrollbarMode="showOnDemand" backgroundColor="ptransparent" backgroundColorSelected="ptransparent" foregroundColor="pgrey" foregroundColorSelected="pwhite">
+    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="106,75" size="1066,68" font="Modern;50" backgroundColor="#ff000000" foregroundColor="#6ca4c5" transparent="1" />
+    <widget name="version" zPosition="1" halign="center" valign="top" position="106,137" size="1066,37" backgroundColor="#ff000000" foregroundColor="#a0424242" font="Modern;25" transparent="1" />
+    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="373,250" size="533,500" scrollbarMode="showOnDemand" backgroundColor="#ff000000" backgroundColorSelected="#ff000000" foregroundColor="#a0424242" foregroundColorSelected="#00ffffff">
       <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0,0), size = (533,52), flags = RT_HALIGN_CENTER, text = 0) ],
             "fonts": [gFont("Modern", 40)],
