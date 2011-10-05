@@ -145,10 +145,11 @@ class MyEpisodesAPI():
 	def send(self):
 		self.auth()
 		l = self.getShowList()
-		for show in l:
-			if self.mMovieName == show[0]:
-				url = self.URL_MARKVIEWED
-				url = url.replace("<showid>", show[1])
-				url = url.replace("<season>", str(self.mSeason))
-				url = url.replace("<episode>", str(self.mEpisode))
-				self.sendWithAuth(url, None)
+		if l is not None:
+			for show in l:
+				if self.mMovieName == show[0]:
+					url = self.URL_MARKVIEWED
+					url = url.replace("<showid>", show[1])
+					url = url.replace("<season>", str(self.mSeason))
+					url = url.replace("<episode>", str(self.mEpisode))
+					self.sendWithAuth(url, None)
