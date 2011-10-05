@@ -636,10 +636,13 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		self._sort()
 
 	def _sort(self):
-		if self.activeSort[1] is None:
-			self.listViewList.sort(key=lambda x: x[2], reverse=self.activeSort[2])
-		else:
-			self.listViewList.sort(key=lambda x: x[1][self.activeSort[1]], reverse=self.activeSort[2])
+		try:
+			if self.activeSort[1] is None:
+				self.listViewList.sort(key=lambda x: x[2], reverse=self.activeSort[2])
+			else:
+				self.listViewList.sort(key=lambda x: x[1][self.activeSort[1]], reverse=self.activeSort[2])
+		except Exception, ex:
+			printl("Exception(" + str(ex) + ")", self, "E")
 
 	def filter(self):
 		self._filter()

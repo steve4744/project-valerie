@@ -54,7 +54,7 @@ class DMC_NewestEpisodes(DMC_Library):
             from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
         
         self.manager = Manager()
-        DMC_Library.__init__(self, session, "tv shows")
+        DMC_Library.__init__(self, session, "tv shows - newest")
 
     ###
     # Return Value is expected to be:
