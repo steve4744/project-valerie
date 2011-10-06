@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	var params = get_params();
+	var message = params["msg"];
 	$('#main_table').dataTable( {
 		"sScrollY": 768,
 		"aaSorting": [[ 1, "asc" ]],
@@ -9,7 +10,7 @@ $(document).ready(function(){
 	} );
 
 	if (params["mode"] == "error") {
-		window.alert("An Error ocurred :(  Check the log please!");
+		window.alert("An Error ocurred :( \n\n" + message);
 		return;
 	}	
 	if (params["showSave"] != "true") {

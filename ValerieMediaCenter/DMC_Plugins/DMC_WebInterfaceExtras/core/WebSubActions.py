@@ -364,28 +364,28 @@ class MediaActions(Resource):
 			if type == "isMovie":
 				printl ("INSERT MOVIE : " + str(key_value_dict), self, "I")
 				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
-				if result:
+				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&showSave=true")
 				else:
-					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isMovie")
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isMovie&"+urlencode({'msg':result["message"]}))
 			
 			# add tvshows
 			elif type == "isTvShow":
 				printl ("INSERT TVSHOW : " + str(key_value_dict), self, "I")
 				result = manager.insertMedia(Manager.TVSHOWS, key_value_dict)
-				if result:
+				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&showSave=true")	
 				else:
-					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isTvShow")	
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isTvShow&"+urlencode({'msg':result["message"]}))	
 			
 			# add tvshowepisodes
 			elif type == "isEpisode":
 				printl ("INSERT EPISODE: " + str(key_value_dict), self, "I")
 				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)				
-				if result:
+				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/episodes?mode=showDoneForm&ParentId=" + parentId + "&showSave=true")
 				else:
-					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isEpisode&ParentId=" + parentId)
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isEpisode&ParentId=" + parentId + "&"+urlencode({'msg':result["message"]}))
 		
 		##########################
 		# EDIT SECTION	

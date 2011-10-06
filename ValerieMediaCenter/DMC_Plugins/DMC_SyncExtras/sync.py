@@ -453,7 +453,8 @@ class pyvalerie(Thread):
 							result.MediaStatus = MediaInfo.STATUS_OK
 							result.syncErrNo   = 0
 							result.syncFailedCause = u""
-							if db.add(result):
+							ret = db.add(result)
+							if ret["status"] > 0:
 								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
 									self.info(str(result.ImdbId) + "_poster_" + posterSize + ".png", 
@@ -471,9 +472,10 @@ class pyvalerie(Thread):
 								#if result.syncFailedCause == u"":
 								#	result.syncFailedCause = "DB Insert Error ??"
 								result.MediaType = MediaInfo.FAILEDSYNC
-								db.add(result)
-								
-								#printl("DB Insert Error ??", self, "W")
+								try:
+									db.add(result)
+								except Exception, ex:									
+									printl("DB Insert Error ??", self, "W")
 					
 					#self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
 					#printl("(" + str(i) + "/" + str(elementListFileCounter) + ")", self)

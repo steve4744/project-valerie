@@ -14,6 +14,7 @@ $(document).ready(function(){
 	var type = params["type"]; 			// => isMovie/isTvShow/isEpisode
 	var Id = params["Id"]; 	
 	var ParentId = params["ParentId"];
+	var message = params["msg"];
 
 	if (debug) {alert("area => mediainfo/function.js \nfnc => document ready " + "\nmode => " + mode + "\nId => " + Id + "\nParentId => " + ParentId + "\ntype => " + type);}
 	
@@ -35,7 +36,7 @@ $(document).ready(function(){
 		return;
 	
 	} else if (mode == "showErrorForm") {
-		window.alert("An Error ocurred :(  Check the log please!");
+		window.alert("An Error ocurred :( ! \n\n" + message);
 		return;
 	
 	//ADD NEW RECORD MANUAL

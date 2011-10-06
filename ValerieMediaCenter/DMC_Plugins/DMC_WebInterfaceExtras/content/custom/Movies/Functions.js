@@ -1,6 +1,8 @@
 $(document).ready(function(){ 
 	document.title = document.title + " - Movies";
 	var params = get_params();
+	var message = params["msg"];
+
 	$('#main_table').dataTable( {
 		"aaSorting": [[ 1, "asc" ]],
 		<!-- PAGINATION_FLAG -->
@@ -9,7 +11,7 @@ $(document).ready(function(){
 	} );
 
 	if (params["mode"] == "error") {
-			window.alert("An Error ocurred :(  Check the log please!");
+			window.alert("An Error ocurred :( \n\n" + message);
 		return;
 	}	
 

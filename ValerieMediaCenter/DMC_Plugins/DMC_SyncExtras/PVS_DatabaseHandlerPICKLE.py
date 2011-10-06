@@ -482,6 +482,7 @@ class databaseHandlerPICKLE(object):
 						
 	def insertMedia(self, media):
 		printl("->", self, "S")
+		ret = {}
 		self._mediaFilesCheckLoaded()
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		serieId = None
@@ -489,20 +490,26 @@ class databaseHandlerPICKLE(object):
 			key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 			if key is not None:
 				serieId = self._getMediaWithKey(key).Id
-				return serieId
+				ret["status"] 	= 3 # ok
+				ret["id"]	= serieId				
+				ret["message"]	= u""
+				return ret
 			
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isTypeEpisode():
-			key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
-			if key is None:
-				serieId = self.insertFakeSerie(media.TheTvDbId)
-			else:
-				serieId = self._getMediaWithKey(key).Id
+			# No Parent... from Sync
+			if media.ParentId is None:
+				key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
+				if key is None:
+					resultInsert = self.insertFakeSerie(media.TheTvDbId)
+					serieId = resultInsert["id"]
+				else:
+					serieId = self._getMediaWithKey(key).Id
+				media.ParentId = serieId 
 			
 		key = self._getNextKey(self._dbMediaFiles)
 		m = media
 		m.Id = self._getNextId(self._dbMediaFiles)
-		m.ParentId = serieId # for Episodes
 		
 		m.Path = media.Path.replace("\\", "/")
 		m.Path = media.Path.replace("//", "/")
@@ -513,27 +520,46 @@ class databaseHandlerPICKLE(object):
 		if ret["reason"] == 1: # exist
 			#printl("Media Insert - Duplicate Found :" + str(ret["mediafile"].Path) + "/" + str(ret["mediafile"].Filename) + "." + str(ret["mediafile"].Extension), self)	
 			m2 = ret["mediafile"]
-			return m2.Id
+
+			ret["status"] 	= -1 # Duplicate
+			ret["id"]	= m2.Id
+			ret["message"]	= u"Duplicate Found"
+			return ret
+
 		elif ret["reason"] == 2: # exist on other path, change record path
 			m2 = ret["mediafile"]			
 			printl("Media Insert - Duplicate Found on other path:" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
 			m2.Path = m.Path
 			m2.MediaStatus = MediaInfo.STATUS_OK
-			return m2.Id
-		
+
+			ret["status"] 	= 2 # on other path
+			ret["id"]	= m2.Id
+			ret["message"]	= u""
+			return ret
+
 		if not key in self._dbMediaFiles:
 			self.MediaFilesCommited = False
 			self._dbMediaFiles[key] = m
 			if self.AUTOCOMMIT:
 				self.saveMediaFiles()
-			return m.Id 	
+			ret["status"] 	= 1 # Created
+			ret["id"]	= m.Id
+			ret["message"]	= u""
+			return ret
 		else: #Failure
 			#self._addFailedCauseOf = self._dbMovies[movieKey]
-			return -1
+			ret["status"] 	= -9 # Failure
+			ret["id"]	= None
+			ret["message"]	= u"Total Failure"
+			return ret
+
 		
 		#if self.AUTOCOMMIT:
 		#	self.saveMovies()
-		return -1
+		ret["status"] 	= -9 # Failure
+		ret["id"]	= None
+		ret["message"]	= u"Total Failure"
+		return ret
 	
 	def insertMediaWithDict(self, key_value_dict):
 		printl("->", self, "S")

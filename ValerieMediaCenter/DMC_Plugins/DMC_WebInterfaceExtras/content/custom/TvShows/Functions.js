@@ -2,6 +2,7 @@ $(document).ready(function(){
 	document.title = document.title + " - Series";
 	var params = get_params();
 	var i = 1,timer;
+	var message = params["msg"];
 
 	$('#main_table').dataTable( {
 		"sScrollY": 768,
@@ -12,7 +13,7 @@ $(document).ready(function(){
 	} );
 
 	if (params["mode"] == "error") {
-			window.alert("An Error ocurred :(  Check the log please!");
+			window.alert("An Error ocurred :( \n\n" + message);
 		return;
 	}	
 	if (params["showSave"] != "true") {
