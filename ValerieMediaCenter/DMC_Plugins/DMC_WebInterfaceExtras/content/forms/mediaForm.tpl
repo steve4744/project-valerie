@@ -17,9 +17,16 @@
 			<tr id="tr_tag"><td>Tag:</td><td>
 				<input id="tag" name="Tag" type="text" value="%s" class="medium"></input></td><td>(e.g.my tag)</td></tr>
 			<tr id="tr_season"><td>Season:</td><td>
-				<input id="season" name="Season" type="text"  maxlength="2" value="%s" class="small"></input></td><td>(e.g. 01)</td></tr>
+				<input id="season" name="Season" type="text"  class="small" maxlength="2" value="%s" class="small"></input>
+				&nbsp;&nbsp;Disc:
+				<input id="disc" name="Disc" type="text"  maxlength="2" value="%s" class="small"></input>
+				&nbsp;&nbsp;Episode:
+				<input id="episode" name="Episode" type="text" maxlength="3" value="%s" class="small"></input>
+			</td><td>(e.g. 01)</td></tr>
+			<!--
 			<tr id="tr_episode"><td>Episode:</td><td>
-				<input id="episode" name="Episode" type="text" maxlength="3" value="%s" class="small"></input></td><td>(e.g. 01)</td></tr>
+				<input id="episode" name="Episode" type="text" maxlength="3" value="s" class="small"></input></td><td>(e.g. 01)</td></tr>
+			-->
 			<tr id="tr_plot"><td>Plot:</td><td>
 				<textarea id="plot" name="Plot" cols="50" rows="15" class="medium">%s</textarea></td><td>(e.g. story description)</td></tr>
 			<tr id="tr_runtime"><td>Runtime:</td><td>

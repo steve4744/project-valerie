@@ -209,7 +209,7 @@ class Database(object):
 		printl("->", self, "S")
 		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
 
-		return self.dbHandler.deleteMedia(media.MediaType, media.Id)
+		return self.dbHandler.deleteMedia(media.Id)
 	
 	##
 	# Adds media files to the db
@@ -260,9 +260,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.updateMediaWithDict(key_value_dict)
 	
-	def deleteMedia(self, type, id):
+	def deleteMedia(self, id):
 		printl("->", self, "S")
-		return self.dbHandler.deleteMedia(type, id)
+		return self.dbHandler.deleteMedia(id)
 
 	def getMediaPaths(self):
 		return self.dbHandler.getMediaPaths()

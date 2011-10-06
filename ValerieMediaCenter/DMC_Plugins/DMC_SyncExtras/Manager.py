@@ -286,7 +286,7 @@ class Manager():
 		return True
 	
 	def deleteMedia(self, type, id):
-		if not self.db.deleteMedia(type, id):
+		if not self.db.deleteMedia(id):
 			printl("Delete Media - Failed", self)	
 			return False
 		return True

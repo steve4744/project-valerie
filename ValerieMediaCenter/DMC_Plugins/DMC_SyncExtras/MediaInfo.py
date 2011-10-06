@@ -101,8 +101,10 @@ class MediaInfo(object):
 	Popularity = 0
 	
 	Season  = -1
+	Disc    = u""
 	Episode = -1
-	EpisodeText = u""	 # for example: Episode Number:Special / Pilot (not numbered)
+	EpisodeLast = None
+	
 	syncStatus  = 0
 	syncErrNo = 0
 	syncFailedCause = u""
@@ -131,47 +133,6 @@ class MediaInfo(object):
 				self.SeasonPoster.clear()
 		except Exception, ex:
 			printls("Exception (ef): " + str(ex), self, "E")
-
-	#def copy(self):
-	#	try:
-	#		m = MediaInfo(self.Path, self.Filename, self.Extension)
-	#		
-	#		m.Alternatives = self.Alternatives
-	#		m.Directors    = self.Directors
-	#		m.Writers      = self.Writers
-	#		m.Genres       = self.Genres
-	#		m.Runtime      = self.Runtime
-	#		m.Tag          = self.Tag
-	#		m.Popularity   = self.Popularity
-	#		m.Plot         = self.Plot
-	#		
-	#		m.Id           = self.Id
-	#		m.ImdbId       = self.ImdbId
-	#		m.isXbmcNfo    = self.isXbmcNfo
-	#		m.TheTvDbId    = self.TheTvDbId
-	#		m.Title        = self.Title
-	#		m.Year         = self.Year
-	#		m.Month        = self.Month
-	#		m.Day          = self.Day
-	#		m.Resolution   = self.Resolution
-	#		m.Sound        = self.Sound
-	#		m.isMovie      = self.isMovie
-	#		m.isSerie      = self.isSerie
-	#		m.isEpisode    = self.isEpisode
-	#		m.Poster       = self.Poster
-	#		m.Backdrop     = self.Backdrop
-	#		m.Season       = self.Season
-	#		m.Episode      = self.Episode
-	#		m.SearchString = self.SearchString
-	#		m.MediaType    = self.MediaType
-	#		m.RecordStatus = self.RecordStatus
-	#		
-	#		# Make sure that this is not copied
-	#		m.SeasonPoster.clear()
-	#		
-	#	except Exception, ex:
-	#		printl("Exception (ef): " + str(ex), self, "E")
-	#	return m
 
 	def isEnigma2Recording(self, name):
 		try:
@@ -457,7 +418,10 @@ class MediaInfo(object):
 			dirs = self.Path.split(u"/")
 			#vidoets = dirs[len(dirs) - 1]
 			printl("dirs=" + str(dirs), self)
-			self.SearchString = dirs[len(dirs) - 2]
+			self.SearchString = dirs[len(dirs) - 1] 	# /DVDs/title/VIDEO_TS.ifo
+			if self.SearchString.upper() == u"VIDEO_TS":	
+				self.SearchString = dirs[len(dirs) - 2]	# /DVDs/title/VIDEO_TS/VIDEO_TS.ifo
+			self.SearchString = self.SearchString.lower()
 			printl("DVD: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 			#return True
 		
@@ -549,6 +513,58 @@ class MediaInfo(object):
 		
 		if not self.isTypeMovie():
 			printl("(isMovie is False) => assuming TV show - trying to get season and episode from SearchString: " + self.SearchString, self, "I")
+			
+	
+			##### 
+			#####  s03d05e01-e05 - Season 3 Disc 5 Episode 1 [to Episode 5]
+			#####			Seinfeld.S08D03.PAL.DVDR		
+			if self.Season == -1 or self.Episode == -1:
+				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
+				if m and m.group("season") and m.group("disc") and m.group("episode"):
+					printl("PARSE RESULT 1:"+str(str(m.group("disc")))+" "+str(m.group("episode"))+" "+str(m.group("episode2")), self)
+					self.setMediaType(self.SERIE)
+					
+					self.Season = int(m.group("season"))
+					self.Disc = int(m.group("disc"))
+					if m.group("episode") == 0:  ## WRONG Expression....
+						self.Episode = int(m.group("episode2"))
+					else:
+						self.Episode = int(m.group("episode"))
+						self.EpisodeLast = int(m.group("episode2"))
+					
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', u" ", self.SearchString)
+			
+			#####
+			#####  s03d05 - Season 3 Disc 5
+			#####			
+			if self.Season == -1 or self.Episode == -1:
+				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)(\D|$)', self.SearchString)
+				if m and m.group("season") and m.group("disc"):
+					printl("PARSE RESULT 3:", self)
+					self.setMediaType(self.SERIE)
+					
+					self.Season = int(m.group("season"))
+					self.Disc = int(m.group("disc"))
+					self.Episode = 0
+					
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+).*', u" ", self.SearchString)
+			
+			#####
+			#####  s03e05e06 s03e05-e06
+			#####
+			if self.Season == -1 or self.Episode == -1:
+				#m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
+				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
+				if m and m.group("season") and m.group("episode"):
+					printl("PARSE RESULT 4:"+str(m.group("episode"))+" "+str(m.group("episode2")), self)
+					self.setMediaType(self.SERIE)
+					
+					self.Season = int(m.group("season"))
+					self.Episode = int(m.group("episode"))
+					self.EpisodeLast = int(m.group("episode2"))
+					
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', u" ", self.SearchString)
+				
 			#####
 			#####  s03e05
 			#####
@@ -556,6 +572,7 @@ class MediaInfo(object):
 			if self.Season == -1 or self.Episode == -1:
 				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
+					#printl("PARSE RESULT 5:", self)
 					self.setMediaType(self.SERIE)
 					isSeasonEpisodeFromFilename = True
 					
@@ -563,21 +580,7 @@ class MediaInfo(object):
 					self.Episode = int(m.group("episode"))
 					
 					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
-			
-			#####
-			#####  s03e05e06 s03e05-e06
-			#####
-			
-			if self.Season == -1 or self.Episode == -1:
-				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
-				if m and m.group("season") and m.group("episode"):
-					self.setMediaType(self.SERIE)
-					
-					self.Season = int(m.group("season"))
-					self.Episode = int(m.group("episode"))
-					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', u" ", self.SearchString)
-			
+
 			#####
 			#####  3x05
 			#####
@@ -710,7 +713,10 @@ class MediaInfo(object):
 			printl("Building search string from parent folder names...", self, "I")
 			try:
 				folders = self.Path.split("/")
-				self.SearchString = folders[len(folders) - 1]
+				self.SearchString = folders[len(folders) - 1] 		# /DVDs/title/VIDEO_TS.ifo
+				if self.SearchString.upper() == u"VIDEO_TS":	
+					self.SearchString = folders[len(folders) - 2]	# /DVDs/title/VIDEO_TS/VIDEO_TS.ifo
+				
 			except Exception, ex:
 				printl("Exception: " + str(ex), self, "E")
 		

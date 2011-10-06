@@ -153,7 +153,7 @@ class MediaForm(Resource):
 		#######################	
 		if currentMode=="showManualAddForm":
 			nextMode = "addMediaToDb"
-			mediaForm = mediaForm % (type, nextMode ,u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
+			mediaForm = mediaForm % (type, nextMode ,u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
 		else:
 			if type == "isMovie":
 				if os.path.isfile(mediaFolderPath + m.ImdbId + "_poster_195x267.png"):
@@ -187,7 +187,7 @@ class MediaForm(Resource):
 			if m.ParentId == None:
 				m.ParentId = u""
 
-			mediaForm = mediaForm % (type, nextMode, Id, m.ParentId, type, Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self._getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
+			mediaForm = mediaForm % (type, nextMode, Id, m.ParentId, type, Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Disc, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self._getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
 
 		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)

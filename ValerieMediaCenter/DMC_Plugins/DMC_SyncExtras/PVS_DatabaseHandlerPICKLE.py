@@ -395,6 +395,10 @@ class databaseHandlerPICKLE(object):
 				if parentId is None and season is None:
 					listToSort.append(self._dbMediaFiles[key])
 
+				elif parentId == "": # to identify "lost episodes"
+					if self._dbMediaFiles[key].ParentId == None:
+						listToSort.append(self._dbMediaFiles[key])
+				
 				elif season is None:
 					if self._dbMediaFiles[key].ParentId == int(parentId):
 						listToSort.append(self._dbMediaFiles[key])
@@ -482,14 +486,18 @@ class databaseHandlerPICKLE(object):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		serieId = None
 		if media.isTypeSerie():
-			serieId = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
-			if serieId is not None:
+			key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
+			if key is not None:
+				serieId = self._getMediaWithKey(key).Id
 				return serieId
+			
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isTypeEpisode():
-			serieId = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
-			if serieId is None:
+			key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
+			if key is None:
 				serieId = self.insertFakeSerie(media.TheTvDbId)
+			else:
+				serieId = self._getMediaWithKey(key).Id
 			
 		key = self._getNextKey(self._dbMediaFiles)
 		m = media
@@ -559,7 +567,7 @@ class databaseHandlerPICKLE(object):
 			self.saveMediaFiles()
 		return True
 		
-	def deleteMedia(self, type, id):
+	def deleteMedia(self, id):
 		printl("->", self, "S")
 		self._mediaFilesCheckLoaded()
 		key = self._getMediaKeyWithId(id)
@@ -570,7 +578,7 @@ class databaseHandlerPICKLE(object):
 				#delete episodes
 				records = self.getEpisodes(id)
 				for rec in records:
-					self.deleteMedia(rec.MediaType, rec.Id)
+					self.deleteMedia(rec.Id)
 			#delete media
 			del(self._dbMediaFiles[key])	
 			if self.AUTOCOMMIT:
@@ -987,7 +995,7 @@ class databaseHandlerPICKLE(object):
 
 			except Exception, ex:
 				printl("Key error: "+ str(key) + " Ex: " + str(ex), self)
-
+				
 	def checkDuplicateMF(self, path, filename, extension):
 		# Return: 	0 - notFound
 		#			
@@ -1019,11 +1027,21 @@ class databaseHandlerPICKLE(object):
 					# DVD ??
 					if m.Extension.lower() == u"ifo":
 						dirs = m.Path.split(u"/")
+						dvdName  = dirs[len(dirs) - 1]
+						if dvdName.upper() == u"VIDEO_TS":	# /DVDs/title/VIDEO_TS.ifo
+							dvdName  = dirs[len(dirs) - 2]
+							dvdPath  = path[:-len(dvdName) - 9]
+						else:					# /DVDs/title/VIDEO_TS/VIDEO_TS.ifo
+							dvdPath  = path[:-len(dvdName)]	
+
 						dirs2 = path.split(u"/")
-						dvdName  = dirs[len(dirs) - 2]					
-						dvdName2 = dirs2[len(dirs2) - 2]					
-						dvdPath  = m.Path[:-len(dvdName) - 9]	#  - /VIDEO_TS
-						dvdPath2 = path[:-len(dvdName2) - 9]	#  - /VIDEO_TS
+						dvdName2 = dirs2[len(dirs2) - 1]
+						if dvdName2.upper() == u"VIDEO_TS":	# /DVDs/title/VIDEO_TS.ifo
+							dvdName2  = dirs2[len(dirs2) - 2]
+							dvdPath2  = path[:-len(dvdName2) - 9]	
+						else:					# /DVDs/title/VIDEO_TS/VIDEO_TS.ifo
+							dvdPath2  = path[:-len(dvdName2)]	
+
 						#printl("DVD Path: " + str(m.Path), self)
 						#printl("dvdName: " + str(dvdName), self)
 						#printl("dvdPath: " + str(dvdPath), self)

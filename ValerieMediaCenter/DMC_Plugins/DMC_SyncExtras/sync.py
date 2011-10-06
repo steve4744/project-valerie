@@ -263,7 +263,7 @@ class pyvalerie(Thread):
 			path = searchpath["directory"]
 			folderType = searchpath["type"]
 			useFolder = searchpath["usefolder"]
-			
+
 			if os.path.isdir(path) is False:
 				continue
 			
@@ -321,16 +321,22 @@ class pyvalerie(Thread):
 						
 					retCheckDuplicate= db.checkDuplicate(path, filename, extension)
 					mediaInDb = retCheckDuplicate["mediafile"]
+					# if never sync with success delete db entry and resync
+					if mediaInDb is not None and retCheckDuplicate["mediafile"].syncErrNo == MediaInfo.STATUS_INFONOTFOUND: # exist
+						db.deleteMedia(retCheckDuplicate["mediafile"].Id)
+						mediaInDb = None
+						
 					if mediaInDb is not None:
 						if retCheckDuplicate["reason"] == 1: # exist
 							m2 = retCheckDuplicate["mediafile"]
-							if m2.syncErrNo == 0:
+							if m2.syncErrNo == 0 and m2.MediaStatus != MediaInfo.STATUS_OK:
 								#printl("Sync - Duplicate Found :" + str(m2.Path) + "/" + str(m2.Filename) + "." + str(m2.Extension), self)	
 								key_value_dict = {}
 								key_value_dict["Id"] = m2.Id
 								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
 								#key_value_dict["syncErrNo"]    = 0
 								key_value_dict["syncFailedCause"] = u""
+								printl("Sync - Update Media 1", self)	
 								if not db.updateMediaWithDict(key_value_dict):
 									printl("Sync - Update Media 1 - Failed", self)	
 								
@@ -344,6 +350,7 @@ class pyvalerie(Thread):
 								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
 								#key_value_dict["syncErrNo"]    = 0
 								key_value_dict["syncFailedCause"] = u""
+								printl("Sync - Update Media 2", self)	
 								if not db.updateMediaWithDict(key_value_dict):
 									printl("Sync - Update Media 2 - Failed", self)	
 					
