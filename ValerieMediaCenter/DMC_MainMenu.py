@@ -191,13 +191,13 @@ class PVMC_Update(Screen):
 			self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
 			cmd = """
 BIN=""
-ipkg > /dev/null 2>/dev/null
+opkg > /dev/null 2>/dev/null
 if [ $? == "1" ]; then
- BIN="ipkg"
+ BIN="opkg"
 else
- opkg > /dev/null 2>/dev/null
+ ipkg > /dev/null 2>/dev/null
  if [ $? == "1" ]; then
-  BIN="opkg"
+  BIN="ipkg"
  fi
 fi
 echo "Binary: $BIN"
@@ -205,8 +205,13 @@ echo "Binary: $BIN"
 if [ $BIN != "" ]; then
  $BIN remove project-valerie
  echo "Cleaning up"
- rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie*
- $BIN install %s
+ rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/*
+ if [ $BIN == "opkg" ]; then
+   OPARAM="--force-overwrite"
+ else
+   OPARAM="-force-overwrite"
+ fi
+ $BIN install %s $OPARAM
 fi""" % str(remoteUrl)
 				
 			printl("cmd=" + str(cmd), self, "D")
