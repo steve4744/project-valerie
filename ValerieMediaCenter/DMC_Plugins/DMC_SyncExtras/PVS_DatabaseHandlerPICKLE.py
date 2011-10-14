@@ -64,6 +64,11 @@ class databaseHandlerPICKLE(object):
 	MediaFilesCommited=True
 	_dbMediaFiles	= None	# New table for other media.. or all in future...
 	
+	idxMoviesByImdb = {}
+	idxSeriesByTheTvDb = {}
+	idxMediaFilesByType = {}
+	
+		
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
 
@@ -135,6 +140,24 @@ class databaseHandlerPICKLE(object):
 				#self.createMediaFilesIndexes()
 				elapsed_time = time.time() - start_time
 				printl("Indexing Took : " + str(elapsed_time), self)
+
+
+	##not tested
+	#def createMediaFilesIndexes(self):		
+	#	printl("->", self, 10)
+	#	#self.idxMoviesByImdb = {}
+	#	#self.idxSeriesByTheTvDb = {}
+	#	self.idxMediaFilesByType = {}
+	#	
+	#	start_time = time.time()
+	#	for key in self._dbMediaFiles:
+	#		if self._checkKeyValid(key):		# only for Pickle
+	#			if self._dbMediaFiles[key].ImdbId == imdbid:
+	#		idx['serie']
+	#		self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
+	#	elapsed_time = time.time() - start_time
+	#	printl("Indexing Took : " + str(elapsed_time), self, 11)
+
 
 	def saveMediaFiles(self):		
 		printl("->", self, "S")
@@ -1225,6 +1248,7 @@ class databaseHandlerPICKLE(object):
 				
 	def _upgrade_MF_2(self):
 		#delete old failed items, not used #FAILEDSYNC = 0
+		self.MediaFilesCommited = False
 		records = self._getMediaFiles(0)
 		for key in records:
 			del(self._dbMediaFiles[key])	
@@ -1394,3 +1418,16 @@ class databaseHandlerPICKLE(object):
 			traceback.print_exc(file=sys.stdout)
 			print '-'*60
 
+
+	#not tested
+	#self.idxMoviesByImdb = {}
+	#self.idxSeriesByTheTvDb = {}
+	#def createMoviesIndexes(self):
+	#	printl("->", self, 10)
+	#	start_time = time.time()
+	#	self.idxMoviesByImdb = {}
+	#	for key in self._dbMovies:
+	#		if key != self.CONFIGKEY:		# only for Pickle
+	#			self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
+	#	elapsed_time = time.time() - start_time
+	#	printl("Indexing Took : " + str(elapsed_time), self, 11)
