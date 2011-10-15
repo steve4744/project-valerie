@@ -85,7 +85,7 @@ class DMC_TvShowLibrary(DMC_Library):
                 filter.append(("Genre", ("Genres", True), tmpGenres))
             
             if len(tmpAbc) > 0:
-                tmpAbc.sort()0
+                tmpAbc.sort()
                 filter.append(("Abc", ("Title", False, 1), tmpAbc))
             
             return (parsedLibrary, ("TheTvDbId", ), None, None, sort, filter)
