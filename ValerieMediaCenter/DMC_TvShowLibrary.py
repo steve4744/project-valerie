@@ -34,14 +34,16 @@ class DMC_TvShowLibrary(DMC_Library):
         global utf8ToLatin
         if utf8ToLatin is None:
             from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
-        
+
+	printl("", self)
+	printl("primaryKeyValuePair=" + str(primaryKeyValuePair), self)
+		
         # Diplay all TVShows
         if primaryKeyValuePair is None:
+	    printl("Series", self)
             parsedLibrary = []
-            #library = self.manager.get-All(Manager.TVSHOWS)
-	    library = self.manager.getSeriesValues()
-	    
-            
+            library = self.manager.getSeriesValues()
+
             tmpAbc = []
             tmpGenres = []
             for tvshow in library:
@@ -83,13 +85,14 @@ class DMC_TvShowLibrary(DMC_Library):
                 filter.append(("Genre", ("Genres", True), tmpGenres))
             
             if len(tmpAbc) > 0:
-                tmpAbc.sort()
+                tmpAbc.sort()0
                 filter.append(("Abc", ("Title", False, 1), tmpAbc))
             
             return (parsedLibrary, ("TheTvDbId", ), None, None, sort, filter)
         
         # Display the Episodes Menu
         elif primaryKeyValuePair.has_key("TheTvDbId") and primaryKeyValuePair.has_key("Season"):
+            printl("EpisodesOfSeason", self)
             parsedLibrary = []
             
             tvshow = self.manager.getElementByUsingPrimaryKey(Manager.TVSHOWS, \
@@ -147,6 +150,7 @@ class DMC_TvShowLibrary(DMC_Library):
         
         # Display the Seasons Menu
         elif primaryKeyValuePair.has_key("TheTvDbId"):
+            printl("Seasons", self)
             parsedLibrary = []
             tvshow = self.manager.getElementByUsingPrimaryKey(Manager.TVSHOWS, \
                 dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
