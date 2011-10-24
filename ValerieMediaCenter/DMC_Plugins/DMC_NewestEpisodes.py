@@ -190,4 +190,4 @@ def settings():
 if gAvailable is True:
     registerPlugin(Plugin(name=_("Newest Episodes"), fnc=settings, where=Plugin.SETTINGS))
     if config.plugins.pvmc.plugins.latestepisodes.enabled.value:
-        registerPlugin(Plugin(name=_("Newest Episodes"), start=DMC_NewestEpisodes, where=Plugin.MENU_VIDEOS))
+        registerPlugin(Plugin(name=_("Newest Episodes"), start=DMC_NewestEpisodes, where=Plugin.MENU_VIDEOS, weight=6))

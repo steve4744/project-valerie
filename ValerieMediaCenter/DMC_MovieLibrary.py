@@ -128,4 +128,4 @@ class DMC_MovieLibrary(DMC_Library):
         return args
 
 if gAvailable is True:
-    registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS))
+    registerPlugin(Plugin(name=_("Movies"), start=DMC_MovieLibrary, where=Plugin.MENU_VIDEOS, weight=1))

@@ -35,5 +35,5 @@ def settings():
 if gAvailable is True:
 	p = []
 	p.append(Plugin(name=_("DVDPlayer"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("DVDPlayer"), start=PVMC_DVDPlayer, where=Plugin.MENU_VIDEOS))
+	p.append(Plugin(name=_("DVDPlayer"), start=PVMC_DVDPlayer, where=Plugin.MENU_VIDEOS, weight=40))
 	registerPlugin(p)
