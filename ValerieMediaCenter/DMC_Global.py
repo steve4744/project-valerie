@@ -214,12 +214,15 @@ class Update(object):
 		latestRevision = self.getLatestRevision()
 		revisionUrl = self.getRevisionUrl()
 		
-		if installedRevision != latestRevision and revisionUrl != "":
-			printl("<-", self, "C")
-			return (latestRevision, revisionUrl, )
-		else:
-			printl("<-", self, "C")
-			return (None, None, )
+		try:
+			if int(installedRevision[1:]) < int(latestRevision[1:]) and revisionUrl != "":
+				printl("<-", self, "C")
+				return (latestRevision, revisionUrl, )
+		except Exception, ex:
+			printl("Exception: " + str(ex), self, "E")
+		
+		printl("<-", self, "C")
+		return (None, None, )
 	
 	# SETTER	
 	def _setBoxtype(self):
@@ -267,6 +270,10 @@ class Update(object):
 			manu = "Dreambox" 
 			model = "7025"
 			arch = "mipsel"  
+		elif box == "dm7020hd":
+			manu = "Dreambox"
+			model = "7020hd"
+			arch = "mipsel"
 		elif box == "elite":
 			manu = "Azbox"
 			model = "Elite"
