@@ -318,16 +318,26 @@ class Failed(Resource):
 		entries = WebData().getData("failed")
 
 		for entry in entries:
-			evtEdit = self._editFailed(entry)
-		
+			entryType = self._getEntryType(entry)
+			
+			evtFunctions = ""
+
+			if entryType is "isMovie":
+				evtFunctions += self._editFailedMovie(entry)
+			elif entryType is "isEpisode":
+				evtFunctions += self._editFailedEpisode(entry)
+			elif entryType is "isFailed":
+				evtFunctions += self._editFailedMovie(entry)
+				evtFunctions += self._editFailedEpisode(entry)
+			elif entryType is "isSerie":
+				evtFunctions = "" #should not happen
+				
 			tableBody += u"""   <tr>
 								<td>%s</td>
 								<td>%s</td>
-								<td>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
-								</td>
+								<td>%s</td>
 							    </tr>
-						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.syncFailedCause, evtEdit)
+						""" % (entry.Path + u"/" + entry.Filename + u"." + entry.Extension, entry.syncFailedCause, evtFunctions)
 				
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -335,22 +345,39 @@ class Failed(Resource):
 		return utf8ToLatin(finalOutput)
 		
 	############################################
-	def _editFailed (self, entry):
-		onclick  = "javascript:window.open('/mediaForm?"
-		
+	def _getEntryType (self, entry):
 		if entry.isTypeMovie():
-			onclick  += urlencode({'type':"isMovie"}) + "&"
+			return "isMovie"
 		elif entry.isTypeEpisode():
-			onclick  += urlencode({'type':"isEpisode"}) + "&"
-		else:
-			onclick  += urlencode({'type':"unknown"}) + "&"
-		
+			return "isEpsiode"
+		elif entry.isTypeSerie():
+			return "isSerie"
+		elif entry.isTypeUnknown():
+			return "isFailed"
+
+	
+	def _editFailedMovie (self, entry):
+		onclick  = "javascript:window.open('/mediaForm?"
+		onclick  += urlencode({'type':"isMovie"}) + "&"
 		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
 		onclick  += urlencode({'Id':entry.Id})  
 		onclick  += "', '_self');"
 		
-		return onclick
+		function = """<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/movie.png" alt="is Movie" title="is Movie" /></a>""" % (onclick)
 		
+		return function	
+		
+	def _editFailedEpisode (self, entry):
+		onclick  = "javascript:window.open('/mediaForm?"
+		onclick  += urlencode({'type':"isEpisode"}) + "&"
+		onclick  += urlencode({'mode':"showEditForm"}) + "&"		
+		onclick  += urlencode({'Id':entry.Id})  
+		onclick  += "', '_self');"
+		
+		function = """<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/episode.png" alt="is Episode" title="is Episode" /></a>""" % (onclick)
+		
+		return function	
+			
 ##########################
 # CLASS:
 ##########################		
