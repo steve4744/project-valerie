@@ -1099,6 +1099,8 @@ class MediaInfo(object):
 		return (self.getMediaType()==self.SERIE)
 	def isTypeEpisode(self):
 		return (self.getMediaType()==self.EPISODE)
+	def isTypeUnknown(self):
+		return (self.getMediaType()==self.UNKNOWN)
 		
 	def isStatusOk(self):
 		return (self.MediaStatus==self.STATUS_OK)

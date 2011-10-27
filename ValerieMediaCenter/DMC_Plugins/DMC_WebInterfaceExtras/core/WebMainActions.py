@@ -2,7 +2,7 @@
 # THIS FILE HAS ALL CLASSES AND FUNCTION THAT ARE NEEDED FOR THE WEBIF
 # TO PROVIDE CLICKABLE MAIN-ACTIONS
 ##############################################################################
-
+import os
 from urllib import urlencode
 from Components.config import config
 from twisted.web.resource import Resource
@@ -332,6 +332,13 @@ class Failed(Resource):
 			elif entryType is "isSerie":
 				evtFunctions = "" #should not happen
 				
+			file = entry.Path + u"/" + entry.Filename + u"." + entry.Extension
+			if not os.path.exists(str(file)):
+				#printl("FILE = " + file, self, "H")
+				evtFunctions += self._deleteFailedEntry(entry)	
+			else:
+				evtFunctions += self._showDeleteInfo(entry)	
+				
 			tableBody += u"""   <tr>
 								<td>%s</td>
 								<td>%s</td>
@@ -375,6 +382,25 @@ class Failed(Resource):
 		onclick  += "', '_self');"
 		
 		function = """<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/episode.png" alt="is Episode" title="is Episode" /></a>""" % (onclick)
+		
+		return function	
+		
+	def _deleteFailedEntry (self, entry):
+		onclick = "javascript:if (confirm('Are you sure to delete the selected failed entry?'))"
+		onclick += "{window.open('/action?type=isFailed&"
+		onclick += "mode=deleteMediaFromDb&"
+		onclick += "Id=" + str(entry.Id) + "&"
+		onclick += "ParentId=" + str(entry.ParentId)
+		onclick += "', '_self')} else { return};"
+		
+		function = """<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>""" % (onclick)
+		
+		return function	
+		
+	def _showDeleteInfo (self, entry):
+		onclick = "javascript: alert('You have to delete the file on your filesystem first!');"
+	
+		function = """<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>""" % (onclick)
 		
 		return function	
 			

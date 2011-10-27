@@ -471,6 +471,14 @@ class MediaActions(Resource):
 					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&showSave=true")
 				else:
 					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isTvShow")
+					
+			# delete failed		
+			elif type == "isFailed":
+				result = manager.deleteMedia(Manager.FAILED, id)
+				if result:
+					return WebHelper().redirectMeTo("/failed?showSave=true")
+				else:
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isTvShow")
 
 		##########################
 		# CHANGE ARTS SECTION
@@ -540,7 +548,10 @@ class MediaActions(Resource):
 				return WebHelper().redirectMeTo("/tvshows")
 			
 			elif request.args["return_to"][0] == "episodes":
-				return WebHelper().redirectMeTo("/episodes")		
+				return WebHelper().redirectMeTo("/episodes")
+			
+			elif request.args["return_to"][0] == "failed":
+				return WebHelper().redirectMeTo("/failed")
 
 ##########################
 # CLASS:
