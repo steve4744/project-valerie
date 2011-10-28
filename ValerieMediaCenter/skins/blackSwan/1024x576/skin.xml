@@ -54,12 +54,12 @@
     <widget name="backdrop" position="0,0" zPosition="0" size="1024,576" text="/hdd/valerie/media/defaultbackdrop.m1v" />
     <eLabel position="71,50" size="881,476" zPosition="1" backgroundColor="#20404040" transparent="0" />
     <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="0" size="1,1" />
-    <widget name="seenPng" zPosition="6" position="0,0" size="36,26" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1024x576/images/seen.png" />
-    <widget name="unseenPng" zPosition="6" position="0,0" size="36,26" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1024x576/images/unseen.png" />
+    <widget name="seenPng" zPosition="6" position="0,0" size="25,26" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1024x576/images/seen.png" />
+    <widget name="unseenPng" zPosition="6" position="0,0" size="25,26" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/1024x576/images/unseen.png" />
     <widget source="listview" render="Listbox" zPosition="3" position="85,145" size="312,312" scrollbarMode="showNever" transparent="0" backgroundColor="#10303030" backgroundColorSelected="#0018587A">
       <convert type="TemplatedMultiContent">
-            {"template": [ MultiContentEntryText(pos = (36,0), size = (261,26), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-            MultiContentEntryPixmapAlphaTest(pos = (0,0), size = (36,26), png = 4) ],
+            {"template": [ MultiContentEntryText(pos = (25,0), size = (273,26), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+            MultiContentEntryPixmapAlphaTest(pos = (0,0), size = (25,26), png = 4) ],
             "fonts": [gFont("Modern", 16)],
             "itemHeight": 26,
             "scrollbarMode": "showNever"
