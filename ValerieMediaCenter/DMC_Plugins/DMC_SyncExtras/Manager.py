@@ -33,9 +33,9 @@ from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 class Manager():
 
 	# make ID's equal in MediaInfo & Manager, hope there is nothing hardcoded...
-	MOVIES 	= 1 #0
-	TVSHOWS = 2 #1
-	TVSHOWSEPISODES = 3 #2
+	MOVIES 	= 1 
+	TVSHOWS = 2 
+	TVSHOWSEPISODES = 3 
 	MUSIC = 4
 
 	TVSHOWSSEASONS = 5

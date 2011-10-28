@@ -21,23 +21,55 @@
 ################################################################################
 # Function			Parameters		Return
 ################################################################################
-
+# getMediaValues		type
+#				order=None
+#				firstRecord=0
+#				numberOfRecords=9999999
+#
+# getMediaValuesForFolder	type
+#				path
+#				order=None
+#				firstRecord=0
+#				numberOfRecords=9999999
+#
+# insertMediaWithDict		key_value_dict
+# updateMediaWithDict		key_value_dict			#ID is Required
+# deleteMedia			id
+# getMediaPaths
+#################################   MOVIES   ################################# 
+# getMediaWithId		id
+# getMediaWithImdbId		imdbid
+# getMediaWithTheTvDbId		thetvdbid
+# getMediaCount			type
+# setMoviesSeen			id
+#################################   SERIES   ################################# 
+# getEpisodesCount		mediaId=None, season=None
+# insertSerie			media
+################################   EPISODES   ################################ 
+# getEpisode			id
+# getEpisodes			mediaId=None
+# getEpisodesWithTheTvDbId	theTvDbId, season=None
+#################################   FAILED   ################################# 
+# getFailed
+# getFailedCount
+# deleteMediaFilesNotOk	#NOT USED
+###################################  UTILS  ###################################
+# getDbDump(self):
+# dbIsCommited(self):
+# checkDuplicate(self, path, filename, extension):
+# transformGenres(self):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import cPickle   as pickle
-from   datetime import date
 import os
-from threading import Lock
 import time
-
-from Components.config import config
-
 import Config
 import DirectoryScanner
-#from FailedEntry import FailedEntry
-from MediaInfo import MediaInfo
 import Utf8
-
+from datetime  import date
+from threading import Lock
+from MediaInfo import MediaInfo
+from Components.config import config
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 	
 DB_SQLITE_LOADED = False
@@ -334,11 +366,10 @@ class Database(object):
 	def getFailedCount(self):
 		printl("->", self, "S")
 		return self.dbHandler.getMediaFailedCount()
-	
 
-	#def clearFailed(self):
-	#	printl("->", self, "S")
-	#	return self.dbHandler.deleteMediaFilesNotOk()
+	def deleteMediaFilesNotOk(self):
+		printl("->", self, "S")
+		return self.dbHandler.deleteMediaFilesNotOk()
 
 #
 ###################################  UTILS  ###################################

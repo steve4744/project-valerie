@@ -9,20 +9,100 @@
 #   
 #   Revisions:
 #   v0 - ../06/2011 - Zuki - Let's import the Pickle Interface from database.py
-#
 #   v1 - 15/07/2011 - Zuki - added Config Record to pickle's to save the structure version
 #			   - added Upgrade Database function's (to apply conversions)
-#
 #   v2 - 16/07/2011 - Zuki - upgrade database is now working
 #			     DB Patch 1 will update fields MediaInfo.MediaType
-#
 #   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
 #			     Changes to webif/sync by Don 	
+#   v  - 28/10/2011 - Zuki - Upgrade DB to v3 = Rename Old DB files
 #
-#   v
+################################################################################
+# Function			Parameters		Return
+################################################################################
+#	# PUBLIC #	#
+# getInstance
+# dbIsCommited
+# loadAll
+# saveMediaFiles			
+# getMediaWithId		id 				# always return a copy, never the directly with record
+# getMediaWithImdbId		imdbid				# always return a copy, never the directly with record
+# getMediaWithTheTvDbId		thetvdbid			# !!! WARNING !!! Will return the first Record, it's possible to have episodes with same tvdbid
+# getMediaValues		mediaType=None
+#				order=None
+#				firstRecord=0
+#				numberOfRecords=9999999
 #
+# getMediaValuesForFolder	mediaType
+#				path
+#				order=None
+#				firstRecord=0
+#				numberOfRecords=9999999
 #
+# getMediaCount			mediaType
+# getMediaPaths							#for folderlist
+# getEpisodesCount		parentId=None
+#				season=None
+#
+# getEpisodes			parentId=None
+#				season=None
+#
+# insertFakeSerie 		forSerie
+# insertMedia			media
+# insertMediaWithDict		key_value_dict
+# updateMediaWithDict		key_value_dict
+# deleteMedia			id
+# getMediaFailedValues	
+# deleteMediaFilesNotOk						# for sync - ALL mediafiles with status not ok
+# getMediaFailedCount
+# markAsMissing			id
+# getDbDump							# for debug 
+#
+#	# PRIVATE #	#
+# _loadMediaFilesDB		
+# _mediaFilesCheckLoaded
+# _checkKeyValid		key
+# _getNextKey			records				# Waiting for _db dict
+# _getNextId			records				# Waiting for _db dict
+# _getMediaKeyWithId		id
+# _getMediaKeyWithImdbId	imdbid
+# _getMediaKeyWithTheTvDbId	thetvdbid, mediaType=None	# !!! WARNING !!! Will return the first Record, it's possible to have episodes with same tvdbid
+# _getMediaWithKey		key				# may return directly the record, it's private
+# _getMediaFiles		mediaType=None, statusOk=True	# for dump only
+# _getMediaValuesWithFilter	mediaType=None	parentId=None
+#				season=None	path=None
+#				order=None	firstRecord=0
+#				numberOfRecords=9999999
+#				statusOk=True
+#
+###################################  UTILS  ###################################
+# _fillMediaInfo			m, key_value_dict
+# checkDuplicateMF		path, filename, extension
+# transformGenres
+############################  DB VERSION CONTROL  #############################
+# _getDBVersion			records
+# _setDBVersion			records, version
+############################  UPGRADE MEDIAFILES  #############################		
+# _upgradeMediaFiles		records
+# _upgrade_MF_1			records
+# convertGetMax
+# convertGetPos
+# _upgrade_MF_2
+# _upgrade_MF_3
+		
+## DB compability - used for upgrades only
+#######   MOVIES   
+# _loadMoviesDB		_moviesCheckLoaded
+# _loadSeriesEpisodesDB	_seriesCheckLoaded
+# _getAllSeries		_getAllEpisodes
+#######   UPGRADE 
+# _upgradeMovies	_upgrade_m_1	_upgrade_m_2
+# _upgradeSeries	_upgrade_s_1 	_upgrade_s_2
+# _upgradeEpisodes	_upgrade_e_1	_upgrade_e_2
+####### this is necessary because in the past the sync plugin was outside of valerie #
+# _checkForPreDbUpates	_modifyPickleDB
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
 
 import os
 import time
@@ -53,10 +133,11 @@ class databaseHandlerPICKLE(object):
 
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
+	STATS	   = -999997
 	CONVERTING = False
 	_ConvertPos = 0
 	_ConvertMax = 0
-	DB_VERSION_MEDIAFILES = 2
+	DB_VERSION_MEDIAFILES = 3
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
@@ -121,7 +202,7 @@ class databaseHandlerPICKLE(object):
 					self._dbMediaFiles = pickle.load(fd)
 					fd.close()
 				else:
-					self.setDBVersion(self._dbMediaFiles, 0)
+					self._setDBVersion(self._dbMediaFiles, 0)
 					
 				self._upgradeMediaFiles(self._dbMediaFiles)
 	
@@ -188,7 +269,7 @@ class databaseHandlerPICKLE(object):
 			self._loadMediaFilesDB()
 	
 	def _checkKeyValid(self, key):
-		return (key != self.CONFIGKEY and key != self.COUNTERID) 
+		return (key != self.CONFIGKEY and key != self.COUNTERID and key != self.STATS) 
 
 	# Waiting for _db dict
 	def _getNextKey(self, records):
@@ -589,7 +670,7 @@ class databaseHandlerPICKLE(object):
 		type = key_value_dict["MediaType"]
 		
 		m = MediaInfo()
-		self.fillMediaInfo(m, key_value_dict)
+		self._fillMediaInfo(m, key_value_dict)
 		
 		return self.insertMedia(m)
 		
@@ -610,7 +691,7 @@ class databaseHandlerPICKLE(object):
 			return False
 	
 		self.MediaFilesCommited = False
-		self.fillMediaInfo(m, key_value_dict)
+		self._fillMediaInfo(m, key_value_dict)
 		self._dbMediaFiles[key] = m
 		if self.AUTOCOMMIT:
 			self.saveMediaFiles()
@@ -641,14 +722,16 @@ class databaseHandlerPICKLE(object):
 	def getMediaFailedValues(self):	
 		return self._getMediaValuesWithFilter(None, None, None, None, None, 0, 9999999, False)
 	
-	#def deleteMediaFilesNotOk(self): # for sync - ALL mediafiles with status not ok
-	#	for key in self._dbMediaFiles:
-	#		if self._checkKeyValid(key):
-	#			if self._dbMediaFiles[key].isStatusOk() != 0:#err
-	#				self.deleteMedia(None, self._dbMediaFiles[key].Id)
-	#	if self.AUTOCOMMIT:
-	#		self.saveMediaFiles()
-	#	return True	
+	def deleteMediaFilesNotOk(self): # for sync - ALL mediafiles with status not ok
+		records = self._getMediaFiles(None, False)
+		
+		for key in records:
+			if self._checkKeyValid(key):
+				if not records[key].isStatusOk():#err
+					self.deleteMedia(records[key].Id)
+		if self.AUTOCOMMIT:
+			self.saveMediaFiles()
+		return True	
 
 	def getMediaFailedCount(self):
 		printl("->", self, "S")
@@ -889,144 +972,10 @@ class databaseHandlerPICKLE(object):
 		
 		return True			
 
-#
-#################################   MOVIES   ################################# 
-#
-	def _loadMoviesDB(self):
-		printl("->", self, "S")
-		if self._dbMovies is None:
-			start_time = time.time()
-			self._dbMovies = {}
-			try:
-				if os.path.exists(self.MOVIESDB):
-					#preUpdates
-					#todo should be executed only once
-					self._checkForPreDbUpates(self.MOVIESDB)
-					fd = open(self.MOVIESDB, "rb")
-					self._dbMovies = pickle.load(fd)
-					fd.close()
-					#postUpdates
-					self._upgradeMovies(self._dbMovies)
-				else:
-					self.setDBVersion(self._dbMovies, self.DB_VERSION_MOVIES)
-	
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-					
-			elapsed_time = time.time() - start_time
-			printl("LoadMovies Took : " + str(elapsed_time), self, 11)
-					
-			if self.USE_INDEXES:
-				start_time = time.time()
-				self.createMoviesIndexes()
-				elapsed_time = time.time() - start_time
-				printl("Indexing Took : " + str(elapsed_time), self, 11)
-			
-			# Temporary to test ID's
-			for movieKey in self._dbMovies:
-				if movieKey != self.CONFIGKEY:
-					self.LastID_M+=1
-					self._dbMovies[movieKey].Id = self.LastID_M
-					
-	def _moviesCheckLoaded(self):
-		#printl("->", self, "S")
-		if self._dbMovies is None:
-			printl("Movies database not loaded yet. Loading ... ", self, "H")
-			self._loadMoviesDB()
-
-#	
-#################################   SERIES   ################################# 
-#
-
-	def _loadSeriesEpisodesDB(self):
-		printl("->", self, "S")
-		start_time = time.time()
-		if self._dbSeries is None or self._dbEpisodes is None:
-			self._dbSeries 	 = self._getAllSeries()
-			self._dbEpisodes = self._getAllEpisodes()
-			if self.USE_INDEXES:
-				self.createSeriesIndexes()
-				
-		elapsed_time = time.time() - start_time
-		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
-
-	def _getAllSeries(self):
-		printl("->", self, "S")
-		records = {}
-		try:
-			if os.path.exists(self.TVSHOWSDB):
-				#preUpdates
-				#todo should be executed only once
-				self._checkForPreDbUpates(self.TVSHOWSDB)
-				fd = open(self.TVSHOWSDB, "rb")
-				records = pickle.load(fd)
-				fd.close()
-				self._upgradeSeries(records)
-			else:
-				self.setDBVersion(records, self.DB_VERSION_SERIES)
-		
-			# Temporary to test ID's
-			for key in records:
-				if key != self.CONFIGKEY:
-					self.LastID_S+=1
-					records[key].Id = self.LastID_S
-				
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-		
-		return (records)
-
-	def _getAllEpisodes(self):
-		printl("->", self, "S")
-		records = {}
-		try:
-			if os.path.exists(self.EPISODESDB):
-				#preUpdates
-				#todo should be executed only once
-				self._checkForPreDbUpates(self.EPISODESDB)
-				fd = open(self.EPISODESDB, "rb")
-				records = pickle.load(fd)
-				fd.close()
-				self._upgradeEpisodes(records)
-			else:
-				self.setDBVersion(records, self.DB_VERSION_EPISODES)
-			
-			# Temporary to test ID's
-			for serieKey in records:
-				if serieKey != self.CONFIGKEY:
-					for season in records[serieKey]:
-						for episode in records[serieKey][season]:
-							self.LastID_E+=1
-							records[serieKey][season][episode].Id = self.LastID_E
-							records[serieKey][season][episode].ParentId = self._dbSeries[serieKey].Id
-
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-
-		return (records)
-		
-	#Call when data is needed, to verify if is loaded
-	def _seriesCheckLoaded(self):
-		#printl("->", self, "S")
-		if self._dbSeries is None:
-			printl("TvShows database not loaded yet. Loading ... ", self, "H")
-			self._loadSeriesEpisodesDB()
 
 ###################################  UTILS  ###################################
 
-	def fillMediaInfo(self, m, key_value_dict):
+	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
 		intFields = ['Id','ParentId','Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Episode']
 		
@@ -1138,7 +1087,7 @@ class databaseHandlerPICKLE(object):
 
 	
 ############################  DB VERSION CONTROL  #############################
-	def getDBVersion(self, records):
+	def _getDBVersion(self, records):
 		printl("->", self, "S")
 		if records.has_key(self.CONFIGKEY):
 			return records[self.CONFIGKEY]
@@ -1146,7 +1095,7 @@ class databaseHandlerPICKLE(object):
 			printl("DB without version")
 			return 0
 		
-	def setDBVersion(self, records, version):
+	def _setDBVersion(self, records, version):
 		printl("->", self, "S")
 		records[self.CONFIGKEY] = version
 		printl("DB version set to "+ str(version))
@@ -1154,7 +1103,7 @@ class databaseHandlerPICKLE(object):
 ############################  UPGRADE MEDIAFILES  #############################		
 	def _upgradeMediaFiles(self, records):
 		#printl("->", self, "S")
-		currentDBVersion = self.getDBVersion(records)
+		currentDBVersion = self._getDBVersion(records)
 		printl("DBVersion: " + str(currentDBVersion))
 		if self.DB_VERSION_MEDIAFILES == currentDBVersion:
 			printl("DB already updated!")
@@ -1165,13 +1114,13 @@ class databaseHandlerPICKLE(object):
 				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
 					self._upgrade_MF_1(records)
-					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==2:
 					self._upgrade_MF_2()
-					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==3:
 					self._upgrade_MF_3()
-#					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==4:
 					pass
 				elif updateToVersion==5:
@@ -1259,10 +1208,145 @@ class databaseHandlerPICKLE(object):
 		os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
 		os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
 		
+#
+#################################   MOVIES   ################################# 
+#
+	def _loadMoviesDB(self):
+		printl("->", self, "S")
+		if self._dbMovies is None:
+			start_time = time.time()
+			self._dbMovies = {}
+			try:
+				if os.path.exists(self.MOVIESDB):
+					#preUpdates
+					#todo should be executed only once
+					self._checkForPreDbUpates(self.MOVIESDB)
+					fd = open(self.MOVIESDB, "rb")
+					self._dbMovies = pickle.load(fd)
+					fd.close()
+					#postUpdates
+					self._upgradeMovies(self._dbMovies)
+				else:
+					self._setDBVersion(self._dbMovies, self.DB_VERSION_MOVIES)
+	
+			except Exception, ex:
+				print ex
+				print '-'*60
+				import sys, traceback
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
+					
+			elapsed_time = time.time() - start_time
+			printl("LoadMovies Took : " + str(elapsed_time), self, 11)
+					
+			if self.USE_INDEXES:
+				start_time = time.time()
+				self.createMoviesIndexes()
+				elapsed_time = time.time() - start_time
+				printl("Indexing Took : " + str(elapsed_time), self, 11)
+			
+			# Temporary to test ID's
+			for movieKey in self._dbMovies:
+				if movieKey != self.CONFIGKEY:
+					self.LastID_M+=1
+					self._dbMovies[movieKey].Id = self.LastID_M
+					
+	def _moviesCheckLoaded(self):
+		#printl("->", self, "S")
+		if self._dbMovies is None:
+			printl("Movies database not loaded yet. Loading ... ", self, "H")
+			self._loadMoviesDB()
+
+#	
+#################################   SERIES   ################################# 
+#
+
+	def _loadSeriesEpisodesDB(self):
+		printl("->", self, "S")
+		start_time = time.time()
+		if self._dbSeries is None or self._dbEpisodes is None:
+			self._dbSeries 	 = self._getAllSeries()
+			self._dbEpisodes = self._getAllEpisodes()
+			if self.USE_INDEXES:
+				self.createSeriesIndexes()
+				
+		elapsed_time = time.time() - start_time
+		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
+
+	def _getAllSeries(self):
+		printl("->", self, "S")
+		records = {}
+		try:
+			if os.path.exists(self.TVSHOWSDB):
+				#preUpdates
+				#todo should be executed only once
+				self._checkForPreDbUpates(self.TVSHOWSDB)
+				fd = open(self.TVSHOWSDB, "rb")
+				records = pickle.load(fd)
+				fd.close()
+				self._upgradeSeries(records)
+			else:
+				self._setDBVersion(records, self.DB_VERSION_SERIES)
+		
+			# Temporary to test ID's
+			for key in records:
+				if key != self.CONFIGKEY:
+					self.LastID_S+=1
+					records[key].Id = self.LastID_S
+				
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		
+		return (records)
+
+	def _getAllEpisodes(self):
+		printl("->", self, "S")
+		records = {}
+		try:
+			if os.path.exists(self.EPISODESDB):
+				#preUpdates
+				#todo should be executed only once
+				self._checkForPreDbUpates(self.EPISODESDB)
+				fd = open(self.EPISODESDB, "rb")
+				records = pickle.load(fd)
+				fd.close()
+				self._upgradeEpisodes(records)
+			else:
+				self._setDBVersion(records, self.DB_VERSION_EPISODES)
+			
+			# Temporary to test ID's
+			for serieKey in records:
+				if serieKey != self.CONFIGKEY:
+					for season in records[serieKey]:
+						for episode in records[serieKey][season]:
+							self.LastID_E+=1
+							records[serieKey][season][episode].Id = self.LastID_E
+							records[serieKey][season][episode].ParentId = self._dbSeries[serieKey].Id
+
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+
+		return (records)
+		
+	#Call when data is needed, to verify if is loaded
+	def _seriesCheckLoaded(self):
+		#printl("->", self, "S")
+		if self._dbSeries is None:
+			printl("TvShows database not loaded yet. Loading ... ", self, "H")
+			self._loadSeriesEpisodesDB()
+
 ############################    UPGRADE MOVIES    #############################
 	def _upgradeMovies(self, records):
 		printl("->", self, "S")
-		currentDBVersion = self.getDBVersion(records)
+		currentDBVersion = self._getDBVersion(records)
 		printl("DBVersion: " + str(currentDBVersion))
 		if self.DB_VERSION_MOVIES == currentDBVersion:
 			printl("DB already updated!")
@@ -1273,11 +1357,11 @@ class databaseHandlerPICKLE(object):
 				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
 					self._upgrade_m_1(records)
-					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 					
 				elif updateToVersion==2:
 					#self._upgrade_m_2(records)
-					#self.setDBVersion(records, updateToVersion)
+					#self._setDBVersion(records, updateToVersion)
 					pass
 				elif updateToVersion==3:
 					pass		
@@ -1303,7 +1387,7 @@ class databaseHandlerPICKLE(object):
 ############################    UPGRADE SERIES    #############################
 	def _upgradeSeries(self, records):
 		printl("->", self, "S")
-		currentDBVersion = self.getDBVersion(records)
+		currentDBVersion = self._getDBVersion(records)
 		printl("DBVersion: " + str(currentDBVersion))
 		if self.DB_VERSION_SERIES == currentDBVersion:
 			printl("DB already updated!")
@@ -1314,11 +1398,11 @@ class databaseHandlerPICKLE(object):
 				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
 					self._upgrade_s_1(records) 
-					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 					
 				elif updateToVersion==2:
 					#self._upgrade_s_2(records)
-					#self.setDBVersion(records, updateToVersion)
+					#self._setDBVersion(records, updateToVersion)
 					pass
 				elif updateToVersion==3:
 					pass
@@ -1340,7 +1424,7 @@ class databaseHandlerPICKLE(object):
 ############################    UPGRADE EPISODES    #############################
 	def _upgradeEpisodes(self, records):
 		printl("->", self, "S")
-		currentDBVersion = self.getDBVersion(records)
+		currentDBVersion = self._getDBVersion(records)
 		printl("DBVersion: " + str(currentDBVersion))
 		if self.DB_VERSION_EPISODES == currentDBVersion:
 			printl("DB already updated!")
@@ -1351,11 +1435,11 @@ class databaseHandlerPICKLE(object):
 				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==1:
 					self._upgrade_e_1(records)
-					self.setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 				
 				elif updateToVersion==2:
 					##self._upgrade_e_2(records)
-					##self.setDBVersion(records, updateToVersion)					
+					##self._setDBVersion(records, updateToVersion)					
 					pass
 				elif updateToVersion==3:
 					pass

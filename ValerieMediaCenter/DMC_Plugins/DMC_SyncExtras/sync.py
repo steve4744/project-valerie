@@ -213,7 +213,8 @@ class pyvalerie(Thread):
 
 		db = Database().getInstance()
 		
-		#db.clearFailed()
+		#temporarly - there are only failed, missing webif
+		#db.deleteMediaFilesNotOk()
 		
 		if self.mode != self.FAST and SyncConfig().getInstance().get("delete") is True:
 			db.deleteMissingFiles()
@@ -431,16 +432,19 @@ class pyvalerie(Thread):
 						printl("Get IMDb ID from title using searchString: " + elementInfo.SearchString, self, "I")
 						tmp = MobileImdbComProvider().getMoviesByTitle(elementInfo)
 						if tmp is None:
-							printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
-							#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
-							#elementInfo.MediaType = MediaInfo.FAILEDSYNC
-							elementInfo.MediaType = MediaInfo.UNKNOWN # avoid create serie
-							elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
-							elementInfo.syncErrNo   = 3
-							elementInfo.syncFailedCause = u"Info Not Found"# cause
-							db.add(elementInfo)
-							continue
-						elementInfo = tmp
+							# validate if user use valerie.info with imdb or tvdb
+							if (elementInfo.isTypeSerie() and elementInfo.TheTvDbId == MediaInfo.TheTvDbIdNull) or (elementInfo.isTypeMovie() and elementInfo.ImdbId == MediaInfo.ImdbIdNull): 
+								printl("=> nothing found :-( " + elementInfo.SearchString, self, "I")
+								#db.addFailed(FailedEntry(path, filename, extension, FailedEntry.UNKNOWN))
+								#elementInfo.MediaType = MediaInfo.FAILEDSYNC
+								elementInfo.MediaType = MediaInfo.UNKNOWN # avoid create serie
+								elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
+								elementInfo.syncErrNo   = 3
+								elementInfo.syncFailedCause = u"Info Not Found"# cause
+								db.add(elementInfo)
+								continue
+						else:
+							elementInfo = tmp
 						printl("Finally about to sync element... ", self, "I")
 						results = Sync().syncWithId(elementInfo)
 					else:
