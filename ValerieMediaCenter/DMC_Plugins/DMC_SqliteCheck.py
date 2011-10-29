@@ -27,8 +27,10 @@ class SqliteCheck(Thread):
 			
 			if self.checkSqlite() is True:
 				config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value = -1
+				config.plugins.pvmc.plugins.sqlitecheck.nextcheck.save()
 		else:
 			config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value = -1
+			config.plugins.pvmc.plugins.sqlitecheck.nextcheck.save()
 
 	def checkSqlite(self):
 		try:
@@ -45,10 +47,12 @@ class SqliteCheck(Thread):
 def sqliteCheck(session):
 	if config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value == 0:
 		config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value = 100
+		config.plugins.pvmc.plugins.sqlitecheck.nextcheck.save()
 		thread = SqliteCheck()
 		thread.start()
 	elif config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value != -1:
 		config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value = config.plugins.pvmc.plugins.sqlitecheck.nextcheck.value - 1
+		config.plugins.pvmc.plugins.sqlitecheck.nextcheck.save()
 
 if gAvailable is True:
 	p = []
