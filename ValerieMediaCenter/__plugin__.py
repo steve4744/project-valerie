@@ -99,10 +99,10 @@ class Plugin():
 	start = None
 	fnc   = None
 	where = None
-	weight = 0
+	weight = 100
 	supportStillPicture = False
 
-	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False, weight=0):
+	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False, weight=100):
 		self.name = name
 		if desc is None:
 			self.desc = self.name
