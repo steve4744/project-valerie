@@ -19,6 +19,7 @@ import os
 Manager = None
 MediaInfo = None
 utf8ToLatin = None
+stringToUtf8 = None
 MediaInfo = None
 MobileImdbComProvider = None
 # --- LAZY IMPORTS ---
@@ -331,9 +332,12 @@ class MediaActions(Resource):
 	def action(self, request):
 		global Manager
 		global utf8ToLatin
+		global stringToUtf8
 		global MediaInfo
 		if Manager is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
+		if stringToUtf8 is None:
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import stringToUtf8
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		if MediaInfo is None:
@@ -398,13 +402,13 @@ class MediaActions(Resource):
 			printl("mode (alterMediaInDb)", self, "I")
 			
 			manager = Manager()
-			type = request.args["type"][0]
-			Id = request.args["Id"][0]
-			parentId = request.args["ParentId"][0]
+			type = stringToUtf8(request.args["type"][0])
+			Id = stringToUtf8(request.args["Id"][0])
+			parentId = stringToUtf8(request.args["ParentId"][0])
 			
 			key_value_dict = {}				
 			for key in request.args.keys():
-				key_value_dict[key] = request.args[key][0]
+				key_value_dict[key] = stringToUtf8(request.args[key][0])
 			
 			if not "Seen" in request.args:
 				key_value_dict["Seen"] = "0"
