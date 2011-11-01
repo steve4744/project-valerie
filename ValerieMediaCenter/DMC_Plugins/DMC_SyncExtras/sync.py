@@ -441,7 +441,7 @@ class pyvalerie(Thread):
 								elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
 								elementInfo.syncErrNo   = 3
 								elementInfo.syncFailedCause = u"Info Not Found"# cause
-								db.add(elementInfo)
+								db.insertMedia(elementInfo)
 								continue
 						else:
 							elementInfo = tmp
@@ -457,7 +457,7 @@ class pyvalerie(Thread):
 							result.MediaStatus = MediaInfo.STATUS_OK
 							result.syncErrNo   = 0
 							result.syncFailedCause = u""
-							ret = db.add(result)
+							ret = db.insertMedia(result)
 							if ret["status"] > 0:
 								#result.Title = self.encodeMe(result.Title)
 								if result.isTypeMovie():
@@ -477,7 +477,7 @@ class pyvalerie(Thread):
 								#	result.syncFailedCause = "DB Insert Error ??"
 								result.MediaType = MediaInfo.FAILEDSYNC
 								try:
-									db.add(result)
+									db.insertMedia(result)
 								except Exception, ex:									
 									printl("DB Insert Error ??", self, "W")
 					

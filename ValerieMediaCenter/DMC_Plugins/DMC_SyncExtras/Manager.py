@@ -145,40 +145,30 @@ class Manager():
 		return None
 
 	#not used anymore - replacement: update/insert media
-	def replace(self, oldElement, newElement):
-		printl("", self)
-		# not consistent ...todo: update serie
-		if oldElement is not None:
-			printl("oldElement=" + str(oldElement), self)
-			if type(oldElement) is MediaInfo:
-				printl("RM " + str(self.db.remove(oldElement)), self)
-			#else:
-			#	self.db.removeFailed(oldElement)
-		
-		if newElement is not None:
-			if len(newElement) == 2:
-				printl("newElement=" + str(newElement[0]), self)
-				printl("ADD " + str(self.db.add(newElement[0])), self)
-				printl("newElement=" + str(newElement[1]), self)
-				printl("ADD " + str(self.db.add(newElement[1])), self)
-			else:
-				printl("newElement=" + str(newElement[0]), self)
-				printl("ADD " + str(self.db.add(newElement[0])), self)
+	#def replace(self, oldElement, newElement):
+	#	printl("", self)
+	#	# not consistent ...todo: update serie
+	#	if oldElement is not None:
+	#		printl("oldElement=" + str(oldElement), self)
+	#		if type(oldElement) is MediaInfo:
+	#			printl("RM " + str(self.db.remove(oldElement)), self)
+	#		#else:
+	#		#	self.db.removeFailed(oldElement)
+	#	
+	#	if newElement is not None:
+	#		if len(newElement) == 2:
+	#			printl("newElement=" + str(newElement[0]), self)
+	#			printl("ADD " + str(self.db.add(newElement[0])), self)
+	#			printl("newElement=" + str(newElement[1]), self)
+	#			printl("ADD " + str(self.db.add(newElement[1])), self)
+	#		else:
+	#			printl("newElement=" + str(newElement[0]), self)
+	#			printl("ADD " + str(self.db.add(newElement[0])), self)
 
-	def remove(self, oldElement, blacklist=True):
-		printl("", self)
-		if oldElement is not None:
-			printl("oldElement=" + str(oldElement), self)
-			if type(oldElement) is MediaInfo:
-				b = self.db.remove(oldElement)
-				printl("RM " + str(b), self)
-				if b and blacklist:
-					Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
-					Blacklist.save()
-			#else:
-			#	self.db.removeFailed(oldElement)
-			#	Blacklist.add(oldElement.Filename + u"." + oldElement.Extension)
-			#	Blacklist.save()
+# self.dbHandler.deleteMedia(media.Id)
+
+	def remove(self, media, blacklist=True):
+		self.deleteMedia(media.Id)
 
 	def getElementByUsingPrimaryKey(self, type, primary_key):
 		printl("", self)
@@ -286,7 +276,7 @@ class Manager():
 			return False
 		return True
 	
-	def deleteMedia(self, type, id):
+	def deleteMedia(self, id):
 		if not self.db.deleteMedia(id):
 			printl("Delete Media - Failed", self)	
 			return False
@@ -372,8 +362,8 @@ class Manager():
 	def getEpisodes(self, id):
 		return self.db.getEpisodes(id)
 	
-	def getEpisodesCount(self, mediaId=None, season=None):
-		return self.db.getEpisodesCount(mediaId, season)
+	def getEpisodesCount(self, parentId=None, season=None):
+		return self.db.getMediaCount(MediaInfo.EPISODE, parentId, season)
 
 	def getEpisode(self, id):
 		return self.db.getEpisode(id)

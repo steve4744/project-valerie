@@ -966,7 +966,8 @@ class ProjectValerieSyncManagerInfo(Screen):
 
 	def delete(self):
 		printl("", self)
-		self.manager.remove(self.element)
+		self.manager.deleteMedia(self.element.Id)
+		
 		self.element = None
 		self.save()
 
@@ -1224,6 +1225,7 @@ class ProjectValerieSyncManager(Screen):
 				testElement = newElement[0]
 			if testElement is not self.oldElement:
 				printl("elementChanged - Changed", self)
+				#### will crash... repalce with insert/update media
 				self.manager.replace(self.oldElement, newElement)
 				index = self["listview"].getIndex()
 				self.load(self.currentCategory, self.currentParam)

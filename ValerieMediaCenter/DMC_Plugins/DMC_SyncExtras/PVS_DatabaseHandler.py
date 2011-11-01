@@ -43,7 +43,6 @@
 # getMediaCount			type
 # setMoviesSeen			id
 #################################   SERIES   ################################# 
-# getEpisodesCount		mediaId=None, season=None
 # insertSerie			media
 ################################   EPISODES   ################################ 
 # getEpisode			id
@@ -110,7 +109,7 @@ gDatabaseMutex = Lock()
 
 class Database(object):
 	DB_NONE   = 0
-	DB_TXD    = 2
+	DB_TXD    = 2 #Not Used
 	DB_PICKLE = 3
 	DB_SQLITE = 4
 
@@ -146,8 +145,8 @@ class Database(object):
 		if self.USE_DB_TYPE == self.DB_PICKLE:			
 			self.dbHandler = databaseHandlerPICKLE().getInstance()
 		
-		if self.USE_DB_TYPE == self.DB_TXD:
-			self.dbHandler = databaseHandlerTXD().getInstance()
+		#if self.USE_DB_TYPE == self.DB_TXD:
+		#	self.dbHandler = databaseHandlerTXD().getInstance()
 	
 	def __str__(self):
 		printl("->", self, "S")	
@@ -156,7 +155,7 @@ class Database(object):
 					u" " + \
 					unicode(self.getMediaCount(MediaInfo.SERIE)) + \
 					u" " + \
-					unicode(self.getEpisodesCount())
+					unicode(self.getMediaCount(MediaInfo.EPISODE))
 			return Utf8.utf8ToLatin(rtv)
 		except Exception, ex:
 			printl("Error retriving _str_: "+ str(ex), self, "W")
@@ -164,22 +163,36 @@ class Database(object):
 
 	def importDataToSql (self):
 		printl("->", self, "S")
-		#try:
-		#	printl("Importing Data", self)
-		#	#self.preload()	# Load from PICKLE
-		#	dbHandlerPickle = databaseHandlerPICKLE().getInstance()
-		#	#dbHandlerSql 	= databaseHandlerSQL().getInstance("ImportDataToSql")
-		#	self.dbHandler.overwriteDB(dbHandlerPickle.get_Movies(),dbHandlerPickle.get_Series(),dbHandlerPickle.get_SeriesEpisodes())
-		#	
-		#	self.save()  	# save to Database SQL
+		try:
+			printl("Importing Data", self)
+			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
+			records = dbHandlerPickle.getMediaValues()
+		
+			start_time = time.time()			
+			cntNew = 0
+			for m in records:
+				self.cleanValuesOfMedia(m)
+				self.dbHandler.insertMedia(m)
+				cntNew += 1
+				
+			printl("Movies Count: "+str(len(records)) + " New: " + str(cntNew) )				
+			self.dbHandler.commit()
+			elapsed_time = time.time() - start_time
+			printl("Took (SQL MediaFiles): " + str(elapsed_time), self)
 		#	try:
 		#		pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
 		#	except Exception, ex:
 		#		printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
-		#except Exception, ex:
-		#	printl("Failed Import to SQL! Reloading Pickles Ex: " + str(ex), __name__, "E")
-		#	self.dbHandler = databaseHandlerPICKLE().getInstance()
-		#	#self.reload()	# Load from PICKLE
+		except Exception, ex:
+			printl("Failed Import to SQL! Reloading Pickle. Ex: " + str(ex), __name__, "E")
+			self.USE_DB_TYPE    	= self.DB_PICKLE
+			__DB_PATH           = config.plugins.pvmc.configfolderpath.value
+			__DB_SQL_FILENAME   = "valerie.db"
+			sqlFile = __DB_PATH+ __DB_SQL_FILENAME
+			if os.path.exists(sqlFile):
+				os.remove(sqlFile)
+			#self.reload()	# Load from PICKLE
+		printl("<-", self)
 			
 
 	def setDBType(self, version):
@@ -237,19 +250,17 @@ class Database(object):
 				self.dbHandler.markAsMissing(m.Id) 
 		#printl("Missing: " + str(len(listMissing)), self)
 
-	def remove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
-		printl("->", self, "S")
-		printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
+	#def r.emove(self, media, is_Movie=False, is_Serie=False, is_Episode=False):
+	#	printl("->", self, "S")
+	#	printl("is Movie=" + str(media.isTypeMovie()) + " is Serie=" + str(media.isTypeSerie()) + " is Episode=" + str(media.isTypeEpisode()), self)
 
-		return self.dbHandler.deleteMedia(media.Id)
-	
 	##
 	# Adds media files to the db
 	# @param media: The media file
 	# @return: mediaID in exist/inserted  or  -1 in case of error
-	def add(self, media):
-		printl("->", self, "S")
-		return self.dbHandler.insertMedia(media)
+	#def add(self, media):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.insertMedia(media)
 
 	def save(self):
 		printl("->", self, "S")
@@ -284,6 +295,10 @@ class Database(object):
 	#
 	# DML statements
 	#	
+	def insertMedia(self, media):
+		printl("->", self, "S")
+		return self.dbHandler.insertMedia(media)
+
 	def insertMediaWithDict(self, key_value_dict):
 		printl("->", self, "S")
 		return self.dbHandler.insertMediaWithDict(key_value_dict)
@@ -322,9 +337,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.getMediaWithTheTvDbId(thetvdbid)
 
-	def getMediaCount(self, type):
+	def getMediaCount(self, mediaType, parentId=None, season=None):
 		printl("->", self, "S")
-		return self.dbHandler.getMediaCount(type)	
+		return self.dbHandler.getMediaCount(mediaType, parentId, season)	
 	
 	def setMoviesSeen(self, id):
 		printl("->", self, "S")
@@ -332,9 +347,6 @@ class Database(object):
 #	
 #################################   SERIES   ################################# 
 #
-	def getEpisodesCount(self, mediaId=None, season=None):
-		return self.dbHandler.getEpisodesCount(mediaId, season)
-	
 	# DML statements
 	def insertSerie(self, media):
 		printl("->", self, "S")
@@ -387,7 +399,58 @@ class Database(object):
 	def transformGenres(self):
 		printl("->", self, "S")
 		self.dbHandler.transformGenres()
-	
+
+	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+	# Clean the default values to insert on sql only correct values
+	def cleanValuesOfMedia(self, media):		
+		if media.ImdbId == u"tt0000000":
+			media.ImdbId = u"";
+		if media.TheTvDbId == u"0":
+			media.TheTvDbId = u"";
+		if media.TmDbId == u"0":
+			media.TmDbId = u"";
+		if media.Year == -1:
+			media.Year = None;
+		if media.Month == -1:
+			media.Month = None;
+		if media.Day == -1:
+			media.Day = None;
+		if media.Season == -1:
+			media.Season = None;
+		if media.Episode == -1:
+			media.Episode = None;
+		if media.Runtime == 0:
+			media.Runtime = None;
+		if media.Popularity == 0:
+			media.Popularity = None;
+		if media.MediaType is None:
+			media.MediaType = MediaInfo.UNKNOWN;
+			
+		# ERR title... don't come in UTF-8
+		if not isinstance(media.Path, unicode):
+			media.Path = Utf8.stringToUtf8(media.Path)
+		if not isinstance(media. Filename, unicode):
+			media.Filename = Utf8.stringToUtf8(media.Filename)
+		if not isinstance(media.Extension, unicode):
+			media.Extension = Utf8.stringToUtf8(media.Extension)
+		if not isinstance(media.Title, unicode):
+			media.Title = Utf8.stringToUtf8(media.Title)
+		if not isinstance(media.Resolution, unicode):
+			media.Resolution = Utf8.stringToUtf8(media.Resolution)
+		if not isinstance(media.Sound, unicode):
+			media.Sound = Utf8.stringToUtf8(media.Sound)
+		if not isinstance(media.Plot, unicode):
+			media.Plot = Utf8.stringToUtf8(media.Plot)
+		if not isinstance(media.Genres, unicode):
+			media.Genres = Utf8.stringToUtf8(media.Genres)
+		if not isinstance(media.Tag, unicode):
+			media.Tag = Utf8.stringToUtf8(media.Tag)
+		if not isinstance(media.Tag, unicode):
+			media.Tag = Utf8.stringToUtf8(media.Tag)
+#		if not isinstance(media.Disc, unicode):
+#			media.Disc = Utf8.stringToUtf8(media.Disc)		
+#	syncFailedCause = u""
+
 #	
 ############################################################################## 
 #

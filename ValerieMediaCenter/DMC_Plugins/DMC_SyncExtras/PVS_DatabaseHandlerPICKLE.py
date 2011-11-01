@@ -41,8 +41,6 @@
 #
 # getMediaCount			mediaType
 # getMediaPaths							#for folderlist
-# getEpisodesCount		parentId=None
-#				season=None
 #
 # getEpisodes			parentId=None
 #				season=None
@@ -542,11 +540,11 @@ class databaseHandlerPICKLE(object):
 
 		return listToReturn
 
-	def getMediaCount(self, mediaType):
+	def getMediaCount(self, mediaType, parentId=None, season=None):
 		printl("->", self, "S")
 		self._mediaFilesCheckLoaded()
-		return len(self._getMediaFiles(mediaType))
-
+		return len(self._getMediaValuesWithFilter(mediaType, parentId, season))
+	
 	#for folderlist
 	def getMediaPaths(self):
 		printl("->", self, "S")
@@ -564,11 +562,11 @@ class databaseHandlerPICKLE(object):
 		return list # return always a copy, user don't use db
 
 
-	def getEpisodesCount(self, parentId=None, season=None):
-		printl("->", self, "S")
-		self._mediaFilesCheckLoaded()
-		return len(self._getMediaValuesWithFilter(MediaInfo.EPISODE, parentId, season))
-	
+	#def get.EpisodesCount(self, parentId=None, season=None):
+	#	printl("->", self, "S")
+	#	self._mediaFilesCheckLoaded()
+	#	return len(self._getMediaValuesWithFilter(MediaInfo.EPISODE, parentId, season))
+	#
 	def getEpisodes(self, parentId=None, season=None):
 		printl("-> for parentID: "+str(parentId)+ " season:"+str(season), self, "S")
 		self._mediaFilesCheckLoaded()
@@ -832,10 +830,10 @@ class databaseHandlerPICKLE(object):
 			s = str(cnt) + "\t"			
 			if self._checkKeyValid(key):	
 				s += str(key) + "\t"
-				s += str(records[key].Id) + "\t"
-				s += str(records[key].ImdbId) + "\t"
-				s += str(records[key].TheTvDbId) + "\t"
-				s += str(records[key].Title) + "\t"
+				s += repr(records[key].Id) + "\t"
+				s += repr(records[key].ImdbId) + "\t"
+				s += repr(records[key].TheTvDbId) + "\t"
+				s += repr(records[key].Title) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -854,10 +852,10 @@ class databaseHandlerPICKLE(object):
 			s = str(cnt) + "\t"			
 			if self._checkKeyValid(key):	
 				s += str(key) + "\t"
-				s += str(records[key].Id) + "\t"
-				s += str(records[key].ImdbId) + "\t"
-				s += str(records[key].TheTvDbId) + "\t"
-				s += str(records[key].Title) + "\t"
+				s += repr(records[key].Id) + "\t"
+				s += repr(records[key].ImdbId) + "\t"
+				s += repr(records[key].TheTvDbId) + "\t"
+				s += repr(records[key].Title) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -876,13 +874,13 @@ class databaseHandlerPICKLE(object):
 			s = str(cnt) + "\t"			
 			if self._checkKeyValid(key):	
 				s += str(key) + "\t"
-				s += str(records[key].Id) + "\t"
-				s += str(records[key].ParentId) + "\t"
-				s += str(records[key].Season) + "\t"
-				s += str(records[key].Episode) + "\t"
-				s += str(records[key].ImdbId) + "\t"
-				s += str(records[key].TheTvDbId) + "\t"
-				s += str(records[key].Title) + "\t"
+				s += repr(records[key].Id) + "\t"
+				s += repr(records[key].ParentId) + "\t"
+				s += repr(records[key].Season) + "\t"
+				s += repr(records[key].Episode) + "\t"
+				s += repr(records[key].ImdbId) + "\t"
+				s += repr(records[key].TheTvDbId) + "\t"
+				s += repr(records[key].Title) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -1203,10 +1201,14 @@ class databaseHandlerPICKLE(object):
 			del(self._dbMediaFiles[key])	
 			
 	def _upgrade_MF_3(self):
-		os.rename(self.MOVIESDB,   self.MOVIESDB   +'.old')	
-		os.rename(self.TVSHOWSDB,  self.TVSHOWSDB  +'.old')	
-		os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
-		os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
+		if os.path.exists(self.MOVIESDB):
+			os.rename(self.MOVIESDB,   self.MOVIESDB   +'.old')	
+		if os.path.exists(self.TVSHOWSDB):
+			os.rename(self.TVSHOWSDB,  self.TVSHOWSDB  +'.old')	
+		if os.path.exists(self.EPISODESDB):
+			os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
+		if os.path.exists(self.FAILEDDB):
+			os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
 		
 #
 #################################   MOVIES   ################################# 

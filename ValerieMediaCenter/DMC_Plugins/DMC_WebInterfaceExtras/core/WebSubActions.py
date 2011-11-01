@@ -447,10 +447,10 @@ class MediaActions(Resource):
 			id = request.args["Id"][0]
 			type = request.args["type"][0]
 			parentId = request.args["ParentId"][0]
-			
+
+			result = manager.deleteMedia(id)
 			#delete movie
 			if type == "isMovie":
-				result = manager.deleteMedia(Manager.MOVIES, id)
 				if result:
 					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&showSave=true")
 				else:
@@ -458,7 +458,6 @@ class MediaActions(Resource):
 				
 			# delete tvshowepisodes
 			elif type == "isEpisode":
-				result = manager.deleteMedia(Manager.TVSHOWSEPISODES, id)
 				if result:
 					return WebHelper().redirectMeTo("/episodes?mode=showDoneForm&ParentId=" + parentId + "&showSave=true")
 				else:
@@ -466,7 +465,6 @@ class MediaActions(Resource):
 				
 			# delete tvshow		
 			elif type == "isTvShow":
-				result = manager.deleteMedia(Manager.TVSHOWS, id)
 				if result:
 					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&showSave=true")
 				else:
@@ -474,7 +472,6 @@ class MediaActions(Resource):
 					
 			# delete failed		
 			elif type == "isFailed":
-				result = manager.deleteMedia(Manager.FAILED, id)
 				if result:
 					return WebHelper().redirectMeTo("/failed?showSave=true")
 				else:
