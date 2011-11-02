@@ -24,3 +24,14 @@ $(document).ready(function(){
 	}
 
 });
+
+function zap(url){
+	//alert(url);
+	jQuery.ajax({
+	  url: url,
+	  context: document.body,
+	  success: function(){
+		//nothing to do for now;
+	  }
+	});
+}

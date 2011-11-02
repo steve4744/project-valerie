@@ -1,6 +1,8 @@
 $(document).ready(function(){
+	document.title = document.title + " - Episodes";
 	var params = get_params();
 	var message = params["msg"];
+	
 	$('#main_table').dataTable( {
 		"sScrollY": 768,
 		"aaSorting": [[ 1, "asc" ]],
@@ -17,3 +19,14 @@ $(document).ready(function(){
 		$('#sm_save').hide();
 	}
 });
+
+function zap(url){
+	//alert(url);
+	jQuery.ajax({
+	  url: url,
+	  context: document.body,
+	  success: function(){
+		//nothing to do for now;
+	  }
+	});
+}

@@ -96,6 +96,7 @@ class Movies(Resource):
 			evtEdit = self._editMovie(entry, "isMovie")
 			evtDelete = self._deleteMovie(entry, "isMovie")
 			evtStream = self._streamMovie(entry)
+			evtPlay = self._playMovie(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -106,10 +107,11 @@ class Movies(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream" title="stream" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream Movie" title="stream Movie" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Movie" title="play Movie" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -144,6 +146,15 @@ class Movies(Resource):
 		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
 		onclick += quote(utf8ToLatin(media))
 		onclick += "', '_blank')} else { return};"
+		
+		return onclick
+	############################################	
+	def _playMovie (self, entry):
+		serviceRef = "4097%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A"
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		url = "http://" + server + "/web/zap?sRef=" + serviceRef + quote(utf8ToLatin(media))
+		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
 		
 		return onclick
 
@@ -264,7 +275,8 @@ class Episodes(Resource):
 		for entry in entries:
 			evtEdit = self._editEpisode(entry, "isEpisode")
 			evtDelete = self._deleteEpisode(entry, "isEpisode")
-			evtStream = self._streamMovie(entry)
+			evtStream = self._streamEpisode(entry)
+			evtPlay = self._playEpisode(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -278,10 +290,11 @@ class Episodes(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream" title="stream" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream Episode" title="stream Episode" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Episode" title="play Episode" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream)
+			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -315,6 +328,15 @@ class Episodes(Resource):
 		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
 		onclick += quote(utf8ToLatin(media))
 		onclick += "', '_blank')} else { return};"
+		
+		return onclick
+	############################################	
+	def _playEpisode (self, entry):
+		serviceRef = "4097%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A"
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		url = "http://" + server + "/web/zap?sRef=" + serviceRef + quote(utf8ToLatin(media))
+		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
 		
 		return onclick
 	
