@@ -603,14 +603,32 @@ class ProjectValerieSyncSettings(Screen):
 					#Propagate exception
 					raise
 
-def autostart(session):
+
+gSyncInfo = None
+
+def getSyncInfoInstance():
 	global gSyncInfo
-	gSyncInfo = ProjectValerieSyncInfo()
-	gSyncInfo.registerOutputInstance(None, session)
-	gSyncInfo.start(pyvalerie.FAST)
+	if gSyncInfo is None:
+		gSyncInfo = ProjectValerieSyncInfo()
+	return gSyncInfo
+
+def autostart(session):
+	syncInfo = getSyncInfoInstance()
+	syncInfo.registerOutputInstance(None, session)
+	syncInfo.start(pyvalerie.FAST)
+
+def registerOutputInstance(instance, session):
+	syncInfo = getSyncInfoInstance()
+	printl("registerOutputInstance::type(syncInfo): " + str(type(syncInfo)))
+	syncInfo.registerOutputInstance(instance, session)
+
+def unregisterOutputInstance(instance):
+	syncInfo = getSyncInfoInstance()
+	printl("unregisterOutputInstance::type(syncInfo): " + str(type(syncInfo)))
+	syncInfo.unregisterOutputInstance(instance)
 
 class ProjectValerieSyncInfo():
-	outputInstance = None
+	outputInstance = []
 	
 	progress = 0
 	range = 0
@@ -640,7 +658,8 @@ class ProjectValerieSyncInfo():
 			self.setOutput(None)
 			self.thread = pyvalerie(self.setOutput, self.setProgress, self.setRange, self.setInfo, self.finished, type)
 			self.thread.start()
-			self.outputInstance.notifyStatus()
+			for outputInstance in self.outputInstance:
+				outputInstance.notifyStatus()
 			return True
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -655,24 +674,30 @@ class ProjectValerieSyncInfo():
 
 	def registerOutputInstance(self, instance, session):
 		try:
-			self.outputInstance = instance
-			self.session = session
+			if instance:
+				self.outputInstance.append(instance)
+			if session:
+				self.session = session
+			
 			if self.inProgress:
 				self.setRange(self.range)
 				self.setProgress(self.progress)
 				self.setInfo(self.poster, self.name, self.year)
 				
-				self.outputInstance.clearLog()
+				for outputInstance in self.outputInstance:
+					outputInstance.clearLog()
 				
 				if len(self.log) > 0:
 					for text in self.log:
-						self.outputInstance.appendLog(text)
+						for outputInstance in self.outputInstance:
+							outputInstance.appendLog(text)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
-	def unregisterOutputInstance(self):
+	def unregisterOutputInstance(self, instance):
 		try:
-			self.outputInstance = None
+			if instance:
+				self.outputInstance.remove(instance)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
@@ -680,17 +705,17 @@ class ProjectValerieSyncInfo():
 		try:
 			if text is None:
 				del self.log[:]
-				if self.outputInstance is not None:
-					self.outputInstance.clearLog()
+				for outputInstance in self.outputInstance:
+					outputInstance.clearLog()
 			else :
 				if len(self.log) >= self.loglinesize:
 					del self.log[:]
-					if self.outputInstance is not None:
-						self.outputInstance.clearLog()
-						self.outputInstance.appendLog(text)
+					for outputInstance in self.outputInstance:
+						outputInstance.clearLog()
+						outputInstance.appendLog(text)
 				else:
-					if self.outputInstance is not None:
-						self.outputInstance.appendLog(text)
+					for outputInstance in self.outputInstance:
+						outputInstance.appendLog(text)
 				self.log.append(text)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -698,16 +723,16 @@ class ProjectValerieSyncInfo():
 	def setRange(self, value):
 		try:
 			self.range = value
-			if self.outputInstance is not None:
-				self.outputInstance.setRange(self.range)
+			for outputInstance in self.outputInstance:
+				outputInstance.setRange(self.range)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
 	def setProgress(self, value):
 		try:
 			self.progress = value
-			if self.outputInstance is not None:
-				self.outputInstance.setProgress(self.progress)
+			for outputInstance in self.outputInstance:
+				outputInstance.setProgress(self.progress)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
@@ -716,10 +741,10 @@ class ProjectValerieSyncInfo():
 			self.poster = poster
 			self.name = name
 			self.year = year
-			if self.outputInstance is not None:
-				self.outputInstance.setPoster(self.poster)
-				self.outputInstance.setName(self.name)
-				self.outputInstance.setYear(self.year)
+			for outputInstance in self.outputInstance:
+				outputInstance.setPoster(self.poster)
+				outputInstance.setName(self.name)
+				outputInstance.setYear(self.year)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
@@ -727,8 +752,9 @@ class ProjectValerieSyncInfo():
 		try:
 			self.inProgress = False
 			self.isFinished = True
-			self.outputInstance.notifyStatus()
-			if self.outputInstance is None:
+			for outputInstance in self.outputInstance:
+				outputInstance.notifyStatus()
+			if len(self.outputInstance) == 0:
 				self.session.open(ProjectValerieSyncFinished)
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -746,7 +772,6 @@ class ProjectValerieSyncInfo():
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
 
-gSyncInfo = None
 
 class ProjectValerieSyncFinished(Screen):
 	skin = """
@@ -1333,16 +1358,13 @@ class ProjectValerieSync(Screen):
 		self.setTitle(_("Sync Manager"))
 
 	def startup(self):
-		global gSyncInfo
-		printl("type(gSyncInfo): " + str(type(gSyncInfo)), self)
-		if gSyncInfo is None:
-			gSyncInfo = ProjectValerieSyncInfo()
-		gSyncInfo.registerOutputInstance(self, self.session)
+		syncInfo = getSyncInfoInstance()
+		registerOutputInstance(self, self.session)
 		
 		self.notifyStatus()
 		
-		printl("gSyncInfo.inProgress: " + str(gSyncInfo.inProgress), self)
-		if gSyncInfo.inProgress is False:
+		printl("syncInfo.inProgress: " + str(syncInfo.inProgress), self)
+		if syncInfo.inProgress is False:
 			self.checkDefaults()
 		
 		if self.autoSync:
@@ -1360,14 +1382,13 @@ class ProjectValerieSync(Screen):
 		SyncCheckDefaults()
 
 	def close(self):
-		global gSyncInfo
-		gSyncInfo.unregisterOutputInstance()
+		unregisterOutputInstance(self)
 		Screen.close(self)
 
 	def notifyStatus(self):
-		global gSyncInfo
-		printl("inProgress:" + str(gSyncInfo.inProgress), self, "D")
-		if gSyncInfo.inProgress is True:
+		syncInfo = getSyncInfoInstance()
+		printl("inProgress:" + str(syncInfo.inProgress), self, "D")
+		if syncInfo.inProgress is True:
 			self["key_red"].setText(_("Hide"))
 			self["key_green"].setText(_("Abort"))
 			self["key_yellow"].setText("")
@@ -1376,7 +1397,7 @@ class ProjectValerieSync(Screen):
 			self["key_green"].setText(_("Synchronize"))
 			self["key_yellow"].setText(_("Fast Synchronize"))
 			
-			if self.autoSync and gSyncInfo.isFinished is True:
+			if self.autoSync and syncInfo.isFinished is True:
 				self.delayedTimer = eTimer()
 				self.delayedTimer.callback.append(self.closeDelayed)
 				self.delayedTimer.start(5000)
@@ -1388,28 +1409,28 @@ class ProjectValerieSync(Screen):
 		printl("<-", self, "H")
 
 	def menu(self):
-		global gSyncInfo
-		if gSyncInfo.inProgress is False:
+		syncInfo = getSyncInfoInstance()
+		if syncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncSettings)
 
 	def manage(self):
-		global gSyncInfo
-		if gSyncInfo.inProgress is False:
+		syncInfo = getSyncInfoInstance()
+		if syncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncManager)
 		else:
 			self.close()
 
 	def go(self):
-		global gSyncInfo
-		if gSyncInfo.inProgress is False:
-			gSyncInfo.start(pyvalerie.NORMAL)
+		syncInfo = getSyncInfoInstance()
+		if syncInfo.inProgress is False:
+			syncInfo.start(pyvalerie.NORMAL)
 		else:
-			gSyncInfo.abort()
+			syncInfo.abort()
 
 	def gofast(self):
-		global gSyncInfo
-		if gSyncInfo.inProgress is False:
-			gSyncInfo.start(pyvalerie.FAST)
+		syncInfo = getSyncInfoInstance()
+		if syncInfo.inProgress is False:
+			syncInfo.start(pyvalerie.FAST)
 
 	def clearLog(self):
 		self["console"].setText("")
