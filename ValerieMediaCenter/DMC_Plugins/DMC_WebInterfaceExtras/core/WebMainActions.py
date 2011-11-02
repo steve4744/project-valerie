@@ -107,7 +107,7 @@ class Movies(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream Movie" title="stream Movie" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Movie" title="stream Movie" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Movie" title="play Movie" /></a>
 							</td>
 						  </tr>
@@ -290,7 +290,7 @@ class Episodes(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
-								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream Episode" title="stream Episode" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Episode" title="stream Episode" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Episode" title="play Episode" /></a>
 							</td>
 						    </tr>
