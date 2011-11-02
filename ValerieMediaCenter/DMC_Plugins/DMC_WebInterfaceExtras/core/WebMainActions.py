@@ -97,6 +97,7 @@ class Movies(Resource):
 			evtDelete = self._deleteMovie(entry, "isMovie")
 			evtStream = self._streamMovie(entry)
 			evtPlay = self._playMovie(entry)
+			evtLoad = self._downloadMovie(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -109,9 +110,10 @@ class Movies(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Movie" title="stream Movie" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Movie" title="play Movie" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Movie" title="download Movie" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -157,7 +159,17 @@ class Movies(Resource):
 		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
 		
 		return onclick
-
+	############################################	
+	def _downloadMovie (self, entry):
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		onclick = "javascript:if (confirm('Are you sure you want to download the record?'))"
+		onclick += "{window.open('http://" + server + "/file?file="
+		onclick += quote(utf8ToLatin(media))
+		onclick += "', '_blank')} else { return};"
+		
+		return onclick
+		
 ##########################
 # CLASS:
 ##########################
@@ -277,6 +289,7 @@ class Episodes(Resource):
 			evtDelete = self._deleteEpisode(entry, "isEpisode")
 			evtStream = self._streamEpisode(entry)
 			evtPlay = self._playEpisode(entry)
+			evtLoad = self._downloadEpisode(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -292,9 +305,10 @@ class Episodes(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Episode" title="stream Episode" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Episode" title="play Episode" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Episode" title="download Episode" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay)
+			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -337,6 +351,16 @@ class Episodes(Resource):
 		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
 		url = "http://" + server + "/web/zap?sRef=" + serviceRef + quote(utf8ToLatin(media))
 		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
+		
+		return onclick
+	############################################	
+	def _downloadEpisode (self, entry):
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		onclick = "javascript:if (confirm('Are you sure you want to download the record?'))"
+		onclick += "{window.open('http://" + server + "/file?file="
+		onclick += quote(utf8ToLatin(media))
+		onclick += "', '_blank')} else { return};"
 		
 		return onclick
 	
