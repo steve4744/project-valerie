@@ -336,7 +336,7 @@ class MobileImdbComProvider():
 		
 		#print "MIMDB seraches for ", info.is_Movie, info.is_Episode, info.is_Serie
 		
-		year = info.Year
+		year = info.Year		
 		
 		results = self.getResults(html)
 		printl("Results are: ", self)
@@ -355,7 +355,7 @@ class MobileImdbComProvider():
 					continue
 			
 			# We check if year +-1, cause sometimes the year is wrong by one year
-			if year <= 0 or year == result.Year or (year+1) == result.Year or (year-1) == result.Year:
+			if year is None or year <= 0 or year == result.Year or (year+1) == result.Year or (year-1) == result.Year:
 				info.ImdbId = result.ImdbId
 				info.Title = result.Title
 				info.Year = result.Year

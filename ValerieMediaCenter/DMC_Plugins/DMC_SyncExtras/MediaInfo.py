@@ -52,9 +52,9 @@ class MediaInfo(object):
 	MediaTypeOld = None # the old type for updates
 	MediaStatus  = STATUS_OK   # for failed items
 	
-	#isMovie   = False
-	#isSerie   = False
-	#isEpisode = False
+	isMovie   = False
+	isSerie   = False
+	isEpisode = False
 	
 	isEnigma2MetaRecording = False
 	
@@ -70,9 +70,9 @@ class MediaInfo(object):
 	Title = u""
 	Alternatives = {}
 	
-	Year  = u""
-	Month = u""
-	Day   = u""
+	Year  = None
+	Month = None
+	Day   = None
 	ImdbIdNull    = u""
 	ImdbId        = ImdbIdNull
 	TheTvDbIdNull = u""
@@ -92,9 +92,9 @@ class MediaInfo(object):
 	Tag        = u""
 	Popularity = 0
 	
-	Season  = u""
-	Disc    = u""
-	Episode = u""
+	Season  = None
+	Disc    = None
+	Episode = None
 	EpisodeLast = u""
 	
 	syncStatus  = 0
