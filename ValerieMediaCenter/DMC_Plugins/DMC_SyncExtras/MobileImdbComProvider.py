@@ -19,11 +19,11 @@ class MobileImdbComProvider():
 		ImdbId = ""
 		Title = ""
 		IsTVSeries = False
-		Year = -1
+		Year = None
 
 		def __init__(self):
 			self.IsTVSeries = False
-			self.Year = -1
+			self.Year = None
 
 		def __str__(self):
 			return Utf8.utf8ToLatin(self.Title + u":" + unicode(self.Year) + u":" + self.ImdbId + u":" + unicode(self.IsTVSeries))

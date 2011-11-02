@@ -589,7 +589,10 @@ class databaseHandlerPICKLE(object):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		serieId = None
 		if media.isTypeSerie():
-			key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
+			if media.TheTvDbId is None or media.TheTvDbId == u"":
+				key = None
+			else:
+				key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 			if key is not None:
 				serieId = self._getMediaWithKey(key).Id
 				ret["status"] 	= 3 # ok
@@ -601,7 +604,11 @@ class databaseHandlerPICKLE(object):
 		if media.isTypeEpisode():
 			# No Parent... from Sync
 			if media.ParentId is None:
-				key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
+				printl("media.TheTvDbId: *" + repr(media.TheTvDbId) + "*", self, "W")
+				if media.TheTvDbId is None or media.TheTvDbId == u"":
+					key = None
+				else:
+					key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 				if key is None:
 					resultInsert = self.insertFakeSerie(media.TheTvDbId)
 					serieId = resultInsert["id"]

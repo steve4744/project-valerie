@@ -462,7 +462,7 @@ class MediaInfo(object):
 				printl("Something went wrong while reading from nfo :-(", self, "I")
 		
 		###  
-		if (self.Year == -1) and (isE2Recording == False):
+		if (self.Year == None) and (isE2Recording == False):
 			m = re.search(r'\s(?P<year>\d{4})\s', self.SearchString)
 			if m and m.group("year"):
 				year = int(m.group("year"))
@@ -510,7 +510,7 @@ class MediaInfo(object):
 			##### 
 			#####  s03d05e01-e05 - Season 3 Disc 5 Episode 1 [to Episode 5]
 			#####			Seinfeld.S08D03.PAL.DVDR		
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("disc") and m.group("episode"):
 					printl("PARSE RESULT 1:"+str(str(m.group("disc")))+" "+str(m.group("episode"))+" "+str(m.group("episode2")), self)
@@ -529,7 +529,7 @@ class MediaInfo(object):
 			#####
 			#####  s03d05 - Season 3 Disc 5
 			#####			
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("disc"):
 					printl("PARSE RESULT 3:", self)
@@ -544,7 +544,7 @@ class MediaInfo(object):
 			#####
 			#####  s03e05e06 s03e05-e06
 			#####
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 				#m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
 				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
@@ -561,23 +561,25 @@ class MediaInfo(object):
 			#####  s03e05
 			#####
 			
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
-					#printl("PARSE RESULT 5:", self)
+					printl("PARSE RESULT 5:", self)
 					self.setMediaType(self.SERIE)
 					isSeasonEpisodeFromFilename = True
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
 					
+					printl("PARSE RESULT 5: " + self.SearchString, self)
 					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
-
+					printl("PARSE RESULT 5: " + self.SearchString, self)
+					
 			#####
 			#####  3x05
 			#####
 			
-			if self.Season == -1 or self.Episode == -1:  
+			if self.Season == None or self.Episode == None:  
 				m = re.search(r'\D(?P<season>\d+)x(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
 					self.setMediaType(self.SERIE)
@@ -591,7 +593,7 @@ class MediaInfo(object):
 			#####  part 3
 			#####
 			
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 				m = re.search(r'\W(part|pt)\s?(?P<episode>\d+)(\D|$)', self.SearchString)
 				if m and m.group("episode"):
 					self.setMediaType(self.SERIE)
@@ -605,7 +607,7 @@ class MediaInfo(object):
 			#####  305
 			#####
 			
-			if self.Season == -1 or self.Episode == -1:
+			if self.Season == None or self.Episode == None:
 			
 				nameConverted = u""
 				prevc = u"a"
@@ -656,8 +658,8 @@ class MediaInfo(object):
 					printl("Assuming TV-Show...", self, "I")
 					if isSeasonEpisodeFromFilename == False:
 						printl("Season / episode seem not to be retrieved from filename => resetting...", self, "I")
-						self.Season = -1
-						self.Episode = -1
+						self.Season = None
+						self.Episode = None
 					self.setMediaType(self.SERIE)
 					
 				self.isEnigma2MetaRecording = True
@@ -675,7 +677,7 @@ class MediaInfo(object):
 		# So we got year and season and episode 
 		# now we can delete everything after the year
 		# but only if the year is not the first word in the string
-		if self.Year != -1:
+		if self.Year is not None:
 			printl("Adapt SearchString due to year...", self, "I")
 			pos = self.SearchString.find(str(self.Year))
 			if pos > 0:

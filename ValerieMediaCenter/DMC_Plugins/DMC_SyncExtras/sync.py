@@ -414,7 +414,7 @@ class pyvalerie(Thread):
 						printl("isXbmcNfo == False => checking for E2 recorded TV show... ", self, "I")
 						if elementInfo.isTypeSerie() and elementInfo.isEnigma2MetaRecording:
 							printl("E2-recorded TV-Show => checking if season and episode already set... ", self, "I")
-							if elementInfo.Season == -1 or elementInfo.Episode == -1:
+							if elementInfo.Season == None or elementInfo.Episode == None:
 								printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
 								tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
 								if tmp[0] is True and tmp[1] is None:
