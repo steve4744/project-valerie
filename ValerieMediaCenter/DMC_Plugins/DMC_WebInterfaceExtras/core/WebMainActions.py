@@ -3,7 +3,7 @@
 # TO PROVIDE CLICKABLE MAIN-ACTIONS
 ##############################################################################
 import os
-from urllib import urlencode
+from urllib import urlencode, quote
 from Components.config import config
 from twisted.web.resource import Resource
 
@@ -93,6 +93,7 @@ class Movies(Resource):
 		for entry in entries:
 			evtEdit = self._editMovie(entry, "isMovie")
 			evtDelete = self._deleteMovie(entry, "isMovie")
+			evtStream = self._streamMovie(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -103,9 +104,10 @@ class Movies(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream" title="stream" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -130,6 +132,15 @@ class Movies(Resource):
 		onclick += "Id=" + str(entry.Id) + "&"
 		onclick += "ParentId=" + str(entry.ParentId)
 		onclick += "', '_self')} else { return};"
+		
+		return onclick
+	############################################	
+	def _streamMovie (self, entry):
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		onclick = "javascript:if (confirm('Are you sure you want to stream the record?'))"
+		onclick += "{window.open('http://192.168.45.60/web/ts.m3u?file="
+		onclick += quote(utf8ToLatin(media))
+		onclick += "', '_blank')} else { return};"
 		
 		return onclick
 
