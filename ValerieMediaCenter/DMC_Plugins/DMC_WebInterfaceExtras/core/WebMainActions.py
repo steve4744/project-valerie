@@ -3,6 +3,8 @@
 # TO PROVIDE CLICKABLE MAIN-ACTIONS
 ##############################################################################
 import os
+import commands
+
 from urllib import urlencode, quote
 from Components.config import config
 from twisted.web.resource import Resource
@@ -137,8 +139,9 @@ class Movies(Resource):
 	############################################	
 	def _streamMovie (self, entry):
 		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
 		onclick = "javascript:if (confirm('Are you sure you want to stream the record?'))"
-		onclick += "{window.open('http://192.168.45.60/web/ts.m3u?file="
+		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
 		onclick += quote(utf8ToLatin(media))
 		onclick += "', '_blank')} else { return};"
 		
@@ -261,6 +264,7 @@ class Episodes(Resource):
 		for entry in entries:
 			evtEdit = self._editEpisode(entry, "isEpisode")
 			evtDelete = self._deleteEpisode(entry, "isEpisode")
+			evtStream = self._streamMovie(entry)
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
@@ -274,9 +278,10 @@ class Episodes(Resource):
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="stream" title="stream" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete)
+			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -300,6 +305,16 @@ class Episodes(Resource):
 		onclick  += "Id=" + str(entry.Id) + "&"
 		onclick  += "ParentId=" + str(entry.ParentId)
 		onclick  += "', '_self')} else { return};"
+		
+		return onclick
+	############################################	
+	def _streamEpisode (self, entry):
+		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
+		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		onclick = "javascript:if (confirm('Are you sure you want to stream the record?'))"
+		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
+		onclick += quote(utf8ToLatin(media))
+		onclick += "', '_blank')} else { return};"
 		
 		return onclick
 	
