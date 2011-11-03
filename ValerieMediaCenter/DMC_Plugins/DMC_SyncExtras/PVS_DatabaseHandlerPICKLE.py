@@ -135,7 +135,7 @@ class databaseHandlerPICKLE(object):
 	CONVERTING = False
 	_ConvertPos = 0
 	_ConvertMax = 0
-	DB_VERSION_MEDIAFILES = 3
+	DB_VERSION_MEDIAFILES = 4
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
@@ -892,83 +892,7 @@ class databaseHandlerPICKLE(object):
 		f.write("\n\n")
 		f.flush()
 
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-------------------------------\n")
-		f.write("-- MediaFiles - Movies.DB OLD--\n")
-		f.write("\n")
-		f.write("Count\tKey   \t\tId   \tTitle\n")		
-		f.write("\n")
-		cnt=0
-		s = u""
-		for key in self._dbMovies:
-			cnt += 1
-			s = str(cnt) + "\t"			
-			if key == self.CONFIGKEY:		
-				s += str(key) + "\t"
-				s += "Version " + str(self._dbMovies[key])
-				s += "\n"
-			else:
-				s += str(key) + "\t"
-				s += str(self._dbMovies[key].Id) + "\t"
-				s += str(self._dbMovies[key].Title) + "\t"
-			f.write(s+"\n")
-		f.write("\n\n")
-		f.flush()
-		
-		f.write("\n")
-		f.write("-------------------------------\n")
-		f.write("-- MediaFiles  -  Series.DB  --\n")
-		f.write("\n")
-
-		cnt=0
-		for key in self._dbSeries:
-			cnt += 1
-			s = str(cnt) + "\t"			
-			s += str(key) + "\t"
-			if key == self.CONFIGKEY:		
-				s += "Version " + str(self._dbSeries[key])
-				s += "\n"
-			else:
-				s += str(self._dbSeries[key].Id) + "\t"
-				s += str(self._dbSeries[key].Title) + "\t"
-			f.write(s+"\n")
-			
-		f.write("\n")
-		f.flush()
-		
-		f.write("-- Episodes --\n")
-		f.write("\n")
-		f.write("Count\tKey\tKey2\tKey3\tId\tParent\tTitle\n")		
-		f.write("\n")
-		
-		cnt=0
-		for key in self._dbEpisodes:
-			if key == self.CONFIGKEY:		
-				s += "Version " + str(self._dbEpisodes[key])
-				s += "\n"
-			else:
-				for season in self._dbEpisodes[key]:
-					for episode in self._dbEpisodes[key][season]:
-						cnt += 1
-						s = str(cnt) + "\t"		
-						s += str(key) + "\t"
-						s += str(season) + "\t"
-						s += str(episode) + "\t"
-						s += str(self._dbEpisodes[key][season][episode].Id) + "\t"
-						s += str(self._dbEpisodes[key][season][episode].ParentId) + "\t"
-						s += str(self._dbEpisodes[key][season][episode].Title) + "\t"
-						f.write(s+"\n")
-
-		f.write("\n")
-		f.flush()
-		
+				
 		f.write("-- MEDIA PATHS --\n")
 		f.write("-- MEDIA PATHS --\n")
 		f.write("-- MEDIA PATHS --\n")
@@ -987,7 +911,8 @@ class databaseHandlerPICKLE(object):
 		for key in key_value_dict.keys():
 			try:
 				if key in intFields:
-					if key_value_dict[key] is None or key_value_dict[key] == "": # To avoid null Values
+					# To avoid null Values
+					if key_value_dict[key] is None or key_value_dict[key] == "" or key_value_dict[key] == "None": 
 						value = None
 					else:
 						value = int(key_value_dict[key])
@@ -1127,7 +1052,8 @@ class databaseHandlerPICKLE(object):
 					self._upgrade_MF_3()
 					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==4:
-					pass
+					self._upgrade_MF_4()
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==5:
 					pass
 				elif updateToVersion==6:
@@ -1216,6 +1142,26 @@ class databaseHandlerPICKLE(object):
 			os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
 		if os.path.exists(self.FAILEDDB):
 			os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
+
+	def _upgrade_MF_4(self):
+		#delete old failed items, not used #FAILEDSYNC = 0
+		self.MediaFilesCommited = False
+		records = self._getMediaFiles()
+		for key in records:
+			m = self._dbMediaFiles[key]
+			if m.Season == -1:
+				m.Season == None
+			if m.Disc == -1:
+				m.Disc == None
+			if m.Episode == -1:
+				m.Episode == None
+			if m.Year == -1:
+				m.Year == None
+			if m.Month == -1:
+				m.Month == None
+			if m.Day == -1:
+				m.Day == None
+
 		
 #
 #################################   MOVIES   ################################# 
