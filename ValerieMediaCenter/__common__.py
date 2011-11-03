@@ -88,28 +88,30 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 		print '\033[1;33m' + "[PVMC] " + "W" + "  " + str(out) + '\033[1;m'
 		writeToLog(type, out)
 	
-	if debugMode == "Silent":
-		return
-	
 	elif verbLevel == VERB_STARTING and debugMode == "High": #only in debugMode high
 		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "S" + "  " + str(out) + '\033[1;m'
-		writeToLog(type, out)
+		if debugMode != "Silent":
+			writeToLog(type, out)
 	
 	elif verbLevel == VERB_HIGHLIGHT and debugMode == "High": #only in debugMode high
 		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;37m' + "H" + "  " + str(out) + '\033[1;m'	
-		writeToLog(type, out)
+		if debugMode != "Silent":
+			writeToLog(type, out)
 	
 	elif verbLevel == VERB_ADDITIONAL and debugMode == "High": #only in debugMode high
 		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "A" + "  " + str(out) + '\033[1;m'	
-		writeToLog(type, out)
+		if debugMode != "Silent":
+			writeToLog(type, out)
 		
 	elif verbLevel == VERB_CLOSING and debugMode == "High": #only in debugMode high
 		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "C" + "  " + str(out) + '\033[1;m'	
-		writeToLog(type, out)
+		if debugMode != "Silent":
+			writeToLog(type, out)
 	
 	elif verbLevel <= VERB_TOLOG:
 		print '\033[0;36m' + "[PVMC] " + "I" + "  " + '\033[1;m' + str(out) 
-		writeToLog(type, out)
+		if debugMode != "Silent":
+			writeToLog(type, out)
 	
 	elif verbLevel > VERB_TOLOG:
 		print '\033[0;36m' + "[PVMC] " + "only onScreen" + "  " + str(out) + '\033[1;m'
