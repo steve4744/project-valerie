@@ -9,7 +9,7 @@
 		<br><br>
 		When you click on the start Backup Button a new window will open. 
 		<br><br>
-		Please be patient until the zip-File will be generated for you :-)
+		Please be patient until the gz-File will be generated for you :-)
 		<br><br>
 	</div>
 	

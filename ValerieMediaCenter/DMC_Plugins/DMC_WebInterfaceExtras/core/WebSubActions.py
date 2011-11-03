@@ -403,8 +403,8 @@ class MediaActions(Resource):
 			
 			manager = Manager()
 			type = stringToUtf8(request.args["type"][0])
-			Id = stringToUtf8(request.args["Id"][0])
-			parentId = stringToUtf8(request.args["ParentId"][0])
+			Id = request.args["Id"][0]
+			parentId = request.args["ParentId"][0]
 			
 			key_value_dict = {}				
 			for key in request.args.keys():
@@ -416,9 +416,12 @@ class MediaActions(Resource):
 			# edit movies		
 			if type == "isMovie":
 				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
-				if result:
+				printl("alter Movie in Db", self, "I")
+				if result is True:
+					printl("TRUE", self, "I")
 					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&Id=" + Id + "&showSave=true")
 				else:
+					printl("FALSE", self, "I")
 					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isMovie&Id=" + Id)
 			
 			# edit tvshows
@@ -659,14 +662,18 @@ class WebFunctions(Resource):
 		elif request.args["mode"][0] == "backupValerie":
 			printl("mode (backupValerie)", self, "I")
 			
-			import zipfile, os
+			#import zipfile, os
 
-			zipf = zipfile.ZipFile('/hdd/valerie-backup.zip', mode='w', compression=zipfile.ZIP_STORED )
-			path = utf8ToLatin(config.plugins.pvmc.tmpfolderpath.value)
-			WebHelper().recursive_zip(zipf, path)
-			zipf.close()
+			#zipf = zipfile.ZipFile('/hdd/valerie-backup.zip', mode='w', compression=zipfile.ZIP_STORED )
+			#path = utf8ToLatin(config.plugins.pvmc.tmpfolderpath.value)
+			#WebHelper().recursive_zip(zipf, path)
+			#zipf.close()
+			
+			backupFile = '/mnt/net/store/valerie-backup.tar'
+			sourcePath = utf8ToLatin(config.plugins.pvmc.tmpfolderpath.value)
+			os.system("tar -cvf " + backupFile + " " + sourcePath + " --exclude 'tmp/*' --exclude 'tmp'")
 
-			return WebHelper().redirectMeTo("/elog/valerie-backup.zip")	
+			return WebHelper().redirectMeTo("/elog/")	
 
 		##########################
 		# RESTORE SECTION - do not use for now fills up the flash => freeze
