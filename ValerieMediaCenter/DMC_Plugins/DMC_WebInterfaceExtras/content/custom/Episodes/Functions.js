@@ -20,13 +20,53 @@ $(document).ready(function(){
 	}
 });
 
+function stream (mediaId, mediaType) {
+	url = "http://" + document.location.host + "/mediaForm?mode=getMediaDetails&Id=" + mediaId + "&type=" + mediaType;
+	dmurl = document.location.host;
+	dmurl = dmurl.substring(0,dmurl.length-5);
+	jQuery.ajax({
+	  url: url,
+	  context: document.body,
+	  success: function(data){
+		window.open("http://" + dmurl + "/web/ts.m3u?file=" + data, "_blank");
+	  }
+	});
+}
+
+function play (mediaId, mediaType) {
+	url = "http://" + document.location.host + "/mediaForm?mode=getMediaDetails&Id=" + mediaId + "&type=" + mediaType;
+	dmurl = document.location.host;
+	dmurl = dmurl.substring(0,dmurl.length-5);
+	jQuery.ajax({
+	  url: url,
+	  context: document.body,
+	  success: function(data){
+			serviceRef = "4097%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A"
+			zap("http://" + dmurl + "/web/zap?sRef=" + serviceRef + data);
+	  }
+	});
+}
+
 function zap(url){
-	//alert(url);
+	alert(url);
 	jQuery.ajax({
 	  url: url,
 	  context: document.body,
 	  success: function(){
 		//nothing to do for now;
+	  }
+	});
+}
+		
+function download (mediaId, mediaType) {
+	url = "http://" + document.location.host + "/mediaForm?mode=getMediaDetails&Id=" + mediaId + "&type=" + mediaType;
+	dmurl = document.location.host;
+	dmurl = dmurl.substring(0,dmurl.length-5);
+	jQuery.ajax({
+	  url: url,
+	  context: document.body,
+	  success: function(data){
+		window.open("http://" + dmurl + "/file?file=" + data, "_blank");
 	  }
 	});
 }

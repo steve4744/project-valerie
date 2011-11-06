@@ -56,13 +56,23 @@ class MediaForm(Resource):
 			type = request.args["type"][0]
 		else:
 			type = u""
-			
+		
 		#######################
 		# DONE MODE
 		#######################
 		if currentMode == "showDoneForm" :
 			
 			return finalOutput
+			
+		#######################
+		# GET MEDIA DETAILS FOR WEBIF
+		#######################
+		elif currentMode == "getMediaDetails":
+			Id = request.args["Id"][0]
+			data = self._getMediaDetails(type, int(Id))
+			response = data.Path + "/" + data.Filename + "." + data.Extension
+			
+			return str(response)
 		
 		#######################
 		# ERROR MODE

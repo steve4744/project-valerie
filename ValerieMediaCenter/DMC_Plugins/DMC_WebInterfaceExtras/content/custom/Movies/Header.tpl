@@ -2,5 +2,4 @@
 <th class="sortfirstasc">Name</th>
 <th width="40px">Year</th>
 <th width="100px">ImdbId</th>
-<th>File</th>
-<th>Actions</th>
+<th width="120px">Actions</th>

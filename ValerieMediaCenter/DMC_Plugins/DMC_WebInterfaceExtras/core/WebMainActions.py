@@ -92,19 +92,21 @@ class Movies(Resource):
 		entries = WebData().getData("movies")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Movies")
 		
+		dmWebifUrl = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
+		
 		for entry in entries:
+			mediaId = entry.Id
 			evtEdit = self._editMovie(entry, "isMovie")
 			evtDelete = self._deleteMovie(entry, "isMovie")
-			evtStream = self._streamMovie(entry)
-			evtPlay = self._playMovie(entry)
-			evtLoad = self._downloadMovie(entry)
+			evtStream = self._streamMovie(mediaId, "isMovie")
+			evtPlay = self._playMovie(mediaId, "isMovie")
+			evtLoad = self._downloadMovie(mediaId, "isMovie")
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%s</td>
 							<td><a href=http://www.imdb.com/title/%s/ target="_blank">%s</a></td>
-							<td>%s</td>
 							<td>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/edit-grey.png" alt="edit" title="edit" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>
@@ -113,7 +115,7 @@ class Movies(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Movie" title="download Movie" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
+					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -141,33 +143,19 @@ class Movies(Resource):
 		
 		return onclick
 	############################################	
-	def _streamMovie (self, entry):
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		onclick = "javascript:if (confirm('Are you sure you want to stream the record?'))"
-		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
-		onclick += quote(utf8ToLatin(media))
-		onclick += "', '_blank')} else { return};"
+	def _streamMovie (self, mediaId, mediaType):
+		onclick = "javascript: stream('" + str(mediaId) + "','" + mediaType + "');"
 		
 		return onclick
 	############################################	
-	def _playMovie (self, entry):
-		serviceRef = "4097%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A"
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		url = "http://" + server + "/web/zap?sRef=" + serviceRef + quote(utf8ToLatin(media))
-		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
+	def _playMovie (self, mediaId, mediaType):
+		onclick = "javascript: play('" + str(mediaId) + "','" + mediaType + "');"	
 		
 		return onclick
 	############################################	
-	def _downloadMovie (self, entry):
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		onclick = "javascript:if (confirm('Are you sure you want to download the record?'))"
-		onclick += "{window.open('http://" + server + "/file?file="
-		onclick += quote(utf8ToLatin(media))
-		onclick += "', '_blank')} else { return};"
-		
+	def _downloadMovie (self, mediaId, mediaType):
+		onclick = "javascript: download('" + str(mediaId) + "','" + mediaType + "');"	
+	
 		return onclick
 		
 ##########################
@@ -285,15 +273,15 @@ class Episodes(Resource):
 		entries = WebData().getData("EpisodesOfSerie", ParentId)
 		
 		for entry in entries:
+			mediaId = entry.Id
 			evtEdit = self._editEpisode(entry, "isEpisode")
 			evtDelete = self._deleteEpisode(entry, "isEpisode")
-			evtStream = self._streamEpisode(entry)
-			evtPlay = self._playEpisode(entry)
-			evtLoad = self._downloadEpisode(entry)
+			evtStream = self._streamEpisode(mediaId, "isEpisode")
+			evtPlay = self._playEpisode(mediaId, "isEpisode")
+			evtLoad = self._downloadEpisode(mediaId, "isEpisode")
 			
 			tableBody += u"""   <tr>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
-							<td>%s</td>
 							<td>%s</td>
 							<td>%s</td>
 							<td>%s</td>
@@ -308,7 +296,7 @@ class Episodes(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Episode" title="download Episode" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.Filename + u"." + entry.Extension, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
+			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -335,33 +323,19 @@ class Episodes(Resource):
 		
 		return onclick
 	############################################	
-	def _streamEpisode (self, entry):
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		onclick = "javascript:if (confirm('Are you sure you want to stream the record?'))"
-		onclick += "{window.open('http://" + server + "/web/ts.m3u?file="
-		onclick += quote(utf8ToLatin(media))
-		onclick += "', '_blank')} else { return};"
+	def _streamEpisode (self, mediaId, mediaType):
+		onclick = "javascript: stream('" + str(mediaId) + "','" + mediaType + "');"
 		
 		return onclick
 	############################################	
-	def _playEpisode (self, entry):
-		serviceRef = "4097%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A0%3A"
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		url = "http://" + server + "/web/zap?sRef=" + serviceRef + quote(utf8ToLatin(media))
-		onclick = "javascript: if (confirm('Are you sure you want to play the record on your TV?')) {zap('" + url + "'); } else { return }"
+	def _playEpisode (self, mediaId, mediaType):
+		onclick = "javascript: play('" + str(mediaId) + "','" + mediaType + "');"	
 		
 		return onclick
 	############################################	
-	def _downloadEpisode (self, entry):
-		media = entry.Path + "/" + entry.Filename + u"." + entry.Extension
-		server = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		onclick = "javascript:if (confirm('Are you sure you want to download the record?'))"
-		onclick += "{window.open('http://" + server + "/file?file="
-		onclick += quote(utf8ToLatin(media))
-		onclick += "', '_blank')} else { return};"
-		
+	def _downloadEpisode (self, mediaId, mediaType):
+		onclick = "javascript: download('" + str(mediaId) + "','" + mediaType + "');"	
+	
 		return onclick
 	
 ##########################
