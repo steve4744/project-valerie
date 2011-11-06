@@ -98,8 +98,8 @@ class DMC_TvShowLibrary(DMC_Library):
             tvshow = self.manager.getElementByUsingPrimaryKey(Manager.TVSHOWS, \
                 dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
             
-            library = self.manager.getAll(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
-	    #library = self.manager.getSeriesEpisodesWithTheTvDbId(param)
+            #library = self.manager.get.All(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
+	    library = self.manager.getEpisodesWithTheTvDbId(primaryKeyValuePair["TheTvDbId"])
 	    
             
             for episode in library:
@@ -168,7 +168,7 @@ class DMC_TvShowLibrary(DMC_Library):
             d["Runtime"] = tvshow.Runtime
             d["Popularity"] = tvshow.Popularity
             d["Genres"]  = utf8ToLatin(tvshow.Genres).split("|")
-            library = self.manager.getAll(Manager.TVSHOWSEPISODES, primaryKeyValuePair["TheTvDbId"])
+            library = self.manager.getEpisodesWithTheTvDbId(primaryKeyValuePair["TheTvDbId"])
             
             seasons = []
             for entry in library:

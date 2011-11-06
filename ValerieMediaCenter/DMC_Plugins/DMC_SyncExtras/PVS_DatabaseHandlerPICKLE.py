@@ -128,7 +128,8 @@ class databaseHandlerPICKLE(object):
 	MOVIESDB   = DB_PATH + "movies.db"
 	TVSHOWSDB  = DB_PATH + "tvshows.db"
 	EPISODESDB = DB_PATH + "episodes.db"
-
+	SEENDB 	   = DB_PATH + "seen.db"
+	
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
 	STATS	   = -999997
@@ -136,11 +137,13 @@ class databaseHandlerPICKLE(object):
 	_ConvertPos = 0
 	_ConvertMax = 0
 	DB_VERSION_MEDIAFILES = 4
+	DB_VERSION_SEEN = 0
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
 				
 	MediaFilesCommited=True
+	SeenCommited=True
 	_dbMediaFiles	= None	# New table for other media.. or all in future...
 	
 	idxMoviesByImdb = {}
@@ -164,6 +167,7 @@ class databaseHandlerPICKLE(object):
 	_dbSeries	= None
 	_dbEpisodes	= None	
 	_dbFailed	= None
+	_dbSeen		= None
 
 	def __init__(self):
 		printl("->", self, "S")
@@ -579,6 +583,7 @@ class databaseHandlerPICKLE(object):
 		printl("insertFake", self)
 		fake = MediaInfo()
 		fake.MediaType = MediaInfo.SERIE
+		fake.TheTvDbId = forSerie
 		fake.Title = "AutoInserted for serie: "+ str(forSerie)
 		return self.insertMedia(fake)
 						
@@ -589,8 +594,9 @@ class databaseHandlerPICKLE(object):
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		serieId = None
 		if media.isTypeSerie():
+			printl("IS SERIE", self, "S")
 			if media.TheTvDbId is None or media.TheTvDbId == u"":
-				key = None
+				key = self._getMediaKeyWithTheTvDbId(u'', MediaInfo.SERIE)
 			else:
 				key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 			if key is not None:
@@ -602,15 +608,19 @@ class databaseHandlerPICKLE(object):
 			
 		# Checks if a tvshow is already in the db, if so then we dont have to readd it a second time
 		if media.isTypeEpisode():
+			printl("IS EPISODE", self, "S")
 			# No Parent... from Sync
 			if media.ParentId is None:
-				printl("media.TheTvDbId: *" + repr(media.TheTvDbId) + "*", self, "W")
+				#printl("media.TheTvDbId: *" + repr(media.TheTvDbId) + "*", self, "W")
 				if media.TheTvDbId is None or media.TheTvDbId == u"":
-					key = None
+					key = self._getMediaKeyWithTheTvDbId(u'', MediaInfo.SERIE)
 				else:
 					key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 				if key is None:
-					resultInsert = self.insertFakeSerie(media.TheTvDbId)
+					if media.TheTvDbId is None or media.TheTvDbId == u"":
+						resultInsert = self.insertFakeSerie(u'')
+					else:
+						resultInsert = self.insertFakeSerie(media.TheTvDbId)
 					serieId = resultInsert["id"]
 				else:
 					serieId = self._getMediaWithKey(key).Id
@@ -654,6 +664,7 @@ class databaseHandlerPICKLE(object):
 			ret["status"] 	= 1 # Created
 			ret["id"]	= m.Id
 			ret["message"]	= u""
+			#printl("<-", self, "S")
 			return ret
 		else: #Failure
 			#self._addFailedCauseOf = self._dbMovies[movieKey]
@@ -1457,16 +1468,126 @@ class databaseHandlerPICKLE(object):
 			traceback.print_exc(file=sys.stdout)
 			print '-'*60
 
+#
+#################################   SEEN   ################################# 
+#
+	def _loadSeenDB(self):
+		printl("->", self, "S")
+		if self._dbSeen is None:
+			start_time = time.time()
+			self._dbSeen = {}
+			self._dbSeen["Movies"] = {}
+			self._dbSeen["TV"] = {}
+			try:
+				if os.path.exists(self.SEENDB):
+					fd = open(self.SEENDB, "rb")
+					self._dbSeen = pickle.load(fd)
+					fd.close()
+					#self._upgradeTables(self._dbMovies)
+				else:
+					self._setDBVersion(self._dbMovies, self.DB_VERSION_SEEN)
+	
+			except Exception, ex:
+				print ex
+				print '-'*60
+				import sys, traceback
+				traceback.print_exc(file=sys.stdout)
+				print '-'*60
 
-	#not tested
-	#self.idxMoviesByImdb = {}
-	#self.idxSeriesByTheTvDb = {}
-	#def createMoviesIndexes(self):
-	#	printl("->", self, 10)
-	#	start_time = time.time()
-	#	self.idxMoviesByImdb = {}
-	#	for key in self._dbMovies:
-	#		if key != self.CONFIGKEY:		# only for Pickle
-	#			self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
-	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self, 11)
+			elapsed_time = time.time() - start_time
+			printl("LoadSeen Took : " + str(elapsed_time), self, 11)
+					
+	
+	def saveSeenDB(self):
+		printl("->", self, "S")
+		if self.SeenCommited:
+			printl("Nothing to Commit", self)
+			return
+		start_time = time.time()
+		try:		
+			fd = open(self.SEENDB, "wb")
+			pickle.dump(self._dbSeen, fd, pickle.HIGHEST_PROTOCOL)
+			fd.close()
+			self.SeenCommited = True
+			
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
+		
+		elapsed_time = time.time() - start_time
+		printl("Took: " + str(elapsed_time), self)
+
+
+	def _seenCheckLoaded():
+		#printl("->", self, "S")
+		if self._dbSeen is None:
+			printl("Seen database not loaded yet. Loading ... ", self, "S")
+			self._loadSeenDB()
+			
+#def isSeen(primary_key):
+#	global dbSeen
+#	_seenCheckLoaded()
+#	if primary_key.has_key("TheTvDbId"):
+#		try:
+#			return dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
+#		except Exception, ex:
+#			return False
+#	if primary_key.has_key("ImdbId"):
+#		try:
+#			return dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
+#		except Exception, ex:
+#			return False
+#	return False
+#
+#def setSeen(primary_key):
+#	global dbSeen
+#	_seenCheckLoaded()
+#	if primary_key.has_key("TheTvDbId"):
+#		if not dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
+#			dbSeen["TV"][primary_key["TheTvDbId"]] = {}
+#		if not dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
+#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
+#		if not dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
+#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
+#			
+#		dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+#		saveSeenDB()
+#		
+#	else:
+#		if primary_key.has_key("ImdbId"):
+#			if not dbSeen["Movies"].has_key(primary_key["ImdbId"]):
+#				dbSeen["Movies"][primary_key["ImdbId"]] = {}
+#				
+#			dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+#			saveSeenDB()
+#	return
+#def markSeen(session, args):
+#	if args.has_key("TheTvDbId"):
+#		if args.has_key("Season"):
+#			if args.has_key("Episode"):
+#				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": True})
+#	else:
+#		if args.has_key("ImdbId"):
+#			setSeen({"ImdbId": args["ImdbId"],  "Seen": True})
+#	return
+#
+#	
+#def markUnSeen(session, args):
+#	if args.has_key("TheTvDbId"):
+#		if args.has_key("Season"):
+#			if args.has_key("Episode"):
+#				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": False})
+#	else:
+#		if args.has_key("ImdbId"):
+#			setSeen({"ImdbId": args["ImdbId"],  "Seen": False})
+#	return
+
+
+#	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
+#	registerPlugin(Plugin(name=_("Seen"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
+#	registerPlugin(Plugin(name=_("Seen"), fnc=isSeen, where=Plugin.INFO_SEEN))
+#	registerPlugin(Plugin(name=_("Mark as Seen"), fnc=markSeen, where=Plugin.MENU_MOVIES_PLUGINS))
+#	registerPlugin(Plugin(name=_("Mark as Unseen"), fnc=markUnSeen, where=Plugin.MENU_MOVIES_PLUGINS))

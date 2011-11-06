@@ -38,7 +38,7 @@ class Manager():
 	TVSHOWSEPISODES = 3 
 	MUSIC = 4
 
-	TVSHOWSSEASONS = 5
+	# TVSHOWSSEASONS = 5 #not USED
 	FAILED = 6
 	FAILED_ALL = 7
 	
@@ -60,42 +60,27 @@ class Manager():
 
 	def finish(self):
 		printl("", self)
-		self.db.save()
+		#Not used self.db.save()
 
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)
-					
+		
+		#deprecated use getMoviesValues, getSeriesValues			
 		if type == self.MOVIES:
 			return self.getMoviesValues()
-					
 		elif type == self.TVSHOWS:
-			return self.getSeriesValues()
-			
+			return self.getSeriesValues()	
 		elif type == self.TVSHOWSEPISODES:
 			list = []
 			if param is not None:
 				### todo: CONVERT TO ID, don't use tvdbid
-				list = self.db.getEpisodesWithTheTvDbId(param)
+				list = self.getEpisodesWithTheTvDbId(param)
 			else:
-				list = self.db.getEpisodes()
-			return list
-		
-		#not used
-		elif type == self.TVSHOWSSEASONS: 
-			#get-ll(Manager.TVSHOWSSEASONS, (thetvdbid, )
-			if param is not None and len(param) == 1:
-				list = self.db.getSeriesSeasons(param[0])
-
-			#get-All(Manager.TVSHOWSSEASONS, (thetvdbid, season, )
-			elif param is not None and len(param) == 2:
-				serie  = param[0]
-				season = param[1]
-				list = self.db.getEpisodesWithKey(serie, season)
-			
+				list = self.getAllEpisodes()
 			return list
 		
 		elif type == self.FAILED or type == self.FAILED_ALL:
-			return self.db.getFailed()
+			return self.getFailed()
 		else:
 			return None
 
@@ -216,6 +201,10 @@ class Manager():
 		printl("no element found", self)
 		return False
 	
+#
+##########################  SEEN - not in dbHandler  ########################## 
+#
+
 	def isSeen(self, primary_key):
 		if primary_key.has_key("TheTvDbId"):
 			if primary_key.has_key("Season"):
@@ -230,10 +219,6 @@ class Manager():
 		
 		return False
 	
-#
-##########################  SEEN - not in dbHandler  ########################## 
-#
-
 	def isShowSeen(self, primary_key):
 		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
 		
@@ -362,6 +347,12 @@ class Manager():
 	def getEpisodes(self, id):
 		return self.db.getEpisodes(id)
 	
+	def getAllEpisodes(self): # DANGER
+		return self.db.getEpisodes()
+		
+	def getEpisodesWithTheTvDbId(self, theTvDbId):
+		return self.db.getEpisodesWithTheTvDbId(theTvDbId)
+		
 	def getEpisodesCount(self, parentId=None, season=None):
 		return self.db.getMediaCount(MediaInfo.EPISODE, parentId, season)
 

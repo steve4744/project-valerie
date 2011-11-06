@@ -76,7 +76,9 @@ class DMC_NewestEpisodes(DMC_Library):
         tmpGenres = []
         shows = {}
         daysBack = config.plugins.pvmc.plugins.latestepisodes.daysback.value
-        episodes = self.manager.getAll(Manager.TVSHOWSEPISODES)
+        #episodes = self.manager.get.All(Manager.TVSHOWSEPISODES)
+	episodes = self.manager.getAllEpisodes()
+	
     
         for episode in episodes:
             # Yeah its a bit supersufficial as date is already in it

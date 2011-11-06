@@ -457,6 +457,7 @@ class pyvalerie(Thread):
 							result.MediaStatus = MediaInfo.STATUS_OK
 							result.syncErrNo   = 0
 							result.syncFailedCause = u""
+							#printl("INSERT: "+result.Filename+ " type: " + str(result.MediaType) , self, "I")
 							ret = db.insertMedia(result)
 							if ret["status"] > 0:
 								#result.Title = self.encodeMe(result.Title)
