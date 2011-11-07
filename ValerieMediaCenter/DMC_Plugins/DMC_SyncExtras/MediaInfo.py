@@ -103,6 +103,7 @@ class MediaInfo(object):
 	Seen = 0
 	SeenDate = u""
 	ShowUp = 1		# Show in List
+	FileCreation = 0
 	
 	Poster   = u""
 	Backdrop = u""

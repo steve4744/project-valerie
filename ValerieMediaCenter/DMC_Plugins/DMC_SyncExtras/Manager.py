@@ -243,6 +243,15 @@ class Manager():
 				return True
 			
 		return False
+	
+	# get from db
+
+	def setSeen(self, primary_key):
+		self.db.setSeen(primary_key)
+	
+	def isSeenDB(self, primary_key):
+		return self.db.isSeen(primary_key)
+			
 #
 ###############################   MEDIA FILES   ############################### 
 #

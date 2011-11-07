@@ -1526,44 +1526,46 @@ class databaseHandlerPICKLE(object):
 		if self._dbSeen is None:
 			printl("Seen database not loaded yet. Loading ... ", self, "S")
 			self._loadSeenDB()
-			
-#def isSeen(primary_key):
-#	global dbSeen
-#	_seenCheckLoaded()
-#	if primary_key.has_key("TheTvDbId"):
-#		try:
-#			return dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
-#		except Exception, ex:
-#			return False
-#	if primary_key.has_key("ImdbId"):
-#		try:
-#			return dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
-#		except Exception, ex:
-#			return False
-#	return False
-#
-#def setSeen(primary_key):
-#	global dbSeen
-#	_seenCheckLoaded()
-#	if primary_key.has_key("TheTvDbId"):
-#		if not dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]] = {}
-#		if not dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
-#		if not dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
-#			
-#		dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
-#		saveSeenDB()
-#		
-#	else:
-#		if primary_key.has_key("ImdbId"):
-#			if not dbSeen["Movies"].has_key(primary_key["ImdbId"]):
-#				dbSeen["Movies"][primary_key["ImdbId"]] = {}
-#				
-#			dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
-#			saveSeenDB()
-#	return
+				
+	def isSeen(self, primary_key):
+		printl("->", self, "S")
+		self._seenCheckLoaded()
+		if primary_key.has_key("TheTvDbId"):
+			try:
+				return self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
+			except Exception, ex:
+				return False
+		if primary_key.has_key("ImdbId"):
+			try:
+				return self.dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
+			except Exception, ex:
+				return False
+		return False
+	
+	def setSeen(self, primary_key):
+		printl("->", self, "S")
+		self._seenCheckLoaded()
+		if primary_key.has_key("TheTvDbId"):
+			if not self.dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
+				self.dbSeen["TV"][primary_key["TheTvDbId"]] = {}
+			if not self.dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
+				self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
+			if not self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
+				self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
+				
+			self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+			self.SeenCommited = False
+			self.saveSeenDB()	
+		else:
+			if primary_key.has_key("ImdbId"):
+				if not self.dbSeen["Movies"].has_key(primary_key["ImdbId"]):
+					self.dbSeen["Movies"][primary_key["ImdbId"]] = {}
+					
+				self.dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+				self.SeenCommited = False
+				self.saveSeenDB()
+		return
+
 #def markSeen(session, args):
 #	if args.has_key("TheTvDbId"):
 #		if args.has_key("Season"):

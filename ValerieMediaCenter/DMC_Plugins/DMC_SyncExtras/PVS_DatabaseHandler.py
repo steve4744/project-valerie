@@ -451,6 +451,15 @@ class Database(object):
 #			media.Disc = Utf8.stringToUtf8(media.Disc)		
 #	syncFailedCause = u""
 
+
+	def isSeen(self, primary_key):
+		return self.dbHandler.isSeen(primary_key)
+	
+	def setSeen(self, primary_key):
+		self.dbHandler.setSeen(primary_key)
+	
+
+
 #	
 ############################################################################## 
 #
