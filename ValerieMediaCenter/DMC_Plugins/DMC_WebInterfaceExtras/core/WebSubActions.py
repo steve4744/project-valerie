@@ -124,13 +124,13 @@ class MediaForm(Resource):
 			if type == "isMovie":
 				m.ImdbId = request.args["ImdbId"][0]
 				printl("showAddByImdbForm: "+str(request.args["ImdbId"][0]) + " " + str(type))
-				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, False)
+				syncData = Manager("WebIf:SubActions:MediaForm").syncElement(path, filename, extension, m.ImdbId, False)
 				m = syncData[0]
 			
 			if type == "isSerie":
 				m.ImdbId = request.args["ImdbId"][0]
 				printl("showAddByImdbForm: "+str(request.args["ImdbId"][0]) + " " + str(type))
-				syncData = Manager().syncElement(path, filename, extension, m.ImdbId, True)
+				syncData = Manager("WebIf:SubActions:MediaForm").syncElement(path, filename, extension, m.ImdbId, True)
 				m = syncData[0]
 		
 		#######################
@@ -140,7 +140,7 @@ class MediaForm(Resource):
 			nextMode = "showAddByImdbForm"
 			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")	
 			mediainfo.SearchString = request.args["Title"][0]
-			results = Manager().searchAlternatives(mediainfo)			
+			results = Manager("WebIf:SubActions:MediaForm").searchAlternatives(mediainfo)			
 		
 		if "Id" in request.args:
 			Id = request.args["Id"][0]
@@ -366,7 +366,7 @@ class MediaActions(Resource):
 		if request.args["mode"][0] == "addMediaToDb":
 			printl("mode (addMediaToDb)", self, "I")
 			
-			manager = Manager()	
+			manager = Manager("WebIf:SubActions:MediaActions")	
 			type = request.args["type"][0]
 			parentId = request.args["ParentId"][0]
 			
@@ -411,7 +411,7 @@ class MediaActions(Resource):
 		elif request.args["mode"][0] == "alterMediaInDb":
 			printl("mode (alterMediaInDb)", self, "I")
 			
-			manager = Manager()
+			manager = Manager("WebIf:SubActions:MediaActions")
 			type = stringToUtf8(request.args["type"][0])
 			Id = request.args["Id"][0]
 			parentId = request.args["ParentId"][0]
@@ -460,7 +460,7 @@ class MediaActions(Resource):
 		elif request.args["mode"][0] == "deleteMediaFromDb":
 			printl("mode (deleteMediaFromDb)", self, "I")
 			
-			manager = Manager()
+			manager = Manager("WebIf:SubActions:MediaActions")
 			id = request.args["Id"][0]
 			type = request.args["type"][0]
 			parentId = request.args["ParentId"][0]
@@ -505,7 +505,7 @@ class MediaActions(Resource):
 		elif request.args["mode"][0] == "changeMediaArts":
 			printl("mode (changeMediaArts)", self, "I")
 			
-			manager = Manager()
+			manager = Manager("WebIf:SubActions:MediaActions")
 			type = request.args["type"][0]
 			media_source = request.args["media_source"][0]
 			media_type = request.args["media_type"][0]
@@ -552,7 +552,7 @@ class MediaActions(Resource):
 		elif request.args["mode"][0] == "saveChangesToDb":
 			printl("mode (saveChangesToDb)", self, "I")
 			
-			manager = Manager()
+			manager = Manager("WebIf:SubActions:MediaActions")
 			manager.finish()
 			
 			if request.args["return_to"][0] == "movies":
@@ -662,7 +662,7 @@ class WebFunctions(Resource):
 		elif request.args["mode"][0] == "dumpDb":
 			printl("mode (dumpDb)", self, "I")
 			
-			Manager().getDbDump()
+			Manager("WebIf:SubActions:WebFunctions").getDbDump()
 			return WebHelper().redirectMeTo("/dumps")	
 			
 		##########################

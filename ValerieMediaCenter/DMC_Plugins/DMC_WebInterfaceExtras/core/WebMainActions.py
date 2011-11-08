@@ -45,9 +45,10 @@ class Home(Resource):
 		finalOutput = WebHelper().getHtmlCore("Home")
 		
 		currentVersion = Update().getInstalledRevision()
-		movieCount = str(Manager().getMoviesCount())
-		tvShowCount = str(Manager().getSeriesCount())
-		episodeCount = str(Manager().getEpisodesCount())
+		manager = Manager("WebIf:MainActions")
+		movieCount = str(manager.getMoviesCount())
+		tvShowCount = str(manager.getSeriesCount())
+		episodeCount = str(manager.getEpisodesCount())
 		
 		updateType = Update().getCurrentUpdateType()
 		latestRevision = Update().getLatestRevision()

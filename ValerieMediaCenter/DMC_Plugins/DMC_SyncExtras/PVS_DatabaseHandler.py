@@ -21,6 +21,8 @@
 ################################################################################
 # Function			Parameters		Return
 ################################################################################
+#
+################################   MEDIAFILES   ################################ 
 # getMediaValues		type
 #				order=None
 #				firstRecord=0
@@ -32,31 +34,32 @@
 #				firstRecord=0
 #				numberOfRecords=9999999
 #
-# insertMediaWithDict		key_value_dict
-# updateMediaWithDict		key_value_dict			#ID is Required
-# deleteMedia			id
-# getMediaPaths
-#################################   MOVIES   ################################# 
 # getMediaWithId		id
 # getMediaWithImdbId		imdbid
 # getMediaWithTheTvDbId		thetvdbid
-# getMediaCount			type
-# setMoviesSeen			id
-#################################   SERIES   ################################# 
-# insertSerie			media
+# getMediaCount			mediaType
+#				parentId=None
+#				season=None
+# getMediaPaths
+# insertMedia			media
+# insertMediaWithDict		key_value_dict
+# updateMediaWithDict		key_value_dict			#ID is Required
+# deleteMedia			id
 ################################   EPISODES   ################################ 
-# getEpisode			id
 # getEpisodes			mediaId=None
 # getEpisodesWithTheTvDbId	theTvDbId, season=None
+	#TODO: CONVERT TO ID	
 #################################   FAILED   ################################# 
 # getFailed
 # getFailedCount
-# deleteMediaFilesNotOk	#NOT USED
 ###################################  UTILS  ###################################
-# getDbDump(self):
-# dbIsCommited(self):
-# checkDuplicate(self, path, filename, extension):
-# transformGenres(self):
+# getDbDump
+# dbIsCommited
+# checkDuplicate		path, filename, extension
+# transformGenres
+# cleanValuesOfMedia		media
+# isSeen			primary_key
+# setSeen			primary_key
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import cPickle   as pickle
@@ -70,6 +73,7 @@ from threading import Lock
 from MediaInfo import MediaInfo
 from Components.config import config
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Screens.MessageBox import MessageBox
 	
 DB_SQLITE_LOADED = False
 DATABASE_HANDLER_FOUND = False
@@ -106,7 +110,7 @@ if DATABASE_HANDLER_FOUND != True:
 
 gDatabase = None
 gDatabaseMutex = Lock()
-
+		
 class Database(object):
 	DB_NONE   = 0
 	DB_TXD    = 2 #Not Used
@@ -130,24 +134,13 @@ class Database(object):
 	#  	 checkduplicates
 	
 	CONFIGKEY  = -999999
-	
-	def __init__(self):
-		printl("->", self, "S")
-			
-		if self.USE_DB_TYPE == self.DB_SQLITE:			
-			self.dbHandler = databaseHandlerSQL().getInstance("from __init__")
-			if self.dbHandler.DB_SQLITE_FIRSTTIME:
-				printl("Sql FirstTime", self)					 
-				self.importDataToSql()#.addCallback(self.ImportDone).addErrback(self.ImportError)
+	#session   = None
+	dbHandler = None
+	# only One instance of DatabaseHandler
 
-				self.dbHandler.DB_SQLITE_FIRSTTIME = False
-					
-		if self.USE_DB_TYPE == self.DB_PICKLE:			
-			self.dbHandler = databaseHandlerPICKLE().getInstance()
+	def __init__(self):
+		printl("->", self, "S")					
 		
-		#if self.USE_DB_TYPE == self.DB_TXD:
-		#	self.dbHandler = databaseHandlerTXD().getInstance()
-	
 	def __str__(self):
 		printl("->", self, "S")	
 		try:
@@ -161,9 +154,50 @@ class Database(object):
 			printl("Error retriving _str_: "+ str(ex), self, "W")
 			return "Error retriving _str_"			
 
-	def importDataToSql (self):
+	def getInstance(self, origin="N/A", session=None):
+		printl("getInstance called from: "+ origin, self, "S")
+		global gDatabase
+		global gDatabaseMutex
+		# Lock to init one only (Backgroud Loader is in concurrence with Screen call)		
+		if gDatabase is None:
+			printl("Acquiring Mutex for: "+ origin, self, "I")
+			gDatabaseMutex.acquire()
+			#try:
+			if True:
+				printl("Mutex Acquired for: "+ origin, self, "I")
+				#if session is not None: self.session = session
+				
+				if self.dbHandler is None:		
+					printl("Creating new Database instance", self)				
+					if self.USE_DB_TYPE == self.DB_SQLITE:			
+						self.dbHandler = databaseHandlerSQL().getInstance("from Database-" + origin )
+						if self.dbHandler.DB_SQLITE_FIRSTTIME:
+							printl("Sql FirstTime", self)					 
+							self.importDataToSql(session)#.addCallback(self.ImportDone).addErrback(self.ImportError)
+			
+							self.dbHandler.DB_SQLITE_FIRSTTIME = False
+						else:
+							printl("NOT Sql FirstTime", self)					 
+								
+					if self.USE_DB_TYPE == self.DB_PICKLE:			
+						self.dbHandler = databaseHandlerPICKLE().getInstance()				
+				
+					if self.PRELOADDB:
+						self.preload()  # RELOAD ALLL 
+					
+				gDatabase = self
+			#finally:	
+				gDatabaseMutex.release()
+				printl("Released Mutex of: "+ origin, self, "I")
+		
+		return gDatabase
+
+	def importDataToSql (self, session):
 		printl("->", self, "S")
 		try:
+			if session is not None:
+				self.mm = session.open(MessageBox, (_("\nConverting data.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+			#self.mm = self.session.open(Msg)		
 			printl("Importing Data", self)
 			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
 			records = dbHandlerPickle.getMediaValues()
@@ -192,6 +226,9 @@ class Database(object):
 			if os.path.exists(sqlFile):
 				os.remove(sqlFile)
 			#self.reload()	# Load from PICKLE
+		if session is not None:
+			#time.sleep(10)
+			self.mm.close(False, self.session)
 		printl("<-", self)
 			
 
@@ -210,26 +247,6 @@ class Database(object):
 			return "SQLite"
 		else:
 			return "No DB Type defined"
-
-	def getInstance(self):
-		printl("->", self, "S")
-		global gDatabase
-		global gDatabaseMutex
-		
-		if gDatabase is None:
-			printl("Acquiring Mutex", self, "I")
-			gDatabaseMutex.acquire()
-			try:
-				printl("Creating new Database instance", self)				
-				if self.PRELOADDB:
-					self.preload()  # RELOAD ALLL 
-					
-				gDatabase = self
-			finally:	
-				gDatabaseMutex.release()
-				printl("Released Mutex", self, "I")
-		
-		return gDatabase
 
 	def preload(self):
 		printl("->", self, "S")
@@ -291,7 +308,26 @@ class Database(object):
 
 	def getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.dbHandler.getMediaValuesForFolder(type, path, order, firstRecord, numberOfRecords)
+
+	def getMediaWithId(self, id):
+		printl("->", self, "S")
+		return self.dbHandler.getMediaWithId(id)
+
+	def getMediaWithImdbId(self, imdbid):
+		printl("->", self, "S")
+		return self.dbHandler.getMediaWithImdbId(imdbid)
+
+	def getMediaWithTheTvDbId(self, thetvdbid):
+		printl("->", self, "S")
+		return self.dbHandler.getMediaWithTheTvDbId(thetvdbid)
+
+	def getMediaCount(self, mediaType, parentId=None, season=None):
+		printl("->", self, "S")
+		return self.dbHandler.getMediaCount(mediaType, parentId, season)	
 	
+	def getMediaPaths(self):
+		return self.dbHandler.getMediaPaths()
+
 	#
 	# DML statements
 	#	
@@ -310,55 +346,9 @@ class Database(object):
 	def deleteMedia(self, id):
 		printl("->", self, "S")
 		return self.dbHandler.deleteMedia(id)
-
-	def getMediaPaths(self):
-		return self.dbHandler.getMediaPaths()
-
-#
-#################################   MOVIES   ################################# 
-#
-	def getDbDump(self):
-		printl("->", self, "S")
-		return self.dbHandler.getDbDump()
-	
-	def dbIsCommited(self):
-		printl("->", self, "S")
-		return self.dbHandler.dbIsCommited()
-
-	def getMediaWithId(self, id):
-		printl("->", self, "S")
-		return self.dbHandler.getMediaWithId(id)
-
-	def getMediaWithImdbId(self, imdbid):
-		printl("->", self, "S")
-		return self.dbHandler.getMediaWithImdbId(imdbid)
-
-	def getMediaWithTheTvDbId(self, thetvdbid):
-		printl("->", self, "S")
-		return self.dbHandler.getMediaWithTheTvDbId(thetvdbid)
-
-	def getMediaCount(self, mediaType, parentId=None, season=None):
-		printl("->", self, "S")
-		return self.dbHandler.getMediaCount(mediaType, parentId, season)	
-	
-	def setMoviesSeen(self, id):
-		printl("->", self, "S")
-		return 	
-#	
-#################################   SERIES   ################################# 
-#
-	# DML statements
-	def insertSerie(self, media):
-		printl("->", self, "S")
-		return self.dbHandler.insertSerie(media)
-
 #	
 ################################   EPISODES   ################################ 
 #
-	def getEpisode(self, id):
-		printl("->", self, "S")
-		return self.dbHandler.getMediaWithId(id)
-
 	def getEpisodes(self, mediaId=None):
 		printl("->", self, "S")
 		return self.dbHandler.getEpisodes(mediaId)
@@ -366,8 +356,7 @@ class Database(object):
 	def getEpisodesWithTheTvDbId(self, theTvDbId, season=None):
 		printl("->", self, "S")
 		Id = self.dbHandler.getMediaWithTheTvDbId(theTvDbId).Id
-		return self.dbHandler.getEpisodes(Id, season)
-	
+		return self.dbHandler.getEpisodes(Id, season)	
 #	
 #################################   FAILED   ################################# 
 #
@@ -379,13 +368,20 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.getMediaFailedCount()
 
-	def deleteMediaFilesNotOk(self):
-		printl("->", self, "S")
-		return self.dbHandler.deleteMediaFilesNotOk()
-
+	#def deleteMediaFilesNotOk(self):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.deleteMediaFilesNotOk()
 #
 ###################################  UTILS  ###################################
 #
+	def getDbDump(self):
+		printl("->", self, "S")
+		return self.dbHandler.getDbDump()
+	
+	def dbIsCommited(self):
+		printl("->", self, "S")
+		return self.dbHandler.dbIsCommited()
+	
 	##
 	# Checks if file is already in the db
 	# @param path: utf-8 
@@ -458,6 +454,14 @@ class Database(object):
 	def setSeen(self, primary_key):
 		self.dbHandler.setSeen(primary_key)
 	
+#	
+#################################   SERIES   ################################# 
+#
+	# DML statements
+	#def insertSerie(self, media):
+	#	printl("->", self, "S")
+	#	return self.dbHandler.insertSerie(media)
+
 
 
 #	

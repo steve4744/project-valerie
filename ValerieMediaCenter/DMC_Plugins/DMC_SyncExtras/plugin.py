@@ -1139,7 +1139,7 @@ class ProjectValerieSyncManager(Screen):
 		if self.APILevel >= 3:
 			self["key_blue"] = StaticText(_("TVShows (All)"))
 		
-		self.manager = Manager()
+		self.manager = Manager("SyncManager")
 		
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions", "MenuActions"], 
 		{

@@ -22,7 +22,6 @@
 ################################################################################
 #	# PUBLIC #	#
 # getInstance
-# dbIsCommited
 # loadAll
 # saveMediaFiles			
 # getMediaWithId		id 				# always return a copy, never the directly with record
@@ -45,13 +44,11 @@
 # getEpisodes			parentId=None
 #				season=None
 #
-# insertFakeSerie 		forSerie
 # insertMedia			media
 # insertMediaWithDict		key_value_dict
 # updateMediaWithDict		key_value_dict
 # deleteMedia			id
 # getMediaFailedValues	
-# deleteMediaFilesNotOk						# for sync - ALL mediafiles with status not ok
 # getMediaFailedCount
 # markAsMissing			id
 # getDbDump							# for debug 
@@ -72,11 +69,13 @@
 #				order=None	firstRecord=0
 #				numberOfRecords=9999999
 #				statusOk=True
+# _insertFakeSerie 		forSerie
 #
 ###################################  UTILS  ###################################
 # _fillMediaInfo			m, key_value_dict
 # checkDuplicateMF		path, filename, extension
 # transformGenres
+# dbIsCommited
 ############################  DB VERSION CONTROL  #############################
 # _getDBVersion			records
 # _setDBVersion			records, version
@@ -168,7 +167,7 @@ class databaseHandlerPICKLE(object):
 	_dbEpisodes	= None	
 	_dbFailed	= None
 	_dbSeen		= None
-
+	
 	def __init__(self):
 		printl("->", self, "S")
 		
@@ -579,8 +578,8 @@ class databaseHandlerPICKLE(object):
 	## 
 	# DML statements
 	##
-	def insertFakeSerie (self, forSerie):
-		printl("insertFake", self)
+	def _insertFakeSerie (self, forSerie):
+		printl("_insertFake", self)
 		fake = MediaInfo()
 		fake.MediaType = MediaInfo.SERIE
 		fake.TheTvDbId = forSerie
@@ -618,9 +617,9 @@ class databaseHandlerPICKLE(object):
 					key = self._getMediaKeyWithTheTvDbId(media.TheTvDbId, MediaInfo.SERIE)
 				if key is None:
 					if media.TheTvDbId is None or media.TheTvDbId == u"":
-						resultInsert = self.insertFakeSerie(u'')
+						resultInsert = self._insertFakeSerie(u'')
 					else:
-						resultInsert = self.insertFakeSerie(media.TheTvDbId)
+						resultInsert = self._insertFakeSerie(media.TheTvDbId)
 					serieId = resultInsert["id"]
 				else:
 					serieId = self._getMediaWithKey(key).Id
@@ -738,16 +737,16 @@ class databaseHandlerPICKLE(object):
 	def getMediaFailedValues(self):	
 		return self._getMediaValuesWithFilter(None, None, None, None, None, 0, 9999999, False)
 	
-	def deleteMediaFilesNotOk(self): # for sync - ALL mediafiles with status not ok
-		records = self._getMediaFiles(None, False)
-		
-		for key in records:
-			if self._checkKeyValid(key):
-				if not records[key].isStatusOk():#err
-					self.deleteMedia(records[key].Id)
-		if self.AUTOCOMMIT:
-			self.saveMediaFiles()
-		return True	
+	#def deleteMediaFilesNotOk(self): # for sync - ALL mediafiles with status not ok
+	#	records = self._getMediaFiles(None, False)
+	#	
+	#	for key in records:
+	#		if self._checkKeyValid(key):
+	#			if not records[key].isStatusOk():#err
+	#				self.deleteMedia(records[key].Id)
+	#	if self.AUTOCOMMIT:
+	#		self.saveMediaFiles()
+	#	return True	
 
 	def getMediaFailedCount(self):
 		printl("->", self, "S")
@@ -1471,6 +1470,8 @@ class databaseHandlerPICKLE(object):
 #
 #################################   SEEN   ################################# 
 #
+# dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+# dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
 	def _loadSeenDB(self):
 		printl("->", self, "S")
 		if self._dbSeen is None:
@@ -1521,7 +1522,7 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 
 
-	def _seenCheckLoaded():
+	def _seenCheckLoaded(self):
 		#printl("->", self, "S")
 		if self._dbSeen is None:
 			printl("Seen database not loaded yet. Loading ... ", self, "S")

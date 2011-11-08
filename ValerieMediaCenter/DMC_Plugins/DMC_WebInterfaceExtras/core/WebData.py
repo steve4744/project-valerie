@@ -30,7 +30,7 @@ class WebData():
 		
 		dataRows = []
 		
-		manager = Manager()
+		manager = Manager("WebIf:WebData")
 		printl("TYPE: " + type)
 		if type == "movies":
 			dataRows = manager.getMoviesValues()

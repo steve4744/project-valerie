@@ -25,7 +25,7 @@ class DMC_MovieLibrary(DMC_Library):
             from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
             printl ("Manager Imported")
         
-        self.manager = Manager()
+        self.manager = Manager("Movies")
         DMC_Library.__init__(self, session, "movies")
 
     ###

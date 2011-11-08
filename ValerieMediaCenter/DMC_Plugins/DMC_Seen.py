@@ -53,94 +53,11 @@ status      = None
 type        = None
 progress    = None
 
-
-
-#def _loadSeenDB():
-#	global dbSeen
-#	global SEENDB
-#	printl("_loadSeenDB ->", None)
-#	if dbSeen is None:
-#		printl("_loadSeenDB loading ->", None)
-#		dbSeen = {}
-#		dbSeen["Movies"] = {}
-#		dbSeen["TV"] = {}
-#		try:
-#			if os.path.exists(SEENDB):
-#				fd = open(SEENDB, "rb")
-#				dbSeen = pickle.load(fd)
-#				fd.close()
-#
-#		except Exception, ex:
-#			print ex
-#			print '-'*60
-#			import sys, traceback
-#			traceback.print_exc(file=sys.stdout)
-#			print '-'*60
-#
-#
-#def saveSeenDB():
-#	global dbSeen
-#	global SEENDB
-#	printl("saveSeenDB ->", None)
-#	try:		
-#		fd = open(SEENDB, "wb")
-#		pickle.dump(dbSeen, fd, pickle.HIGHEST_PROTOCOL)
-#		fd.close()
-#		
-#	except Exception, ex:
-#		print ex
-#		print '-'*60
-#		import sys, traceback
-#		traceback.print_exc(file=sys.stdout)
-#		print '-'*60
-#
-#def _seenCheckLoaded():
-#	#printl("->", self, 10)
-#	global dbSeen
-#	if dbSeen is None:
-#		printl("SeenDB Not Loaded", None, 10)
-#		_loadSeenDB()
-#
 def isSeen(primary_key):
 	manager.isSeenDB(primary_key)
-#	global dbSeen
-#	_seenCheckLoaded()
-#	if primary_key.has_key("TheTvDbId"):
-#		try:
-#			return dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
-#		except Exception, ex:
-#			return False
-#	if primary_key.has_key("ImdbId"):
-#		try:
-#			return dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
-#		except Exception, ex:
-#			return False
-#	return False
-#
+
 def setSeen(primary_key):
 	manager.setSeen(primary_key)
-#	global dbSeen
-#	_seenCheckLoaded()
-#	if primary_key.has_key("TheTvDbId"):
-#		if not dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]] = {}
-#		if not dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
-#		if not dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
-#			dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
-#			
-#		dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
-#		saveSeenDB()
-#		
-#	else:
-#		if primary_key.has_key("ImdbId"):
-#			if not dbSeen["Movies"].has_key(primary_key["ImdbId"]):
-#				dbSeen["Movies"][primary_key["ImdbId"]] = {}
-#				
-#			dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
-#			saveSeenDB()
-#	return
-
 
 def autostart(session):
 	#global dbSeen
@@ -152,11 +69,10 @@ def autostart(session):
 	global status
 	global type
 	global progress
-	#SEENDB = config.plugins.pvmc.configfolderpath.value + "seen.db"
-	#_loadSeenDB()
+
 	global manager
 	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-	manager = Manager()	
+	manager = Manager("DMC_SEEN")	
 		
 def markSeen(session, args):
 	if args.has_key("TheTvDbId"):

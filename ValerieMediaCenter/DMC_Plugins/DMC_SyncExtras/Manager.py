@@ -14,8 +14,53 @@
 #
 #   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
 #			     Changes to webif/sync by Don 	
+##
+################################################################################
+# Function			Parameters		Return
+################################################################################
+# getAll(self, type, param=None):
+# searchAlternatives(self, oldElement, searchstring=None):
+# syncElement(self, path, filename, extension, imdbid, istvshow, oldelement=None):
+# getElementByUsingPrimaryKey(self, type, primary_key):
+# getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
+# isSeen(self, primary_key):
+# isShowSeen(self, primary_key):
+# isSeasonSeen(self, primary_key):
+# isEntrySeen(self, primary_key):
+# get from db
+# setSeen(self, primary_key):
+# isSeenDB(self, primary_key):
+###############################   MEDIA FILES   ############################### 
+# insertMedia(self, type, key_value_dict):
+# updateMedia(self, type, key_value_dict):
+# deleteMedia(self, id):
+# getMediaPaths(self):
+# getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
+##################################   MOVIES   ################################# 
+# getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+# getMovie(self, id):
+# getMoviesCount(self):
+##################################   SERIES   ################################# 
+# getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+# getSerie(self, id):
+# #####getSeriesWithTheTvDbId(self, theTvDbId):
+# getSeriesCount(self):
+# getEpisodes(self, id):
+# getAllEpisodes(self): # DANGER
+# getEpisodesWithTheTvDbId(self, theTvDbId):
+# getEpisodesCount(self, parentId=None, season=None):
+# getEpisode(self, id):
+#################################   FAILED   ################################# 
+# getFailed(self):
+# getFailedItem(self, id):
+# getFailedCount(self):
+################################     UTILS      ################################ 
+# getDbDump(self):
+# dbIsCommited(self):	
+# changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
 import os
 import Blacklist
 import replace
@@ -44,19 +89,20 @@ class Manager():
 	
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
+	Session = None
 
-	def __init__(self):
-		printl("->", self)
-		try:
-			self.db = Database().getInstance()
+	def __init__(self, origin="N/A", session=None):
+		printl("Init called from: "+ origin, self, "S")
+		#try:
+		if True:
+			self.db = Database().getInstance("Manager-"+origin, session)
 			replace.load()
-		except Exception, ex:
-			printl ("Exception on Init Ex:"+str(ex), self)
-			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.sync import checkDefaults
-			checkDefaults()
-			
-			self.db = Database().getInstance()
-			replace.load()
+		#except Exception, ex:
+		#	printl ("Exception on Init Ex:"+str(ex), self)
+		#	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.sync import checkDefaults
+		#	checkDefaults()			
+		#	self.db = Database().getInstance("Manager (by exception)-"+origin, session)
+		#	replace.load()
 
 	def finish(self):
 		printl("", self)
@@ -151,9 +197,6 @@ class Manager():
 	#			printl("ADD " + str(self.db.add(newElement[0])), self)
 
 # self.dbHandler.deleteMedia(media.Id)
-
-	def remove(self, media, blacklist=True):
-		self.deleteMedia(media.Id)
 
 	def getElementByUsingPrimaryKey(self, type, primary_key):
 		printl("", self)
@@ -270,6 +313,10 @@ class Manager():
 			return False
 		return True
 	
+	#deprecated - use: deleteMedia(id)
+	#def remove(self, media, blacklist=True):
+	#	self.deleteMedia(media.Id)
+
 	def deleteMedia(self, id):
 		if not self.db.deleteMedia(id):
 			printl("Delete Media - Failed", self)	
@@ -347,8 +394,8 @@ class Manager():
 	def getSerie(self, id):
 		return self.db.getMediaWithId(id)
 
-	def getSeriesWithTheTvDbId(self, theTvDbId):
-		return self.db.getMediaWithTheTvDbId(theTvDbId)
+	#def getSeriesWithTheTvDbId(self, theTvDbId):
+	#	return self.db.getMediaWithTheTvDbId(theTvDbId)
 		
 	def getSeriesCount(self):
 		return self.db.getMediaCount(MediaInfo.SERIE)
@@ -366,8 +413,8 @@ class Manager():
 		return self.db.getMediaCount(MediaInfo.EPISODE, parentId, season)
 
 	def getEpisode(self, id):
-		return self.db.getEpisode(id)
-
+		return self.db.getMediaWithId(id)
+		
 #	
 #################################   FAILED   ################################# 
 #

@@ -61,14 +61,14 @@ class BackgroundDbLoader(Thread):
 	def __init__ (self, session):
 		Thread.__init__(self)
 		printl("init->", self, "S")
-		#self.session = session
+		self.session = session
 		#self.mm = self.session.open(MessageBox, (_("\nLoading data.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
 		#self.mm = self.session.open(Msg)		
 
 	def run(self):
 		printl("run->")
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-		m = Manager()
+		m = Manager("BackgroundDbLoader", self.session)
 		#self.mm.close(False, self.session)
 
 def autostart(session):
