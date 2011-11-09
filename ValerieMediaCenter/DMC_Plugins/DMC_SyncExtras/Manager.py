@@ -298,15 +298,18 @@ class Manager():
 #
 ###############################   MEDIA FILES   ############################### 
 #
-	def insertMedia(self, type, key_value_dict):
+	def insertMedia(self, media):
+		return self.db.insertMedia(media)
+			
+	def insertMediaWithDict(self, type, key_value_dict):
 		key_value_dict["MediaType"] = type
 		ret = self.db.insertMediaWithDict(key_value_dict)
 		if ret["status"]<=0:
 			printl("Insert Media - Failed " + ret["message"], self)	
 			
 		return ret
-			
-	def updateMedia(self, type, key_value_dict):
+
+	def updateMediaWithDict(self, type, key_value_dict):
 		key_value_dict["MediaType"] = type
 		if not self.db.updateMediaWithDict(key_value_dict):
 			printl("Update Media - Failed", self)	

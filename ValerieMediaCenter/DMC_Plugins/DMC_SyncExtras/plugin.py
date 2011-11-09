@@ -1242,7 +1242,7 @@ class ProjectValerieSyncManager(Screen):
 				self.session.openWithCallback(self.elementChanged, ProjectValerieSyncManagerInfo, self.manager, self.oldElement)
 
 	def elementChanged(self, newElement):
-		printl("newElement: " + str(newElement), self)
+		printl("newElement: " + repr(newElement), self)
 		if newElement is not None:
 			if len(newElement) == 2:
 				testElement = newElement[1]
@@ -1251,7 +1251,9 @@ class ProjectValerieSyncManager(Screen):
 			if testElement is not self.oldElement:
 				printl("elementChanged - Changed", self)
 				#### will crash... repalce with insert/update media
-				self.manager.replace(self.oldElement, newElement)
+				#self.manager.replace(self.oldElement, newElement)
+				self.manager.deleteMedia(self.oldElement.Id)
+				self.manager.insertMedia(testElement)
 				index = self["listview"].getIndex()
 				self.load(self.currentCategory, self.currentParam)
 				if index >= self["listview"].count():

@@ -377,7 +377,7 @@ class MediaActions(Resource):
 			# add movies
 			if type == "isMovie":
 				printl ("INSERT MOVIE : " + str(key_value_dict), self, "I")
-				result = manager.insertMedia(Manager.MOVIES, key_value_dict)
+				result = manager.insertMediaWithDict(Manager.MOVIES, key_value_dict)
 				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&showSave=true")
 				else:
@@ -386,7 +386,7 @@ class MediaActions(Resource):
 			# add tvshows
 			elif type == "isTvShow":
 				printl ("INSERT TVSHOW : " + str(key_value_dict), self, "I")
-				result = manager.insertMedia(Manager.TVSHOWS, key_value_dict)
+				result = manager.insertMediaWithDict(Manager.TVSHOWS, key_value_dict)
 				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&showSave=true")	
 				else:
@@ -395,7 +395,7 @@ class MediaActions(Resource):
 			# add tvshowepisodes
 			elif type == "isEpisode":
 				printl ("INSERT EPISODE: " + str(key_value_dict), self, "I")
-				result = manager.insertMedia(Manager.TVSHOWSEPISODES, key_value_dict)				
+				result = manager.insertMediaWithDict(Manager.TVSHOWSEPISODES, key_value_dict)				
 				if result["status"] > 0:
 					return WebHelper().redirectMeTo("/episodes?mode=showDoneForm&ParentId=" + parentId + "&showSave=true")
 				else:
@@ -426,7 +426,7 @@ class MediaActions(Resource):
 			
 			# edit movies		
 			if type == "isMovie":
-				result = manager.updateMedia(Manager.MOVIES, key_value_dict)
+				result = manager.updateMediaWithDict(Manager.MOVIES, key_value_dict)
 				printl("alter Movie in Db", self, "I")
 				if result is True:
 					printl("TRUE", self, "I")
@@ -437,7 +437,7 @@ class MediaActions(Resource):
 			
 			# edit tvshows
 			elif type == "isTvShow":
-				result = manager.updateMedia(Manager.TVSHOWS, key_value_dict)
+				result = manager.updateMediaWithDict(Manager.TVSHOWS, key_value_dict)
 				if result:
 					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&Id=" + Id + "&showSave=true")
 				else:
@@ -445,7 +445,7 @@ class MediaActions(Resource):
 			
 			# edit tvsshowepisodes
 			elif type == "isEpisode":
-				result = manager.updateMedia(Manager.TVSHOWSEPISODES, key_value_dict)
+				result = manager.updateMediaWithDict(Manager.TVSHOWSEPISODES, key_value_dict)
 				if result:
 					return WebHelper().redirectMeTo("/episodes?mode=showDoneForm&Id=" + Id + "&ParentId=" + parentId + "&showSave=true")
 				else:
