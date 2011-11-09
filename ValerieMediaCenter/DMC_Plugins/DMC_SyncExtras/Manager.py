@@ -400,8 +400,8 @@ class Manager():
 	def getSeriesCount(self):
 		return self.db.getMediaCount(MediaInfo.SERIE)
 		
-	def getEpisodes(self, id):
-		return self.db.getEpisodes(id)
+	def getEpisodes(self, parentId=None, season=None):
+		return self.db.getEpisodes(parentId, season)
 	
 	def getAllEpisodes(self): # DANGER
 		return self.db.getEpisodes()

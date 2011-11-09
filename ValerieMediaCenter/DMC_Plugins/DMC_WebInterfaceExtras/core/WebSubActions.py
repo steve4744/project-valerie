@@ -418,7 +418,8 @@ class MediaActions(Resource):
 			
 			key_value_dict = {}				
 			for key in request.args.keys():
-				key_value_dict[key] = stringToUtf8(request.args[key][0])
+			#	key_value_dict[key] = stringToUtf8(request.args[key][0])
+				key_value_dict[key] = request.args[key][0]
 			
 			if not "Seen" in request.args:
 				key_value_dict["Seen"] = "0"

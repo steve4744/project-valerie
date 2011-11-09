@@ -53,6 +53,7 @@ class DMC_MovieLibrary(DMC_Library):
                 d["ArtBackdropId"] = utf8ToLatin(movie.ImdbId)
                 d["ArtPosterId"] = d["ArtBackdropId"]
                 
+                d["Id"]  = movie.Id
                 d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
                 d["Title"]   = "  " + utf8ToLatin(movie.Title)
                 if d["Title"][2].upper() not in tmpAbc:
@@ -99,7 +100,9 @@ class DMC_MovieLibrary(DMC_Library):
                 else:
                     image = unseenPng
                 
-                parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
+                d["ViewMode"] = "play"
+		
+		parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
             sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
             if self.checkFileCreationDate:
                 sort.append(("File Creation", "Creation", True))
@@ -115,13 +118,14 @@ class DMC_MovieLibrary(DMC_Library):
                 tmpAbc.sort()
                 filter.append(("Abc", ("Title", False, 1), tmpAbc))
             
-            return (parsedLibrary, ("play", "ImdbId", ), None, None, sort, filter)
+            return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
         
         return None
 
     def buildInfoPlaybackArgs(self, entry):
         args = {}
-        args["title"]   = entry["Title"]
+        args["id"] 	= entry["Id"]
+	args["title"]   = entry["Title"]
         args["year"]    = entry["Year"]
         args["imdbid"]  = entry["ImdbId"]
         args["type"]    = "movie"

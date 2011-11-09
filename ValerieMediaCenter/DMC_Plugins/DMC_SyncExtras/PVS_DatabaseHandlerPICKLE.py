@@ -507,6 +507,9 @@ class databaseHandlerPICKLE(object):
 				elif season is None:
 					if self._dbMediaFiles[key].ParentId == int(parentId):
 						listToSort.append(self._dbMediaFiles[key])
+				else: 
+					if self._dbMediaFiles[key].ParentId == int(parentId) and self._dbMediaFiles[key].Season == season:
+						listToSort.append(self._dbMediaFiles[key])
 						
 		#printl("1 --------------------------------")
 		#print (str(listToSort))
@@ -1533,12 +1536,12 @@ class databaseHandlerPICKLE(object):
 		self._seenCheckLoaded()
 		if primary_key.has_key("TheTvDbId"):
 			try:
-				return self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
+				return self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
 			except Exception, ex:
 				return False
 		if primary_key.has_key("ImdbId"):
 			try:
-				return self.dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
+				return self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"]
 			except Exception, ex:
 				return False
 		return False
@@ -1547,50 +1550,47 @@ class databaseHandlerPICKLE(object):
 		printl("->", self, "S")
 		self._seenCheckLoaded()
 		if primary_key.has_key("TheTvDbId"):
-			if not self.dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
-				self.dbSeen["TV"][primary_key["TheTvDbId"]] = {}
-			if not self.dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
-				self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
-			if not self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
-				self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
+			if not self._dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]] = {}
+			if not self._dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
+			if not self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
 				
-			self.dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+			self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
 			self.SeenCommited = False
 			self.saveSeenDB()	
 		else:
 			if primary_key.has_key("ImdbId"):
-				if not self.dbSeen["Movies"].has_key(primary_key["ImdbId"]):
-					self.dbSeen["Movies"][primary_key["ImdbId"]] = {}
+				if not self._dbSeen["Movies"].has_key(primary_key["ImdbId"]):
+					self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
 					
-				self.dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
 				self.SeenCommited = False
 				self.saveSeenDB()
 		return
 
-#def markSeen(session, args):
-#	if args.has_key("TheTvDbId"):
-#		if args.has_key("Season"):
-#			if args.has_key("Episode"):
-#				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": True})
-#	else:
-#		if args.has_key("ImdbId"):
-#			setSeen({"ImdbId": args["ImdbId"],  "Seen": True})
-#	return
-#
-#	
-#def markUnSeen(session, args):
-#	if args.has_key("TheTvDbId"):
-#		if args.has_key("Season"):
-#			if args.has_key("Episode"):
-#				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": False})
-#	else:
-#		if args.has_key("ImdbId"):
-#			setSeen({"ImdbId": args["ImdbId"],  "Seen": False})
-#	return
-
-
-#	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
-#	registerPlugin(Plugin(name=_("Seen"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
-#	registerPlugin(Plugin(name=_("Seen"), fnc=isSeen, where=Plugin.INFO_SEEN))
-#	registerPlugin(Plugin(name=_("Mark as Seen"), fnc=markSeen, where=Plugin.MENU_MOVIES_PLUGINS))
-#	registerPlugin(Plugin(name=_("Mark as Unseen"), fnc=markUnSeen, where=Plugin.MENU_MOVIES_PLUGINS))
+	#new
+	def MarkAsSeen(self, primary_key):
+		printl("->", self, "S")
+		self._seenCheckLoaded()
+		if primary_key.has_key("TheTvDbId"):
+			if not self._dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]] = {}
+			if not self._dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
+			if not self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
+				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
+				
+			self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+			self.SeenCommited = False
+			self.saveSeenDB()	
+		else:
+			if primary_key.has_key("ImdbId"):
+				if not self._dbSeen["Movies"].has_key(primary_key["ImdbId"]):
+					self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
+					
+				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+				self.SeenCommited = False
+				self.saveSeenDB()
+		return

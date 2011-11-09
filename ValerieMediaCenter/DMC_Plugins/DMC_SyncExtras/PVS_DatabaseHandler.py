@@ -349,9 +349,9 @@ class Database(object):
 #	
 ################################   EPISODES   ################################ 
 #
-	def getEpisodes(self, mediaId=None):
+	def getEpisodes(self, parentId=None, season=None):
 		printl("->", self, "S")
-		return self.dbHandler.getEpisodes(mediaId)
+		return self.dbHandler.getEpisodes(parentId, season)
 	#TODO: CONVERT TO ID	
 	def getEpisodesWithTheTvDbId(self, theTvDbId, season=None):
 		printl("->", self, "S")

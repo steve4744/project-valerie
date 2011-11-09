@@ -564,7 +564,8 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 			print "selection", selection
 			primaryKeyValuePair = None
 			if self.onEnterPrimaryKeys is not None:
-				if "play" in self.onEnterPrimaryKeys:
+				#if "play" in self.onEnterPrimaryKeys:
+				if selection[1]["ViewMode"] == "play":
 					printl("playEntry ->", self, "D")
 					self.playEntry(selection[1], self.libraryFlags)
 					printl("playEntry <-", self, "D")
@@ -602,7 +603,9 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 	def _load(self, primaryKeys=None, ignoreSort=False, ignoreFilter=False):
 		print "primaryKeys", primaryKeys
 		self.currentKeyValuePair = primaryKeys
+		
 		library = self.loadLibrary(primaryKeys, self.seenPng, self.unseenPng)
+		
 		self.listViewList = library[0]
 		#print self.listViewList
 		self.onEnterPrimaryKeys = library[1]
@@ -619,6 +622,7 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		print "onEnterPrimaryKeys", self.onEnterPrimaryKeys
 		print "onLeavePrimaryKeyValuePair", self.onLeavePrimaryKeyValuePair
 		print "onLeaveSelectKeyValuePair", self.onLeaveSelectKeyValuePair
+		print "onSortKeyValuePair", self.onSortKeyValuePair
 		
 		if ignoreSort is False:
 			# After changing the lsit always return to the default sort

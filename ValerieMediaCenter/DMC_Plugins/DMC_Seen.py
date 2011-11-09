@@ -40,11 +40,6 @@ try:
 except:
 	gAvailable = False
 
-# migrate to DB Layer
-#SEENDB     = None
-#dbSeen     = None
-manager = None
-
 imdbid      = None
 thetvdb     = None
 season      = None
@@ -52,16 +47,23 @@ episode     = None
 status      = None
 type        = None
 progress    = None
+manager     = None
 
 def isSeen(primary_key):
+	global manager
+	if manager is None:
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
+		manager = Manager("DMC_SEEN")	
 	manager.isSeenDB(primary_key)
 
 def setSeen(primary_key):
+	global manager
+	if manager is None:
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
+		manager = Manager("DMC_SEEN")	
 	manager.setSeen(primary_key)
 
 def autostart(session):
-	#global dbSeen
-	#global SEENDB
 	global imdbid
 	global thetvdb
 	global season
@@ -69,10 +71,7 @@ def autostart(session):
 	global status
 	global type
 	global progress
-
 	global manager
-	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-	manager = Manager("DMC_SEEN")	
 		
 def markSeen(session, args):
 	if args.has_key("TheTvDbId"):

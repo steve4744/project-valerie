@@ -406,7 +406,8 @@ class pyvalerie(Thread):
 						elementInfo.setMediaType(MediaInfo.SERIE)
 					
 					result = elementInfo.parse(useFolder)
-					
+					printl("TheTvDbId: " + elementInfo.TheTvDbId, self, "I")
+						
 					if result == False:
 						continue
 					
