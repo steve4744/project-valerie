@@ -182,14 +182,15 @@ class DMC_ListView(DMC_View):
 		date = ""
 		if element["Year"] is not None:
 			date = "%04d" % (element["Year"], )
-		if element["Month"] is not None:
-			if date != "":
-				date = date + "-"
-			date = date + "%02d" % (element["Month"], )
-		if element["Day"] is not None:
-			if date != "":
-				date = date + "-"
-			date = date + "%02d" % (element["Day"], )				
+		# No space in screen to put the Complete Date
+		#if element["Month"] is not None:
+		#	if date != "":
+		#		date = date + "-"
+		#	date = date + "%02d" % (element["Month"], )
+		#if element["Day"] is not None:
+		#	if date != "":
+		#		date = date + "-"
+		#	date = date + "%02d" % (element["Day"], )				
 		self.setText("year", date)
 		self.setText("runtime", str(element["Runtime"]) + ' ' + _("min"))
 		
