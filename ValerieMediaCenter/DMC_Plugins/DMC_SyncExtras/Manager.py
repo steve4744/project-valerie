@@ -106,7 +106,7 @@ class Manager():
 
 	def finish(self):
 		printl("", self)
-		#Not used self.db.save()
+		self.db.save()
 
 	def getAll(self, type, param=None):
 		printl("type=" + str(type) + " param=" + str(param), self)

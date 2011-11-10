@@ -79,6 +79,8 @@ class DMC_TvShowLibrary(DMC_Library):
 				else:
 					image = None
 					
+				d["ScreenTitle"] = d["Title"]
+				d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
 				d["ViewMode"] = "ShowSeasons"
 				parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
 				
@@ -100,8 +102,7 @@ class DMC_TvShowLibrary(DMC_Library):
 		elif primaryKeyValuePair["ViewMode"]=="ShowSeasons":
 			printl("Seasons", self)
 			parsedLibrary = []
-			#tvshow = self.manager.getElementByUsingPrimaryKey(Manager.TVSHOWS, \
-			#	dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
+			
 			tvshow = self.manager.getSerie(primaryKeyValuePair["Id"])
 			d = {}
 			
@@ -119,21 +120,23 @@ class DMC_TvShowLibrary(DMC_Library):
 			d["Popularity"] = tvshow.Popularity
 			d["Genres"]  = utf8ToLatin(tvshow.Genres).split("|")
 			
-			#library = self.manager.getEpisodesWithTheTvDbId(primaryKeyValuePair["TheTvDbId"])
 			library = self.manager.getEpisodes(primaryKeyValuePair["Id"])
 			
 			seasons = []
 			for entry in library:
-				#season = entry.__dict__["Season"]
 				season = entry.Season
 				if season not in seasons:
 					seasons.append(season)
 					s = d.copy()
 					if entry.Season is None:
 						s["Title"]  = "  Special"
+						s["Season"] = "" # for retrive data only with season=None
 					else:
 						s["Title"]  = "  Season %2d" % (season, )
-					s["Season"] = season
+						s["Season"] = season
+					
+					s["ScreenTitle"] = tvshow.Title + " - " + s["Title"].strip()
+					s["ScreenTitle"] = utf8ToLatin(s["ScreenTitle"])
 					s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
 					
 					if config.plugins.pvmc.showseenforseason.value is True:
@@ -165,63 +168,75 @@ class DMC_TvShowLibrary(DMC_Library):
 			tvshow  = self.manager.getSerie(primaryKeyValuePair["Id"])
 			library = self.manager.getEpisodes(primaryKeyValuePair["Id"], primaryKeyValuePair["Season"])
 			for episode in library:
-				#if episode.Season == primaryKeyValuePair["Season"]:
-				if True:
-					d = {}
+				d = {}
 
-					d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
-					d["ArtPosterId"] = d["ArtBackdropId"]
-						
-					d["Id"]  = episode.Id
-					d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
-					d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
-					d["Tag"]     = utf8ToLatin(tvshow.Tag)
-					#d["Title"]   = "  %dx%02d: %s" % (episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
-					if episode.Season is None and episode.Disc is None and episode.Episode is not None: # 
-						d["Title"]   = "  %s: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
-					elif episode.Season is not None and episode.Disc is None and episode.Episode is not None: # 
-						d["Title"]   = "  %dx%02d: %s" % (episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
-					elif episode.Season is not None and episode.Disc is not None and episode.Episode is None: # 
-						d["Title"]   = "  %dD%02d: %s" % (episode.Season, episode.Disc, utf8ToLatin(episode.Title), )
-					else:
-						d["Title"]   = "  %s" % (utf8ToLatin(episode.Title), )
-							
-					d["Year"]    = episode.Year
-					d["Month"]   = episode.Month
-					d["Day"]     = episode.Day
-					d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
-					if self.checkFileCreationDate:
-						try:
-							d["Creation"] = os.stat(d["Path"]).st_mtime
-						except Exception, ex:
-							printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-							d["Creation"] = 0
-					d["Season"]  = episode.Season
-					d["Episode"] = episode.Episode
-					d["Plot"]    = utf8ToLatin(episode.Plot)
-					d["Runtime"] = episode.Runtime
-					d["Popularity"] = episode.Popularity
-					d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
-					d["Resolution"]  = utf8ToLatin(episode.Resolution)
-					d["Sound"]  = utf8ToLatin(episode.Sound)
+				d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
+				d["ArtPosterId"] = d["ArtBackdropId"]
 					
-					if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
-						image = seenPng
-					else:
-						image = unseenPng
-					d["ViewMode"] = "play"
-					_season = episode.Season
-					if _season is None:
-						_season=0
-					_disc = episode.Disc
-					if _disc is None:
-						_disc=0
-					_episode = episode.Episode
-					if _episode is None:
-						_episode=0
-					printl("SEASON: " + repr(_season), self)
-						
-					parsedLibrary.append((d["Title"], d, _season * 100000 + _disc * 1000 + _episode, "50", image))
+				d["Id"]  = episode.Id
+				d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
+				d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
+				d["Tag"]     = utf8ToLatin(tvshow.Tag)
+				#d["Title"]   = "  %dx%02d: %s" % (episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
+				if episode.Season is None and episode.Disc is None and episode.Episode is not None: # 
+					# Only Episode
+					d["Title"]   = "  %s: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+				elif episode.Season is None and episode.Disc is not None and episode.Episode is None: 
+					# Only Disc
+					d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+				elif episode.Season is not None and episode.Disc is None and episode.Episode is not None: # 
+					# Without Disc
+					d["Title"]   = "  %02d: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+				elif episode.Season is not None and episode.Disc is not None and episode.Episode is None: # 
+					# Without Episode
+					d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+				else:
+					d["Title"]   = "  %s" % (utf8ToLatin(episode.Title), )
+					
+				if episode.Season is None:
+					d["ScreenTitle"] = tvshow.Title + " - " + "Special"
+				else:
+					d["ScreenTitle"] = tvshow.Title + " - " + "Season %2d" % (episode.Season, )
+				d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
+				d["Year"]    = episode.Year
+				d["Month"]   = episode.Month
+				d["Day"]     = episode.Day
+				d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
+				if self.checkFileCreationDate:
+					try:
+						d["Creation"] = os.stat(d["Path"]).st_mtime
+					except Exception, ex:
+						printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+						d["Creation"] = 0
+				d["Season"]  = episode.Season
+				d["Episode"] = episode.Episode
+				d["Plot"]    = utf8ToLatin(episode.Plot)
+				d["Runtime"] = episode.Runtime
+				d["Popularity"] = episode.Popularity
+				d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
+				d["Resolution"]  = utf8ToLatin(episode.Resolution)
+				d["Sound"]  = utf8ToLatin(episode.Sound)
+				
+				if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+					image = seenPng
+				else:
+					image = unseenPng
+				d["ViewMode"] = "play"
+				_season = episode.Season
+				if _season is None:
+					_season=0
+				_disc = episode.Disc
+				if _disc is None:
+					_disc=0
+				_episode = episode.Episode
+				if _episode is None:
+					_episode=0
+				printl("DISC: " + repr(_disc), self)
+				_season  = int(_season)
+				_disc    = int(_disc)
+				_episode = int(_episode)
+					
+				parsedLibrary.append((d["Title"], d, _season * 100000 + _disc * 1000 + _episode, "50", image))
 			sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
 			if self.checkFileCreationDate:
 				sort.append(("File Creation", "Creation", True))

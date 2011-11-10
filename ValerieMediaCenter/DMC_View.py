@@ -618,6 +618,9 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		else:
 			self.libraryFlags = {}
 		
+		#if len(library) >= 8:
+		#	self.listViewList = library[0]
+		
 		
 		print "onEnterPrimaryKeys", self.onEnterPrimaryKeys
 		print "onLeavePrimaryKeyValuePair", self.onLeavePrimaryKeyValuePair

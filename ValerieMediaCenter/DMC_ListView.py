@@ -136,7 +136,10 @@ class DMC_ListView(DMC_View):
 			else:
 				self["poster"].instance.setPixmapFromFile(config.plugins.pvmc.mediafolderpath.value + "defaultposter" + self.postersize + ".png")
 		
-		self.setText("title", selection[0])
+		#self.setText("title", selection[0])
+		printl("TITLE for Screen:"+repr(element["ScreenTitle"]),self)
+		self.setText("title", element["ScreenTitle"])
+		
 		if self.APILevel == 1:
 			self.setText("otitle", "---") #self.moviedb[selection[1]]["OTitle"])
 		self.setText("tag", element["Tag"], True)

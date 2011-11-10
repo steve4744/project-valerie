@@ -109,7 +109,8 @@ class DMC_BackdropView(DMC_View):
 				else:
 					self["backdrop"].setStillPictureToDefault()
 		
-		self.setText("title", selection[0].strip())
+		#self.setText("title", selection[0].strip())
+		self.setText("title", element["ScreenTitle"])
 		self.setText("cnt_title", selection[0].strip())
 		self.setPoster("cnt_poster", element["ArtPosterId"])
 		self.setText("cnt_shortDescription", element["Plot"], what=_("Overview"))

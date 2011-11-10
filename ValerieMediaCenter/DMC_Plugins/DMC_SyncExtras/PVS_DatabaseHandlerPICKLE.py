@@ -108,6 +108,7 @@ import cPickle as pickle
 import Genres
 import random
 import copy
+import Utf8
 from Components.config import config
 from MediaInfo         import MediaInfo
 
@@ -500,8 +501,12 @@ class databaseHandlerPICKLE(object):
 				if parentId is None and season is None:
 					listToSort.append(self._dbMediaFiles[key])
 
-				elif parentId == "": # to identify "lost episodes"
+				elif parentId == "": # to identify "lost episodes" - force to retrieve data, or will return all medafiles (next if)
 					if self._dbMediaFiles[key].ParentId == None:
+						listToSort.append(self._dbMediaFiles[key])
+				
+				elif season == "": # to identify "lost episodes"
+					if self._dbMediaFiles[key].Season == None and self._dbMediaFiles[key].ParentId == int(parentId):
 						listToSort.append(self._dbMediaFiles[key])
 				
 				elif season is None:
@@ -916,10 +921,9 @@ class databaseHandlerPICKLE(object):
 
 
 ###################################  UTILS  ###################################
-
 	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
-		intFields = ['Id','ParentId','Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Episode']
+		intFields = ['Id','ParentId','MediaType','Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'Seen', 'ShowUp', 'FileCreation']
 		
 		for key in key_value_dict.keys():
 			try:
@@ -930,7 +934,13 @@ class databaseHandlerPICKLE(object):
 					else:
 						value = int(key_value_dict[key])
 				else:
-					value = key_value_dict[key]
+					# check is in Utf8
+					if not isinstance(key_value_dict[key], unicode):
+						try:
+							value = Utf8.stringToUtf8(key_value_dict[key])
+						except Exception, ex:
+							printl("Key convertion to Utf8 error: "+ repr(key) + " Ex: " + str(ex), self)
+							value = key_value_dict[key]
 				
 				setattr(m, key, value)
 
