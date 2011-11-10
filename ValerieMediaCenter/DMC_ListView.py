@@ -175,10 +175,21 @@ class DMC_ListView(DMC_View):
 		genres = genres.strip()
 		self.setText("genre", genres.replace(" ", " / "), what=_("Genre"))
 		#self.setText("year", str(element["Year"]))
-		date = str(element["Year"])
-		if element.has_key("Month") and element.has_key("Day"):
-			if element["Month"] > 0 and element["Day"] > 0:
-				date = "%04d-%02d-%02d" % (element["Year"], element["Month"], element["Day"], )
+		
+		#if element.has_key("Month") and element.has_key("Day"):
+		#	if element["Month"] > 0 and element["Day"] > 0:
+		#		date = "%04d-%02d-%02d" % (element["Year"], element["Month"], element["Day"], )
+		date = ""
+		if element["Year"] is not None:
+			date = "%04d" % (element["Year"], )
+		if element["Month"] is not None:
+			if date != "":
+				date = date + "-"
+			date = date + "%02d" % (element["Month"], )
+		if element["Day"] is not None:
+			if date != "":
+				date = date + "-"
+			date = date + "%02d" % (element["Day"], )				
 		self.setText("year", date)
 		self.setText("runtime", str(element["Runtime"]) + ' ' + _("min"))
 		

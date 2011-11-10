@@ -120,7 +120,7 @@ class DMC_MovieLibrary(DMC_Library):
 			
 			return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
 			
-		elif primaryKeyValuePair["ViewMode"]=="ShowMovieParts":
+		elif primaryKeyValuePair["ViewMode"]=="ShowGroup":
 			pass
 	
 		return None
