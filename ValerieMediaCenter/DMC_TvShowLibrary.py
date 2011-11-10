@@ -254,8 +254,9 @@ class DMC_TvShowLibrary(DMC_Library):
 		playbackList = []
 		
 		primaryKeyValuePair = {}
-		primaryKeyValuePair["TheTvDbId"] = entry["TheTvDbId"]
+		primaryKeyValuePair["Id"] = entry["Id"]
 		primaryKeyValuePair["Season"] = entry["Season"]
+		primaryKeyValuePair["ViewMode"] = "ShowEpisodes"
 		library = self.loadLibrary(primaryKeyValuePair)[0]
 		
 		playbackList.append( (entry["Path"], entry["Title"], entry, ))
