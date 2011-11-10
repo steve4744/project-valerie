@@ -100,6 +100,7 @@ class DMC_MovieLibrary(DMC_Library):
 					image = unseenPng
 				
 				d["ViewMode"] = "play"
+				d["ScreenTitle"] = utf8ToLatin(movie.Title)
 				
 				parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
 			sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
