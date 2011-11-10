@@ -104,6 +104,7 @@ class DMC_TvShowLibrary(DMC_Library):
 			parsedLibrary = []
 			
 			tvshow = self.manager.getSerie(primaryKeyValuePair["Id"])
+			printl("TVSHOW: " + str(tvshow), self, "E")
 			d = {}
 			
 			d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
@@ -166,6 +167,7 @@ class DMC_TvShowLibrary(DMC_Library):
 			
 			#library = self.manager.getEpisodesWithTheTvDbId(primaryKeyValuePair["TheTvDbId"])
 			tvshow  = self.manager.getSerie(primaryKeyValuePair["Id"])
+			printl("TVSHOW: " + str(tvshow), self, "E")
 			library = self.manager.getEpisodes(primaryKeyValuePair["Id"], primaryKeyValuePair["Season"])
 			for episode in library:
 				d = {}
@@ -174,6 +176,7 @@ class DMC_TvShowLibrary(DMC_Library):
 				d["ArtPosterId"] = d["ArtBackdropId"]
 					
 				d["Id"]  = episode.Id
+				d["TVShowId"]  = tvshow.Id
 				d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
 				d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
 				d["Tag"]     = utf8ToLatin(tvshow.Tag)
@@ -243,7 +246,7 @@ class DMC_TvShowLibrary(DMC_Library):
 			
 			filter = [("All", (None, False), ("", )), ]
 			
-			return (parsedLibrary, ("ViewMode", "Id", "Season", "Episode", ), dict({ \
+			return (parsedLibrary, ("ViewMode", "Id", "TVShowId", "Season", "Episode", ), dict({ \
 				'ViewMode': "ShowSeasons", \
 				'Id': primaryKeyValuePair["Id"], \
 				}), primaryKeyValuePair, sort, filter)
@@ -253,11 +256,14 @@ class DMC_TvShowLibrary(DMC_Library):
 	def getPlaybackList(self, entry):
 		playbackList = []
 		
+		printl("Entry: " + str(entry), self, "E")
+		
 		primaryKeyValuePair = {}
-		primaryKeyValuePair["Id"] = entry["Id"]
+		primaryKeyValuePair["Id"] = entry["TVShowId"]
 		primaryKeyValuePair["Season"] = entry["Season"]
 		primaryKeyValuePair["ViewMode"] = "ShowEpisodes"
 		library = self.loadLibrary(primaryKeyValuePair)[0]
+		print library
 		
 		playbackList.append( (entry["Path"], entry["Title"], entry, ))
 		nextEpisode = entry["Episode"] + 1
