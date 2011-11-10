@@ -122,10 +122,15 @@ class DMC_NewestEpisodes(DMC_Library):
                 d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
                 d["ArtPosterId"] = d["ArtBackdropId"]
                 
+                d["Id"]  = episode.Id
                 d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
                 d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
                 d["Tag"]     = utf8ToLatin(tvshow.Tag)
                 d["Title"]   = " %s %dx%02d: %s" % (utf8ToLatin(tvshow.Title),episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
+                
+                d["ScreenTitle"] = d["Title"]
+                d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
+                
                 d["Year"]    = episode.Year
                 d["Month"]   = episode.Month
                 d["Day"]     = episode.Day
@@ -147,6 +152,8 @@ class DMC_NewestEpisodes(DMC_Library):
                 else:
                     image = unseenPng
                 
+                d["ViewMode"] = "play"
+                
                 parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50", image))
     
         sort = [("Aired", "Date", True),("Title", None, False), ("Popularity", "Popularity", True), ]
@@ -161,10 +168,9 @@ class DMC_NewestEpisodes(DMC_Library):
         elapsed_time = time.time() - start_time
         printl("Took (loadLibrary): " + str(elapsed_time), self)
         
-        return (parsedLibrary, ("play", "TheTvDbId", "Season", "Episode", ), dict({ \
-            'TheTvDbId': episode.TheTvDbId, \
+        return (parsedLibrary, ("ViewMode", "Id", "TheTvDbId", "Season", "Episode", ), dict({ \
+            'Id': episode.Id, \
             }), primaryKeyValuePair, sort, filter)
-        
 
     def getPlaybackList(self, entry):
         playbackList = []
