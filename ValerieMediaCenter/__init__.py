@@ -127,4 +127,5 @@ if skinLoaded == False:
 loadPlugins(config.plugins.pvmc.pluginfolderpath.value + "/DMC_Plugins", "Plugins.Extensions.ProjectValerie.DMC_Plugins.")
 
 config.plugins.pvmc.save()
-config.save()
+# Will crash with enigma2 3.2.1 !!!!!!!!!!!!
+#config.save()
