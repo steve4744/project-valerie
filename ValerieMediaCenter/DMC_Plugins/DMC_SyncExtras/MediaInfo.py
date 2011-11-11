@@ -104,6 +104,7 @@ class MediaInfo(object):
 	SeenDate = u""
 	ShowUp = 1		# Show in List
 	FileCreation = 0
+	Group = u""
 	
 	Poster   = u""
 	Backdrop = u""
@@ -507,75 +508,97 @@ class MediaInfo(object):
 		if not self.isTypeMovie():
 			printl("(isMovie is False) => assuming TV show - trying to get season and episode from SearchString: " + self.SearchString, self, "I")
 			
-	
+			## trying a global expression
+			#	m = re.search(r'\W(s(?P<season>\d+))?\s?(d(?P<disc>\d+))?\s?(e(?P<episode>\d+))?([-]?\s?e?(?P<episode2>\d+))?(\D|$)' , self.SearchString)
+			
 			##### 
 			#####  s03d05e01-e05 - Season 3 Disc 5 Episode 1 [to Episode 5]
+			#####  s01d02e03     - Season 3 Disc 5 Episode 1
+			#####  s01d02	     - Season 3 Disc 5 
 			#####			Seinfeld.S08D03.PAL.DVDR		
 			if self.Season == None or self.Episode == None:
-				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
-				if m and m.group("season") and m.group("disc") and m.group("episode"):
-					printl("PARSE RESULT 1:"+str(str(m.group("disc")))+" "+str(m.group("episode"))+" "+str(m.group("episode2")), self)
+				#m =re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
+				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)\s?(e(?P<episode>\d+))?([-]e?(?P<episode2>\d+))?(\D|$)', self.SearchString)				
+			#	m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)(\D|$)', self.SearchString)
+				if m and m.group("season") and m.group("disc"):
+					#printl("PARSE RESULT 1:"+str(str(m.group("disc")))+" "+str(m.group("episode"))+" "+str(m.group("episode2")), self)
 					self.setMediaType(self.SERIE)
 					
 					self.Season = int(m.group("season"))
 					self.Disc = int(m.group("disc"))
-					if m.group("episode") == 0:  ## WRONG Expression....
-						self.Episode = int(m.group("episode2"))
-					else:
+					if m.group("episode") is not None:
 						self.Episode = int(m.group("episode"))
+					if m.group("episode2") is not None:
 						self.EpisodeLast = int(m.group("episode2"))
 					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', u" ", self.SearchString)
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+)\s?(e(?P<episode>\d+))?([-]e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
 			
 			#####
 			#####  s03d05 - Season 3 Disc 5
 			#####			
-			if self.Season == None or self.Episode == None:
-				m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)(\D|$)', self.SearchString)
-				if m and m.group("season") and m.group("disc"):
-					printl("PARSE RESULT 3:", self)
-					self.setMediaType(self.SERIE)
-					
-					self.Season = int(m.group("season"))
-					self.Disc = int(m.group("disc"))
-					self.Episode = 0
-					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+).*', u" ", self.SearchString)
-			
+			#if self.Season == None or self.Episode == None:
+			#	m = re.search(r'\Ws(?P<season>\d+)\s?d(?P<disc>\d+)(\D|$)', self.SearchString)
+			#	if m and m.group("season") and m.group("disc"):
+			#		printl("PARSE RESULT 3:", self)
+			#		self.setMediaType(self.SERIE)
+			#		
+			#		self.Season = int(m.group("season"))
+			#		self.Disc = int(m.group("disc"))
+			#		self.Episode = 0
+			#		
+			#		self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+).*', u" ", self.SearchString)
+			#
 			#####
-			#####  s03e05e06 s03e05-e06
+			#####  s03e05e06 s03e05-e06 s03e05-06 s03e05 06
+			#####  s03e05
 			#####
 			if self.Season == None or self.Episode == None:
 				#m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
-				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
+				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
-					printl("PARSE RESULT 4:"+str(m.group("episode"))+" "+str(m.group("episode2")), self)
+					#printl("PARSE RESULT 4:"+str(m.group("episode"))+" "+str(m.group("episode2")), self)
 					self.setMediaType(self.SERIE)
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
-					self.EpisodeLast = int(m.group("episode2"))
+					if m.group("episode2") is not None:
+						self.EpisodeLast = int(m.group("episode2"))
 					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+).*', u" ", self.SearchString)
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
 				
 			#####
 			#####  s03e05
 			#####
-			
+			#
+			#if self.Season == None or self.Episode == None:
+			#	m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
+			#	if m and m.group("season") and m.group("episode"):
+			#		printl("PARSE RESULT 5:", self)
+			#		self.setMediaType(self.SERIE)
+			#		isSeasonEpisodeFromFilename = True
+			#		
+			#		self.Season = int(m.group("season"))
+			#		self.Episode = int(m.group("episode"))
+			#		
+			#		printl("PARSE RESULT 5: " + self.SearchString, self)
+			#		self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
+			#		printl("PARSE RESULT 5: " + self.SearchString, self)
+			#		
+			#####
+			#####  d05 - Disc 5
+			#####			
 			if self.Season == None or self.Episode == None:
-				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)(\D|$)', self.SearchString)
-				if m and m.group("season") and m.group("episode"):
-					printl("PARSE RESULT 5:", self)
+				m = re.search(r'\Wd(?P<disc>\d+)(\D|$)', self.SearchString)
+				if m and m.group("disc"):
+					#printl("PARSE RESULT 3:", self)
 					self.setMediaType(self.SERIE)
-					isSeasonEpisodeFromFilename = True
 					
-					self.Season = int(m.group("season"))
-					self.Episode = int(m.group("episode"))
+					self.Season = 0
+					self.Disc = int(m.group("disc"))
+					self.Episode = 0
 					
-					printl("PARSE RESULT 5: " + self.SearchString, self)
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
-					printl("PARSE RESULT 5: " + self.SearchString, self)
-					
+					self.SearchString = re.sub(r'd(?P<disc>\d+).*', u" ", self.SearchString)
+
 			#####
 			#####  3x05
 			#####

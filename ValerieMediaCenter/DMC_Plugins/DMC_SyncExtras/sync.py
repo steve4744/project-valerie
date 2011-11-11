@@ -324,6 +324,7 @@ class pyvalerie(Thread):
 					mediaInDb = retCheckDuplicate["mediafile"]
 					# if never sync with success delete db entry and resync
 					if mediaInDb is not None and retCheckDuplicate["mediafile"].syncErrNo == MediaInfo.STATUS_INFONOTFOUND: # exist
+						printl("Deleting and resync FailedItem", self)
 						db.deleteMedia(retCheckDuplicate["mediafile"].Id)
 						mediaInDb = None
 						

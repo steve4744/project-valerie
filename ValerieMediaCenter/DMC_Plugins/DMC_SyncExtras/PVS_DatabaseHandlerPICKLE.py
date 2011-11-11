@@ -169,11 +169,14 @@ class databaseHandlerPICKLE(object):
 	_dbFailed	= None
 	_dbSeen		= None
 	
+	session = None
+	
 	def __init__(self):
 		printl("->", self, "S")
 		
-	def getInstance(self):
-		printl("->", self, "S")
+	def getInstance(self, origin, session):
+		printl("-> from:"+str(origin), self, "S")
+		self.session = session
 		global gDatabaseHandler
 		if gDatabaseHandler is None:			
 			printl("PICKLE - New Instance", self)
@@ -464,13 +467,17 @@ class databaseHandlerPICKLE(object):
 	def getMediaValues(self, mediaType=None, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self._getMediaValuesWithFilter(mediaType, None, None, None, order, firstRecord, numberOfRecords)
 	
-	def getMediaValuesForFolder(self, mediaType, path, order=None, firstRecord=0, numberOfRecords=9999999):
+	#def getMediaValuesForFolder(self, mediaType, path, order=None, firstRecord=0, numberOfRecords=9999999):
+	#	return self._getMediaValuesWithFilter(mediaType, None, None, path, order, firstRecord, numberOfRecords)
+	def getMediaValuesForGroup(self, mediaType, group, order=None, firstRecord=0, numberOfRecords=9999999):
+		ret = {}
+		ret["reason"] 	= -1
+		ret["mediafile"]= None
+
 		return self._getMediaValuesWithFilter(mediaType, None, None, path, order, firstRecord, numberOfRecords)
 	
 	def _getMediaValuesWithFilter(self, mediaType=None, parentId=None, season=None, path=None, order=None, firstRecord=0, numberOfRecords=9999999, statusOk=True):
-		#printl("-> parentId:"+str(parentId) + " season:" + str(season), self, "S")
 		printl("-> mediaType:"+str(mediaType) + " statusOk:" + str(statusOk), self, "S")
-		#printl("->", self, "S")
 		if order is None:
 			order = self.ORDER_TITLE
 		listToSort   = []
@@ -526,9 +533,7 @@ class databaseHandlerPICKLE(object):
 			listSorted = sorted(listToSort, key=lambda k: k.Year)
 		else:
 			listSorted = listToSort
-		#printl("2 --------------------------------")
-		#print (str(listSorted))					
-
+	
 		## return parcial listToReturn ---- (on Dict - orderdict only on 2.7)
 		if firstRecord==0 and numberOfRecords==9999999:
 			printl("All Records", self)
@@ -543,9 +548,7 @@ class databaseHandlerPICKLE(object):
 				recPosition += 1
 				if recCount >= numberOfRecords:
 					break
-		#printl("3 --------------------------------")
-		#print (str(listToReturn))					
-
+	
 		elapsed_time = time.time() - start_time		
 		printl("Took: " + str(elapsed_time), self)
 
@@ -593,7 +596,7 @@ class databaseHandlerPICKLE(object):
 		fake.TheTvDbId = forSerie
 		fake.Title = "AutoInserted for serie: "+ str(forSerie)
 		return self.insertMedia(fake)
-						
+
 	def insertMedia(self, media):
 		printl("->", self, "S")
 		ret = {}
@@ -664,6 +667,16 @@ class databaseHandlerPICKLE(object):
 			return ret
 
 		if not key in self._dbMediaFiles:
+			path = Utf8.utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)
+			if os.path.exists(path):
+				try:
+					m.FileCreation = os.stat(path).st_mtime
+				except Exception, ex:
+					printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+					m.FileCreation = 0
+			else:
+				m.FileCreation = -1
+			
 			self.MediaFilesCommited = False
 			self._dbMediaFiles[key] = m
 			if self.AUTOCOMMIT:
@@ -712,7 +725,9 @@ class databaseHandlerPICKLE(object):
 		if m is None:
 			printl("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
 			return False
-	
+		#reset status if in failed
+		key_value_dict["MediaStatus"] = MediaInfo.STATUS_OK
+
 		self.MediaFilesCommited = False
 		self._fillMediaInfo(m, key_value_dict)
 		self._dbMediaFiles[key] = m
@@ -788,6 +803,7 @@ class databaseHandlerPICKLE(object):
 		printl("->", self, "S")
 		self._moviesCheckLoaded()
 		self._seriesCheckLoaded()
+		self._seenCheckLoaded()
 		path = config.plugins.pvmc.tmpfolderpath.value + "/dumps"
 		now = datetime.datetime.now()
 		file = path + "/db_%04d%02d%02d_%02d%02d%02d.dump" % (now.year, now.month, now.day, now.hour, now.minute, now.second)
@@ -859,6 +875,7 @@ class databaseHandlerPICKLE(object):
 				s += repr(records[key].ImdbId) + "\t"
 				s += repr(records[key].TheTvDbId) + "\t"
 				s += repr(records[key].Title) + "\t"
+				s += repr(records[key].FileCreation) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -909,6 +926,38 @@ class databaseHandlerPICKLE(object):
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
+
+
+		f.write("-------------------------------\n")
+		f.write("-- Tables    -    Seen       --\n")
+		f.write("-------------------------------\n")
+		f.write("\n")
+		f.write("Count\tKey  \tId   \tParent\tSeason\tEpisode\tImdb    \tTheTvDbId\tTitle\n")		
+		f.write("\n")
+		cnt=0
+		s = u""
+		records = self._dbSeen
+		for imdb in records["Movies"]:
+			cnt += 1
+			s = str(cnt) + "\t"			
+			s += repr(imdb) + "\t"
+			s += repr(records["Movies"][imdb]["Seen"]) + "\t"
+			f.write(s+"\n")
+		f.write("\n")
+		cnt=0
+		for tvdbid in records["TV"]:
+			for season in records["TV"][tvdbid]:
+				for episode in records["TV"][tvdbid][season]:
+					cnt += 1
+					s = str(cnt) + "\t"			
+					s += repr(tvdbid) + "\t"
+					s += repr(season) + "\t"
+					s += repr(episode) + "\t"
+					s += repr(records["TV"][tvdbid][season][episode]["Seen"]) + "\t"
+					f.write(s+"\n")
+		f.write("\n\n")
+		f.flush()
+
 
 				
 		f.write("-- MEDIA PATHS --\n")
@@ -1078,7 +1127,8 @@ class databaseHandlerPICKLE(object):
 					self._upgrade_MF_4()
 					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==5:
-					pass
+					self._upgrade_MF_5()
+					#self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==6:
 					pass
 				
@@ -1185,6 +1235,34 @@ class databaseHandlerPICKLE(object):
 			if m.Day == -1:
 				m.Day == None
 
+	def _upgrade_MF_5(self):
+		if self.session is not None:
+			mm = self.session.open(MessageBox, (_("\nConverting data to version 5.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+		self.MediaFilesCommited = False
+		records = self._getMediaFiles()
+		for key in records:
+			m = self._dbMediaFiles[key]
+			if not isinstance(m.Path, unicode):
+				m.Path = Utf8.stringToUtf8(m.Path)
+			if not isinstance(m.Filename, unicode):
+				m.Filename = Utf8.stringToUtf8(m.Filename)
+			if not isinstance(m.Extension, unicode):
+				m.Extension = Utf8.stringToUtf8(m.Extension)
+			path = utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)				
+
+			if os.path.exists(path):
+				try:
+					m.FileCreation = os.stat(path).st_mtime
+				except Exception, ex:
+					printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+					m.FileCreation = 0
+			else:
+				m.FileCreation = -1
+		
+		if self.session is not None:
+			#time.sleep(10)
+			mm.close(False, self.session)
+		
 		
 #
 #################################   MOVIES   ################################# 
@@ -1542,10 +1620,15 @@ class databaseHandlerPICKLE(object):
 			self._loadSeenDB()
 				
 	def isSeen(self, primary_key):
-		printl("->", self, "S")
+		printl("-> for: " + repr(primary_key), self, "S")
 		self._seenCheckLoaded()
 		if primary_key.has_key("TheTvDbId"):
 			try:
+				s = ""
+				s += repr(primary_key["TheTvDbId"]) + "\t"
+				s += repr(primary_key["Season"]) + "\t"
+				s += repr(primary_key["Episode"]) + "\t"
+				printl("PARAMS:" + s, self)
 				return self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"]
 			except Exception, ex:
 				return False

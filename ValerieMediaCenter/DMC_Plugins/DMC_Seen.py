@@ -54,7 +54,7 @@ def isSeen(primary_key):
 	if manager is None:
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		manager = Manager("DMC_SEEN")	
-	manager.isSeenDB(primary_key)
+	return manager.isSeenDB(primary_key)
 
 def setSeen(primary_key):
 	global manager

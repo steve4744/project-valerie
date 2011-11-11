@@ -180,7 +180,7 @@ class Database(object):
 							printl("NOT Sql FirstTime", self)					 
 								
 					if self.USE_DB_TYPE == self.DB_PICKLE:			
-						self.dbHandler = databaseHandlerPICKLE().getInstance()				
+						self.dbHandler = databaseHandlerPICKLE().getInstance("from Database-" + origin, session)	
 				
 					if self.PRELOADDB:
 						self.preload()  # RELOAD ALLL 
@@ -228,7 +228,7 @@ class Database(object):
 			#self.reload()	# Load from PICKLE
 		if session is not None:
 			#time.sleep(10)
-			self.mm.close(False, self.session)
+			self.mm.close(False, session)
 		printl("<-", self)
 			
 
