@@ -104,7 +104,12 @@ class MediaInfo(object):
 	SeenDate = u""
 	ShowUp = 1		# Show in List
 	FileCreation = 0
-	Group = u""
+	FileSize = None
+	CRC = None
+	CRCFile = None
+	CRCOffset = 0
+	CRCSize = None
+	Group = None
 	
 	Poster   = u""
 	Backdrop = u""

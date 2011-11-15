@@ -109,8 +109,10 @@ import Genres
 import random
 import copy
 import Utf8
+import binascii 
 from Components.config import config
 from MediaInfo         import MediaInfo
+from Screens.MessageBox import MessageBox
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from threading import Lock
@@ -129,14 +131,17 @@ class databaseHandlerPICKLE(object):
 	TVSHOWSDB  = DB_PATH + "tvshows.db"
 	EPISODESDB = DB_PATH + "episodes.db"
 	SEENDB 	   = DB_PATH + "seen.db"
+	TABLESDB   = DB_PATH + "tables.db"
 	
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
 	STATS	   = -999997
+	DBID	   = -999996
 	CONVERTING = False
 	_ConvertPos = 0
 	_ConvertMax = 0
-	DB_VERSION_MEDIAFILES = 4
+	DB_VERSION_MEDIAFILES = 5
+	DB_VERSION_TABLES = 0
 	DB_VERSION_SEEN = 0
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
@@ -144,7 +149,9 @@ class databaseHandlerPICKLE(object):
 				
 	MediaFilesCommited=True
 	SeenCommited=True
-	_dbMediaFiles	= None	# New table for other media.. or all in future...
+	TablesCommited=True
+	_dbMediaFiles	= None	
+	_dbTables	= None	
 	
 	idxMoviesByImdb = {}
 	idxSeriesByTheTvDb = {}
@@ -188,6 +195,7 @@ class databaseHandlerPICKLE(object):
 	
 	def loadAll (self):
 		self._mediaFilesCheckLoaded()
+		#self._mediaFilesCheckLoaded()
 		
 #
 #################################   MEDIAS   ################################# 
@@ -274,7 +282,7 @@ class databaseHandlerPICKLE(object):
 			self._loadMediaFilesDB()
 	
 	def _checkKeyValid(self, key):
-		return (key != self.CONFIGKEY and key != self.COUNTERID and key != self.STATS) 
+		return (key != self.CONFIGKEY and key != self.COUNTERID and key != self.STATS and key != self.DBID) 
 
 	# Waiting for _db dict
 	def _getNextKey(self, records):
@@ -667,15 +675,7 @@ class databaseHandlerPICKLE(object):
 			return ret
 
 		if not key in self._dbMediaFiles:
-			path = Utf8.utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)
-			if os.path.exists(path):
-				try:
-					m.FileCreation = os.stat(path).st_mtime
-				except Exception, ex:
-					printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-					m.FileCreation = 0
-			else:
-				m.FileCreation = -1
+			self._setFileinfo(self._dbMediaFiles[key])
 			
 			self.MediaFilesCommited = False
 			self._dbMediaFiles[key] = m
@@ -731,6 +731,10 @@ class databaseHandlerPICKLE(object):
 		self.MediaFilesCommited = False
 		self._fillMediaInfo(m, key_value_dict)
 		self._dbMediaFiles[key] = m
+		
+		if self._dbMediaFiles[key].FileSize == 0:
+			self._setFileInfo(self._dbMediaFiles[key])
+			
 		if self.AUTOCOMMIT:
 			self.saveMediaFiles()
 		return True
@@ -821,12 +825,17 @@ class databaseHandlerPICKLE(object):
 			
 		if self.CONFIGKEY in self._dbMediaFiles:
 			s += str(self.CONFIGKEY) + "\t"
-			s += "Version " + str(self._dbMediaFiles[self.CONFIGKEY])
+			s += "Version: " + str(self._dbMediaFiles[self.CONFIGKEY])
 			s += "\n"
 		if self.COUNTERID in self._dbMediaFiles:
 			s += str(self.COUNTERID) + "\t"
-			s += "Last ID " + str(self._dbMediaFiles[self.COUNTERID])
+			s += "Last ID: " + str(self._dbMediaFiles[self.COUNTERID])
 			s += "\n"
+		if self.DBID in self._dbMediaFiles:
+			s += str(self.DBID) + "\t"
+			s += "DB ID: " + str(self._dbMediaFiles[self.DBID])
+			s += "\n"
+			
 		f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -874,8 +883,11 @@ class databaseHandlerPICKLE(object):
 				s += repr(records[key].Id) + "\t"
 				s += repr(records[key].ImdbId) + "\t"
 				s += repr(records[key].TheTvDbId) + "\t"
-				s += repr(records[key].Title) + "\t"
-				s += repr(records[key].FileCreation) + "\t"
+				s += repr(records[key].CRC) + "\t"
+				s += repr(records[key].Title) + "\t\t"
+				#s += repr(records[key].FileCreation) + "\t"
+				s += repr(records[key].CRCFile) + "\t"
+				s += repr(records[key].FileSize) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -922,7 +934,10 @@ class databaseHandlerPICKLE(object):
 				s += repr(records[key].Episode) + "\t"
 				s += repr(records[key].ImdbId) + "\t"
 				s += repr(records[key].TheTvDbId) + "\t"
-				s += repr(records[key].Title) + "\t"
+				s += repr(records[key].CRC) + "\t"
+				s += repr(records[key].Title) + "\t\t"
+				s += repr(records[key].CRCFile) + "\t"
+				s += repr(records[key].FileSize) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -976,6 +991,7 @@ class databaseHandlerPICKLE(object):
 		
 		for key in key_value_dict.keys():
 			try:
+				printl("KEY: " + str(key), self)
 				if key in intFields:
 					# To avoid null Values
 					if key_value_dict[key] is None or key_value_dict[key] == "" or key_value_dict[key] == "None": 
@@ -1128,7 +1144,7 @@ class databaseHandlerPICKLE(object):
 					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==5:
 					self._upgrade_MF_5()
-					#self._setDBVersion(records, updateToVersion)
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==6:
 					pass
 				
@@ -1236,34 +1252,67 @@ class databaseHandlerPICKLE(object):
 				m.Day == None
 
 	def _upgrade_MF_5(self):
+		start_time = time.time()
 		if self.session is not None:
 			mm = self.session.open(MessageBox, (_("\nConverting data to version 5.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
 		self.MediaFilesCommited = False
+		self._dbMediaFiles[self.DBID] = start_time
 		records = self._getMediaFiles()
 		for key in records:
-			m = self._dbMediaFiles[key]
-			if not isinstance(m.Path, unicode):
-				m.Path = Utf8.stringToUtf8(m.Path)
-			if not isinstance(m.Filename, unicode):
-				m.Filename = Utf8.stringToUtf8(m.Filename)
-			if not isinstance(m.Extension, unicode):
-				m.Extension = Utf8.stringToUtf8(m.Extension)
-			path = utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)				
-
-			if os.path.exists(path):
-				try:
-					m.FileCreation = os.stat(path).st_mtime
-				except Exception, ex:
-					printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-					m.FileCreation = 0
-			else:
-				m.FileCreation = -1
+			self._setFileInfo(self._dbMediaFiles[key])
 		
 		if self.session is not None:
 			#time.sleep(10)
 			mm.close(False, self.session)
+		elapsed_time = time.time() - start_time
+		printl("Upgrade5 Took : " + str(elapsed_time), self, 11)
+	
+			
+	# AVI files contain a 56-byte header, starting at offset 32 within the file.
+	def getCRC32OfMedia(self, media):
+		media.CRCOffset = 0
+		if media.Extension.lower() == u"ifo":
+			filename = Utf8.utf8ToLatin(media.Path + u"/VIDEO_TS.VOB")
+		else:
+			filename = Utf8.utf8ToLatin(media.Path + u"/" + media.Filename + u"." + media.Extension)
+			if media.FileSize <= 1000:
+				media.CRCSize = media.FileSize
+			else:
+				media.CRCOffset = 200
+				
+		media.CRCFile = filename #filename
 		
-		
+		f = file(filename, 'rb')
+		f.seek(media.CRCOffset)
+		x = f.read(media.CRCSize)
+		f.close()
+		x = binascii.crc32(x) #binascii.a2b_hex('18329a7e')
+		return format(x & 0xFFFFFFFF, '08x') 
+
+	def _setFileInfo(self, m):
+		if not isinstance(m.Path, unicode):
+			m.Path = Utf8.stringToUtf8(m.Path)
+		if not isinstance(m.Filename, unicode):
+			m.Filename = Utf8.stringToUtf8(m.Filename)
+		if not isinstance(m.Extension, unicode):
+			m.Extension = Utf8.stringToUtf8(m.Extension)
+		path = Utf8.utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)				
+
+		if os.path.exists(path):
+			try:
+				m.FileCreation = os.stat(path).st_mtime
+				m.FileSize = os.stat(path).st_size
+				#m.CRCSize = 100
+				#m.CRC = self.getCRC32OfMedia(m)					
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+				m.FileCreation = 0
+		else:
+			m.FileCreation = -1
+			m.FileSize = None
+			m.CRCSize = None
+			m.CRC = None
+	
 #
 #################################   MOVIES   ################################# 
 #

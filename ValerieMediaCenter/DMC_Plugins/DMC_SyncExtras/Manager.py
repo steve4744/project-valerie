@@ -347,6 +347,9 @@ class Manager():
 	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
 		return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
 
+	#def getMoviesValuesByGroup(self, order=None, firstRecord=0, numberOfRecords=9999999):
+	#	return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
+	#
 	def getMovie(self, id):
 		return self.db.getMediaWithId(id)
 
