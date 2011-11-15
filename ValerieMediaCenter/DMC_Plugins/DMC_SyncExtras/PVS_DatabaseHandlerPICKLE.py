@@ -972,7 +972,7 @@ class databaseHandlerPICKLE(object):
 ###################################  UTILS  ###################################
 	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
-		intFields = ['Id','ParentId','MediaType','Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'Seen', 'ShowUp', 'FileCreation']
+		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'Seen', 'ShowUp', 'FileCreation']
 		
 		for key in key_value_dict.keys():
 			try:
