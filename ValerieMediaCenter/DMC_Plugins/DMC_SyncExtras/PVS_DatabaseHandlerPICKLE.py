@@ -675,7 +675,7 @@ class databaseHandlerPICKLE(object):
 			return ret
 
 		if not key in self._dbMediaFiles:
-			self._setFileinfo(self._dbMediaFiles[key])
+			self._setFileInfo(m)
 			
 			self.MediaFilesCommited = False
 			self._dbMediaFiles[key] = m
