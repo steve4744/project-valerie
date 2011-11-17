@@ -131,7 +131,6 @@ class databaseHandlerPICKLE(object):
 	TVSHOWSDB  = DB_PATH + "tvshows.db"
 	EPISODESDB = DB_PATH + "episodes.db"
 	SEENDB 	   = DB_PATH + "seen.db"
-	TABLESDB   = DB_PATH + "tables.db"
 	
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
@@ -141,7 +140,6 @@ class databaseHandlerPICKLE(object):
 	_ConvertPos = 0
 	_ConvertMax = 0
 	DB_VERSION_MEDIAFILES = 5
-	DB_VERSION_TABLES = 0
 	DB_VERSION_SEEN = 0
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
@@ -149,14 +147,7 @@ class databaseHandlerPICKLE(object):
 				
 	MediaFilesCommited=True
 	SeenCommited=True
-	TablesCommited=True
 	_dbMediaFiles	= None	
-	_dbTables	= None	
-	
-	idxMoviesByImdb = {}
-	idxSeriesByTheTvDb = {}
-	idxMediaFilesByType = {}
-	
 		
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
@@ -1603,7 +1594,7 @@ class databaseHandlerPICKLE(object):
 			self._dbSeen["TV"] = {}
 			try:
 				if os.path.exists(self.SEENDB):
-					fd = open(self.SEENDB, "rb")
+					fd = open(self.SEENDB, "Polog40@rb")
 					self._dbSeen = pickle.load(fd)
 					fd.close()
 					#self._upgradeTables(self._dbMovies)
