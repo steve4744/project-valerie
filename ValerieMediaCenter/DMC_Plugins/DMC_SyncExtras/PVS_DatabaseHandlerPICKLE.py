@@ -1594,7 +1594,7 @@ class databaseHandlerPICKLE(object):
 			self._dbSeen["TV"] = {}
 			try:
 				if os.path.exists(self.SEENDB):
-					fd = open(self.SEENDB, "Polog40@rb")
+					fd = open(self.SEENDB, "rb")
 					self._dbSeen = pickle.load(fd)
 					fd.close()
 					#self._upgradeTables(self._dbMovies)
@@ -1709,3 +1709,6 @@ class databaseHandlerPICKLE(object):
 				self.SeenCommited = False
 				self.saveSeenDB()
 		return
+
+	def getSeenForUpgrade(self):
+		return self._dbSeen;

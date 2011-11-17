@@ -76,6 +76,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Screens.MessageBox import MessageBox
 	
 DB_SQLITE_LOADED = False
+DB_PICKLEV2_LOADED = False
 DATABASE_HANDLER_FOUND = False
 
 try:
@@ -86,6 +87,15 @@ try:
 	DATABASE_HANDLER_FOUND = True
 except Exception, ex:
 	printl("PVS_DatabaseHandlerSQL not Loaded :(   "+ str(ex), None , "H")
+
+try:					   
+	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLEV2 import databaseHandlerPICKLEV2
+	from PVS_DatabaseHandlerPICKLEV2 import databaseHandlerPICKLEV2
+	DB_PICKLEV2_LOADED = True
+	printl("PVS_DatabaseHandlerPICKLE V2 Loaded :)", None, "H")
+	DATABASE_HANDLER_FOUND = True
+except Exception, ex:
+	printl("PVS_DatabaseHandlerPICKLE V2 not Loaded :(   "+ str(ex), None, "H")
 		
 try:					   
 	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
@@ -94,7 +104,7 @@ try:
 	DATABASE_HANDLER_FOUND = True
 except Exception, ex:
 	printl("PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "H")
-		
+	
 try:
 	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerTXD import databaseHandlerTXD
 	from PVS_DatabaseHandlerTXD import databaseHandlerTXD
@@ -112,15 +122,18 @@ gDatabase = None
 gDatabaseMutex = Lock()
 		
 class Database(object):
-	DB_NONE   = 0
-	DB_TXD    = 2 #Not Used
-	DB_PICKLE = 3
-	DB_SQLITE = 4
+	DB_NONE     = 0
+	DB_TXD      = 2 #Not Used
+	DB_PICKLE   = 3
+	DB_PICKLEV2 = 4
+	DB_SQLITE   = 5
 
 	DB_PATH   = config.plugins.pvmc.configfolderpath.value
 
 	if DB_SQLITE_LOADED and os.path.exists(DB_PATH + "usesql"):
 		USE_DB_TYPE    	= DB_SQLITE
+	elif DB_PICKLEV2_LOADED:
+		USE_DB_TYPE    	= DB_PICKLEV2
 	else:
 		USE_DB_TYPE    	= DB_PICKLE
 		
@@ -128,13 +141,8 @@ class Database(object):
 	
 	USE_INDEXES = False  		# Create indexes key/id
 	PRELOADDB   = True  		# Reload All tables on Start (default)
-	# NOTE: almost every queries to DB force to use all tables
-	#  Examples:
-	#  	 Count Records(webif)
-	#  	 checkduplicates
 	
 	CONFIGKEY  = -999999
-	#session   = None
 	dbHandler = None
 	# only One instance of DatabaseHandler
 
@@ -171,20 +179,30 @@ class Database(object):
 					printl("Creating new Database instance", self)				
 					if self.USE_DB_TYPE == self.DB_SQLITE:			
 						self.dbHandler = databaseHandlerSQL().getInstance("from Database-" + origin )
-						if self.dbHandler.DB_SQLITE_FIRSTTIME:
+						if self.dbHandler.DB_FIRSTTIME:
 							printl("Sql FirstTime", self)					 
 							self.importDataToSql(session)#.addCallback(self.ImportDone).addErrback(self.ImportError)
 			
-							self.dbHandler.DB_SQLITE_FIRSTTIME = False
+							self.dbHandler.DB_FIRSTTIME = False
 						else:
 							printl("NOT Sql FirstTime", self)					 
+
+					if self.USE_DB_TYPE == self.DB_PICKLEV2:		
+						self.dbHandler = databaseHandlerPICKLEV2().getInstance("from Database-" + origin, session)	
+						if self.dbHandler.DB_FIRSTTIME:
+							printl("Pickle V2 FirstTime", self)					 
+							self.importDataToPickleV2(session)
+			
+							self.dbHandler.DB_FIRSTTIME = False
+						else:
+							printl("NOT Pickle FirstTime", self)					 
 								
 					if self.USE_DB_TYPE == self.DB_PICKLE:			
 						self.dbHandler = databaseHandlerPICKLE().getInstance("from Database-" + origin, session)	
 				
 					if self.PRELOADDB:
-						self.preload()  # RELOAD ALLL 
-					
+						self.dbHandler.loadAll()# RELOAD ALLL 
+						
 				gDatabase = self
 			#finally:	
 				gDatabaseMutex.release()
@@ -219,18 +237,50 @@ class Database(object):
 		#		printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
 		except Exception, ex:
 			printl("Failed Import to SQL! Reloading Pickle. Ex: " + str(ex), __name__, "E")
-			self.USE_DB_TYPE    	= self.DB_PICKLE
+			self.USE_DB_TYPE    	= self.DB_PICKLEV2
 			__DB_PATH           = config.plugins.pvmc.configfolderpath.value
 			__DB_SQL_FILENAME   = "valerie.db"
 			sqlFile = __DB_PATH+ __DB_SQL_FILENAME
 			if os.path.exists(sqlFile):
 				os.remove(sqlFile)
-			#self.reload()	# Load from PICKLE
 		if session is not None:
-			#time.sleep(10)
 			self.mm.close(False, session)
 		printl("<-", self)
 			
+	def importDataToPickleV2 (self, session):
+		printl("->", self, "S")
+		try:
+			if session is not None:
+				self.mm = session.open(MessageBox, (_("\nConverting data to V2.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+			self.mm = self.session.open(Msg)		
+			printl("Importing Data to PickleV2", self)
+			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
+			#Upgrade SeenDB
+			records = dbHandlerPickle.getSeenForUpgrade()
+		
+			start_time = time.time()			
+			cntNew = 0
+			for m in records:
+			#	self.cleanValuesOfMedia(m)
+			#	self.dbHandler.insertMedia(m)
+				cntNew += 1				
+			printl("Seen Count: "+str(len(records)) + " Processed: " + str(cntNew) )				
+			
+			#self.dbHandler.commit()
+			elapsed_time = time.time() - start_time
+			printl("Took: " + str(elapsed_time), self)
+			try:
+				if os.path.exists(self.DB_PATH + "seen.db"):
+					os.rename(self.DB_PATH + "seen.db",   self.DB_PATH + "seen.db" +".old")
+			except Exception, ex:
+				printl("Backup Seen failed! Ex: " + str(ex), __name__, "E")
+		except Exception, ex:
+			printl("Failed Import to PickleV2! Reloading Pickle V1. Ex: " + str(ex), __name__, "E")
+			self.USE_DB_TYPE    	= self.DB_PICKLE
+			
+		if session is not None:
+			self.mm.close(False, session)
+		printl("<-", self)
 
 	def setDBType(self, version):
 		printl("->", self, "S")
@@ -248,10 +298,6 @@ class Database(object):
 		else:
 			return "No DB Type defined"
 
-	def preload(self):
-		printl("->", self, "S")
-		self.dbHandler.loadAll()
-		
 	def deleteMissingFiles(self):
 		printl("->", self, "S")
 		self._verifyAndDeleteMissingFiles( self.dbHandler.getMediaValues() )
