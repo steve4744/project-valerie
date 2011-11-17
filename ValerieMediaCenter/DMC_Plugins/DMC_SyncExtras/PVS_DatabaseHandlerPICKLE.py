@@ -195,7 +195,7 @@ class databaseHandlerPICKLE(object):
 	
 	def loadAll (self):
 		self._mediaFilesCheckLoaded()
-		#self._mediaFilesCheckLoaded()
+		self._seenCheckLoaded()
 		
 #
 #################################   MEDIAS   ################################# 
@@ -234,24 +234,6 @@ class databaseHandlerPICKLE(object):
 				#self.createMediaFilesIndexes()
 				elapsed_time = time.time() - start_time
 				printl("Indexing Took : " + str(elapsed_time), self)
-
-
-	##not tested
-	#def createMediaFilesIndexes(self):		
-	#	printl("->", self, 10)
-	#	#self.idxMoviesByImdb = {}
-	#	#self.idxSeriesByTheTvDb = {}
-	#	self.idxMediaFilesByType = {}
-	#	
-	#	start_time = time.time()
-	#	for key in self._dbMediaFiles:
-	#		if self._checkKeyValid(key):		# only for Pickle
-	#			if self._dbMediaFiles[key].ImdbId == imdbid:
-	#		idx['serie']
-	#		self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
-	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self, 11)
-
 
 	def saveMediaFiles(self):		
 		printl("->", self, "S")
@@ -885,8 +867,8 @@ class databaseHandlerPICKLE(object):
 				s += repr(records[key].TheTvDbId) + "\t"
 				s += repr(records[key].CRC) + "\t"
 				s += repr(records[key].Title) + "\t\t"
-				#s += repr(records[key].FileCreation) + "\t"
-				s += repr(records[key].CRCFile) + "\t"
+				s += repr(records[key].FileCreation) + "\t"
+				#s += repr(records[key].CRCFile) + "\t"
 				s += repr(records[key].FileSize) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
@@ -934,9 +916,10 @@ class databaseHandlerPICKLE(object):
 				s += repr(records[key].Episode) + "\t"
 				s += repr(records[key].ImdbId) + "\t"
 				s += repr(records[key].TheTvDbId) + "\t"
-				s += repr(records[key].CRC) + "\t"
+				#s += repr(records[key].CRC) + "\t"
 				s += repr(records[key].Title) + "\t\t"
-				s += repr(records[key].CRCFile) + "\t"
+				#s += repr(records[key].CRCFile) + "\t"
+				s += repr(records[key].FileCreation) + "\t"
 				s += repr(records[key].FileSize) + "\t"
 			f.write(s+"\n")
 		f.write("\n\n")
@@ -1262,7 +1245,6 @@ class databaseHandlerPICKLE(object):
 			self._setFileInfo(self._dbMediaFiles[key])
 		
 		if self.session is not None:
-			#time.sleep(10)
 			mm.close(False, self.session)
 		elapsed_time = time.time() - start_time
 		printl("Upgrade5 Took : " + str(elapsed_time), self, 11)
