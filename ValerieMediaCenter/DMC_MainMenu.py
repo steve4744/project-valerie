@@ -907,7 +907,7 @@ def stop_e2(session):
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 
 registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
-registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS))
-registerPlugin(Plugin(name=_("Expert"), fnc=settings_expert, where=Plugin.SETTINGS))
+registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS, weight=10))
+registerPlugin(Plugin(name=_("Expert"), fnc=settings_expert, where=Plugin.SETTINGS, weight=1000))
 registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=20))
 registerPlugin(Plugin(name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=30))
