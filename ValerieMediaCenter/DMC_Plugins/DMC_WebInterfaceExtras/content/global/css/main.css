@@ -77,8 +77,13 @@ td {
     border-radius: 5px 5px 5px 5px;
     margin-bottom: 8px;
     width: 990px;
-    min-height: 768px;
+    /*min-height: 768px;*/
 	/*overflow: auto;*/
+	/*margin: auto; /* Div soll zentriert werden */
+	min-height: 768px; /* Mindesthöhe für moderne Browser */
+	height:auto !important; /* Important Regel für moderne Browser */
+	height:100%; /* Mindesthöhe für den IE */
+	overflow: hidden !important; /* FF Scroll-leiste */ 
 }
 
 
