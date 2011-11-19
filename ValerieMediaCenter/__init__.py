@@ -122,8 +122,8 @@ if skinLoaded == False:
 		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 		config.plugins.pvmc.skin.value           = defaultSkin
 
-#TODO THIS IS NOT NEEDED RIGHT? 
-#loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
+#We also have to search for Plugins in the main folder as there are main components located (settings general and expert)
+loadPlugins(config.plugins.pvmc.pluginfolderpath.value, "Plugins.Extensions.ProjectValerie.")
 loadPlugins(config.plugins.pvmc.pluginfolderpath.value + "/DMC_Plugins", "Plugins.Extensions.ProjectValerie.DMC_Plugins.")
 
 config.plugins.pvmc.save()
