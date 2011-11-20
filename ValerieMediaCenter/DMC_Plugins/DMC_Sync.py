@@ -44,7 +44,7 @@ def autostartPlugin(session):
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import autostart
 		autostart(session)
 	else:
-		printl("Can not sync as no internet connection available!", self, "W")
+		printl("Can not sync as no internet connection available!", __name__, "W")
 
 def startPlugin(session):
 	if isInetAvailable():

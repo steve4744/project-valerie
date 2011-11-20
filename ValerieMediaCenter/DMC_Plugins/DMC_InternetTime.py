@@ -25,7 +25,7 @@ DATE_END='<br>'
 
 def getUTC():
 	if isInetAvailable() is False:
-		printl("Can not get utc time as no internet connection available!", self, "W")
+		printl("Can not get utc time as no internet connection available!", __name__, "W")
 		return None
 	
 	try:
