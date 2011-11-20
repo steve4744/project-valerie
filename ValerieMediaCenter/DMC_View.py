@@ -720,10 +720,14 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 			select = (self.currentKeyValuePair, primaryKeyValuePair)
 		self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT, select, self.activeSort, self.activeFilter))
 
+	def clearDefaultView(self, unused=None, unused2=None):
+		self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT, ))
+
 	def displayOptionsMenu(self):
 		pluginList = []
 		
 		pluginList.append((_("Set view as default"), Plugin("View", fnc=self.setDefaultView), ))
+		pluginList.append((_("Clear default view"), Plugin("View", fnc=self.clearDefaultView), ))
 		
 		plugins = getPlugins(where=Plugin.MENU_MOVIES_PLUGINS)
 		for plugin in plugins:

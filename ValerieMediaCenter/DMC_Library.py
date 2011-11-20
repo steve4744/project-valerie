@@ -46,6 +46,12 @@ class DMC_Library(Screen):
         return default
 
     def setDefault(self, selection, sort, filter):
+        if selection is None and sort is None and filter is None:
+            try:
+                os.remove(self.defaultPickle)
+            except:
+                printl("Could not remove " + str(self.defaultPickle), self, "E")
+            return
         default = {
             "view": self.currentViewIndex, 
             "selection": selection, 
