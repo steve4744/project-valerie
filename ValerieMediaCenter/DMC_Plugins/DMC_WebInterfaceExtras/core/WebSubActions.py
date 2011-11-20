@@ -642,9 +642,11 @@ class WebFunctions(Resource):
 					useFolder = request.args.has_key("usefolder")
 					
 					path = {"directory": directory, "enabled": enabled, "usefolder": useFolder, "type": typeFolder}
-					
+					action = "standard"
 					from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PathsConfig import PathsConfig
-					PathsConfig().getInstance().setPath(id, path)
+					if directory == "":
+						action = "delete"
+					PathsConfig().getInstance().setPath(id, path, action)
 					PathsConfig().getInstance().save()
 				
 				elif request.args["section"][0] == "filetypes":
@@ -697,4 +699,26 @@ class WebFunctions(Resource):
 			outputStream = open(filename, '/hdd/test.zip')
 			outputStream.write(request.args['myFile'])
 			outputStream.close()			
-			
+		
+		##########################
+		# NORMAL SYNC
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "normalSync":
+			printl("mode (normalSync)", self, "I")
+
+		##########################
+		# FAST SYNC
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "fastSync":
+			printl("mode (fastSync)", self, "I")
+
+		##########################
+		# CANCEL SYNC
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "cancelSync":
+			printl("mode (cancelSync)", self, "I")
+
+					

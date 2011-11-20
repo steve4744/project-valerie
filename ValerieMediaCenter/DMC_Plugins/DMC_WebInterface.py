@@ -73,6 +73,7 @@ def autostart(session):
 		root.putChild("tvshows", WebMainActions.TvShows())
 		root.putChild("episodes", WebMainActions.Episodes())
 		root.putChild("failed", WebMainActions.Failed())
+		root.putChild("sync", WebMainActions.Sync())		
 		root.putChild("extras", WebMainActions.Extras())
 		root.putChild("options", WebMainActions.Options())
 		root.putChild("logs", WebMainActions.Logs())

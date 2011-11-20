@@ -7,10 +7,19 @@
 	</div>
 	
 	<br><br>
+
+	<div class="subheader">Add Path</div>
+	
+	<div class="text">
+		<!-- CUSTOM_TBODY_SYNC_PATH_ADD -->
+	</div>
+	
+	<br><br><br>
 	
 	<div class="subheader">Path Settings</div>
 
 	<div class="text">
 		<!-- CUSTOM_TBODY_SYNC_PATH -->
 	</div>
+
 </div>

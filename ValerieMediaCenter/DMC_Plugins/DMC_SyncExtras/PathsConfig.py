@@ -143,21 +143,28 @@ class PathsConfig(Xml2Dict):
 	def getPaths(self):
 		return self._dict["xml"]["searchpaths"]["searchpath"]
 
-	def setPath(self, oldPrimaryKey, newEntry):
+	def setPath(self, oldPrimaryKey, newEntry, action = "standard"):
 		printl("oldPrimaryKey: %s" % oldPrimaryKey, self, "I")
+		printl("newEntry: %s" % newEntry, self, "I")
+		printl("action: %s" % action, self, "I")
 		# Delete Entry
-		if oldPrimaryKey and newEntry is None:
+		if oldPrimaryKey and (action == "delete" or newEntry is None):
+			printl("delete", self, "I")
 			for i in range(len(self._dict["xml"]["searchpaths"]["searchpath"])):
+				printl("for", self, "I")
 				if oldPrimaryKey == self._dict["xml"]["searchpaths"]["searchpath"][i]["directory"]:
+					printl("found", self, "I")
 					del(self._dict["xml"]["searchpaths"]["searchpath"][i])
 					break
 		
 		# Add Entry
-		elif oldPrimaryKey is None and newEntry:
+		elif newEntry and (oldPrimaryKey is None or oldPrimaryKey == "new") :
+			printl("add", self, "I")
 			self._dict["xml"]["searchpaths"]["searchpath"].append(newEntry)
 		
 		# Change Entry
 		elif oldPrimaryKey and newEntry:
+			printl("change", self, "I")
 			for i in range(len(self._dict["xml"]["searchpaths"]["searchpath"])):
 				if oldPrimaryKey == self._dict["xml"]["searchpaths"]["searchpath"][i]["directory"]:
 					self._dict["xml"]["searchpaths"]["searchpath"][i] = newEntry

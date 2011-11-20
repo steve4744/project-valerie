@@ -538,6 +538,9 @@ class SyncSettings (Resource):
 		
 		tableBody = self.buildTableSyncPath("options.sync")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC_PATH -->", tableBody)
+		
+		tableBody = self.buildTableSyncPathAdd("options.sync")
+		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY_SYNC_PATH_ADD -->", tableBody)
 	
 		return utf8ToLatin(finalOutput)
 
@@ -609,6 +612,47 @@ class SyncSettings (Resource):
 									WebHelper().prepareTable(types, None, "type")[1], WebHelper().prepareTable(path["usefolder"], None, "usefolder")[1])
 		
 		tableBody += u"""</table>"""
+			
+		return tableBody
+		
+	def buildTableSyncPathAdd(self, section):
+		tableBody = u""
+		pathsConfig = WebData().getData(section)
+		
+		for path in pathsConfig.getPaths():
+			name = u"Directory"
+			value = path["directory"]
+			id = path["directory"]
+			
+			configType, tag = WebHelper().prepareTable(value, None)
+			
+			types = (path["type"], pathsConfig.getPathsChoices()["type"], )
+
+		tableBody += u"""
+						<table align="left" id="settings_sync_sub">
+							<tr>
+								<td width="100px">Enabled</td>
+								<td width="5100px">Directory</td>
+								<td width="50px">Type</td>
+								<td width="50px">UseFolder</td>
+								<td width="70px"></td>
+							</tr>
+							<form id="saveSetting" action="/function" method="get">
+								<input type="hidden" name="mode" value="options.saveconfig"></input>
+								<input type="hidden" name="what" value="settings_sync"></input>
+								<input type="hidden" name="section" value="paths"></input>
+								<input type="hidden" name="Id" value="new"></input>
+								<tr id="tr_entry">
+									<td width="50px">%s</td>
+									<td width="200px">%s</td>
+									<td width="50px">%s</td>
+									<td width="50px">%s</td>
+									<td width="70px"><input type="submit" value="add Path"></input></td>
+								</tr>
+							</form>
+						</table>
+					""" % (WebHelper().prepareTable(path["enabled"], None, "enabled")[1], WebHelper().prepareTable("/PATH/TO/NEW/MEDIA/", None, "directory")[1], 
+									WebHelper().prepareTable(types, None, "type")[1], WebHelper().prepareTable(path["usefolder"], None, "usefolder")[1])
 		
 		return tableBody
 
@@ -631,6 +675,25 @@ class Logs (Resource):
 	
 		return utf8ToLatin(finalOutput)	
 
+##########################
+# CLASS:
+##########################		
+class Sync (Resource):
+	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+	
+	def action(self, request):
+		global utf8ToLatin
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+		
+		finalOutput = WebHelper().getHtmlCore("Sync")
+	
+		return utf8ToLatin(finalOutput)	
+		
 ##########################
 # CLASS:
 ##########################		
