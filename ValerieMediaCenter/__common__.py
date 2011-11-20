@@ -145,4 +145,33 @@ def openLogFile():
 		pass
 	
 	gLogFile = open(logDir + "/valerie_%04d%02d%02d_%02d%02d.log" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
+
+#------------------------------------------------------------------------------------------
+
+gConnectivity = None
+
+def isInetAvailable():
+	global gConnectivity
+	if gConnectivity is None:
+		gConnectivity = testInetConnectivity()
 	
+	return gConnectivity
+
+def testInetConnectivity():
+	import urllib2
+	from   sys import version_info
+	import socket
+	try:
+		opener = urllib2.build_opener()
+		page = None
+		if version_info[1] >= 6:
+			page = opener.open("http://www.google.com", timeout=2)
+		else:
+			socket.setdefaulttimeout(2)
+			page = opener.open("http://www.google.com")
+		if page is not None:
+			return True
+		else:
+			return False
+	except:
+		return False
