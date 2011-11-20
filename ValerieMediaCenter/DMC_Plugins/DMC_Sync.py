@@ -51,7 +51,8 @@ def startPlugin(session):
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
 		session.open(ProjectValerieSync)
 	else:
-		self.session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
+		from Screens.MessageBox import MessageBox
+		session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
 
 registerPlugin(Plugin(name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=10))
