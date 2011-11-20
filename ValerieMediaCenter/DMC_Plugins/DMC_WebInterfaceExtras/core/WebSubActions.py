@@ -706,6 +706,11 @@ class WebFunctions(Resource):
 		##########################
 		elif request.args["mode"][0] == "normalSync":
 			printl("mode (normalSync)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.sync import pyvalerie
+			syncInfo = getSyncInfoInstance()
+			syncInfo.registerOutputInstance(None, None) #session)
+			syncInfo.start(pyvalerie.NORMAL)
 
 		##########################
 		# FAST SYNC
@@ -713,6 +718,11 @@ class WebFunctions(Resource):
 		##########################
 		elif request.args["mode"][0] == "fastSync":
 			printl("mode (fastSync)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.sync import pyvalerie
+			syncInfo = getSyncInfoInstance()
+			syncInfo.registerOutputInstance(None, None) #session)
+			syncInfo.start(pyvalerie.FAST)
 
 		##########################
 		# CANCEL SYNC
@@ -720,5 +730,9 @@ class WebFunctions(Resource):
 		##########################
 		elif request.args["mode"][0] == "cancelSync":
 			printl("mode (cancelSync)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			syncInfo = getSyncInfoInstance()
+			syncInfo.registerOutputInstance(None, None) #session)
+			syncInfo.abort()
 
 					
