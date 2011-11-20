@@ -33,7 +33,7 @@ from DMC_MovieLibrary import DMC_MovieLibrary
 from DMC_TvShowLibrary import DMC_TvShowLibrary
 
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugin, getPlugins, Plugin, registerPlugin
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, isInetAvailable
 
 #------------------------------------------------------------------------------------------
 
@@ -173,9 +173,12 @@ class PVMC_Update(Screen):
 
 	def startUpdate(self):
 		printl("->", self, "S")
-		time.sleep(2)
-		self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
-		
+		if isInetAvailable():
+			time.sleep(2)
+			self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
+		else:
+			self.session.openWithCallback(self.close, MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
+
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
 	# RTV = 127 Binary not found
@@ -478,9 +481,11 @@ class PVMC_MainMenu(Screen):
 		printl("->", self, "H")
 		
 		version = None
-		
 		if config.plugins.pvmc.checkforupdate.value != "Off":
-			version, remoteUrl = Update().checkForUpdate()
+			if isInetAvailable():
+				version, remoteUrl = Update().checkForUpdate()
+			else:
+				printl("Can not check for updates as no internet connection available!", self, "W")
 		
 		printl("version=" + str(version), self)
 		

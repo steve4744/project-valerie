@@ -9,7 +9,7 @@ from Components.config import ConfigYesNo
 from Components.config import ConfigSubsection
 
 
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, isInetAvailable
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 #------------------------------------------------------------------------------------------
@@ -24,6 +24,10 @@ DATE_START='</b></font><font size="5" color="white">'
 DATE_END='<br>'
 
 def getUTC():
+	if isInetAvailable() is False:
+		printl("Can not get utc time as no internet connection available!", self, "W")
+		return None
+	
 	try:
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.WebGrabber import getText
 		page = getText("http://www.time.gov/timezone.cgi?UTC/s/0", False, False)
@@ -80,7 +84,7 @@ def haveRTC():
 		if len(time) > 0 and time != "0":
 			return True
 	except Exception, ex:
-		printl("Exception(" + str(ex) + ")", __name__, "E")
+		printl("Exception(" + str(ex) + ")", __name__, "I")
 	return False
 
 class InternetTime(Thread):

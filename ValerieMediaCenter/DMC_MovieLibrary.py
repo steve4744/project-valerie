@@ -112,7 +112,6 @@ class DMC_MovieLibrary(DMC_Library):
 			sort.append(("Filename", "Filename", False))
 			
 			filter = [("All", (None, False), ("", )), ]
-			
 			filter.append(("Seen", ("Seen", False, 1), ("Seen", "Unseen", )))
 			
 			if len(tmpGenres) > 0:

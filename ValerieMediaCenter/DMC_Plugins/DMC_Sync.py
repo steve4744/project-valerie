@@ -4,7 +4,7 @@ from Components.config import config
 from Components.config import ConfigYesNo
 from Components.config import ConfigSubsection
 
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, isInetAvailable
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
 
 from Components.Language import language
@@ -40,12 +40,18 @@ def settings():
 	return s
 
 def autostartPlugin(session):
-	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import autostart
-	autostart(session)
+	if isInetAvailable():
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import autostart
+		autostart(session)
+	else:
+		printl("Can not sync as no internet connection available!", self, "W")
 
 def startPlugin(session):
-	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
-	session.open(ProjectValerieSync)
+	if isInetAvailable():
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
+		session.open(ProjectValerieSync)
+	else:
+		self.session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
 
 registerPlugin(Plugin(name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=10))
