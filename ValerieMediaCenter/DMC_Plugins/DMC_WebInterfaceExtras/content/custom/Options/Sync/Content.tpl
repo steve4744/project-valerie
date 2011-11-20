@@ -21,5 +21,9 @@
 	<div class="text">
 		<!-- CUSTOM_TBODY_SYNC_PATH -->
 	</div>
+	
+	<div class="text">
+		<br><br><br>Hint: If you want to delete a line, just delete content of directory and press "save".
+	</div>
 
 </div>
