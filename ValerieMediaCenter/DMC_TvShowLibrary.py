@@ -220,8 +220,11 @@ class DMC_TvShowLibrary(DMC_Library):
 				
 				if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
 					image = seenPng
+					d["Seen"] = "Seen"
 				else:
 					image = unseenPng
+					d["Seen"] = "Unseen"
+				
 				d["ViewMode"] = "play"
 				_season = episode.Season
 				if _season is None:
@@ -243,6 +246,7 @@ class DMC_TvShowLibrary(DMC_Library):
 				sort.append(("File Creation", "Creation", True))
 			
 			filter = [("All", (None, False), ("", )), ]
+			filter.append(("Seen", ("Seen", False, 1), ("Seen", "Unseen", )))
 			
 			return (parsedLibrary, ("ViewMode", "Id", "TVShowId", "Season", "Episode", ), dict({ \
 				'ViewMode': "ShowSeasons", \

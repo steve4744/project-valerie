@@ -81,86 +81,93 @@ class DMC_NewestEpisodes(DMC_Library):
 	
     
         for episode in episodes:
-            # Yeah its a bit supersufficial as date is already in it
-            # But will allow the view to sort the list
-            # avoid crash if Null Values    
-            yy=episode.Year
-            mm=episode.Month
-            dd=episode.Day
-            if yy is None or yy == -1:
-                yy=1971
-            if mm is None or mm == -1:
-                mm=1
-            if dd is None or dd == -1:
-                dd=1
-            fileCreationValidTime = False
-            epDate = date(yy,mm,dd)
-            if self.checkFileCreationDate:
-                try:
-                    creation = os.stat(utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)).st_mtime
-                    cDate = date.fromtimestamp(creation)
-                    if (today-cDate).days < daysBack:
-                        fileCreationValidTime = True
-                except Exception, ex:
-                    printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-                    creation = 0
-            
-                
-            if (today-epDate).days < daysBack or fileCreationValidTime:
-                if not shows.has_key(episode.ParentId):
-                    tvshow = self.manager.getSerie(episode.ParentId)
-                    shows[episode.ParentId]= tvshow
-                    genres  = utf8ToLatin(tvshow.Genres).split("|")
-                    for genre in genres:
-                        if genre not in tmpGenres:
-                            tmpGenres.append(genre)
-                else:
-                    tvshow = shows[episode.ParentId]
-                
-                d = {}
-                
-                d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
-                d["ArtPosterId"] = d["ArtBackdropId"]
-                
-                d["Id"]  = episode.Id
-                d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
-                d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
-                d["Tag"]     = utf8ToLatin(tvshow.Tag)
-                d["Title"]   = " %s %dx%02d: %s" % (utf8ToLatin(tvshow.Title),episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
-                
-                d["ScreenTitle"] = d["Title"]
-                d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
-                
-                d["Year"]    = episode.Year
-                d["Month"]   = episode.Month
-                d["Day"]     = episode.Day
-                d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
+            try:
+                # Yeah its a bit supersufficial as date is already in it
+                # But will allow the view to sort the list
+                # avoid crash if Null Values    
+                yy=episode.Year
+                mm=episode.Month
+                dd=episode.Day
+                if yy is None or yy == -1:
+                    yy=1971
+                if mm is None or mm == -1:
+                    mm=1
+                if dd is None or dd == -1:
+                    dd=1
+                fileCreationValidTime = False
+                epDate = date(yy,mm,dd)
                 if self.checkFileCreationDate:
-                    d["Creation"] = creation
-                d["Season"]  = episode.Season
-                d["Episode"] = episode.Episode
-                d["Plot"]    = utf8ToLatin(episode.Plot)
-                d["Runtime"] = episode.Runtime
-                d["Popularity"] = episode.Popularity
-                d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
-                d["Resolution"]  = utf8ToLatin(episode.Resolution)
-                d["Sound"]  = utf8ToLatin(episode.Sound)
-                d["Date"]    = yy*10000 + mm*100 + dd
+                    try:
+                        creation = os.stat(utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)).st_mtime
+                        cDate = date.fromtimestamp(creation)
+                        if (today-cDate).days < daysBack:
+                            fileCreationValidTime = True
+                    except Exception, ex:
+                        printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+                        creation = 0
                 
-                if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
-                    image = seenPng
-                else:
-                    image = unseenPng
                 
-                d["ViewMode"] = "play"
-                
-                parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50", image))
-    
+                if (today-epDate).days < daysBack or fileCreationValidTime:
+                    if not shows.has_key(episode.ParentId):
+                        tvshow = self.manager.getSerie(episode.ParentId)
+                        shows[episode.ParentId]= tvshow
+                        genres  = utf8ToLatin(tvshow.Genres).split("|")
+                        for genre in genres:
+                            if genre not in tmpGenres:
+                                tmpGenres.append(genre)
+                    else:
+                        tvshow = shows[episode.ParentId]
+                    
+                    d = {}
+                    
+                    d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
+                    d["ArtPosterId"] = d["ArtBackdropId"]
+                    
+                    d["Id"]  = episode.Id
+                    d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
+                    d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
+                    d["Tag"]     = utf8ToLatin(tvshow.Tag)
+                    d["Title"]   = " %s %dx%02d: %s" % (utf8ToLatin(tvshow.Title),episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
+                    
+                    d["ScreenTitle"] = d["Title"]
+                    d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
+                    
+                    d["Year"]    = episode.Year
+                    d["Month"]   = episode.Month
+                    d["Day"]     = episode.Day
+                    d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
+                    if self.checkFileCreationDate:
+                        d["Creation"] = creation
+                    d["Season"]  = episode.Season
+                    d["Episode"] = episode.Episode
+                    d["Plot"]    = utf8ToLatin(episode.Plot)
+                    d["Runtime"] = episode.Runtime
+                    d["Popularity"] = episode.Popularity
+                    d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
+                    d["Resolution"]  = utf8ToLatin(episode.Resolution)
+                    d["Sound"]  = utf8ToLatin(episode.Sound)
+                    d["Date"]    = yy*10000 + mm*100 + dd
+                    
+                    if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+                        image = seenPng
+                        d["Seen"] = "Seen"
+                    else:
+                        image = unseenPng
+                        d["Seen"] = "Unseen"
+                    
+                    d["ViewMode"] = "play"
+                    
+                    parsedLibrary.append((d["Title"], d, episode.Season * 1000 + episode.Episode, "50", image))
+            except Exception, ex:
+                printl("Exception while loading library: " + str(ex), self, "E")
+        
         sort = [("Aired", "Date", True),("Title", None, False), ("Popularity", "Popularity", True), ]
         if self.checkFileCreationDate:
             sort.append(("File Creation", "Creation", True))
         
         filter = [("All", (None, False), ("", )), ]
+        filter.append(("Seen", ("Seen", False, 1), ("Seen", "Unseen", )))
+        
         if len(tmpGenres) > 0:
             tmpGenres.sort()
             filter.append(("Genre", ("Genres", True), tmpGenres))

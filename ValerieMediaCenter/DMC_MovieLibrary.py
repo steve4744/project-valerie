@@ -96,8 +96,10 @@ class DMC_MovieLibrary(DMC_Library):
 				
 				if self.manager.isSeen({"ImdbId": d["ImdbId"]}):
 					image = seenPng
+					d["Seen"] = "Seen"
 				else:
 					image = unseenPng
+					d["Seen"] = "Unseen"
 				
 				d["ViewMode"] = "play"
 				d["ScreenTitle"] = utf8ToLatin(movie.Title)
@@ -110,6 +112,9 @@ class DMC_MovieLibrary(DMC_Library):
 			sort.append(("Filename", "Filename", False))
 			
 			filter = [("All", (None, False), ("", )), ]
+			
+			filter.append(("Seen", ("Seen", False, 1), ("Seen", "Unseen", )))
+			
 			if len(tmpGenres) > 0:
 				tmpGenres.sort()
 				filter.append(("Genre", ("Genres", True), tmpGenres))
