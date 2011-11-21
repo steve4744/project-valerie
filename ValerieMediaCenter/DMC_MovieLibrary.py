@@ -77,13 +77,14 @@ class DMC_MovieLibrary(DMC_Library):
 				#d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
 				d["Filename"] = utf8ToLatin(movie.Filename).lower()
 				d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
-				if self.checkFileCreationDate:
-					d["Creation"] = 0
-					try:
-						d["Creation"] = os.stat(d["Path"]).st_mtime
-					except Exception, ex:
-						printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-						d["Creation"] = 0
+				#if self.checkFileCreationDate:
+				#	d["Creation"] = 0
+				#	try:
+				#		d["Creation"] = os.stat(d["Path"]).st_mtime
+				#	except Exception, ex:
+				#		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+				#		d["Creation"] = 0
+				d["Creation"] = movie.FileCreation
 				d["Plot"]    = utf8ToLatin(movie.Plot)
 				d["Runtime"] = movie.Runtime
 				d["Popularity"] = movie.Popularity

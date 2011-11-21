@@ -495,13 +495,14 @@ class PVMC_MainMenu(Screen):
 					_("A new version of MediaCenter is available for download!\n\nVersion: %s") % version, \
 					MessageBox.TYPE_YESNO, timeout=120, close_on_any_key=False, default=False)
 			elif  config.plugins.pvmc.checkforupdate.value == "Passive":
-				behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
-				multiple = ""
-				if behind > 1:
-					multiple = (_("revisions"))
-				else:
-					multiple = (_("revision"))
-				self["version"].setText((_("Current Version %s.") % config.plugins.pvmc.version.value) + ' ' + (_("You are %s") % behind) + ' ' + (_("%s behind!") % multiple))
+				#behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
+				#multiple = ""
+				#if behind > 1:
+				#	multiple = (_("revisions"))
+				#else:
+				#	multiple = (_("revision"))
+				#self["version"].setText((_("Current Version %s.") % config.plugins.pvmc.version.value) + ' ' + (_("You are %s") % behind) + ' ' + (_("%s behind!") % multiple))
+				self["version"].setText(_("Update to %s available") % int(version[1:]))
 				version = None #Hack for the moment
 			else:
 				version = None #Hack for the moment

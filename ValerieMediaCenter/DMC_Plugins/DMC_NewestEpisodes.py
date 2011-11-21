@@ -98,7 +98,7 @@ class DMC_NewestEpisodes(DMC_Library):
                 epDate = date(yy,mm,dd)
                 if self.checkFileCreationDate:
                     try:
-                        creation = os.stat(utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)).st_mtime
+                        creation = episode.FileCreation #os.stat(utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)).st_mtime
                         cDate = date.fromtimestamp(creation)
                         if (today-cDate).days < daysBack:
                             fileCreationValidTime = True
@@ -136,8 +136,9 @@ class DMC_NewestEpisodes(DMC_Library):
                     d["Month"]   = episode.Month
                     d["Day"]     = episode.Day
                     d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
-                    if self.checkFileCreationDate:
-                        d["Creation"] = creation
+                    #if self.checkFileCreationDate:
+                    #    d["Creation"] = creation
+                    d["Creation"] = episode.FileCreation
                     d["Season"]  = episode.Season
                     d["Episode"] = episode.Episode
                     d["Plot"]    = utf8ToLatin(episode.Plot)

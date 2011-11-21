@@ -203,12 +203,13 @@ class DMC_TvShowLibrary(DMC_Library):
 				d["Month"]   = episode.Month
 				d["Day"]     = episode.Day
 				d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
-				if self.checkFileCreationDate:
-					try:
-						d["Creation"] = os.stat(d["Path"]).st_mtime
-					except Exception, ex:
-						printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-						d["Creation"] = 0
+				#if self.checkFileCreationDate:
+				#	try:
+				#		d["Creation"] = os.stat(d["Path"]).st_mtime
+				#	except Exception, ex:
+				#		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+				#		d["Creation"] = 0
+				d["Creation"] = episode.FileCreation
 				d["Season"]  = episode.Season
 				d["Episode"] = episode.Episode
 				d["Plot"]    = utf8ToLatin(episode.Plot)
