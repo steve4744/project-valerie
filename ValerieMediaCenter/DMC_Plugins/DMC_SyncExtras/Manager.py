@@ -23,13 +23,8 @@
 # syncElement(self, path, filename, extension, imdbid, istvshow, oldelement=None):
 # getElementByUsingPrimaryKey(self, type, primary_key):
 # getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
-# isSeen(self, primary_key):
-# isShowSeen(self, primary_key):
-# isSeasonSeen(self, primary_key):
-# isEntrySeen(self, primary_key):
-# get from db
-# setSeen(self, primary_key):
-# isSeenDB(self, primary_key):
+# isMediaSeen(self, id):
+# setMediaSeen(self, primary_key):
 ###############################   MEDIA FILES   ############################### 
 # insertMedia(self, type, key_value_dict):
 # updateMedia(self, type, key_value_dict):
@@ -248,53 +243,15 @@ class Manager():
 ##########################  SEEN - not in dbHandler  ########################## 
 #
 
-	def isSeen(self, primary_key):
-		if primary_key.has_key("TheTvDbId"):
-			if primary_key.has_key("Season"):
-				if primary_key.has_key("Episode"):
-					return self.isEntrySeen(primary_key)
-				else:
-				    return self.isSeasonSeen(primary_key)
-			else:
-				return self.isShowSeen(primary_key)
-		elif primary_key.has_key("ImdbId"):
-			return self.isEntrySeen(primary_key)
-		
-		return False
-	
-	def isShowSeen(self, primary_key):
-		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
-		
-		for episode in library:
-			if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
-				return False
-		return True
-	
-	def isSeasonSeen(self, primary_key):
-		library = self.getAll(Manager.TVSHOWSEPISODES, primary_key["TheTvDbId"])
-		
-		for episode in library:
-			if episode.Season == primary_key["Season"]:
-				if not self.isEntrySeen({"TheTvDbId": primary_key["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
-					return False
-		return True
-	
-	def isEntrySeen(self, primary_key):
-		plugins = getPlugins(where=Plugin.INFO_SEEN)
-		for plugin in plugins:
-			if plugin.fnc(primary_key):
-				return True
-			
-		return False
-	
-	# get from db
+	def isMediaSeen(self, id, Season=None):
+		return self.db.isMediaSeen(id)
+		#return self.isEntrySeen(primary_key)
+		#return self.isSeasonSeen(primary_key)
+		#return self.isShowSeen(primary_key)
 
-	def setSeen(self, primary_key):
-		self.db.setSeen(primary_key)
+	def setMediaSeen(self, id, seen):
+		self.db.setMediaSeen(id, seen)
 	
-	def isSeenDB(self, primary_key):
-		return self.db.isSeen(primary_key)
-			
 #
 ###############################   MEDIA FILES   ############################### 
 #

@@ -95,7 +95,8 @@ class DMC_MovieLibrary(DMC_Library):
 				d["Resolution"]  = utf8ToLatin(movie.Resolution)
 				d["Sound"]  = utf8ToLatin(movie.Sound)
 				
-				if self.manager.isSeen({"ImdbId": d["ImdbId"]}):
+				#if self.manager.is_Seen({"ImdbId": d["ImdbId"]}):
+				if self.manager.isMediaSeen(d["Id"]):
 					image = seenPng
 					d["Seen"] = "Seen"
 				else:

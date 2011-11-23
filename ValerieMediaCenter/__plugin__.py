@@ -92,7 +92,7 @@ class Plugin():
 	AUTOSTART_DELAYED = 16
 	
 	INFO_PLAYBACK = 100
-	INFO_SEEN = 101
+	#INFO_SEEN = 101
 
 	name  = None
 	desc = None

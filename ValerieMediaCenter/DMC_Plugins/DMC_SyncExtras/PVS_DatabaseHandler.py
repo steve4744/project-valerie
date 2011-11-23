@@ -58,8 +58,8 @@
 # checkDuplicate		path, filename, extension
 # transformGenres
 # cleanValuesOfMedia		media
-# isSeen			primary_key
-# setSeen			primary_key
+# isMediaSeen			id
+# setMediaSeen			id
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import cPickle   as pickle
@@ -254,13 +254,42 @@ class Database(object):
 				self.mm = session.open(MessageBox, (_("\nConverting data to V2.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
 			self.mm = self.session.open(Msg)		
 			printl("Importing Data to PickleV2", self)
+			# this will Open Pickle V1 and run upgrades if necessary
 			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
+			dbHandlerPickle.loadAll()
 			#Upgrade SeenDB
 			records = dbHandlerPickle.getSeenForUpgrade()
 		
 			start_time = time.time()			
 			cntNew = 0
-			for m in records:
+			for imdb in records["Movies"]:
+				printl("getSeen for imdb: "+imdb, self)
+				m = self.dbHandler.getMediaWithImdbId(imdb)
+				self.dbHandler.MarkMediaAsSeen(m.Id)
+				
+				if not self._dbSeen["Movies"].has_key(primary_key["ImdbId"]):
+					self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
+					
+				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+				self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
+					
+				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+			
+				if not self._dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
+					self._dbSeen["TV"][primary_key["TheTvDbId"]] = {}
+				if not self._dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
+					self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
+				if not self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
+					self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
+				
+				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+				self.SeenCommited = False
+				self.saveSeenDB()	
+
+
+# dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+# dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
+
 			#	self.cleanValuesOfMedia(m)
 			#	self.dbHandler.insertMedia(m)
 				cntNew += 1				
@@ -494,51 +523,9 @@ class Database(object):
 #	syncFailedCause = u""
 
 
-	def isSeen(self, primary_key):
-		return self.dbHandler.isSeen(primary_key)
+	def isMediaSeen(self, id):
+		return self.dbHandler.isMediaSeen(id)
 	
-	def setSeen(self, primary_key):
-		self.dbHandler.setSeen(primary_key)
+	def setMediaSeen(self, id, seen):
+		self.dbHandler.setMediaSeen(id, seen)
 	
-#	
-#################################   SERIES   ################################# 
-#
-	# DML statements
-	#def insertSerie(self, media):
-	#	printl("->", self, "S")
-	#	return self.dbHandler.insertSerie(media)
-
-
-
-#	
-############################################################################## 
-#
-	#not tested
-	#self.idxMoviesByImdb = {}
-	#self.idxSeriesByTheTvDb = {}
-	#def createMoviesIndexes(self):
-	#	printl("->", self, 10)
-	#	start_time = time.time()
-	#	self.idxMoviesByImdb = {}
-	#	for key in self._dbMovies:
-	#		if key != self.CONFIGKEY:		# only for Pickle
-	#			self.idxMoviesByImdb[self._dbMovies[key].ImdbId] = key
-	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self, 11)
-
-	#not tested
-	#def createSeriesIndexes(self):
-	#	printl("->", self, 10)
-	#	start_time = time.time()
-	#	self.idxSeriesByTheTvDb = {}
-	#	for key in self._dbSeries:
-	#		self.idxSeriesByTheTvDb[self._dbSeries[key].TheTvDbId] = key
-	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self)
-
-	#def createSeriesIndexes(self):
-	#	start_time = time.time()
-	#	for key in self._dbSeries:
-	#		self.idxSeriesByThetvdb[self._dbSeries[key].TheTvDbId] = key
-	#	elapsed_time = time.time() - start_time
-	#	printl("Indexing Took : " + str(elapsed_time), self)

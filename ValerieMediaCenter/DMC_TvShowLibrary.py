@@ -72,7 +72,8 @@ class DMC_TvShowLibrary(DMC_Library):
 					if genre not in tmpGenres:
 						tmpGenres.append(genre)
 				if config.plugins.pvmc.showseenforshow.value is True:
-					if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"]}):
+					#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"]}):
+					if self.manager.isMediaSeen(d["Id"]):
 						image = seenPng
 					else:
 						image = unseenPng
@@ -140,7 +141,8 @@ class DMC_TvShowLibrary(DMC_Library):
 					s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
 					
 					if config.plugins.pvmc.showseenforseason.value is True:
-						if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Season": s["Season"]}):
+						#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"], "Season": s["Season"]}):
+						if self.manager.isMediaSeen(d["Id"], s["Season"]):
 							image = seenPng
 						else:
 							image = unseenPng
@@ -219,7 +221,8 @@ class DMC_TvShowLibrary(DMC_Library):
 				d["Resolution"]  = utf8ToLatin(episode.Resolution)
 				d["Sound"]  = utf8ToLatin(episode.Sound)
 				
-				if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+				#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+				if self.manager.isMediaSeen(d["Id"]):
 					image = seenPng
 					d["Seen"] = "Seen"
 				else:

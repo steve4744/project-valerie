@@ -149,8 +149,9 @@ class DMC_NewestEpisodes(DMC_Library):
                     d["Sound"]  = utf8ToLatin(episode.Sound)
                     d["Date"]    = yy*10000 + mm*100 + dd
                     
-                    if self.manager.isSeen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
-                        image = seenPng
+                    #if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
+                    if self.manager.isMediaSeen(d["Id"]):
+		        image = seenPng
                         d["Seen"] = "Seen"
                     else:
                         image = unseenPng

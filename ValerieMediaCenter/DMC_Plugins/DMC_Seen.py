@@ -49,19 +49,20 @@ type        = None
 progress    = None
 manager     = None
 
-def isSeen(primary_key):
-	global manager
-	if manager is None:
-		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-		manager = Manager("DMC_SEEN")	
-	return manager.isSeenDB(primary_key)
 
-def setSeen(primary_key):
+#def is_Seen(id, season):
+#	global manager
+#	if manager is None:
+#		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
+#		manager = Manager("DMC_SEEN")	
+#	return manager.isMediaSeen(isMediaSeen, season)
+
+def setSeen(id, seen):
 	global manager
 	if manager is None:
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		manager = Manager("DMC_SEEN")	
-	manager.setSeen(primary_key)
+	manager.setMediaSeen(id, seen)
 
 def autostart(session):
 	global imdbid
@@ -74,62 +75,45 @@ def autostart(session):
 	global manager
 		
 def markSeen(session, args):
-	if args.has_key("TheTvDbId"):
-		if args.has_key("Season"):
-			if args.has_key("Episode"):
-				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": True})
-	else:
-		if args.has_key("ImdbId"):
-			setSeen({"ImdbId": args["ImdbId"],  "Seen": True})
-	return
-
+	if args.has_key("Id"):
+		setSeen(args["Id"], True)
 	
 def markUnSeen(session, args):
-	if args.has_key("TheTvDbId"):
-		if args.has_key("Season"):
-			if args.has_key("Episode"):
-				setSeen({"TheTvDbId": args["TheTvDbId"], "Episode":args["Episode"], "Season": args["Season"], "Seen": False})
-	else:
-		if args.has_key("ImdbId"):
-			setSeen({"ImdbId": args["ImdbId"],  "Seen": False})
-	return
+	if args.has_key("Id"):
+		setSeen(args["Id"], False)
 	
 def info_playback(d, flags):
-	global imdbid
-	global thetvdb
-	global season
-	global episode
-	global status
-	global type
+	#global imdbid
+	#global thetvdb
+	#global season
+	#global episode
+	#global status
+	#global type
 	global progress
 	if flags.has_key("DO_NOT_TRACK") and flags["DO_NOT_TRACK"] is True:
 		return
 	
-	if d.has_key("imdbid"):
-		imdbid = d["imdbid"]
-	if d.has_key("thetvdb"):
-		thetvdb = d["thetvdb"]
-	if d.has_key("season") and d.has_key("episode"):
-		season = d["season"]
-		episode = d["episode"]
-	if d.has_key("status"):
-		status = d["status"]
-	if d.has_key("type"):
-		type = d["type"]
+	#if d.has_key("imdbid"):
+	#	imdbid = d["imdbid"]
+	#if d.has_key("thetvdb"):
+	#	thetvdb = d["thetvdb"]
+	#if d.has_key("season") and d.has_key("episode"):
+	#	season = d["season"]
+	#	episode = d["episode"]
+	#if d.has_key("status"):
+	#	status = d["status"]
+	#if d.has_key("type"):
+	#	type = d["type"]
 	if d.has_key("progress"):
 		progress = d["progress"]
 	
 	if status == "stopped":
 		if progress >= 70:
-			if type == "movie":
-				setSeen({"ImdbId": imdbid, "Seen": True})
-			elif type == "tvshow":
-				setSeen({"TheTvDbId": thetvdb, "Episode":episode, "Season": season, "Seen": True})
-				
+			setSeen(d["id"], True)
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
 	registerPlugin(Plugin(name=_("Seen"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
-	registerPlugin(Plugin(name=_("Seen"), fnc=isSeen, where=Plugin.INFO_SEEN))
+	#registerPlugin(Plugin(name=_("Seen"), fnc=is_Seen, where=Plugin.INFO_SEEN))
 	registerPlugin(Plugin(name=_("Mark as Seen"), fnc=markSeen, where=Plugin.MENU_MOVIES_PLUGINS))
 	registerPlugin(Plugin(name=_("Mark as Unseen"), fnc=markUnSeen, where=Plugin.MENU_MOVIES_PLUGINS))
