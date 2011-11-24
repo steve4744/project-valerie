@@ -319,10 +319,11 @@ class Update(object):
 		printl("->", self, "S")
 		boxType = self.getBoxtype()
 		self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
+		installedRevision = self.getInstalledRevision()
 		printl("Checking URL: " + str(self.url), self) 
 		try:
 			opener = urllib2.build_opener()
-			opener.addheaders = [('User-agent', 'urllib2_val_' + boxType[1] + '_' + boxType[2] + '_' + boxType[3])]
+			opener.addheaders = [('User-agent', 'urllib2_val_' + boxType[1] + '_' + boxType[2] + '_' + boxType[3] + '_' + installedRevision)]
 			f = opener.open(self.url)
 			html = f.read()
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
