@@ -40,37 +40,21 @@ try:
 except:
 	gAvailable = False
 
-imdbid      = None
-thetvdb     = None
-season      = None
-episode     = None
-status      = None
-type        = None
 progress    = None
 manager     = None
-
-
-#def is_Seen(id, season):
-#	global manager
-#	if manager is None:
-#		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-#		manager = Manager("DMC_SEEN")	
-#	return manager.isMediaSeen(isMediaSeen, season)
 
 def setSeen(id, seen):
 	global manager
 	if manager is None:
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
-		manager = Manager("DMC_SEEN")	
-	manager.setMediaSeen(id, seen)
-
+		manager = Manager("DMC_SEEN")
+	if seen:
+	#	manager.MarkAsSeen(id, None)
+		manager.MarkAsSeen(id)
+	else:
+		manager.MarkAsUnseen(id)
+	
 def autostart(session):
-	global imdbid
-	global thetvdb
-	global season
-	global episode
-	global status
-	global type
 	global progress
 	global manager
 		
@@ -83,27 +67,10 @@ def markUnSeen(session, args):
 		setSeen(args["Id"], False)
 	
 def info_playback(d, flags):
-	#global imdbid
-	#global thetvdb
-	#global season
-	#global episode
-	#global status
-	#global type
 	global progress
 	if flags.has_key("DO_NOT_TRACK") and flags["DO_NOT_TRACK"] is True:
 		return
 	
-	#if d.has_key("imdbid"):
-	#	imdbid = d["imdbid"]
-	#if d.has_key("thetvdb"):
-	#	thetvdb = d["thetvdb"]
-	#if d.has_key("season") and d.has_key("episode"):
-	#	season = d["season"]
-	#	episode = d["episode"]
-	#if d.has_key("status"):
-	#	status = d["status"]
-	#if d.has_key("type"):
-	#	type = d["type"]
 	if d.has_key("progress"):
 		progress = d["progress"]
 	

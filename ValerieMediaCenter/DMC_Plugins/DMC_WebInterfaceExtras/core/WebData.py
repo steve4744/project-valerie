@@ -44,16 +44,16 @@ class WebData():
 		elif type == "EpisodesOfSerie":
 			dataRows = manager.getEpisodes(param)	
 		elif type == "failed":
-			dataRows = manager.getFailed()
+			dataRows = manager.getFailedValues()
 
 		elif type == "MediaInfo_isMovie":
-			dataRows = manager.getMovie(param)
+			dataRows = manager.getMedia(param)
 		elif type == "MediaInfo_isTvShow":
-			dataRows = manager.getSerie(param)
+			dataRows = manager.getMedia(param)
 		elif type == "MediaInfo_isEpisode":
-			dataRows = manager.getEpisode(param)
+			dataRows = manager.getMedia(param)
 		elif type == "MediaInfo_isFailed":
-			dataRows = manager.getFailedItem(param)
+			dataRows = manager.getMedia(param)
 			
 		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin

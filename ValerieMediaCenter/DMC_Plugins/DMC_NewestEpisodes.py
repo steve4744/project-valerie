@@ -109,7 +109,7 @@ class DMC_NewestEpisodes(DMC_Library):
                 
                 if (today-epDate).days < daysBack or fileCreationValidTime:
                     if not shows.has_key(episode.ParentId):
-                        tvshow = self.manager.getSerie(episode.ParentId)
+                        tvshow = self.manager.getMedia(episode.ParentId)
                         shows[episode.ParentId]= tvshow
                         genres  = utf8ToLatin(tvshow.Genres).split("|")
                         for genre in genres:

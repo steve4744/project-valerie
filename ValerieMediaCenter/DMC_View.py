@@ -461,12 +461,12 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		select = None
 		selection = self["listview"].getCurrent()
 		if selection is not None:
-			primaryKeyValuePair = {}
+			params = {}
 			print self.onEnterPrimaryKeys
 			for key in self.onEnterPrimaryKeys:
 				if key != "play":
-					primaryKeyValuePair[key] = selection[1][key]
-			select = (self.currentKeyValuePair, primaryKeyValuePair)
+					params[key] = selection[1][key]
+			select = (self.currentKeyValuePair, params)
 		self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort, self.activeFilter))
 
 	def onChooseViewCallback(self, choice):
@@ -477,12 +477,12 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 			select = None
 			selection = self["listview"].getCurrent()
 			if selection is not None:
-				primaryKeyValuePair = {}
+				params = {}
 				print self.onEnterPrimaryKeys
 				for key in self.onEnterPrimaryKeys:
 					if key != "play":
-						primaryKeyValuePair[key] = selection[1][key]
-				select = (self.currentKeyValuePair, primaryKeyValuePair)
+						params[key] = selection[1][key]
+				select = (self.currentKeyValuePair, params)
 			self.close((DMC_View.ON_CLOSED_CAUSE_CHANGE_VIEW, select, self.activeSort, self.activeFilter, choice[1]))
 
 	def onChooseView(self):

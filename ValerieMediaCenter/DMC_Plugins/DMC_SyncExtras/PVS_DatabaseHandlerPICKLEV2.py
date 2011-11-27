@@ -1,21 +1,14 @@
 # -*- coding: utf-8 -*-
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
-#   PVS_DatabaseHandlerPICKLE.py
-#   Project Valerie - Database Handler for PICKLE
+#   PVS_DatabaseHandlerPICKLEV2.py
+#   Project Valerie - Database Handler for PICKLE V2
 #
-#   Created by Zuki on 20/05/2011.
+#   Created by Zuki on 25/11/2011.
 #   Interface for working with PICKLE Files
 #   
 #   Revisions:
-#   v0 - ../06/2011 - Zuki - Let's import the Pickle Interface from database.py
-#   v1 - 15/07/2011 - Zuki - added Config Record to pickle's to save the structure version
-#			   - added Upgrade Database function's (to apply conversions)
-#   v2 - 16/07/2011 - Zuki - upgrade database is now working
-#			     DB Patch 1 will update fields MediaInfo.MediaType
-#   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
-#			     Changes to webif/sync by Don 	
-#   v  - 28/10/2011 - Zuki - Upgrade DB to v3 = Rename Old DB files
+#   v0 - ../06/2011 - Zuki
 #
 ################################################################################
 # Function			Parameters		Return
@@ -89,7 +82,6 @@
 		
 ## DB compability - used for upgrades only
 #######   MOVIES   
-# _loadMoviesDB		_moviesCheckLoaded
 # _loadSeriesEpisodesDB	_seriesCheckLoaded
 # _getAllSeries		_getAllEpisodes
 #######   UPGRADE 
@@ -121,51 +113,33 @@ gDatabaseHandler = None
 gConnection = None
 gMutex_Id = Lock()
 
-class databaseHandlerPICKLE(object):
-	DB_PATH           = config.plugins.pvmc.configfolderpath.value
-
-	MEDIAFILESDB = DB_PATH + "mediafiles.db"
-
-	FAILEDDB   = DB_PATH + "failed.db"
-	MOVIESDB   = DB_PATH + "movies.db"
-	TVSHOWSDB  = DB_PATH + "tvshows.db"
-	EPISODESDB = DB_PATH + "episodes.db"
-	SEENDB 	   = DB_PATH + "seen.db"
+class databaseHandlerPICKLEV2(object):
+	DB_FIRSTTIME 	= False
+	DB_PATH		= config.plugins.pvmc.configfolderpath.value
+	MEDIAFILESDB	= DB_PATH + "mediafiles.db"
+	TABLESDB	= DB_PATH + "tables.db"
 	
 	CONFIGKEY  = -999999
 	COUNTERID  = -999998
 	STATS	   = -999997
 	DBID	   = -999996
+	DB_VERSION_MEDIAFILES 	= 5
+	DB_VERSION_TABLES 	= 0
+	
 	CONVERTING = False
 	_ConvertPos = 0
 	_ConvertMax = 0
-	DB_VERSION_MEDIAFILES = 5
-	DB_VERSION_SEEN = 0
 	USE_INDEXES = False  	# Create indexes key/id
 	AUTOCOMMIT  = False	# Only if database have a few record... 500?
 				# It can be changed on runtime (to avoid commit during sync )
 				
 	MediaFilesCommited=True
-	SeenCommited=True
+	TablesCommited=True
 	_dbMediaFiles	= None	
-		
+	_dbTables	= None	
+	
 	ORDER_TITLE = 1
 	ORDER_YEAR  = 2
-
-	#temp - to delete with old .db
-	DB_VERSION_MOVIES = 1
-	DB_VERSION_SERIES = 1
-	DB_VERSION_EPISODES = 1	
-	LastID_M   = 100000
-	LastID_S   = 200000
-	LastID_E   = 300000
-	LastID_MF  = 500000
-		
-	_dbMovies	= None
-	_dbSeries	= None
-	_dbEpisodes	= None	
-	_dbFailed	= None
-	_dbSeen		= None
 	
 	session = None
 	
@@ -177,16 +151,18 @@ class databaseHandlerPICKLE(object):
 		self.session = session
 		global gDatabaseHandler
 		if gDatabaseHandler is None:			
-			printl("PICKLE - New Instance", self)
+			printl("PICKLEV2 - New Instance", self)
 			gDatabaseHandler = self
+			self.DB_FIRSTTIME = not os.path.exists(self.TABLESDB) # is created only on v2
+	
 		return gDatabaseHandler
 
 	def dbIsCommited(self):
-		return self.MediaFilesCommited
+		return self.MediaFilesCommited and self.TablesCommited
 	
 	def loadAll (self):
 		self._mediaFilesCheckLoaded()
-		self._seenCheckLoaded()
+		self._tablesCheckLoaded()
 		
 #
 #################################   MEDIAS   ################################# 
@@ -198,10 +174,6 @@ class databaseHandlerPICKLE(object):
 			self._dbMediaFiles = {}
 			try:
 				if os.path.exists(self.MEDIAFILESDB):
-					#preUpdates
-					#todo should be executed only once
-					# not needed for now, created in r999
-					#self._checkForPreDbUpates(self.MEDIAFILESDB)
 					fd = open(self.MEDIAFILESDB, "rb")
 					self._dbMediaFiles = pickle.load(fd)
 					fd.close()
@@ -259,7 +231,13 @@ class databaseHandlerPICKLE(object):
 
 	# Waiting for _db dict
 	def _getNextKey(self, records):
-		maxKey = max(records.keys(), key=int) + 1
+		if len(records) == 0:
+			maxKey = 0
+		else:
+			maxKey = max(records.keys(), key=int) + 1
+		#except ValueError:
+		#	return default
+		
 		if (maxKey<=0):
 			maxKey = 1
 		printl("NextKey: " +str(maxKey) , self, "H")
@@ -285,24 +263,20 @@ class databaseHandlerPICKLE(object):
 			printl("an error as ocurred: "+str(ex), self, "E")
 		finally:	
 			gMutex_Id.release()
-			#printl("Released Mutex for NextId: "+str(nextId), self, "H")
+			printl("Released Mutex for NextId: "+str(nextId), self, "H")
 		return nextId
 		
 	## 
 	# SQL statements
 	##
 	def _getMediaKeyWithId(self, id):
-		#printl("->", self, "S")
+		printl("->", self, "S")
 		_id = int(id)
 		
 		self._mediaFilesCheckLoaded()
 		#start_time = time.time()
 		k = None
 		if self.USE_INDEXES:
-			# use Indexes loaded at beginning
-			# indexing 0.0007		
-			#key = self.idxMoviesImdb[imdb]
-			#element = self._dbMovies[key]			
 			pass
 		else:			
 			# without indexing 0.02
@@ -324,10 +298,6 @@ class databaseHandlerPICKLE(object):
 		#start_time = time.time()
 		k = None
 		if self.USE_INDEXES:
-			# use Indexes loaded at beginning
-			# indexing 0.0007		
-			#key = self.idxMoviesImdb[imdb]
-			#element = self._dbMovies[key]			
 			pass
 		else:			
 			# without indexing 0.02
@@ -351,10 +321,6 @@ class databaseHandlerPICKLE(object):
 		#start_time = time.time()
 		k = None
 		if self.USE_INDEXES:
-			# use Indexes loaded at beginning
-			# indexing 0.0007		
-			#key = self.idxMoviesImdb[imdb]
-			#element = self._dbMovies[key]			
 			pass
 		else:			
 			# without indexing 0.02
@@ -376,7 +342,8 @@ class databaseHandlerPICKLE(object):
 
 	# may return directly the record, it's private
 	def _getMediaWithKey(self, key):
-		#printl("->  for key: "+str(key), self)
+		#printl("->", self, "S")
+		printl("->  for key: "+str(key), self)
 		self._mediaFilesCheckLoaded()
 		element = None
 		if key is not None:
@@ -386,7 +353,7 @@ class databaseHandlerPICKLE(object):
 	
 	# always return a copy, never the directly with record
 	def getMediaWithId(self, id):
-		#printl("->  for id: "+str(id), self, "S")
+		printl("->  for id: "+str(id), self, "S")
 		self._mediaFilesCheckLoaded()
 		element = None
 		key = self._getMediaKeyWithId(id)
@@ -409,11 +376,11 @@ class databaseHandlerPICKLE(object):
 
 	# !!! WARNING !!! Will return the first Record, it's possible to have episodes with same tvdbid
 	# always return a copy, never the directly with record
-	def getMediaWithTheTvDbId(self, thetvdbid):
+	def getMediaWithTheTvDbId(self, thetvdbid, mediaType=None):
 		printl("->  for : "+str(thetvdbid), self, "S")
 		self._mediaFilesCheckLoaded()
 		element = None
-		key = self._getMediaKeyWithTheTvDbId(thetvdbid)
+		key = self._getMediaKeyWithTheTvDbId(thetvdbid, mediaType)
 		if key is not None:
 			element = copy.copy(self._dbMediaFiles[key]) ###.copy()
 		
@@ -555,12 +522,6 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 		return list # return always a copy, user don't use db
 
-
-	#def get.EpisodesCount(self, parentId=None, season=None):
-	#	printl("->", self, "S")
-	#	self._mediaFilesCheckLoaded()
-	#	return len(self._getMediaValuesWithFilter(MediaInfo.EPISODE, parentId, season))
-	#
 	def getEpisodes(self, parentId=None, season=None):
 		printl("-> for parentID: "+str(parentId)+ " season:"+str(season), self, "S")
 		self._mediaFilesCheckLoaded()
@@ -601,7 +562,7 @@ class databaseHandlerPICKLE(object):
 			printl("IS EPISODE", self, "S")
 			# No Parent... from Sync
 			if media.ParentId is None:
-				printl("media.TheTvDbId: *" + repr(media.TheTvDbId) + "*", self, "W")
+				#printl("media.TheTvDbId: *" + repr(media.TheTvDbId) + "*", self, "W")
 				if media.TheTvDbId is None or media.TheTvDbId == u"":
 					key = self._getMediaKeyWithTheTvDbId(u'', MediaInfo.SERIE)
 				else:
@@ -777,9 +738,9 @@ class databaseHandlerPICKLE(object):
 	# for debug 
 	def getDbDump(self):
 		printl("->", self, "S")
-		self._moviesCheckLoaded()
-		self._seriesCheckLoaded()
-		self._seenCheckLoaded()
+		self._mediaFilesCheckLoaded()
+		self._tablesCheckLoaded()
+		
 		path = config.plugins.pvmc.tmpfolderpath.value + "/dumps"
 		now = datetime.datetime.now()
 		file = path + "/db_%04d%02d%02d_%02d%02d%02d.dump" % (now.year, now.month, now.day, now.hour, now.minute, now.second)
@@ -787,8 +748,10 @@ class databaseHandlerPICKLE(object):
 			os.makedirs(path)		
 		f = open(file, "w")
 		
+		f.write("--- PICKLE V2 ---\n")
+		f.write("\n")
 		f.write("----------------\n")
-		f.write("-- MediaFiles --\n")
+		f.write("-- Parameters --\n")
 		f.write("----------------\n")
 		f.write("\n")
 		f.write("Key\t\tId\n")		
@@ -805,7 +768,7 @@ class databaseHandlerPICKLE(object):
 			s += "\n"
 		if self.DBID in self._dbMediaFiles:
 			s += str(self.DBID) + "\t"
-			s += "DB ID: " + str(self._dbMediaFiles[self.DBID])
+			s += "DB ID: " + repr(self._dbMediaFiles[self.DBID])
 			s += "\n"
 			
 		f.write(s+"\n")
@@ -917,33 +880,35 @@ class databaseHandlerPICKLE(object):
 
 
 		f.write("-------------------------------\n")
-		f.write("-- Tables    -    Seen       --\n")
+		f.write("-- Tables                    --\n")		
+		f.write("--   MF ID:"+repr(self._dbTables["MediaFilesDBId"])+" --\n")		
+		f.write("-------------------------------\n")		
+		f.write("-- Table Seen ("+str(len(self._dbTables["Seen"]))+")        \n")
 		f.write("-------------------------------\n")
+		
 		f.write("\n")
-		f.write("Count\tKey  \tId   \tParent\tSeason\tEpisode\tImdb    \tTheTvDbId\tTitle\n")		
+		f.write("Count\tId   \tImdbId \t\tTheTvDbId\tSeason\tEpisode\tUniqueId\tDBId  \tUsers\n")		
 		f.write("\n")
 		cnt=0
 		s = u""
-		records = self._dbSeen
-		for imdb in records["Movies"]:
+		tbl = self._dbTables["Seen"]
+		#key = self._getTableKeyForId(tbl, mediaId)
+		
+		for key in tbl:
+			media = tbl[key]
+			users = tbl[key]["Users"]
 			cnt += 1
 			s = str(cnt) + "\t"			
-			s += repr(imdb) + "\t"
-			s += repr(records["Movies"][imdb]["Seen"]) + "\t"
+			s += repr(tbl[key]["Id"]) + "\t"
+			s += repr(tbl[key]["ImdbId"]) + "\t"
+			s += repr(tbl[key]["TheTvDbId"]) + "\t"
+			s += repr(tbl[key]["Season"]) + "\t"
+			s += repr(tbl[key]["Episode"]) + "\t"
+			s += repr(tbl[key]["UniqueId"]) + "\t"
+			for user in tbl[key]["Users"]:
+				s += repr(user) + "," +repr(tbl[key]["Users"][user])+ " | "
 			f.write(s+"\n")
-		f.write("\n")
-		cnt=0
-		for tvdbid in records["TV"]:
-			for season in records["TV"][tvdbid]:
-				for episode in records["TV"][tvdbid][season]:
-					cnt += 1
-					s = str(cnt) + "\t"			
-					s += repr(tvdbid) + "\t"
-					s += repr(season) + "\t"
-					s += repr(episode) + "\t"
-					s += repr(records["TV"][tvdbid][season][episode]["Seen"]) + "\t"
-					f.write(s+"\n")
-		f.write("\n\n")
+		f.write("\n")				
 		f.flush()
 
 
@@ -1096,151 +1061,61 @@ class databaseHandlerPICKLE(object):
 		#printl("->", self, "S")
 		currentDBVersion = self._getDBVersion(records)
 		printl("DBVersion: " + str(currentDBVersion))
-		if self.DB_VERSION_MEDIAFILES == currentDBVersion:
+		if self.DB_VERSION_MEDIAFILES < 5:
+			printl("DB Not correctly updated!!!!!!, aborting....")
+			os.abort()
+			
+		elif self.DB_VERSION_MEDIAFILES == currentDBVersion:
 			printl("DB already updated!")
 		else:
 			printl("Upgrading database to version: " + str(self.DB_VERSION_MEDIAFILES) )
 			#   Let's run some Upgrade Scripts... :)
 			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION_MEDIAFILES+1):
 				printl("Applying upgrade to version : " + str(updateToVersion))
-				if updateToVersion==1:
-					self._upgrade_MF_1(records)
-					self._setDBVersion(records, updateToVersion)
-				elif updateToVersion==2:
-					self._upgrade_MF_2()
-					self._setDBVersion(records, updateToVersion)
-				elif updateToVersion==3:
-					self._upgrade_MF_3()
-					self._setDBVersion(records, updateToVersion)
-				elif updateToVersion==4:
-					self._upgrade_MF_4()
-					self._setDBVersion(records, updateToVersion)
-				elif updateToVersion==5:
-					self._upgrade_MF_5()
-					self._setDBVersion(records, updateToVersion)
-				elif updateToVersion==6:
+				if updateToVersion==6:
+					pass
+					#self._upgrade_MF_6(records)
+					#self._setDBVersion(records, updateToVersion)
+				elif updateToVersion==7:
+					pass
+					#self._upgrade_MF_7()
+					#self._setDBVersion(records, updateToVersion)
+				elif updateToVersion==8:
 					pass
 				
 			self.saveMediaFiles()
 	
-	def _upgrade_MF_1(self, records):
-		
-		self._moviesCheckLoaded()
-		self._seriesCheckLoaded()
-		self._ConvertMax += len(self._dbMovies)
-		self._ConvertMax += len(self._dbSeries)
-		for serieKey in self._dbEpisodes:
-			if self._checkKeyValid(serieKey):
-				for season in self._dbEpisodes[serieKey]:
-					for episode in self._dbEpisodes[serieKey][season]:
-						self._ConvertMax += 1
-		
-		self._ConvertPos = 0
-		self.CONVERTING = True		
-		
-		for rec in self._dbMovies.values():			
-			if type(rec) is MediaInfo:
-				if rec.TheTvDbId == u"0":
-					rec.TheTvDbId = u""
-				self.insertMedia(rec)
-				self._ConvertPos += 1
+	def _upgrade_MF_6(self):
+		pass
+		#start_time = time.time()
+		#if self.session is not None:
+		#	mm = self.session.open(MessageBox, (_("\nConverting data to version 6.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+		#self.MediaFilesCommited = False
+		#self._dbMediaFiles[self.DBID] = start_time
+		#records = self._getMediaFiles()
+		#for key in records:
+		#	pass
+		#
+		#if self.session is not None:
+		#	mm.close(False, self.session)
+		#elapsed_time = time.time() - start_time
+		#printl("Upgrade5 Took : " + str(elapsed_time), self, 11)
 
-		for rec in self._dbSeries.values():			
-			if type(rec) is MediaInfo:
-				#if rec.TheTvDbId == u"0":
-				#	rec.TheTvDbId = u""
-				self.insertMedia(rec)
-				self._ConvertPos += 1
-					
-		for serieKey in self._dbEpisodes:
-			if self._checkKeyValid(serieKey):
-				for season in self._dbEpisodes[serieKey]:
-					for episode in self._dbEpisodes[serieKey][season]:
-						printl("episode: " +str(episode)+ " for serie: "+str(serieKey), self)
-						rec=self._dbEpisodes[serieKey][season][episode]
-						#key = self._getMediaKeyWithTheTvDbId(serieKey)
-						key = self._getMediaKeyWithTheTvDbId(rec.TheTvDbId, MediaInfo.SERIE)
-						if key is None:
-							if rec.TheTvDbId is None or rec.TheTvDbId == u"":
-								resultInsert = self._insertFakeSerie(u'')
-							else:
-								resultInsert = self._insertFakeSerie(rec.TheTvDbId)
-							serieId = resultInsert["id"]
-						else:
-							printl("key: " + str(key), self)
-							serieId = self._getMediaWithKey(key).Id
-						rec.ParentId = serieId 
-						self.insertMedia(rec)
-						self._ConvertPos += 1
-						
-						#if insertFake:
-						#	printl("insertFake", self)
-						#	fake = MediaInfo()
-						#	fake.MediaType = MediaInfo.SERIE
-						#	fake.Title = "AutoInserted for serie: "+serieKey
-						#	newId = self.insertMedia(fake)
-						#	key = self._getMediaKeyWithId(newId)
-						#rec.ParentId = self._dbMediaFiles[key].Id
-						
-		self.CONVERTING = False
-	
-	def convertGetMax(self):
-		return self._ConvertMax
-
-	def convertGetPos(self):
-		return self._ConvertPos
-				
-	def _upgrade_MF_2(self):
-		#delete old failed items, not used #FAILEDSYNC = 0
-		self.MediaFilesCommited = False
-		records = self._getMediaFiles(0)
-		for key in records:
-			del(self._dbMediaFiles[key])	
-			
-	def _upgrade_MF_3(self):
-		if os.path.exists(self.MOVIESDB):
-			os.rename(self.MOVIESDB,   self.MOVIESDB   +'.old')	
-		if os.path.exists(self.TVSHOWSDB):
-			os.rename(self.TVSHOWSDB,  self.TVSHOWSDB  +'.old')	
-		if os.path.exists(self.EPISODESDB):
-			os.rename(self.EPISODESDB, self.EPISODESDB +'.old')	
-		if os.path.exists(self.FAILEDDB):
-			os.rename(self.FAILEDDB,   self.FAILEDDB   +'.old')	
-
-	def _upgrade_MF_4(self):
-		#delete old failed items, not used #FAILEDSYNC = 0
-		self.MediaFilesCommited = False
-		records = self._getMediaFiles()
-		for key in records:
-			m = self._dbMediaFiles[key]
-			if m.Season == -1:
-				m.Season == None
-			if m.Disc == -1:
-				m.Disc == None
-			if m.Episode == -1:
-				m.Episode == None
-			if m.Year == -1:
-				m.Year == None
-			if m.Month == -1:
-				m.Month == None
-			if m.Day == -1:
-				m.Day == None
-
-	def _upgrade_MF_5(self):
-		start_time = time.time()
-		if self.session is not None:
-			mm = self.session.open(MessageBox, (_("\nConverting data to version 5.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
-		self.MediaFilesCommited = False
-		self._dbMediaFiles[self.DBID] = start_time
-		records = self._getMediaFiles()
-		for key in records:
-			self._setFileInfo(self._dbMediaFiles[key])
-		
-		if self.session is not None:
-			mm.close(False, self.session)
-		elapsed_time = time.time() - start_time
-		printl("Upgrade5 Took : " + str(elapsed_time), self, 11)
-	
+	def _upgrade_MF_7(self):
+		pass
+		#start_time = time.time()
+		#if self.session is not None:
+		#	mm = self.session.open(MessageBox, (_("\nConverting data to version 7.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+		#self.MediaFilesCommited = False
+		#self._dbMediaFiles[self.DBID] = start_time
+		#records = self._getMediaFiles()
+		#for key in records:
+		#	pass
+		#
+		#if self.session is not None:
+		#	mm.close(False, self.session)
+		#elapsed_time = time.time() - start_time
+		#printl("Upgrade6 Took : " + str(elapsed_time), self, 11)
 			
 	# AVI files contain a 56-byte header, starting at offset 32 within the file.
 	def getCRC32OfMedia(self, media):
@@ -1287,261 +1162,6 @@ class databaseHandlerPICKLE(object):
 			m.CRCSize = None
 			m.CRC = None
 	
-#
-#################################   MOVIES   ################################# 
-#
-	def _loadMoviesDB(self):
-		printl("->", self, "S")
-		if self._dbMovies is None:
-			start_time = time.time()
-			self._dbMovies = {}
-			try:
-				if os.path.exists(self.MOVIESDB):
-					#preUpdates
-					#todo should be executed only once
-					self._checkForPreDbUpates(self.MOVIESDB)
-					fd = open(self.MOVIESDB, "rb")
-					self._dbMovies = pickle.load(fd)
-					fd.close()
-					#postUpdates
-					self._upgradeMovies(self._dbMovies)
-				else:
-					self._setDBVersion(self._dbMovies, self.DB_VERSION_MOVIES)
-	
-			except Exception, ex:
-				print ex
-				print '-'*60
-				import sys, traceback
-				traceback.print_exc(file=sys.stdout)
-				print '-'*60
-					
-			elapsed_time = time.time() - start_time
-			printl("LoadMovies Took : " + str(elapsed_time), self, 11)
-					
-			if self.USE_INDEXES:
-				start_time = time.time()
-				self.createMoviesIndexes()
-				elapsed_time = time.time() - start_time
-				printl("Indexing Took : " + str(elapsed_time), self, 11)
-			
-			# Temporary to test ID's
-			for movieKey in self._dbMovies:
-				if movieKey != self.CONFIGKEY:
-					self.LastID_M+=1
-					self._dbMovies[movieKey].Id = self.LastID_M
-					
-	def _moviesCheckLoaded(self):
-		#printl("->", self, "S")
-		if self._dbMovies is None:
-			printl("Movies database not loaded yet. Loading ... ", self, "H")
-			self._loadMoviesDB()
-
-#	
-#################################   SERIES   ################################# 
-#
-
-	def _loadSeriesEpisodesDB(self):
-		printl("->", self, "S")
-		start_time = time.time()
-		if self._dbSeries is None or self._dbEpisodes is None:
-			self._dbSeries 	 = self._getAllSeries()
-			self._dbEpisodes = self._getAllEpisodes()
-			if self.USE_INDEXES:
-				self.createSeriesIndexes()
-				
-		elapsed_time = time.time() - start_time
-		printl("Load Series/Episodes Took : " + str(elapsed_time), self)
-
-	def _getAllSeries(self):
-		printl("->", self, "S")
-		records = {}
-		try:
-			if os.path.exists(self.TVSHOWSDB):
-				#preUpdates
-				#todo should be executed only once
-				self._checkForPreDbUpates(self.TVSHOWSDB)
-				fd = open(self.TVSHOWSDB, "rb")
-				records = pickle.load(fd)
-				fd.close()
-				self._upgradeSeries(records)
-			else:
-				self._setDBVersion(records, self.DB_VERSION_SERIES)
-		
-			# Temporary to test ID's
-			for key in records:
-				if key != self.CONFIGKEY:
-					self.LastID_S+=1
-					records[key].Id = self.LastID_S
-				
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-		
-		return (records)
-
-	def _getAllEpisodes(self):
-		printl("->", self, "S")
-		records = {}
-		try:
-			if os.path.exists(self.EPISODESDB):
-				#preUpdates
-				#todo should be executed only once
-				self._checkForPreDbUpates(self.EPISODESDB)
-				fd = open(self.EPISODESDB, "rb")
-				records = pickle.load(fd)
-				fd.close()
-				self._upgradeEpisodes(records)
-			else:
-				self._setDBVersion(records, self.DB_VERSION_EPISODES)
-			
-			# Temporary to test ID's
-			for serieKey in records:
-				if serieKey != self.CONFIGKEY:
-					for season in records[serieKey]:
-						for episode in records[serieKey][season]:
-							self.LastID_E+=1
-							records[serieKey][season][episode].Id = self.LastID_E
-							records[serieKey][season][episode].ParentId = self._dbSeries[serieKey].Id
-
-		except Exception, ex:
-			print ex
-			print '-'*60
-			import sys, traceback
-			traceback.print_exc(file=sys.stdout)
-			print '-'*60
-
-		return (records)
-		
-	#Call when data is needed, to verify if is loaded
-	def _seriesCheckLoaded(self):
-		#printl("->", self, "S")
-		if self._dbSeries is None:
-			printl("TvShows database not loaded yet. Loading ... ", self, "H")
-			self._loadSeriesEpisodesDB()
-
-############################    UPGRADE MOVIES    #############################
-	def _upgradeMovies(self, records):
-		printl("->", self, "S")
-		currentDBVersion = self._getDBVersion(records)
-		printl("DBVersion: " + str(currentDBVersion))
-		if self.DB_VERSION_MOVIES == currentDBVersion:
-			printl("DB already updated!")
-		else:
-			printl("Upgrading database to version: " + str(self.DB_VERSION_MOVIES) )
-			#   Let's run some Upgrade Scripts... :)
-			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION_MOVIES+1):
-				printl("Applying upgrade to version : " + str(updateToVersion))
-				if updateToVersion==1:
-					self._upgrade_m_1(records)
-					self._setDBVersion(records, updateToVersion)
-					
-				elif updateToVersion==2:
-					#self._upgrade_m_2(records)
-					#self._setDBVersion(records, updateToVersion)
-					pass
-				elif updateToVersion==3:
-					pass		
-				elif updateToVersion==4:
-					pass
-				elif updateToVersion==5:
-					pass
-				elif updateToVersion==6:
-					pass
-				
-			self.saveMovies()
-	
-	# Migrate isMovie,isSerie,isEpisode to MediaType (1,2,3)
-	# can be used by movies.db and tvshows.db
-	def _upgrade_m_1(self, records):
-		for rec in records:
-			if type(records[rec]) is MediaInfo:
-				records[rec].getMediaType() # will populate mediatype field
-	
-	def _upgrade_m_2(self, records):
-		pass
-	
-############################    UPGRADE SERIES    #############################
-	def _upgradeSeries(self, records):
-		printl("->", self, "S")
-		currentDBVersion = self._getDBVersion(records)
-		printl("DBVersion: " + str(currentDBVersion))
-		if self.DB_VERSION_SERIES == currentDBVersion:
-			printl("DB already updated!")
-		else:
-			printl("Upgrading database to version: " + str(self.DB_VERSION_SERIES) )
-			#   Let's run some Upgrade Scripts... :)
-			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION_SERIES+1):
-				printl("Applying upgrade to version : " + str(updateToVersion))
-				if updateToVersion==1:
-					self._upgrade_s_1(records) 
-					self._setDBVersion(records, updateToVersion)
-					
-				elif updateToVersion==2:
-					#self._upgrade_s_2(records)
-					#self._setDBVersion(records, updateToVersion)
-					pass
-				elif updateToVersion==3:
-					pass
-				elif updateToVersion==4:
-					pass
-				elif updateToVersion==5:
-					pass
-				elif updateToVersion==6:
-					pass
-				
-			self.saveSeries()
-	
-	def _upgrade_s_1(self, records):
-		self._upgrade_m_1(records) # is the same
-	
-	def _upgrade_s_2(self, records):
-		pass
-	
-############################    UPGRADE EPISODES    #############################
-	def _upgradeEpisodes(self, records):
-		printl("->", self, "S")
-		currentDBVersion = self._getDBVersion(records)
-		printl("DBVersion: " + str(currentDBVersion))
-		if self.DB_VERSION_EPISODES == currentDBVersion:
-			printl("DB already updated!")
-		else:
-			printl("Upgrading database to version: " + str(self.DB_VERSION_EPISODES) )
-			#   Let's run some Upgrade Scripts... :)
-			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION_EPISODES+1):
-				printl("Applying upgrade to version : " + str(updateToVersion))
-				if updateToVersion==1:
-					self._upgrade_e_1(records)
-					self._setDBVersion(records, updateToVersion)
-				
-				elif updateToVersion==2:
-					##self._upgrade_e_2(records)
-					##self._setDBVersion(records, updateToVersion)					
-					pass
-				elif updateToVersion==3:
-					pass
-				elif updateToVersion==4:
-					pass
-				elif updateToVersion==5:
-					pass
-				elif updateToVersion==6:
-					pass
-
-			self.saveEpisodes()
-
-
-	def _upgrade_e_1(self, records):
-		for serie in records:
-			for season in records[serie]:
-				for episode in records[serie][season]:
-					if type(records[serie][season][episode]) is MediaInfo:
-						records[serie][season][episode].getMediaType() # will populate mediatype field
-			
-	def _upgrade_e_2(self, records):
-		pass
-
 
 ################################################################################
 # this is necessary because in the past the sync plugin was outside of valerie #
@@ -1582,26 +1202,40 @@ class databaseHandlerPICKLE(object):
 			print '-'*60
 
 #
-#################################   SEEN   ################################# 
+#################################   TABLES   ################################# 
 #
-# dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
-# dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
-	def _loadSeenDB(self):
+	def _loadTablesDB(self):
 		printl("->", self, "S")
-		if self._dbSeen is None:
+		if self._dbTables is None:
 			start_time = time.time()
-			self._dbSeen = {}
-			self._dbSeen["Movies"] = {}
-			self._dbSeen["TV"] = {}
+			self._dbTables = {}
 			try:
-				if os.path.exists(self.SEENDB):
-					fd = open(self.SEENDB, "rb")
-					self._dbSeen = pickle.load(fd)
+				if os.path.exists(self.TABLESDB):
+					fd = open(self.TABLESDB, "rb")
+					self._dbTables = pickle.load(fd)
 					fd.close()
-					#self._upgradeTables(self._dbMovies)
+					#self._upgradeTables(self._dbTables)
+					# Verify DB Sync with MediaFiles
+					if self._dbTables["MediaFilesDBId"] != self._dbMediaFiles[self.DBID]:
+						pass
+						# Delete Id's
+						# Try to Update Ids (publish this function?)
 				else:
-					self._setDBVersion(self._dbSeen, self.DB_VERSION_SEEN)
-	
+					self._setDBVersion(self._dbTables, self.DB_VERSION_TABLES)
+					self._dbTables[self.DBID] = start_time
+					self._dbTables["Seen"] = {}
+					self._dbTables["MediaFilesDBId"] = self._dbMediaFiles[self.DBID]
+					# _dbTables["Seen"] specification:
+					# 9999 = default UserId (Only 1 user)
+					#[key]["Id"]			# MediaId
+					#     ["ImdbId"]		# extrainfo
+					#     ["TheTvDbId"]		# extrainfo
+					#     ["Season"]		# extrainfo
+					#     ["Episode"]		# extrainfo
+					#     ["UniqueId"]		# extrainfo
+					#     ["Users"][userid] = 0 	# UnSeen
+					#                       = 1 	# Seen	
+			
 			except Exception, ex:
 				print ex
 				print '-'*60
@@ -1611,19 +1245,19 @@ class databaseHandlerPICKLE(object):
 
 			elapsed_time = time.time() - start_time
 			printl("LoadSeen Took : " + str(elapsed_time), self, 11)
-					
+				
 	
-	def saveSeenDB(self):
+	def saveTablesDB(self):
 		printl("->", self, "S")
-		if self.SeenCommited:
+		if self.TablesCommited:
 			printl("Nothing to Commit", self)
 			return
 		start_time = time.time()
 		try:		
-			fd = open(self.SEENDB, "wb")
-			pickle.dump(self._dbSeen, fd, pickle.HIGHEST_PROTOCOL)
+			fd = open(self.TABLESDB, "wb")
+			pickle.dump(self._dbTables, fd, pickle.HIGHEST_PROTOCOL)
 			fd.close()
-			self.SeenCommited = True
+			self.TablesCommited = True
 			
 		except Exception, ex:
 			print ex
@@ -1636,55 +1270,109 @@ class databaseHandlerPICKLE(object):
 		printl("Took: " + str(elapsed_time), self)
 
 
-	def _seenCheckLoaded(self):
+	def _tablesCheckLoaded(self):
 		#printl("->", self, "S")
-		if self._dbSeen is None:
-			printl("Seen database not loaded yet. Loading ... ", self, "S")
-			self._loadSeenDB()
-				
-	def isMediaSeen(self, id):
-		printl("-> for: " + repr(id), self, "S")
-		self._seenCheckLoaded()
-		try:
-			m=self.getMediaWithId(id)
-			if m.isTypeMovie():
-				return self._dbSeen["Movies"][m.ImdbId]["Seen"]
-			else:
-				return self._dbSeen["TV"][m.TheTvDbId][m.Season][m.Episode]["Seen"]
-		except Exception, ex:
-			return False
-		
-		return False
-		
-	def _MarkSeen(self, id, seen):
-		#TODO
-		printl("->", self, "S")
-		self._seenCheckLoaded()
-		m=self.getMediaWithId(id)
-		if m.isTypeMovie():
-			if not self._dbSeen["Movies"].has_key(m.ImdbId):
-				self._dbSeen["Movies"][m.ImdbId] = {}
-				
-			self._dbSeen["Movies"][m.ImdbId]["Seen"] = seen
-			self.SeenCommited = False
-			self.saveSeenDB()
+		if self._dbTables is None:
+			printl("Tables database not loaded yet. Loading ... ", self, "S")
+			self._loadTablesDB()
+#
+#################################   SEEN   ################################# 
+#
+# _dbTables["Seen"] specification:
+# 9999 = default UserId (Only 1 user)
+#[key]["Id"]			# MediaId
+#     ["ImdbId"]		# extrainfo
+#     ["TheTvDbId"]		# extrainfo
+#     ["Season"]		# extrainfo
+#     ["Episode"]		# extrainfo
+#     ["UniqueId"]		# extrainfo
+#     ["Users"][userid] = 0 	# UnSeen
+	def _getTableKeyForId (self, tbl, id):
+		#printl("->", self, "S")
+		self._tablesCheckLoaded()
+		k = None
+		for key in tbl:
+			if self._checkKeyValid(key):		# only for Pickle
+				if tbl[key]["Id"] == id:
+					k = key
+					break
+		return k
+
+	def MarkAsSeenWithMedia(self, media, userId=9999): 
+		printl("-> imdb"+ str(media.ImdbId) + " tvdb:" + str(media.TheTvDbId), self, "S")
+		self._tablesCheckLoaded()
+		tbl = self._dbTables["Seen"]
+		if media.Id is None:
+			key = None
 		else:
-			if not self._dbSeen["TV"].has_key(m.TheTvDbId):
-				self._dbSeen["TV"][m.TheTvDbId] = {}
-			if not self._dbSeen["TV"][m.TheTvDbId].has_key(m.Season):
-				self._dbSeen["TV"][m.TheTvDbId][m.Season] = {}
-			if not self._dbSeen["TV"][m.TheTvDbId][m.Season].has_key(m.Episode):
-				self._dbSeen["TV"][m.TheTvDbId][m.Season][m.Episode] = {}
+			key = self._getTableKeyForId(tbl, media.Id)
 				
-			self._dbSeen["TV"][m.TheTvDbId][m.Season][m.Episode]["Seen"] = seen
-			self.SeenCommited = False
-			self.saveSeenDB()	
+		if key is not None:
+			#printl("KEY 1: *" + repr(key) + "*", self)
+			users = tbl[key]["Users"]
+			users[userId] = 1
+		else:
+			key = self._getNextKey(tbl)
+			#printl("KEY 2: *" + repr(key) + "*", self)
+			
+			tbl[key] = {}			
+			tbl[key]["Id"]		= media.Id
+			tbl[key]["ImdbId"]	= media.ImdbId
+			tbl[key]["TheTvDbId"]	= media.TheTvDbId
+			tbl[key]["Season"]	= media.Season
+			tbl[key]["Episode"]	= media.Episode
+			tbl[key]["UniqueId"]	= None
+			tbl[key]["Users"]	= {}
+			tbl[key]["Users"][userId] = 1	# 0 = UnSeen, 1 = Seen			
+			printl("Mark for user " + str(userId), self, "S")
+		
+		self.TablesCommited = False
+		self.saveTablesDB()	
+		printl("<-", self, "S")
 	
-	def MarkAsSeen(self, id, user=9999):
-		self._MarkSeen(id, True)
+	def MarkAsSeen(self, mediaId, userId=9999): 
+		printl("->", self, "S")
+		m = self.getMediaWithId(mediaId)
+		self.MarkAsSeenWithMedia(m, userId)
+			
+	def MarkAsUnseen(self, mediaId, userId=9999): 
+		printl("->", self, "S")
+		self._tablesCheckLoaded()
+		tbl = self._dbTables["Seen"]		
+		key = self._getTableKeyForId(tbl, mediaId)
+
+		printl("key " + str(key), self)
 		
-	def MarkAsUnseen(self, id, user=9999):
-		self._MarkSeen(id, False)
+		if key is not None:
+			users = tbl[key]["Users"]
+			printl("key " + repr(users), self)
+			if users.has_key(userId):
+				printl("REMOVED", self)
+				users.pop(userId)				
+				#users[userId] = 0
 		
-	def getSeenForUpgrade(self):
-		return self._dbSeen;
+		self.TablesCommited = False
+		self.saveTablesDB()	
+
+	def isMediaSeen(self, mediaId, userId=9999):
+		#printl("->", self, "S")
+		self._tablesCheckLoaded()
+		tbl = self._dbTables["Seen"]		
+		key = self._getTableKeyForId(tbl, mediaId)
+		
+		if key is not None:
+			users = tbl[key]["Users"]
+			# TO DO: verify if total users is equal to totalrecords, then is equal to all seen
+			if users.has_key(userId):
+				return True #1	# Seen
+			else:
+				return False #9	# Seen by Others
+		else:
+			return False #0		# Unseen
+
+	## executes the given statement with substitution variables
+	#def commit(self):
+	#	printl("->", self, "D")
+	#	connection = self.__OpenDatabase()
+	#	if connection is not None:
+	#		connection.commit()			

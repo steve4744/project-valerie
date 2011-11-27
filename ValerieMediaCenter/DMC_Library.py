@@ -118,7 +118,7 @@ class DMC_Library(Screen):
             self.close()
 
     # prototype for library loading, is called by the view
-    def loadLibrary(self, primaryKeyValuePair=None):
+    def loadLibrary(self, params=None):
         #dict({'root': None})
         return []
 

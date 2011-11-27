@@ -31,14 +31,14 @@ class DMC_MovieLibrary(DMC_Library):
 	###
 	# Return Value is expected to be:
 	# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-	def loadLibrary(self, primaryKeyValuePair, seenPng= None, unseenPng=None):
+	def loadLibrary(self, params, seenPng= None, unseenPng=None):
 		global Manager
 		global utf8ToLatin
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
 		# Diplay all Movies
-		if primaryKeyValuePair is None:
+		if params is None:
 			parsedLibrary = []
 			library = self.manager.getMoviesValues()
 			
@@ -77,13 +77,6 @@ class DMC_MovieLibrary(DMC_Library):
 				#d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
 				d["Filename"] = utf8ToLatin(movie.Filename).lower()
 				d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
-				#if self.checkFileCreationDate:
-				#	d["Creation"] = 0
-				#	try:
-				#		d["Creation"] = os.stat(d["Path"]).st_mtime
-				#	except Exception, ex:
-				#		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-				#		d["Creation"] = 0
 				d["Creation"] = movie.FileCreation
 				d["Plot"]    = utf8ToLatin(movie.Plot)
 				d["Runtime"] = movie.Runtime
@@ -95,7 +88,6 @@ class DMC_MovieLibrary(DMC_Library):
 				d["Resolution"]  = utf8ToLatin(movie.Resolution)
 				d["Sound"]  = utf8ToLatin(movie.Sound)
 				
-				#if self.manager.is_Seen({"ImdbId": d["ImdbId"]}):
 				if self.manager.isMediaSeen(d["Id"]):
 					image = seenPng
 					d["Seen"] = "Seen"
@@ -126,7 +118,7 @@ class DMC_MovieLibrary(DMC_Library):
 			
 			return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
 			
-		elif primaryKeyValuePair["ViewMode"]=="ShowGroup":
+		elif params["ViewMode"]=="ShowGroup":
 			pass
 	
 		return None

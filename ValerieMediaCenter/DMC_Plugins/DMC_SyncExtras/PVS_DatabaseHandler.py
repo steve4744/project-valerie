@@ -195,7 +195,7 @@ class Database(object):
 			
 							self.dbHandler.DB_FIRSTTIME = False
 						else:
-							printl("NOT Pickle FirstTime", self)					 
+							printl("NOT Pickle V2 FirstTime", self)					 
 								
 					if self.USE_DB_TYPE == self.DB_PICKLE:			
 						self.dbHandler = databaseHandlerPICKLE().getInstance("from Database-" + origin, session)	
@@ -210,90 +210,127 @@ class Database(object):
 		
 		return gDatabase
 
-	def importDataToSql (self, session):
-		printl("->", self, "S")
-		try:
-			if session is not None:
-				self.mm = session.open(MessageBox, (_("\nConverting data.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
-			#self.mm = self.session.open(Msg)		
-			printl("Importing Data", self)
-			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
-			records = dbHandlerPickle.getMediaValues()
-		
-			start_time = time.time()			
-			cntNew = 0
-			for m in records:
-				self.cleanValuesOfMedia(m)
-				self.dbHandler.insertMedia(m)
-				cntNew += 1
-				
-			printl("Movies Count: "+str(len(records)) + " New: " + str(cntNew) )				
-			self.dbHandler.commit()
-			elapsed_time = time.time() - start_time
-			printl("Took (SQL MediaFiles): " + str(elapsed_time), self)
-		#	try:
-		#		pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
-		#	except Exception, ex:
-		#		printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
-		except Exception, ex:
-			printl("Failed Import to SQL! Reloading Pickle. Ex: " + str(ex), __name__, "E")
-			self.USE_DB_TYPE    	= self.DB_PICKLEV2
-			__DB_PATH           = config.plugins.pvmc.configfolderpath.value
-			__DB_SQL_FILENAME   = "valerie.db"
-			sqlFile = __DB_PATH+ __DB_SQL_FILENAME
-			if os.path.exists(sqlFile):
-				os.remove(sqlFile)
-		if session is not None:
-			self.mm.close(False, session)
-		printl("<-", self)
+	#def importDataToSql (self, session):
+	#	printl("->", self, "S")
+	#	try:
+	#		if session is not None:
+	#			self.mm = session.open(MessageBox, (_("\nConverting data.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+	#		#self.mm = self.session.open(Msg)		
+	#		printl("Importing Data", self)
+	#		dbHandlerPickle = databaseHandlerPICKLE().getInstance("from importDataToSQL")
+	#		records = dbHandlerPickle.getMediaValues()
+	#	
+	#		start_time = time.time()			
+	#		cntNew = 0
+	#		for m in records:
+	#			self.cleanValuesOfMedia(m)
+	#			self.dbHandler.insertMedia(m)
+	#			cntNew += 1
+	#			
+	#		printl("Movies Count: "+str(len(records)) + " New: " + str(cntNew) )				
+	#		self.dbHandler.commit()
+	#		elapsed_time = time.time() - start_time
+	#		printl("Took (SQL MediaFiles): " + str(elapsed_time), self)
+	#	#	try:
+	#	#		pass #os.rename(self.DB_TXD, self.DB_TXD +'.'+ str(time.time()) + '.bak')
+	#	#	except Exception, ex:
+	#	#		printl("Backup movie txd failed! Ex: " + str(ex), __name__, "E")
+	#	except Exception, ex:
+	#		printl(".Failed Import to SQL! Reloading Pickle. Ex: " + str(ex), __name__, "E")
+	#		self.USE_DB_TYPE    	= self.DB_PICKLEV2
+	#		__DB_PATH           = config.plugins.pvmc.configfolderpath.value
+	#		__DB_SQL_FILENAME   = "valerie.db"
+	#		sqlFile = __DB_PATH+ __DB_SQL_FILENAME
+	#		if os.path.exists(sqlFile):
+	#			os.remove(sqlFile)
+	#	if session is not None:
+	#		self.mm.close(False, session)
+	#	printl("<-", self)
 			
 	def importDataToPickleV2 (self, session):
 		printl("->", self, "S")
 		try:
 			if session is not None:
 				self.mm = session.open(MessageBox, (_("\nConverting data to V2.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
-			self.mm = self.session.open(Msg)		
+				#self.mm = self.session.open(Msg)		
 			printl("Importing Data to PickleV2", self)
 			# this will Open Pickle V1 and run upgrades if necessary
-			dbHandlerPickle = databaseHandlerPICKLE().getInstance()
+			dbHandlerPickle = databaseHandlerPICKLE().getInstance("from importDataToPickleV2", None)
 			dbHandlerPickle.loadAll()
 			#Upgrade SeenDB
 			records = dbHandlerPickle.getSeenForUpgrade()
 		
 			start_time = time.time()			
 			cntNew = 0
+			
+			printl("Total Seen Movies to Convert: "+str(len(records["Movies"])), self)
 			for imdb in records["Movies"]:
+				if imdb == u"":
+					continue
 				printl("getSeen for imdb: "+imdb, self)
 				m = self.dbHandler.getMediaWithImdbId(imdb)
-				self.dbHandler.MarkMediaAsSeen(m.Id)
+				if m is None:
+					#printl("IS NONE: "+imdb, self)
+					m = MediaInfo()
+					m.Id = None
+					m.ImdbId = imdb
+					
+				seen = records["Movies"][imdb]["Seen"]
+				if seen:
+					self.dbHandler.MarkAsSeenWithMedia(m)
+				else:
+					pass
+					#self.dbHandler.MarkAsUnseenWithMedia(m)
 				
-				if not self._dbSeen["Movies"].has_key(primary_key["ImdbId"]):
-					self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
-					
-				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
-				self._dbSeen["Movies"][primary_key["ImdbId"]] = {}
-					
-				self._dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
+				cntNew += 1
 			
-				if not self._dbSeen["TV"].has_key(primary_key["TheTvDbId"]):
-					self._dbSeen["TV"][primary_key["TheTvDbId"]] = {}
-				if not self._dbSeen["TV"][primary_key["TheTvDbId"]].has_key(primary_key["Season"]):
-					self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]] = {}
-				if not self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]].has_key(primary_key["Episode"]):
-					self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]] = {}
-				
-				self._dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
-				self.SeenCommited = False
-				self.saveSeenDB()	
-
-
+			printl("Total Seen Series(no episodes) to Convert: "+str(len(records["TV"])), self)
+			for thetvdb in records["TV"]:
+				if thetvdb == u"":
+					continue
+				printl("getSeen for thetvdb: "+thetvdb, self)
+				serie = self.dbHandler.getMediaWithTheTvDbId(thetvdb)
+				for season in records["TV"][thetvdb]:			
+					if serie is not None:
+						EpisodesFromSeason = self.dbHandler.getEpisodes(serie.Id, season)	
+					for episode in records["TV"][thetvdb][season]:
+						EpisodeInserted = False
+						seen = records["TV"][thetvdb][season][episode]["Seen"]
+						if serie is not None:
+							for ep in EpisodesFromSeason:
+								if episode == ep.Episode:
+									EpisodeInserted = True
+									if seen:
+										self.dbHandler.MarkAsSeen(ep.Id)
+									else:	
+										pass
+										#self.dbHandler.MarkAsUnseen(ep.Id)
+						else:
+							#printl("NO SERIE: " + thetvdb, self)
+							pass
+							
+						if not EpisodeInserted:
+							#printl("MANNUALLY: " + thetvdb, self)
+							m = MediaInfo() # Fake Media, Avoid loosing Seen Data
+							m.Id = None
+							m.TheTvDbId = thetvdb
+							m.Season = season
+							m.Episode = episode
+							if seen:
+								#printl("SEEN 2: " + thetvdb, self)
+								self.dbHandler.MarkAsSeenWithMedia(m)
+							else:
+								#printl("UNSEEN 2: " + thetvdb, self)
+								#self.dbHandler.MarkAsUnseenWithMedia(m)
+								pass
+								
+						cntNew += 1
+								
+									
 # dbSeen["Movies"][primary_key["ImdbId"]]["Seen"] = primary_key["Seen"]
 # dbSeen["TV"][primary_key["TheTvDbId"]][primary_key["Season"]][primary_key["Episode"]]["Seen"] = primary_key["Seen"]
 
-			#	self.cleanValuesOfMedia(m)
-			#	self.dbHandler.insertMedia(m)
-				cntNew += 1				
-			printl("Seen Count: "+str(len(records)) + " Processed: " + str(cntNew) )				
+			printl("Seen Count: "+str(str(len(records["Movies"])+len(records["TV"]))) + " Processed: " + str(cntNew) )				
 			
 			#self.dbHandler.commit()
 			elapsed_time = time.time() - start_time
@@ -302,9 +339,9 @@ class Database(object):
 				if os.path.exists(self.DB_PATH + "seen.db"):
 					os.rename(self.DB_PATH + "seen.db",   self.DB_PATH + "seen.db" +".old")
 			except Exception, ex:
-				printl("Backup Seen failed! Ex: " + str(ex), __name__, "E")
+				printl(".Backup Seen failed! Ex: " + str(ex), __name__, "E")
 		except Exception, ex:
-			printl("Failed Import to PickleV2! Reloading Pickle V1. Ex: " + str(ex), __name__, "E")
+			printl(".Failed Import to PickleV2! Reloading Pickle V1. Ex: " + str(ex), __name__, "E")
 			self.USE_DB_TYPE    	= self.DB_PICKLE
 			
 		if session is not None:
@@ -435,7 +472,7 @@ class Database(object):
 #	
 #################################   FAILED   ################################# 
 #
-	def getFailed(self):
+	def getFailedValues(self):
 		printl("->", self, "S")
 		return self.dbHandler.getMediaFailedValues()
 		
@@ -526,6 +563,9 @@ class Database(object):
 	def isMediaSeen(self, id):
 		return self.dbHandler.isMediaSeen(id)
 	
-	def setMediaSeen(self, id, seen):
-		self.dbHandler.setMediaSeen(id, seen)
+	def MarkAsSeen(self, id, user=9999):
+		self.dbHandler.MarkAsSeen(id, user)
+	
+	def MarkAsUnseen(self, id, user=9999):
+		self.dbHandler.MarkAsUnseen(id, user)
 	

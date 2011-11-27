@@ -29,7 +29,7 @@ class DMC_TvShowLibrary(DMC_Library):
 	###
 	# Return Value is expected to be:
 	# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-	def loadLibrary(self, primaryKeyValuePair, seenPng=None, unseenPng=None):
+	def loadLibrary(self, params, seenPng=None, unseenPng=None):
 		global Manager
 		global utf8ToLatin
 		if utf8ToLatin is None:
@@ -38,10 +38,10 @@ class DMC_TvShowLibrary(DMC_Library):
 		printl("DEBUG 3", self)
 	
 		printl("", self)
-		printl("primaryKeyValuePair=" + str(primaryKeyValuePair), self)
+		printl("params=" + str(params), self)
 			
 		# Diplay all TVShows
-		if primaryKeyValuePair is None:
+		if params is None:
 			printl("Series", self)
 			parsedLibrary = []
 			library = self.manager.getSeriesValues()
@@ -97,14 +97,14 @@ class DMC_TvShowLibrary(DMC_Library):
 				filter.append(("Abc", ("Title", False, 1), tmpAbc))
 				
 			return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
+			# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
 		
 		# Display the Seasons Menu
-		#elif primaryKeyValuePair.has_key("ShowSeasons"):
-		elif primaryKeyValuePair["ViewMode"]=="ShowSeasons":
+		elif params["ViewMode"]=="ShowSeasons":
 			printl("Seasons", self)
 			parsedLibrary = []
 			
-			tvshow = self.manager.getSerie(primaryKeyValuePair["Id"])
+			tvshow = self.manager.getMedia(params["Id"])
 			d = {}
 			
 			d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
@@ -121,7 +121,7 @@ class DMC_TvShowLibrary(DMC_Library):
 			d["Popularity"] = tvshow.Popularity
 			d["Genres"]  = utf8ToLatin(tvshow.Genres).split("|")
 			
-			library = self.manager.getEpisodes(primaryKeyValuePair["Id"])
+			library = self.manager.getEpisodes(params["Id"])
 			
 			seasons = []
 			for entry in library:
@@ -141,7 +141,6 @@ class DMC_TvShowLibrary(DMC_Library):
 					s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
 					
 					if config.plugins.pvmc.showseenforseason.value is True:
-						#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"], "Season": s["Season"]}):
 						if self.manager.isMediaSeen(d["Id"], s["Season"]):
 							image = seenPng
 						else:
@@ -155,20 +154,16 @@ class DMC_TvShowLibrary(DMC_Library):
 			
 			filter = [("All", (None, False), ("", )), ]
 			
-			return (parsedLibrary, ("ViewMode", "Id", "Season", ), None, primaryKeyValuePair, sort, filter)
-
+			return (parsedLibrary, ("ViewMode", "Id", "Season", ), None, params, sort, filter)
+			# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
+	
 		# Display the Episodes Menu
-		#elif primaryKeyValuePair.has_key("TheTvDbId") and primaryKeyValuePair.has_key("Season"):
-		elif primaryKeyValuePair["ViewMode"]=="ShowEpisodes":
+		elif params["ViewMode"]=="ShowEpisodes":
 			printl("EpisodesOfSeason", self)
 			parsedLibrary = []
 			
-			#tvshow = self.manager.getElement...ByUsingPrimaryKey(Manager.TVSHOWS, \
-			#	dict({'thetvdbid': primaryKeyValuePair["TheTvDbId"]}))
-			
-			#library = self.manager.getEpisodesWithTheTvDbId(primaryKeyValuePair["TheTvDbId"])
-			tvshow  = self.manager.getSerie(primaryKeyValuePair["Id"])
-			library = self.manager.getEpisodes(primaryKeyValuePair["Id"], primaryKeyValuePair["Season"])
+			tvshow  = self.manager.getMedia(params["Id"])
+			library = self.manager.getEpisodes(params["Id"], params["Season"])
 			for episode in library:
 				d = {}
 
@@ -205,12 +200,6 @@ class DMC_TvShowLibrary(DMC_Library):
 				d["Month"]   = episode.Month
 				d["Day"]     = episode.Day
 				d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
-				#if self.checkFileCreationDate:
-				#	try:
-				#		d["Creation"] = os.stat(d["Path"]).st_mtime
-				#	except Exception, ex:
-				#		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
-				#		d["Creation"] = 0
 				d["Creation"] = episode.FileCreation
 				d["Season"]  = episode.Season
 				d["Episode"] = episode.Episode
@@ -221,7 +210,6 @@ class DMC_TvShowLibrary(DMC_Library):
 				d["Resolution"]  = utf8ToLatin(episode.Resolution)
 				d["Sound"]  = utf8ToLatin(episode.Sound)
 				
-				#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"], "Episode":episode.Episode, "Season": episode.Season}):
 				if self.manager.isMediaSeen(d["Id"]):
 					image = seenPng
 					d["Seen"] = "Seen"
@@ -252,21 +240,21 @@ class DMC_TvShowLibrary(DMC_Library):
 			filter = [("All", (None, False), ("", )), ]
 			filter.append(("Seen", ("Seen", False, 1), ("Seen", "Unseen", )))
 			
-			return (parsedLibrary, ("ViewMode", "Id", "TVShowId", "Season", "Episode", ), dict({ \
-				'ViewMode': "ShowSeasons", \
-				'Id': primaryKeyValuePair["Id"], \
-				}), primaryKeyValuePair, sort, filter)
-			
+			return (parsedLibrary, ("ViewMode", "Id", "TVShowId", "Season", "Episode", ), \
+				dict({'ViewMode': "ShowSeasons", 'Id': params["Id"],}), \
+			params, sort, filter)
+			# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
+	
 		return None
 
 	def getPlaybackList(self, entry):
 		playbackList = []
 		
-		primaryKeyValuePair = {}
-		primaryKeyValuePair["Id"] = entry["TVShowId"]
-		primaryKeyValuePair["Season"] = entry["Season"]
-		primaryKeyValuePair["ViewMode"] = "ShowEpisodes"
-		library = self.loadLibrary(primaryKeyValuePair)[0]
+		params = {}
+		params["Id"] = entry["TVShowId"]
+		params["Season"] = entry["Season"]
+		params["ViewMode"] = "ShowEpisodes"
+		library = self.loadLibrary(params)[0]
 		
 		playbackList.append( (entry["Path"], entry["Title"], entry, ))
 		nextEpisode = entry["Episode"] + 1

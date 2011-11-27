@@ -9,11 +9,10 @@
 #   
 #   Revisions:
 #   v1 - 15/07/2011 - Zuki - Avoid null values on Dates, Popularity & Runtime
-#
 #   v2 - 18/07/2011 - Zuki - Added Counters for Movies/Series
-#
 #   v  - 15/09/2011 - Zuki - Convert Db's to one file - mediafiles.db
 #			     Changes to webif/sync by Don 	
+#   v  - 23/11/2011 - Zuki - CleanUp
 ##
 ################################################################################
 # Function			Parameters		Return
@@ -21,11 +20,9 @@
 # getAll(self, type, param=None):
 # searchAlternatives(self, oldElement, searchstring=None):
 # syncElement(self, path, filename, extension, imdbid, istvshow, oldelement=None):
-# getElementByUsingPrimaryKey(self, type, primary_key):
-# getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
-# isMediaSeen(self, id):
-# setMediaSeen(self, primary_key):
+# getElement_ByUsingPrimaryKey(self, type, primary_key):
 ###############################   MEDIA FILES   ############################### 
+# getMedia(self, id):
 # insertMedia(self, type, key_value_dict):
 # updateMedia(self, type, key_value_dict):
 # deleteMedia(self, id):
@@ -33,45 +30,39 @@
 # getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
 ##################################   MOVIES   ################################# 
 # getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-# getMovie(self, id):
 # getMoviesCount(self):
 ##################################   SERIES   ################################# 
 # getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-# getSerie(self, id):
-# #####getSeriesWithTheTvDbId(self, theTvDbId):
 # getSeriesCount(self):
 # getEpisodes(self, id):
 # getAllEpisodes(self): # DANGER
 # getEpisodesWithTheTvDbId(self, theTvDbId):
 # getEpisodesCount(self, parentId=None, season=None):
-# getEpisode(self, id):
-#################################   FAILED   ################################# 
-# getFailed(self):
-# getFailedItem(self, id):
+#################################   FAILED   ################################## 
+# getFailedValues(self):
 # getFailedCount(self):
-################################     UTILS      ################################ 
+##########################           SEEN            ########################## 
+# isMediaSeen(self, id, Season=None):
+# MarkAsSeen(self, id, user=9999):
+# MarkAsUnseen(self, id, user=9999):
+###############################     UTILS      ################################ 
 # getDbDump(self):
 # dbIsCommited(self):	
 # changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
 #
 
-
 import os
 import Blacklist
 import replace
-
-from   PVS_DatabaseHandler import Database
-from   MediaInfo import MediaInfo
-from   MobileImdbComProvider import MobileImdbComProvider
-
+from PVS_DatabaseHandler import Database
+from MediaInfo import MediaInfo
+from MobileImdbComProvider import MobileImdbComProvider
 from sync import Sync
 from Arts import Arts
-
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 
 class Manager():
-
 	# make ID's equal in MediaInfo & Manager, hope there is nothing hardcoded...
 	MOVIES 	= 1 
 	TVSHOWS = 2 
@@ -121,9 +112,145 @@ class Manager():
 			return list
 		
 		elif type == self.FAILED or type == self.FAILED_ALL:
-			return self.getFailed()
+			return self.getFailedValues()
 		else:
 			return None
+#
+###############################   MEDIA FILES   ############################### 
+#
+	def getMedia(self, id):
+		return self.db.getMediaWithId(id)
+	
+	def insertMedia(self, media):
+		return self.db.insertMedia(media)
+			
+	def insertMediaWithDict(self, type, key_value_dict):
+		key_value_dict["MediaType"] = type
+		ret = self.db.insertMediaWithDict(key_value_dict)
+		if ret["status"]<=0:
+			printl("Insert Media - Failed " + ret["message"], self)	
+			
+		return ret
+
+	def updateMediaWithDict(self, type, key_value_dict):
+		key_value_dict["MediaType"] = type
+		if not self.db.updateMediaWithDict(key_value_dict):
+			printl("Update Media - Failed", self)	
+			return False
+		return True
+	
+	def deleteMedia(self, id):
+		if not self.db.deleteMedia(id):
+			printl("Delete Media - Failed", self)	
+			return False
+		return True
+	
+	def getMediaPaths(self):
+		return self.db.getMediaPaths()
+	
+	def getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMediaValuesForFolder(type, path, order=None, firstRecord=0, numberOfRecords=9999999)
+#
+#################################   MOVIES   ################################# 
+#
+	# Pass throught functions
+	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
+
+	#def getMoviesValuesByGroup(self, order=None, firstRecord=0, numberOfRecords=9999999):
+	#	return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
+	#
+	
+	def getMoviesCount(self):
+		return self.db.getMediaCount(MediaInfo.MOVIE)
+#
+#################################   SERIES   ################################# 
+#
+	# Pass throught functions		
+	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
+		return self.db.getMediaValues(MediaInfo.SERIE, order, firstRecord, numberOfRecords)
+		
+	
+	def getSeriesCount(self):
+		return self.db.getMediaCount(MediaInfo.SERIE)
+		
+	def getEpisodes(self, parentId=None, season=None):
+		return self.db.getEpisodes(parentId, season)
+	
+	def getAllEpisodes(self): # DANGER
+		return self.db.getEpisodes()
+		
+	def getEpisodesWithTheTvDbId(self, theTvDbId):
+		return self.db.getEpisodesWithTheTvDbId(theTvDbId)
+		
+	def getEpisodesCount(self, parentId=None, season=None):
+		return self.db.getMediaCount(MediaInfo.EPISODE, parentId, season)		
+#	
+#################################   FAILED   ################################# 
+#
+	def getFailedValues(self):
+		return self.db.getFailedValues()
+		
+	def getFailedCount(self):
+		return self.db.getFailedCount()
+		
+#
+##########################           SEEN            ########################## 
+#
+	def isMediaSeen(self, id, Season=None):
+		return self.db.isMediaSeen(id)
+		#return self.isEntrySeen(primary_key)
+		#return self.isSeasonSeen(primary_key)
+		#return self.isShowSeen(primary_key)
+
+	def MarkAsSeen(self, id, user=9999):
+		self.db.MarkAsSeen(id, user)
+	
+	def MarkAsUnseen(self, id, user=9999):
+		self.db.MarkAsUnseen(id, user)
+#
+###################################  UTILS  ###################################
+#
+		# for test 
+	def getDbDump(self):
+		return self.db.getDbDump()
+		
+	def dbIsCommited(self):
+		return self.db.dbIsCommited()
+		
+	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
+		printl("start changing arts 2", self)
+		m = None
+		if type == self.MOVIES:
+			m = self.db.getMediaWithId(id)
+		elif type == self.TVSHOWS:
+			m = self.db.getMediaWithId(id)		
+		elif type == self.TVSHOWSEPISODES:
+			m = self.db.getMediaWithId(id)
+		elif type == self.MUSIC:
+			pass
+			#m = self.db.getMediaWithId(id)
+			return False
+		else:
+			return None				
+
+		if m is None:
+			printl("Change Media Art - DB Error - Not found", self)	
+			return False
+		
+		if backdrop is not None:
+			m.Backdrop = backdrop
+		if poster is not None:
+			m.Poster = poster
+		
+		if m.Backdrop is not None or m.Poster is not None:
+			printl("downloading arts", self)
+			Arts().download(m, overwrite)
+			return True
+		else:
+			return False
+	
+		return False
 
 	def searchAlternatives(self, oldElement, searchstring=None):
 		element = MediaInfo(oldElement.Path, oldElement.Filename, oldElement.Extension)
@@ -169,7 +296,7 @@ class Manager():
 			if results is not None:
 				return results
 		return None
-
+	
 	#not used anymore - replacement: update/insert media
 	#def replace(self, oldElement, newElement):
 	#	printl("", self)
@@ -193,204 +320,50 @@ class Manager():
 
 # self.dbHandler.deleteMedia(media.Id)
 
-	def getElementByUsingPrimaryKey(self, type, primary_key):
-		printl("", self)
-		printl("type=" + str(type), self)
-		printl("primary_key=" + str(primary_key), self)
-		element = None
-		if type == self.MOVIES and primary_key.has_key("imdbid"):
-			printl("is_Movie found", self)
-			imdbid = primary_key["imdbid"]
-			element = self.db.getMediaWithImdbId(imdbid)
-		
-		elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
-			printl("is_TvShow found", self)
-			thetvdbid = primary_key["thetvdbid"]
-			element = self.db.getMediaWithTheTvDbId(thetvdbid)
-		
-		elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
-			printl("is_Episode found", self)
-			thetvdbid = primary_key["thetvdbid"]
-			season = int(primary_key["season"])
-			episode = int(primary_key["episode"])
-			printl("Looking up episode", self, "D")
-			element = self.db.getSeriesEpisode(thetvdbid, season, episode)
-		
-		return element
+	#def getElement_ByUsingPrimaryKey(self, type, primary_key):
+	#	printl("", self)
+	#	printl("type=" + str(type), self)
+	#	printl("primary_key=" + str(primary_key), self)
+	#	element = None
+	#	if type == self.MOVIES and primary_key.has_key("imdbid"):
+	#		printl("is_Movie found", self)
+	#		imdbid = primary_key["imdbid"]
+	#		element = self.db.getMediaWithImdbId(imdbid)
+	#	
+	#	elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
+	#		printl("is_TvShow found", self)
+	#		thetvdbid = primary_key["thetvdbid"]
+	#		element = self.db.getMediaWithTheTvDbId(thetvdbid)
+	#	
+	#	elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
+	#		printl("is_Episode found", self)
+	#		thetvdbid = primary_key["thetvdbid"]
+	#		season = int(primary_key["season"])
+	#		episode = int(primary_key["episode"])
+	#		printl("Looking up episode", self, "D")
+	#		element = self.db.getSeriesEpisode(thetvdbid, season, episode)
+	#	
+	#	return element
 	
-	def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
-		printl("start changing arts", self)
-		media = self.getElementByUsingPrimaryKey(type, primary_key)
-		if media is not None:
-			printl("element found ", self)
-			if backdrop is not None:
-				media.Backdrop = backdrop
-				printl("setting backdrop source", self)
-			if poster is not None:
-				media.Poster = poster
-				printl("setting poster source", self)
-			
-			if media.Backdrop is not None or media.Poster is not None:
-				printl("downloading arts", self)
-				Arts().download(media, overwrite)
-				return True
-			else:
-				return False
-		printl("no element found", self)
-		return False
-	
-#
-##########################  SEEN - not in dbHandler  ########################## 
-#
-
-	def isMediaSeen(self, id, Season=None):
-		return self.db.isMediaSeen(id)
-		#return self.isEntrySeen(primary_key)
-		#return self.isSeasonSeen(primary_key)
-		#return self.isShowSeen(primary_key)
-
-	def setMediaSeen(self, id, seen):
-		self.db.setMediaSeen(id, seen)
-	
-#
-###############################   MEDIA FILES   ############################### 
-#
-	def insertMedia(self, media):
-		return self.db.insertMedia(media)
-			
-	def insertMediaWithDict(self, type, key_value_dict):
-		key_value_dict["MediaType"] = type
-		ret = self.db.insertMediaWithDict(key_value_dict)
-		if ret["status"]<=0:
-			printl("Insert Media - Failed " + ret["message"], self)	
-			
-		return ret
-
-	def updateMediaWithDict(self, type, key_value_dict):
-		key_value_dict["MediaType"] = type
-		if not self.db.updateMediaWithDict(key_value_dict):
-			printl("Update Media - Failed", self)	
-			return False
-		return True
-	
-	#deprecated - use: deleteMedia(id)
-	#def remove(self, media, blacklist=True):
-	#	self.deleteMedia(media.Id)
-
-	def deleteMedia(self, id):
-		if not self.db.deleteMedia(id):
-			printl("Delete Media - Failed", self)	
-			return False
-		return True
-	
-	def getMediaPaths(self):
-		return self.db.getMediaPaths()
-	
-	def getMediaValuesForFolder(self, type, path, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getMediaValuesForFolder(type, path, order=None, firstRecord=0, numberOfRecords=9999999)
-	
-#
-#################################   MOVIES   ################################# 
-#
-	# Pass throught functions
-
-	# for test 
-	def getDbDump(self):
-		return self.db.getDbDump()
-		
-	def dbIsCommited(self):
-		return self.db.dbIsCommited()
-		
-	def getMoviesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
-
-	#def getMoviesValuesByGroup(self, order=None, firstRecord=0, numberOfRecords=9999999):
-	#	return self.db.getMediaValues(MediaInfo.MOVIE, order, firstRecord, numberOfRecords)
+	#NOT USED
+	#def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
+	#	printl("start changing arts", self)
+	#	media = self.getElementByUsingPrimaryKey(type, primary_key)
+	#	if media is not None:
+	#		printl("element found ", self)
+	#		if backdrop is not None:
+	#			media.Backdrop = backdrop
+	#			printl("setting backdrop source", self)
+	#		if poster is not None:
+	#			media.Poster = poster
+	#			printl("setting poster source", self)
+	#		
+	#		if media.Backdrop is not None or media.Poster is not None:
+	#			printl("downloading arts", self)
+	#			Arts().download(media, overwrite)
+	#			return True
+	#		else:
+	#			return False
+	#	printl("no element found", self)
+	#	return False
 	#
-	def getMovie(self, id):
-		return self.db.getMediaWithId(id)
-
-	def getMoviesCount(self):
-		return self.db.getMediaCount(MediaInfo.MOVIE)
-
-	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
-		printl("start changing arts 2", self)
-		m = None
-		if type == self.MOVIES:
-			m = self.db.getMediaWithId(id)
-		elif type == self.TVSHOWS:
-			m = self.db.getMediaWithId(id)		
-		elif type == self.TVSHOWSEPISODES:
-			m = self.db.getMediaWithId(id)
-		elif type == self.MUSIC:
-			pass
-			#m = self.db.getMediaWithId(id)
-			return False
-		else:
-			return None				
-
-		if m is None:
-			printl("Change Media Art - DB Error - Not found", self)	
-			return False
-		
-		if backdrop is not None:
-			m.Backdrop = backdrop
-		if poster is not None:
-			m.Poster = poster
-		
-		if m.Backdrop is not None or m.Poster is not None:
-			printl("downloading arts", self)
-			Arts().download(m, overwrite)
-			return True
-		else:
-			return False
-	
-		return False
-#
-#################################   SERIES   ################################# 
-#
-	# Pass throught functions
-		
-	def getSeriesValues(self, order=None, firstRecord=0, numberOfRecords=9999999):
-		return self.db.getMediaValues(MediaInfo.SERIE, order, firstRecord, numberOfRecords)
-	
-	def getSerie(self, id):
-		return self.db.getMediaWithId(id)
-
-	#def getSeriesWithTheTvDbId(self, theTvDbId):
-	#	return self.db.getMediaWithTheTvDbId(theTvDbId)
-		
-	def getSeriesCount(self):
-		return self.db.getMediaCount(MediaInfo.SERIE)
-		
-	def getEpisodes(self, parentId=None, season=None):
-		return self.db.getEpisodes(parentId, season)
-	
-	def getAllEpisodes(self): # DANGER
-		return self.db.getEpisodes()
-		
-	def getEpisodesWithTheTvDbId(self, theTvDbId):
-		return self.db.getEpisodesWithTheTvDbId(theTvDbId)
-		
-	def getEpisodesCount(self, parentId=None, season=None):
-		return self.db.getMediaCount(MediaInfo.EPISODE, parentId, season)
-
-	def getEpisode(self, id):
-		return self.db.getMediaWithId(id)
-		
-#	
-#################################   FAILED   ################################# 
-#
-	def getFailed(self):
-		return self.db.getFailed()
-		
-	def getFailedItem(self, id):
-		return self.db.getMediaWithId(id)
-		
-	def getFailedCount(self):
-		return self.db.getFailedCount()
-		
-#
-###################################  UTILS  ###################################
-#
-	

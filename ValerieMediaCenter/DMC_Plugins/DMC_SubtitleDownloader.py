@@ -105,8 +105,9 @@ class DMC_SubtitleDownloader(ChoiceBox):
 			season = str(args["Season"])
 			episode = str(args["Episode"])
 			
-			tvshowEntry = Manager("SubtitleDownloader").getElementByUsingPrimaryKey(Manager.TVSHOWS, \
-				dict({'thetvdbid': args["TheTvDbId"]}))
+			#tvshowEntry = Manager("SubtitleDownloader").getElement_ByUsingPrimaryKey(Manager.TVSHOWS, \
+			#	dict({'thetvdbid': args["TheTvDbId"]}))			
+			tvshowEntry = Manager("SubtitleDownloader").getMedia(args["Id"])
 			tvshow = tvshowEntry.Title
 		else:
 			season = ""
