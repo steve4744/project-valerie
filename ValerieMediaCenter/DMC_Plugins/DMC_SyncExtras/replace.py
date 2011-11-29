@@ -71,12 +71,15 @@ def load():
 		try:
 			f = open(config.plugins.pvmc.configfolderpath.value + rf + ".conf", "r")
 			for line in f.readlines():
-				keys = line.split("=")
-				if len(keys) == 2:
-					keys[0] = keys[0].strip().strip('[\'\"]')
-					keys[1] = keys[1].strip().strip('[\'\"]')
-					#printl("[" + str(rf) + "] " + str(keys[0]) + " --> " + str(keys[1]), __name__, "D")
-					replacementsList[rf].append([re.compile(keys[0]),keys[1]])
+				try:
+					keys = line.split("=")
+					if len(keys) == 2:					
+						keys[0] = keys[0].strip().strip('[\'\"]')
+						keys[1] = keys[1].strip().strip('[\'\"]')
+						printl("[" + str(rf) + "] " + str(keys[0]) + " --> " + str(keys[1]), __name__, "D")
+						replacementsList[rf].append([re.compile(keys[0]),keys[1]])
+				except Exception, ex:
+					printl("Exception: " + str(ex), __name__)
 			f.flush()
 			f.close()
 		except Exception, ex:
