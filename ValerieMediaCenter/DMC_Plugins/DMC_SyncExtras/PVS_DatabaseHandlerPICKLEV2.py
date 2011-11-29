@@ -1225,6 +1225,8 @@ class databaseHandlerPICKLEV2(object):
 					self._dbTables[self.DBID] = start_time
 					self._dbTables["Seen"] = {}
 					self._dbTables["MediaFilesDBId"] = self._dbMediaFiles[self.DBID]
+					self.TablesCommited = False
+					self.saveTablesDB()	
 					# _dbTables["Seen"] specification:
 					# 9999 = default UserId (Only 1 user)
 					#[key]["Id"]			# MediaId

@@ -259,7 +259,9 @@ class Database(object):
 			dbHandlerPickle.loadAll()
 			#Upgrade SeenDB
 			records = dbHandlerPickle.getSeenForUpgrade()
-		
+			
+			self.dbHandler.loadAll()
+			
 			start_time = time.time()			
 			cntNew = 0
 			
