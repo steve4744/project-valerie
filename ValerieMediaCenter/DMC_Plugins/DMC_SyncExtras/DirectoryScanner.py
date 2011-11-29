@@ -105,11 +105,12 @@ class DirectoryScanner():
 	def _listDirectory(self, directory, fileExtList, fileIgnoreRegex, recursive=True):
 		"get list of file info objects for files of particular extensions" 
 		printl("directory=" + str(directory), self)
-
+		
 		if "RECYCLE.BIN" in directory:
 			return
 
 		try:
+			self.folderList[self.directory][directory] = os.path.getmtime(directory)
 			for f in os.listdir(directory):
 				file = os.path.join(directory, f)
 				if os.path.isfile(file):
@@ -119,7 +120,6 @@ class DirectoryScanner():
 						self.fileList.append([directory, shortname, extension])
 				
 				elif recursive is True and os.path.isdir(file):
-					self.folderList[self.directory][directory] = os.path.getmtime(directory)
 					self._listDirectory(file, fileExtList, fileIgnoreRegex)
 		except Exception, ex:
 			#import sys, traceback
