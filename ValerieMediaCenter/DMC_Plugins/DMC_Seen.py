@@ -42,6 +42,7 @@ except:
 
 progress    = None
 status      = None
+id          = None
 manager     = None
 
 def setSeen(id, seen):
@@ -58,6 +59,7 @@ def setSeen(id, seen):
 def autostart(session):
 	global progress
 	global status
+	global id
 	global manager
 		
 def markSeen(session, args):
@@ -71,6 +73,7 @@ def markUnSeen(session, args):
 def info_playback(d, flags):
 	global progress
 	global status
+	global id
 	if flags.has_key("DO_NOT_TRACK") and flags["DO_NOT_TRACK"] is True:
 		return
 	
@@ -79,11 +82,12 @@ def info_playback(d, flags):
 		progress = d["progress"]
 	if d.has_key("status"):
 		status = d["status"]
+	if d.has_key("id"):
+		id = d["id"]
 
 	if status == "stopped":
 		if progress >= 70:
-			pass
-			#setSeen(d["Id"], True)
+			setSeen(id, True)
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
