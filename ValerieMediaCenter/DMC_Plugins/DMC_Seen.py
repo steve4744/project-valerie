@@ -82,7 +82,8 @@ def info_playback(d, flags):
 
 	if status == "stopped":
 		if progress >= 70:
-			setSeen(d["id"], True)
+			pass;
+			#setSeen(d["Id"], True)
 
 if gAvailable is True:
 	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
