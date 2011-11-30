@@ -82,7 +82,7 @@ def info_playback(d, flags):
 
 	if status == "stopped":
 		if progress >= 70:
-			pass;
+			pass
 			#setSeen(d["Id"], True)
 
 if gAvailable is True:
