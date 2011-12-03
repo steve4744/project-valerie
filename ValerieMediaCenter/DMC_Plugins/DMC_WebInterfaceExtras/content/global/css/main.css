@@ -260,9 +260,11 @@ img {border: none; }
 .requiredfield{
 	background-color:#FFE3E3
 }
-
+.center{
+	text-align:center;
+}
 .small{
-	width: 80px;
+	width: 50px;
 }
 .medium{
 	width: 350px;

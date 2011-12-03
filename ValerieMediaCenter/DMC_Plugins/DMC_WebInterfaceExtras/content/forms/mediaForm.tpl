@@ -17,11 +17,12 @@
 			<tr id="tr_tag"><td>Tag:</td><td>
 				<input id="tag" name="Tag" type="text" value="%s" class="medium"></input></td><td>(e.g.my tag)</td></tr>
 			<tr id="tr_season"><td>Season:</td><td>
-				<input id="season" name="Season" type="text"  class="small" maxlength="2" value="%s" class="small"></input>
-				&nbsp;&nbsp;Disc:
-				<input id="disc" name="Disc" type="text"  maxlength="2" value="%s" class="small"></input>
-				&nbsp;&nbsp;Episode:
-				<input id="episode" name="Episode" type="text" maxlength="3" value="%s" class="small"></input>
+				<input id="season" name="Season" type="text" maxlength="2" value="%s" class="small center"></input>
+				&nbsp;&nbsp;&nbsp;&nbsp;Disc:&nbsp;
+				<input id="disc" name="Disc" type="text"  maxlength="2" value="%s" class="small center"></input>
+				&nbsp;&nbsp;&nbsp;&nbsp;Episode:&nbsp;
+				<input id="episode" name="Episode" type="text" maxlength="3" value="%s" class="small center"></input>
+				-&nbsp;<input id="episodelast" name="EpisodeLast" type="text" maxlength="3" value="%s" class="small center"></input>
 			</td><td>(e.g. 01)</td></tr>
 			<!--
 			<tr id="tr_episode"><td>Episode:</td><td>
@@ -30,9 +31,9 @@
 			<tr id="tr_plot"><td>Plot:</td><td>
 				<textarea id="plot" name="Plot" cols="50" rows="15" class="medium">%s</textarea></td><td>(e.g. story description)</td></tr>
 			<tr id="tr_runtime"><td>Runtime:</td><td>
-				<input id="runtime" name="Runtime" type="text" value="%s" class="small"></input></td><td>(e.g. 90)</td></tr>
+				<input id="runtime" name="Runtime" type="text" value="%s" class="small center"></input></td><td>(e.g. 90)</td></tr>
 			<tr id="tr_year"><td>Year:</td><td>
-				<input id="year" name="Year" type="text" maxlength="4" value="%s" class="small"></td><td></input>(e.g. 2011)</td></tr>
+				<input id="year" name="Year" type="text" maxlength="4" value="%s" class="small center"></td><td></input>(e.g. 2011)</td></tr>
 			<tr id="tr_genres"><td>Genres:</td><td>
 				<input id="genres" name="Genres" type="text" value="%s" class="medium"></input></td><td>(e.g. Action|Thriller)</td></tr>
 			<tr id="tr_popularity"><td>Popularity:</td><td>

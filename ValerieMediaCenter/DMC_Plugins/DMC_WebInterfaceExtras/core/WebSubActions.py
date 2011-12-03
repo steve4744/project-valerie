@@ -198,7 +198,7 @@ class MediaForm(Resource):
 			if m.ParentId == None:
 				m.ParentId = u""
 
-			mediaForm = mediaForm % (type, nextMode, Id, m.ParentId, type, Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Disc, m.Episode, m.Plot, m.Runtime, m.Year, m.Genres, self._getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
+			mediaForm = mediaForm % (type, nextMode, Id, m.ParentId, type, Id, m.ImdbId, m.TheTvDbId, m.Title, m.Tag, m.Season, m.Disc, m.Episode, m.EpisodeLast, m.Plot, m.Runtime, m.Year, m.Genres, self._getPopularity(m.Popularity), m.Path, m.Filename, m.Extension, seenCheck)
 
 		finalOutput = finalOutput.replace("<!-- CUSTOM_IMAGE -->", image)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_BACKDROP -->", backdrop)

@@ -123,7 +123,7 @@ class databaseHandlerPICKLEV2(object):
 	COUNTERID  = -999998
 	STATS	   = -999997
 	DBID	   = -999996
-	DB_VERSION_MEDIAFILES 	= 5
+	DB_VERSION_MEDIAFILES 	= 6
 	DB_VERSION_TABLES 	= 0
 	
 	CONVERTING = False
@@ -925,7 +925,7 @@ class databaseHandlerPICKLEV2(object):
 ###################################  UTILS  ###################################
 	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
-		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'Seen', 'ShowUp', 'FileCreation']
+		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'EpisodeLast', 'Seen', 'ShowUp', 'FileCreation']
 		
 		for key in key_value_dict.keys():
 			try:
@@ -1073,9 +1073,8 @@ class databaseHandlerPICKLEV2(object):
 			for updateToVersion in range(currentDBVersion+1, self.DB_VERSION_MEDIAFILES+1):
 				printl("Applying upgrade to version : " + str(updateToVersion))
 				if updateToVersion==6:
-					pass
-					#self._upgrade_MF_6(records)
-					#self._setDBVersion(records, updateToVersion)
+					self._upgrade_MF_6()
+					self._setDBVersion(records, updateToVersion)
 				elif updateToVersion==7:
 					pass
 					#self._upgrade_MF_7()
@@ -1086,20 +1085,28 @@ class databaseHandlerPICKLEV2(object):
 			self.saveMediaFiles()
 	
 	def _upgrade_MF_6(self):
-		pass
-		#start_time = time.time()
-		#if self.session is not None:
-		#	mm = self.session.open(MessageBox, (_("\nConverting data to version 6.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
-		#self.MediaFilesCommited = False
-		#self._dbMediaFiles[self.DBID] = start_time
-		#records = self._getMediaFiles()
-		#for key in records:
-		#	pass
-		#
-		#if self.session is not None:
-		#	mm.close(False, self.session)
-		#elapsed_time = time.time() - start_time
-		#printl("Upgrade5 Took : " + str(elapsed_time), self, 11)
+		start_time = time.time()
+		if self.session is not None:
+			mm = self.session.open(MessageBox, (_("\nConverting data to version 6.... \n\nPlease wait... ")), MessageBox.TYPE_INFO)
+		self.MediaFilesCommited = False
+		records = self._getMediaFiles()
+		for key in records:
+			m = self._dbMediaFiles[key]
+			try:
+				if m.EpisodeLast is not None:
+					if m.EpisodeLast == "":
+						m.EpisodeLast = None
+					else:
+						m.EpisodeLast = int(m.EpisodeLast)
+					
+			except Exception, ex:
+				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
+			
+			
+		if self.session is not None:
+			mm.close(False, self.session)
+		elapsed_time = time.time() - start_time
+		printl("Upgrade6 Took : " + str(elapsed_time), self, 11)
 
 	def _upgrade_MF_7(self):
 		pass
