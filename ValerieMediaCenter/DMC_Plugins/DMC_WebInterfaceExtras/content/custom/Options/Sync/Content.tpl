@@ -16,14 +16,14 @@
 	
 	<br><br><br>
 	
-	<div class="subheader">Path Settings</div>
+	<div class="subheader">Path Settings - (Hint: If you want to delete a line, just delete content of directory and press "save".)</div>
 
 	<div class="text">
 		<!-- CUSTOM_TBODY_SYNC_PATH -->
 	</div>
 	
-	<div class="text">
-		<br><br><br>Hint: If you want to delete a line, just delete content of directory and press "save".
-	</div>
+
+	
+
 
 </div>
