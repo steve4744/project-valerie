@@ -343,12 +343,14 @@ class PVMC_MainMenu(Screen):
 		elif self.APILevel >= 3:
 			list = []
 			plugins = getPlugins(where=Plugin.MENU_PICTURES)
+			plugins = self.checkShow(plugins)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Pictures"), plugins[0], "menu_pictures", "50"))
 			elif plugins is not None and len(plugins) > 1:
 				list.append((_("Pictures"), plugins, "menu_pictures", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_MUSIC)
+			plugins = self.checkShow(plugins)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Music"), plugins[0], "menu_music", "50"))
 			elif plugins is not None and len(plugins) > 1:
@@ -361,18 +363,23 @@ class PVMC_MainMenu(Screen):
 				list.append((_("TV Shows"), "PVMC_Series", "", "50"))
 			else:
 				plugins = getPlugins(where=Plugin.MENU_VIDEOS)
+				print plugins
+				plugins = self.checkShow(plugins)
+				print plugins
 				if plugins is not None and len(plugins) == 1:
 					list.append((_("Videos"), plugins[0], "menu_videos", "50"))
 				elif plugins is not None and len(plugins) > 1:
 					list.append((_("Videos"), plugins, "menu_videos", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
+			plugins = self.checkShow(plugins)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("Programs"), plugins[0], "menu_programs", "50"))
 			elif plugins is not None and len(plugins) > 1:
 				list.append((_("Programs"), plugins, "menu_programs", "50"))
 			
 			plugins = getPlugins(where=Plugin.MENU_SYSTEM)
+			plugins = self.checkShow(plugins)
 			if plugins is not None and len(plugins) == 1:
 				list.append((_("System"), plugins[0], "menu_system", "50"))
 			elif plugins is not None and len(plugins) > 1:
@@ -422,7 +429,21 @@ class PVMC_MainMenu(Screen):
 	def setCustomTitle(self):
 		self.setTitle(_("Project Valerie"))
 		self.showInfo(False)
-	
+
+	def checkShow(self, plugins):
+		l = []
+		for plugin in plugins:
+			settings = getPlugin(plugin.name, Plugin.SETTINGS)
+			show = True
+			if settings is not None:
+				settings = settings.fnc()
+				for setting in settings:
+					if setting[0] == _("Show"):
+						show = setting[1].value
+			if show: 
+				l.append(plugin)
+		return l
+
 	def showInfo(self, visible):
 		printl("->", self, "S")
 		self.isInfoHidden = visible
@@ -463,7 +484,13 @@ class PVMC_MainMenu(Screen):
 		if self.APILevel == 1:
 			self["menu"].setIndex(0)
 		elif self.APILevel >= 2:
-			self["menu"].setIndex(2)
+			print self["menu"]
+			i = 0
+			for entry in self["menu"].list:
+				if entry[2] == "menu_tv":
+					self["menu"].setIndex(i)
+					break
+				i += 1
 		
 		if self.APILevel >= 2 and self.ShowStillPicture is True and len(self.UseDreamScene) > 0:
 			printl("Using DreamScene at " + str(self.UseDreamScene), self)
@@ -579,86 +606,38 @@ class PVMC_MainMenu(Screen):
 	def okbuttonClick(self):
 		printl("->", self, "S")
 		
-		if self.APILevel == 1 and self.Watch == True:
-			selection = self["menuWatch"].getCurrent()
-			if selection is not None:
-				#REMOVED: They had enough time to update skin to higher API Level!
-				#if selection[1] == "PVMC_Movies":
-				#	self.session.openWithCallback(self.showStillPicture, PVMC_Movies)
-				#elif selection[1] == "PVMC_Series":
-				#	self.session.openWithCallback(self.showStillPicture, PVMC_Series)
-				pass
-		else:
+		if self.APILevel  >= 3:
 			selection = self["menu"].getCurrent()
 			printl("selection=" + str(selection), self)
 			if selection is not None:
 				printl("type(selection[1])=" + str(type(selection[1])), self)
-				if selection[1] == "PVMC_Watch":
-					self["menuWatch"].setIndex(1)
-					self.Watch = True;
-				elif selection[1] == "PVMC_Movies":
-					if self.APILevel >= 2 and self.ShowStillPicture is True:
-						self["showiframe"].finishStillPicture()
-					self.session.openWithCallback(self.showStillPicture, DMC_MovieLibrary)
-				elif selection[1] == "PVMC_Series":
-					if self.APILevel >= 2 and self.ShowStillPicture is True:
-						self["showiframe"].finishStillPicture()
-					self.session.openWithCallback(self.showStillPicture, DMC_TvShowLibrary)
-				elif selection[1] == "PVMC_AudioPlayer":
-					self.session.open(MessageBox, "TODO!\nThis feature is not yet implemented.", type = MessageBox.TYPE_INFO)
-					#self.session.open(MC_AudioPlayer)
-				elif selection[1] == "PVMC_Settings":
-					self.session.openWithCallback(self.showStillPicture, PVMC_Settings)
-				elif selection[1] == "PVMC_Sync":
-					isInstalled = False
-					try:
-						from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
-						isInstalled = True
-					except Exception, ex:
-						isInstalled = False
-						printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
-					if isInstalled:
-						self.session.openWithCallback(self.showStillPicture, ProjectValerieSync)
-					else:
-						self.session.open(MessageBox, _("Please install the plugin \nProjectValerieSync\n to use this feature."), type = MessageBox.TYPE_INFO)
-				elif selection[1] == "InfoBar":
-					self.Exit()
-				elif selection[1] == "Exit":
-					self.Exit()
-				else:
-					if self.APILevel >= 3:
-						s = selection[1]
-						if  type(s) is list:
-							self.menu_main_list_index = self["menu"].getIndex()
-							self.menu_main_list = self["menu"].list
-							l = []
-							l.append(("< " + _("Back"), Plugin.MENU_MAIN, "", "50"))
-							for plugin in s:
-								settings = getPlugin(plugin.name, Plugin.SETTINGS)
-								show = True
-								if settings is not None:
-									settings = settings.fnc()
-									for setting in settings:
-										if setting[0] == _("Show"):
-											show = setting[1].value
-								if show: 
-									l.append((plugin.desc, plugin, "", "50"))
-							self["menu"].setList(l)
-							self["menu"].setIndex(1)
-							self.refreshOrientationMenu(0)
-						elif type(s) is int:
-							if s == Plugin.MENU_MAIN:
-								self["menu"].setList(self.menu_main_list)
-								self["menu"].setIndex(self.menu_main_list_index)
-								self.refreshOrientationMenu(0)
-						elif type(s) is not str:
-							if s.supportStillPicture is False:
-								if self.APILevel >= 2 and self.ShowStillPicture is True:
-									self["showiframe"].finishStillPicture()
-							if s.start is not None:
-								self.session.openWithCallback(self.showStillPicture, s.start)
-							elif s.fnc is not None:
-								s.fnc(self.session)
+				s = selection[1]
+				if  type(s) is list:
+					self.menu_main_list_index = self["menu"].getIndex()
+					self.menu_main_list = self["menu"].list
+					l = []
+					l.append(("< " + _("Back"), Plugin.MENU_MAIN, "", "50"))
+					for plugin in self.checkShow(s):
+						l.append((plugin.desc, plugin, "", "50"))
+					self["menu"].setList(l)
+					self["menu"].setIndex(1)
+					self.refreshOrientationMenu(0)
+				elif type(s) is int:
+					if s == Plugin.MENU_MAIN:
+						self["menu"].setList(self.menu_main_list)
+						self["menu"].setIndex(self.menu_main_list_index)
+						self.refreshOrientationMenu(0)
+				elif type(s) is not str:
+					print type(s)
+					print str(s)
+					print s
+					if s.supportStillPicture is False:
+						if self.APILevel >= 2 and self.ShowStillPicture is True:
+							self["showiframe"].finishStillPicture()
+					if s.start is not None:
+						self.session.openWithCallback(self.showStillPicture, s.start)
+					elif s.fnc is not None:
+						s.fnc(self.session)
 
 	def up(self):
 		printl("->", self, "S")
