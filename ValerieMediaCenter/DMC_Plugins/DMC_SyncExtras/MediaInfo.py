@@ -95,7 +95,7 @@ class MediaInfo(object):
 	Season  = None
 	Disc    = None
 	Episode = None
-	EpisodeLast = u""
+	EpisodeLast = None
 	
 	syncStatus  = 0
 	syncErrNo = 0
