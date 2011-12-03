@@ -21,7 +21,8 @@ except Exception, ex:
 
 def settings():
 	s = []
-	s.append((_("Show"), config.plugins.pvmc.plugins.dreamnetcast.show, ))
+	if gAvailable is True:
+		s.append((_("Show"), config.plugins.pvmc.plugins.dreamnetcast.show, ))
 	return s
 
 if gAvailable is True:

@@ -27,7 +27,8 @@ class PVMC_MultiMediathek(MultiMediathek):
 
 def settings():
 	s = []
-	s.append((_("Show"), config.plugins.pvmc.plugins.multimediathek.show, ))
+	if gAvailable is True:
+		s.append((_("Show"), config.plugins.pvmc.plugins.multimediathek.show, ))
 	return s
 
 if gAvailable is True:

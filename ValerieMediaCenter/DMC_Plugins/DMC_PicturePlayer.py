@@ -72,7 +72,8 @@ class PVMC_PicturePlayerSetup(PicturePlayerSetup):
 
 def settings():
 	s = []
-	s.append((_("Show"), config.plugins.pvmc.plugins.pictureplayer.show, ))
+	if gAvailable is True:
+		s.append((_("Show"), config.plugins.pvmc.plugins.pictureplayer.show, ))
 	return s
 
 if gAvailable is True:

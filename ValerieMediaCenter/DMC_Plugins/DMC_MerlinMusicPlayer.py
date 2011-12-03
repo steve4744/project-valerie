@@ -31,7 +31,8 @@ class PVMC_MerlinMusicPlayer(MerlinMusicPlayerFileList):
 
 def settings():
 	s = []
-	s.append((_("Show"), config.plugins.pvmc.plugins.merlinmusicplayer.show, ))
+	if gAvailable is True:
+		s.append((_("Show"), config.plugins.pvmc.plugins.merlinmusicplayer.show, ))
 	return s
 
 if gAvailable is True:

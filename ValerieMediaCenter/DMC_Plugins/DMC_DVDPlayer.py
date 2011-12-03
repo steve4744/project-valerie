@@ -29,7 +29,8 @@ class PVMC_DVDPlayer(DVDPlayer):
 
 def settings():
 	s = []
-	s.append((_("Show"), config.plugins.pvmc.plugins.dvdplayer.show, ))
+	if gAvailable is True:
+		s.append((_("Show"), config.plugins.pvmc.plugins.dvdplayer.show, ))
 	return s
 
 if gAvailable is True:
