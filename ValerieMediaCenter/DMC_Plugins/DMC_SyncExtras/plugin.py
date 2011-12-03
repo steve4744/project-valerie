@@ -140,7 +140,11 @@ class ProjectValerieSyncSettingsConfPathsAdd(Screen):
 	def add(self):
 		printl("prev: " + str(self.selection), self)
 		printl("now: " +str(self.folderList.getFilename()), self)
-		if self.selection in self.folderList.getFilename():
+		filename = self.folderList.getFilename()
+		if filename is None:
+			# No prober path -> ignore
+			pass
+		elif self.selection in filename:
 			self.close(self.folderList.getFilename())
 		else:
 			self.close(self.selection)
