@@ -101,17 +101,25 @@ class DirectoryScanner():
 					
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
-		
+
 	def _listDirectory(self, directory, fileExtList, fileIgnoreRegex, recursive=True):
 		"get list of file info objects for files of particular extensions" 
 		printl("directory=" + str(directory), self)
 		
 		if "RECYCLE.BIN" in directory:
 			return
-
+		
 		try:
+			# Get all files and folders in "directory"
+			filesAndFolders = os.listdir(directory)
+			# Test if the folder should be ignored
+			if "ignore" in filesAndFolders:
+				printl("Ignoring folder " + str(directory), self, "I")
+				return
+			
+			# Get change date of folder
 			self.folderList[self.directory][directory] = os.path.getmtime(directory)
-			for f in os.listdir(directory):
+			for f in filesAndFolders:
 				file = os.path.join(directory, f)
 				if os.path.isfile(file):
 					# File is f and path is directory
@@ -122,16 +130,7 @@ class DirectoryScanner():
 				elif recursive is True and os.path.isdir(file):
 					self._listDirectory(file, fileExtList, fileIgnoreRegex)
 		except Exception, ex:
-			#import sys, traceback
 			printl("Exception: " + str(ex), self)
-			#exc_type, exc_value, exc_traceback = sys.exc_info()
-			#print "*** print_tb:"
-			#traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
-			#print "*** print_exception:"
-			#traceback.print_exception(exc_type, exc_value, exc_traceback,
-			#						  limit=2, file=sys.stdout)
-			#print "*** print_exc:"
-			#traceback.print_exc()
 
 	def fileToTulpe(self, file):
 		(filepath, filename) = os.path.split(file)
