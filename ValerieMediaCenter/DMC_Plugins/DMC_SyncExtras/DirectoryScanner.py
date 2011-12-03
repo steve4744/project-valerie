@@ -106,7 +106,12 @@ class DirectoryScanner():
 		"get list of file info objects for files of particular extensions" 
 		printl("directory=" + str(directory), self)
 		
+		# Ignore system specific folders
 		if "RECYCLE.BIN" in directory:
+			return
+		if ".svn" in directory:
+			return
+		if ".git" in directory:
 			return
 		
 		try:
