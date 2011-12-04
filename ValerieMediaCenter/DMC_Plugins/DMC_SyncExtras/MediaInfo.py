@@ -605,8 +605,8 @@ class MediaInfo(object):
 					if m.group("episode2") is not None:
 						self.EpisodeLast = int(m.group("episode2"))
 					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
-			
+					
+					self.SearchString = re.sub(r's?(e(?P<episode>\d+))([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)			
 			#####
 			#####  d05 - Disc 5
 			#####			
