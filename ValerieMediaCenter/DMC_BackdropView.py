@@ -103,11 +103,14 @@ class DMC_BackdropView(DMC_View):
 		element = selection[1]
 		if self.ShowStillPicture is True:
 			if changeBackdrop is True:
-				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
-				if os.access(backdrop, os.F_OK):
-					self["backdrop"].setStillPicture(backdrop)
-				else:
-					self["backdrop"].setStillPictureToDefault()
+				try: # Note: We add here a try instead of a if cause its most of the time true
+					backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
+					if os.access(backdrop, os.F_OK):
+						self["backdrop"].setStillPicture(backdrop)
+					else:
+						self["backdrop"].setStillPictureToDefault()
+				except:
+					pass
 		
 		#self.setText("title", selection[0].strip())
 		self.setText("title", element["ScreenTitle"])

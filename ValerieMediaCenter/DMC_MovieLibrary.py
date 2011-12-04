@@ -31,7 +31,7 @@ class DMC_MovieLibrary(DMC_Library):
 	###
 	# Return Value is expected to be:
 	# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-	def loadLibrary(self, params, seenPng= None, unseenPng=None):
+	def loadLibrary(self, params, seenPng=None, unseenPng=None):
 		global Manager
 		global utf8ToLatin
 		if utf8ToLatin is None:

@@ -37,34 +37,33 @@ class DMC_JamendoLibrary(DMC_Library):
     ###
     # Return Value is expected to be:
     # (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
-    def loadLibrary(self, primaryKeyValuePair):
+    def loadLibrary(self, params, seenPng=None, unseenPng=None):
         global utf8ToLatin
         if utf8ToLatin is None:
             from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
         from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.WebGrabber import getFile
         from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Xml2Dict import Xml2Dict
         
-        # Diplay all TVShows
-        if primaryKeyValuePair is None:
+        if params is None:
             parsedLibrary = []
             
-            #parsedLibrary.append(("Radio Rock", {"Section": "radio_rock"}, "radio_rock", "50"))
             parsedLibrary.append(
                 ("Top50 this month", {
-                "Section": "top50", "ArtId": "jamendo_top50", "Year": 0, "Runtime": 0, "Popularity": 0, "Tag": "", "Plot": "", "Genres": []
+                "ScreenTitle": "Top50 this month", "ViewMode": "top50", "ArtPosterId": "jamendo_top50", "Year": 0, "Runtime": 0, "Popularity": 0, "Tag": "", "Plot": "", "Genres": []
                 }, "top5", "50")
             )
             parsedLibrary.append(
                 ("Radio channels", {
-                "Section": "radio", "ArtId": "jamendo_radio", "Year": 0, "Runtime": 0, "Popularity": 0, "Tag": "", "Plot": "", "Genres": []
+                "ScreenTitle": "Radio channels", "ViewMode": "radio", "ArtPosterId": "jamendo_radio", "Year": 0, "Runtime": 0, "Popularity": 0, "Tag": "", "Plot": "", "Genres": []
                 }, "radio", "50")
             )
             
             sort = [("Title", None, False), ]
             filter = [("All", (None, False), ("", )), ]
-            self.lastLibrary = (parsedLibrary, ("Section", ), None, None, sort, filter)
+            self.lastLibrary = (parsedLibrary, ("ViewMode", ), None, None, sort, filter)
             return self.lastLibrary
-        elif primaryKeyValuePair.has_key("Section") and primaryKeyValuePair["Section"] == "top50":
+        
+        elif params["ViewMode"]=="top50":
             parsedLibrary = []
             try:
                 os.remove("/hdd/valerie/jamendo.xml")
@@ -80,10 +79,11 @@ class DMC_JamendoLibrary(DMC_Library):
                 d = {}
                 
                 d["Top"]     = i+1
-                d["ArtId"] = "jamendo_" + utf8ToLatin(track["album_id"])
+                d["ArtPosterId"] = "jamendo_" + utf8ToLatin(track["album_id"])
                 
                 d["JamendoId"]  = utf8ToLatin(track["id"])
                 d["Title"]   = "  [%d] %s" % (i+1, utf8ToLatin(track["name"]))
+                d["ScreenTitle"] = d["Title"]
                 d["Tag"]     = ""
                 d["Year"]    = 1
                 d["Month"]   = 1
@@ -103,12 +103,14 @@ class DMC_JamendoLibrary(DMC_Library):
                 d["Resolution"]  = ""
                 d["Sound"]  = ""
                 
+                d["ViewMode"] = "play"
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
             sort = [("Top", "Top", False), ("Title", None, False), ]
             filter = [("All", (None, False), ("", )), ]
-            self.lastLibrary = (parsedLibrary, ("play", "JamendoId", ), None, None, sort, filter, {"DO_NOT_TRACK": True, "AUTO_PLAY_NEXT": True, })
+            self.lastLibrary = (parsedLibrary, ("ViewMode", "JamendoId", ), None, None, sort, filter, {"DO_NOT_TRACK": True, "AUTO_PLAY_NEXT": True, })
             return self.lastLibrary
-        elif primaryKeyValuePair.has_key("Section") and primaryKeyValuePair["Section"] == "radio":
+        
+        elif params["ViewMode"]=="radio":
             parsedLibrary = []
             try:
                 os.remove("/hdd/valerie/jamendo.xml")
@@ -123,9 +125,10 @@ class DMC_JamendoLibrary(DMC_Library):
                 track = xml["data"]["radio"][i]
                 d = {}
                 
-                d["ArtId"] = "jamendo_" + utf8ToLatin(track["idstr"])
+                d["ArtPosterId"] = "jamendo_" + utf8ToLatin(track["idstr"])
                 d["JamendoRadioId"]  = utf8ToLatin(track["id"])
                 d["Title"]   = "  [%d] %s" % (i+1, utf8ToLatin(track["name"]))
+                d["ScreenTitle"] = d["Title"]
                 d["Tag"]     = ""
                 d["Year"]    = 1
                 d["Month"]   = 1
@@ -142,10 +145,11 @@ class DMC_JamendoLibrary(DMC_Library):
                 d["Resolution"]  = ""
                 d["Sound"]  = ""
                 
+                d["ViewMode"] = "play"
                 parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50"))
             sort = [("Title", None, False), ]
             filter = [("All", (None, False), ("", )), ]
-            self.lastLibrary = (parsedLibrary, ("play", "JamendoRadioId", ), None, None, sort, filter, {"DO_NOT_TRACK": True, "AUTO_PLAY_NEXT": True, })
+            self.lastLibrary = (parsedLibrary, ("ViewMode", "JamendoRadioId", ), None, None, sort, filter, {"DO_NOT_TRACK": True, "AUTO_PLAY_NEXT": True, })
             return self.lastLibrary
         
         
@@ -186,10 +190,11 @@ class DMC_JamendoLibrary(DMC_Library):
                 d = {}
                 
                 d["Top"]     = i+1
-                d["ArtId"] = "jamendo_" + utf8ToLatin(track["album_id"])
+                d["ArtPosterId"] = "jamendo_" + utf8ToLatin(track["album_id"])
                 
                 d["JamendoId"]  = utf8ToLatin(track["id"])
                 d["Title"]   = "  [%d] %s" % (i+1, utf8ToLatin(track["name"]))
+                d["ScreenTitle"] = d["Title"]
                 d["Tag"]     = ""
                 d["Year"]    = 1
                 d["Month"]   = 1

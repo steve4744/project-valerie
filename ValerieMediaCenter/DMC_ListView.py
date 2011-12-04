@@ -118,13 +118,16 @@ class DMC_ListView(DMC_View):
 
 	def _refresh(self, selection, changeBackdrop):
 		element = selection[1]
-		if self.ShowStillPicture is True: 
-			if changeBackdrop is True and self.BackdropDynamic == 1: 
-				backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v" 
-				if os.access(backdrop, os.F_OK): 
-					self["backdrop"].setStillPicture(backdrop) 
-				else: 
-					self["backdrop"].setStillPictureToDefault() 
+		if self.ShowStillPicture is True:
+			if changeBackdrop is True and self.BackdropDynamic == 1:
+				try: # Note: We add here a try instead of a if cause its most of the time true
+					backdrop = config.plugins.pvmc.mediafolderpath.value + element["ArtBackdropId"] + "_backdrop.m1v"
+					if os.access(backdrop, os.F_OK): 
+						self["backdrop"].setStillPicture(backdrop)
+					else: 
+						self["backdrop"].setStillPictureToDefault()
+				except:
+					pass
 		
 		if self["poster"].instance is not None:
 			poster = config.plugins.pvmc.mediafolderpath.value + element["ArtPosterId"] + "_poster"
