@@ -99,6 +99,7 @@ def autostart(session):
 		root.putChild("addRecord", WebSubActions.AddRecord())
 		root.putChild("alternatives", WebSubActions.Alternatives())	
 		root.putChild("function", WebSubActions.WebFunctions())
+		root.putChild("syncronize", WebSubActions.SyncFunctions())		
 		
 		site = Site(root)
 		port = config.plugins.pvmc.plugins.webinterface.port.value

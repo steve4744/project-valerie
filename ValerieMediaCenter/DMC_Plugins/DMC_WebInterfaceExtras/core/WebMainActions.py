@@ -689,8 +689,30 @@ class Sync (Resource):
 		global utf8ToLatin
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+			
+		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+		syncInfo = getSyncInfoInstance()
+		isRunning = syncInfo.inProgress
+		isFinished = syncInfo.isFinished
+		currentProgress = syncInfo.progress
+		currentRange = syncInfo.range
+		lastPoster = syncInfo.poster
+		lastName = syncInfo.name
+		lastYear = syncInfo.year
 		
-		finalOutput = WebHelper().getHtmlCore("Sync")
+		
+		finalOutput = WebHelper().getHtmlCore("Sync", True)
+		syncStates = """
+						<input id="isRunning" type="hidden" name="isRunning" value="%s"></input>
+						<input id="isFinished" type="hidden" name="isFinished" value="%s"></input>
+						<input id="currentProgress" type="hidden" name="currentProgress" value="%s"></input>
+						<input id="currentRange" type="hidden" name="currentRange" value="%s"></input>
+						<input id="lastPoster" type="hidden" name="lastPoster" value="%s"></input>
+						<input id="lastName" type="hidden" name="lastName" value="%s"></input>
+						<input id="lastYear" type="hidden" name="lastYear" value="%s"></input>
+					 """ % (isRunning, isFinished, currentProgress, currentRange, lastPoster, lastName, lastYear)
+		
+		finalOutput = finalOutput.replace("<!-- SYNC_STATES -->", syncStates)
 	
 		return utf8ToLatin(finalOutput)	
 		

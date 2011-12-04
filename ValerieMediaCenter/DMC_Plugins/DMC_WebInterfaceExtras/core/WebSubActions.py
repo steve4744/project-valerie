@@ -699,21 +699,49 @@ class WebFunctions(Resource):
 			outputStream = open(filename, '/hdd/test.zip')
 			outputStream.write(request.args['myFile'])
 			outputStream.close()			
+
+##########################
+# CLASS:
+##########################
+class SyncFunctions(Resource):
+
+	def render_GET(self, request):
+		return self.action(request)
+
+	def render_POST(self, request):
+		return self.action(request)
+
+	def action(self, request):
+		global Manager
+		global utf8ToLatin
+		global MediaInfo
+		if Manager is None:
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
+		if utf8ToLatin is None:
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+		if MediaInfo is None:
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		
+		printl("request: " + str(request), self)
+		printl("request.args: " + str(request.args), self)
+		printl("request.args[mode]: " + str(request.args["mode"]), self)	
+			
 		##########################
-		# NORMAL SYNC
+		# START NORMAL SYNC
 		# Argument: 	
 		##########################
-		elif request.args["mode"][0] == "normalSync":
+		if request.args["mode"][0] == "normalSync":
 			printl("mode (normalSync)", self, "I")
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.sync import pyvalerie
 			syncInfo = getSyncInfoInstance()
 			syncInfo.registerOutputInstance(None, None) #session)
 			syncInfo.start(pyvalerie.NORMAL)
+			
+			return WebHelper().redirectMeTo("/sync")	
 
 		##########################
-		# FAST SYNC
+		# START FAST SYNC
 		# Argument: 	
 		##########################
 		elif request.args["mode"][0] == "fastSync":
@@ -723,6 +751,8 @@ class WebFunctions(Resource):
 			syncInfo = getSyncInfoInstance()
 			syncInfo.registerOutputInstance(None, None) #session)
 			syncInfo.start(pyvalerie.FAST)
+			
+			return WebHelper().redirectMeTo("/sync")	
 
 		##########################
 		# CANCEL SYNC
@@ -734,5 +764,60 @@ class WebFunctions(Resource):
 			syncInfo = getSyncInfoInstance()
 			syncInfo.registerOutputInstance(None, None) #session)
 			syncInfo.abort()
+			
+			return WebHelper().redirectMeTo("/sync")	
+		
+		##########################
+		# SHOW SYNC LOG
+		# Argument: 	
+		##########################	
+		elif request.args["mode"][0] == "getSyncLog":
+			row = int(request.args["row"][0])
+			printl("mode (getSyncLog)", self, "I")
+			global utf8ToLatin
+			if utf8ToLatin is None:
+				from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
+			
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			syncInfo = getSyncInfoInstance()
+			log = syncInfo.log
+			if row < len(log):
+				return log[row]
+			else:
+				return " "
+				
+		##########################
+		# GET SYNC PERCENTAGE
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "getSyncPercentage":
+			printl("mode (getSyncPercentage)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			syncInfo = getSyncInfoInstance()
+			progress = syncInfo.progress
+			
+			return str(progress)
+			
+		##########################
+		# GET RUNNING STATE
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "getRunningState":
+			printl("mode (getRunningState)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			syncInfo = getSyncInfoInstance()
+			running = syncInfo.inProgress
+			
+			return str(running)		
 
-					
+		##########################
+		# GET FINISHED STATE
+		# Argument: 	
+		##########################
+		elif request.args["mode"][0] == "getFinishedState":
+			printl("mode (getFinishedState)", self, "I")
+			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
+			syncInfo = getSyncInfoInstance()
+			finished = syncInfo.isFinished
+			
+			return str(finished)					

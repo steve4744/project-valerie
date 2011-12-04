@@ -1,28 +1,33 @@
 <div class="textheader">Sync</div>	
-	<div class="subheader">Instructions</div>
+	<div class="subheader">Information</div>
+	
+	<div class="text">
+	<br>
+	Please note that this page is static without any mechanism for refresh. If you want to see a new informtion regarding your sync just press "F5".
+	<br>
+	</div>
+	<br>
+	<div class="subheader">Progress</div>
+	
+	<div class="text">
+		<br>
+		<span class="progressbar" id="uploadprogressbar"></span>
+		<br>
+	</div>
+	
+	<br>
+	
+	<div class="subheader">Last Log Messages</div>
+	
+	<br>
+	
+	<div class="text">
+		<span class="syncLog" id="syncLog"></span>	
 
-	<div class="text">
-		Click on the buttons above to start the corresponding feature.
-		<br><br>
-		In the next paragraph you will find some small instructions for each feature as information for you.
-	</div>
+	<br><br><br>
+		
+	<!-- SYNC_STATES -->
 	
-	<div class="subheader">Instruction - normal Sync</div>
-	
-	<div class="text">
-		Description.
-	</div>
-	
-	<div class="subheader">Instruction - fast Sync</div>
-	
-	<div class="text">
-		Description.
-	</div>
-	
-	<div class="subheader">Instruction - cancel Sync</div>
-	
-	<div class="text">
-		Description.
 	</div>
 
 </div>
