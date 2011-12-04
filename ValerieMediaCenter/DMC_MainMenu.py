@@ -627,10 +627,12 @@ class PVMC_MainMenu(Screen):
 						self["menu"].setList(self.menu_main_list)
 						self["menu"].setIndex(self.menu_main_list_index)
 						self.refreshOrientationMenu(0)
-				elif type(s) is not str:
-					print type(s)
-					print str(s)
-					print s
+				elif type(s) is str:
+					if selection[1] == "InfoBar":
+						self.Exit()
+				elif selection[1] == "Exit":
+					self.Exit()
+				else:
 					if s.supportStillPicture is False:
 						if self.APILevel >= 2 and self.ShowStillPicture is True:
 							self["showiframe"].finishStillPicture()
