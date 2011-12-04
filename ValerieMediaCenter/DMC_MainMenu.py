@@ -359,8 +359,8 @@ class PVMC_MainMenu(Screen):
 			list.append((_("Live TV"),  "InfoBar", "menu_tv", "50"))
 			
 			if config.plugins.pvmc.showmovieandtvinmainmenu.value is True:
-				list.append((_("Movies"),   "PVMC_Movies","", "50"))
-				list.append((_("TV Shows"), "PVMC_Series", "", "50"))
+				list.append((_("Movies"),   getPlugin(_("Movies"), Plugin.MENU_VIDEOS),"", "50"))
+				list.append((_("TV Shows"), getPlugin(_("TV Shows"), Plugin.MENU_VIDEOS), "", "50"))
 			else:
 				plugins = getPlugins(where=Plugin.MENU_VIDEOS)
 				print plugins
