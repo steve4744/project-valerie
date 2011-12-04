@@ -432,11 +432,13 @@ class MediaInfo(object):
 		#################### DVD ######################
 		
 		### Replacements PRE
-		printl("[pre] - " + str(self.SearchString), self)
+		printl("Replacements PRE on " + str(self.SearchString), self, "I")
+		step = 1
 		for replacement in replace.replacements(u"pre"):
-			#printl("[pre] " + str(replacement[0]) + " --> " + str(replacement[1]), self)
+			old = self.SearchString
 			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
-			printl("\t" + str(self.SearchString), self)
+			printl("\tStep %d: %s -> %s = %s -> %s" % (step, str(replacement[0].pattern), str(replacement[1]), old, self.SearchString), self, "I")
+			step = step + 1
 		
 		printl(":-1: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		

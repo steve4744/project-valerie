@@ -18,7 +18,7 @@ def load():
 		printl("Check " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__)
 		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "pre.conf") is False:
 			f = open(config.plugins.pvmc.configfolderpath.value + "pre.conf", "w")
-			f.write('"[^\w\d]"=" "\n')
+			f.write('"[\W]"=" "\n')
 			f.write('"[\.]"=" "\n')
 			f.write('"[\[\]-_]"=" "\n')
 			f.write('"^[^-\s]*-"=" "\n')
@@ -73,7 +73,7 @@ def load():
 			for line in f.readlines():
 				try:
 					keys = line.split("=")
-					if len(keys) == 2:					
+					if len(keys) == 2:
 						keys[0] = keys[0].strip().strip('[\'\"]')
 						keys[1] = keys[1].strip().strip('[\'\"]')
 						printl("[" + str(rf) + "] " + str(keys[0]) + " --> " + str(keys[1]), __name__, "D")
