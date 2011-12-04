@@ -1460,7 +1460,7 @@ class ProjectValerieSync(Screen):
 
 	def setName(self, name):
 		if name is not None and len(name) > 0:
-			self["name"].setText(name)
+			self["name"].setText(Utf8.utf8ToLatin(name))
 		else:
 			self["name"].setText("")
 
