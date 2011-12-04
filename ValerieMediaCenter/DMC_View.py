@@ -61,7 +61,7 @@ def getViews():
 def getViewClass():
 	return DMC_View
 
-class DMC_View(Screen, HelpableScreen, NumericalTextInput):
+class DMC_View(Screen, NumericalTextInput):
 
 	skin = """
 	<screen name="DMC_View" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
@@ -84,7 +84,6 @@ class DMC_View(Screen, HelpableScreen, NumericalTextInput):
 		print "viewName", viewName
 		self.skinName = viewName[2]
 		Screen.__init__(self, session)
-		HelpableScreen.__init__(self)
 		NumericalTextInput.__init__(self)
 		self.skinName = viewName[2]
 		self.select = select
