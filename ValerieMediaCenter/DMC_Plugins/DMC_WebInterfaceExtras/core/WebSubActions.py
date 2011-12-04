@@ -164,7 +164,7 @@ class MediaForm(Resource):
 		#######################	
 		if currentMode=="showManualAddForm":
 			nextMode = "addMediaToDb"
-			mediaForm = mediaForm % (type, nextMode ,u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
+			mediaForm = mediaForm % (type, nextMode ,u"", ParentId, type, u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", u"", 0)
 		else:
 			if type == "isMovie":
 				if os.path.isfile(mediaFolderPath + m.ImdbId + "_poster_195x267.png"):

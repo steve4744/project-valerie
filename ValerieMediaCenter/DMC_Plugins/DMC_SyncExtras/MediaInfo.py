@@ -387,7 +387,9 @@ class MediaInfo(object):
 			printl(" => found IMDb-ID = " + str(self.ImdbId), self, "I")
 			ret = True
 				
-		m = re.search(r'(?P<tvdb>tvdb\d+)', string)
+		# change d+ to w+, so user can group episodes with a non existent tvdb. ex. tvdbHomeVideos
+		# Sync will not find on Web, but will group in a serie
+		m = re.search(r'(?P<tvdb>tvdb\w+)', string)
 		if m and m.group("tvdb"):
 			self.TheTvDbId = m.group("tvdb")[4:]
 			printl(" => found TheTvDb-ID = " + str(self.TheTvDbId), self, "I")
@@ -402,6 +404,9 @@ class MediaInfo(object):
 		valerieInfoSearchString = None
 		isSeasonEpisodeFromFilename = False
 		isE2Recording = (self.Extension == u"ts") and (self.isEnigma2Recording(absFilename))
+		# Avoid Null Titles		
+		if self.Title is None or self.Title == "":
+			self.Title = self.Filename
 		
 		if self.isValerieInfoAvailable(self.Path) is True:
 			valerieInfoSearchString = self.getValerieInfo(self.Path).strip()
@@ -588,7 +593,20 @@ class MediaInfo(object):
 			#		printl("PARSE RESULT 5: " + self.SearchString, self)
 			#		self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
 			#		printl("PARSE RESULT 5: " + self.SearchString, self)
-			#		
+			#
+			
+			if self.Season == None or self.Episode == None:
+				m = re.search(r'\Ws?(e(?P<episode>\d+))([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
+				if m and m.group("episode"):
+					self.setMediaType(self.SERIE)
+					
+					self.Season = 0
+					self.Episode = int(m.group("episode"))
+					if m.group("episode2") is not None:
+						self.EpisodeLast = int(m.group("episode2"))
+					
+					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
+			
 			#####
 			#####  d05 - Disc 5
 			#####			
