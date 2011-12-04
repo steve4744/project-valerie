@@ -214,7 +214,7 @@ if [ $BIN != "" ]; then
  else
    OPARAM="-force-overwrite"
  fi
- $BIN install %s $OPARAM
+ ( export OPKG_CONF_DIR=/tmp; $BIN install %s $OPARAM; )
 fi""" % str(remoteUrl)
 				
 			printl("cmd=" + str(cmd), self, "D")

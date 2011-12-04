@@ -24,7 +24,7 @@ def load():
 			f.write('"^[^-\s]*-"=" "\n')
 			f.write('"_"=" "\n')
 			f.write('" (720p|1080i|1080p)( |$)+"=" "\n')
-			f.write('" (x264|blu-ray|bluray|hdtv|xvid)( |$)+"=" "\n')
+			f.write('" (x264|blu-ray|bluray|hdtv|xvid|hddvd)( |$)+"=" "\n')
 			f.write('" (eng|rus)( |$)+"=" "\n')
 			f.write('" (oar)( |$)+"=" "\n')
 			f.write('" (miniseries)( |$)+"=" "\n')
