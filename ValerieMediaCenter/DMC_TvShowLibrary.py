@@ -266,7 +266,10 @@ class DMC_TvShowLibrary(DMC_Library):
 		library = self.loadLibrary(params)[0]
 		
 		playbackList.append( (entry["Path"], entry["Title"], entry, ))
-		nextEpisode = entry["Episode"] + 1
+		if entry["Episode"] is None:
+			nextEpisode = 0
+		else:	
+			nextEpisode = entry["Episode"] + 1
 		
 		found = True
 		while found is True:

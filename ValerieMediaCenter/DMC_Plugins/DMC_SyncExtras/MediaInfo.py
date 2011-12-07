@@ -597,6 +597,9 @@ class MediaInfo(object):
 			#		printl("PARSE RESULT 5: " + self.SearchString, self)
 			#
 			
+			#####
+			#####  e05
+			#####
 			if self.Season == None or self.Episode == None:
 				m = re.search(r'\Ws?(e(?P<episode>\d+))([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
 				if m and m.group("episode"):
