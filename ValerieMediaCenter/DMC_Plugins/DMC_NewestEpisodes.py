@@ -190,6 +190,7 @@ class DMC_NewestEpisodes(DMC_Library):
 
     def buildInfoPlaybackArgs(self, entry):
         args = {}
+        args["id"] 	= entry["Id"]
         args["title"]   = entry["Title"]
         args["year"]    = entry["Year"]
         args["thetvdb"] = entry["TheTvDbId"]
