@@ -29,8 +29,8 @@
     <widget name="stillpicture_usedreamscene" text="/hdd/valerie/dreamscene/blackSwan.mp4" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="1280,720" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackSwan/background.m1v" />
     <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="106,75" size="1066,68" font="Modern;50" backgroundColor="#ff000000" foregroundColor="#6ca4c5" transparent="1" />
-    <widget name="version" zPosition="1" halign="center" valign="top" position="106,137" size="1066,37" backgroundColor="#ff000000" foregroundColor="#a0424242" font="Modern;25" transparent="1" />
-    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="373,250" size="533,500" scrollbarMode="showOnDemand" backgroundColor="#ff000000" backgroundColorSelected="#ff000000" foregroundColor="#a0424242" foregroundColorSelected="#00ffffff">
+    <widget name="version" zPosition="1" halign="right" valign="top" position="53,625" size="1173,37" backgroundColor="#ff000000" foregroundColor="#00ffffff" font="Modern;25" transparent="1" />
+    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="373,250" size="533,375" scrollbarMode="showOnDemand" backgroundColor="#ff000000" backgroundColorSelected="#ff000000" foregroundColor="#30626262" foregroundColorSelected="#00ffffff">
       <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0,0), size = (533,52), flags = RT_HALIGN_CENTER, text = 0) ],
             "fonts": [gFont("Modern", 40)],
@@ -39,15 +39,16 @@
     </widget>
   </screen>
   <!-- PVMC_Settings -->
-  <screen name="PVMC_Settings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="PVMC_Settings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="config" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040" />
+    <widget name="config" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030" />
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="17,561" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="284,561" size="26,20" alphatest="blend" />
     <widget source="key_red" render="Label" position="53,551" zPosition="1" size="231,37" font="Modern;25" halign="left" valign="top" transparent="1" />
     <widget source="key_green" render="Label" position="320,551" zPosition="1" size="231,37" font="Modern;25" halign="left" valign="top" transparent="1" />
   </screen>
+
   <!-- PVMC ListView -->
   <screen name="PVMC_ListView" position="0,0" size="1280,720" title=" " flags="wfNoBorder" backgroundColor="#ff000000">
     <widget name="API" text="7" position="0,0" zPosition="0" size="1,1" />
@@ -213,9 +214,10 @@
     <widget name="InfoPixmap" zPosition="5" pixmap="skin_default/icons/input_info.png" position="1079,75" size="94,66" alphatest="on" />
     <widget name="list" position="106,150" size="1066,495" zPosition="5" backgroundColor="#10303030" transparent="0" />
   </screen>
+  
   <!-- SYNC -->
   <!-- ProjectValerieSync -->
-  <screen name="ProjectValerieSync" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSync" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
     <!-- empty line -->
@@ -228,18 +230,18 @@
     <widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <!-- empty line -->
-    <eLabel zPosition="2" position="17,75" size="711,5" backgroundColor="#20404040" transparent="0" />
-    <eLabel zPosition="2" position="17,475" size="711,25" backgroundColor="#20404040" transparent="0" />
-    <eLabel zPosition="2" position="17,75" size="7,422" backgroundColor="#20404040" transparent="0" />
-    <eLabel zPosition="2" position="721,75" size="7,422" backgroundColor="#20404040" transparent="0" />
-    <widget name="console" zPosition="4" position="24,80" size="696,412" font="Modern;17" backgroundColor="#20404040" transparent="0" />
+    <eLabel zPosition="2" position="17,75" size="711,5" backgroundColor="#10303030" transparent="0" />
+    <eLabel zPosition="2" position="17,475" size="711,25" backgroundColor="#10303030" transparent="0" />
+    <eLabel zPosition="2" position="17,75" size="7,422" backgroundColor="#10303030" transparent="0" />
+    <eLabel zPosition="2" position="721,75" size="7,422" backgroundColor="#10303030" transparent="0" />
+    <widget name="console" zPosition="4" position="24,80" size="696,412" font="Modern;17" backgroundColor="#10303030" transparent="0" />
     <!-- empty line -->
     <widget source="progresstxt" render="Label" zPosition="1" position="17,506" size="142,30" font="Modern;20" transparent="1" />
     <widget name="progress" zPosition="1" position="177,508" size="551,25" borderWidth="1" borderColor="#bbbbbb" transparent="1" />
     <!-- empty line -->
     <eLabel text="" zPosition="1" position="746,75" size="3,468" backgroundColor="#ffffff" />
     <!-- empty line -->
-    <eLabel zPosition="1" position="768,75" size="316,468" backgroundColor="#20404040" transparent="0" />
+    <eLabel zPosition="1" position="768,75" size="316,468" backgroundColor="#10303030" transparent="0" />
     <widget source="lasttxt" render="Label" zPosition="2" position="775,80" size="309,37" font="Modern;25" transparent="1" />
     <widget name="poster" zPosition="2" position="792,130" size="277,267" transparent="1" />
     <widget source="yeartxt" zPosition="2" render="Label" position="782,402" size="152,30" font="Modern;20" transparent="1" />
@@ -247,11 +249,12 @@
     <widget source="nametxt" render="Label" zPosition="2" position="782,432" size="295,30" font="Modern;20" transparent="1" />
     <widget name="name" zPosition="2" position="792,462" size="284,90" font="Modern;20" transparent="1" />
   </screen>
+  
   <!-- ProjectValerieSyncManager -->
-  <screen name="ProjectValerieSyncManager" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncManager" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="3" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget source="listview" render="Listbox" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040">
+    <widget source="listview" render="Listbox" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030">
       <convert type="TemplatedMultiContent">
             {"template": [  MultiContentEntryText(pos = (17,0),  size = (1013,37), font=0, flags = RT_HALIGN_LEFT,  text = 0),
                         MultiContentEntryText(pos = (0,37), size = (1013,30), font=1, flags = RT_HALIGN_RIGHT, text = 1) ],
@@ -269,18 +272,19 @@
     <widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
   </screen>
+  
   <!-- ProjectValerieSyncManagerInfo -->
-  <screen name="ProjectValerieSyncManagerInfo" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncManagerInfo" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
     <!-- empty line -->
-    <eLabel zPosition="1" position="17,75" size="1066,150" backgroundColor="#20404040" transparent="0" />
+    <eLabel zPosition="1" position="17,75" size="1066,150" backgroundColor="#10303030" transparent="0" />
     <widget source="pathtxt" render="Label" zPosition="2" position="24,75" size="266,37" font="Modern;25" transparent="1" />
     <widget source="filenametxt" render="Label" zPosition="2" position="24,150" size="266,37" font="Modern;25" transparent="1" />
     <widget name="path" zPosition="2" position="248,75" size="817,75" font="Modern;25" halign="left" valign="top" transparent="1" />
     <widget name="filename" zPosition="2" position="248,150" size="817,75" font="Modern;25" halign="left" valign="top" transparent="1" />
     <!-- empty line -->
-    <eLabel zPosition="1" position="17,237" size="1066,306" backgroundColor="#20404040" transparent="0" />
+    <eLabel zPosition="1" position="17,237" size="1066,306" backgroundColor="#10303030" transparent="0" />
     <widget source="titletxt" render="Label" zPosition="2" position="24,237" size="266,37" font="Modern;25" transparent="1" />
     <widget source="yeartxt" render="Label" zPosition="2" position="24,275" size="266,37" font="Modern;25" transparent="1" />
     <widget source="seasontxt" render="Label" zPosition="2" position="24,312" size="266,37" font="Modern;25" transparent="1" />
@@ -299,17 +303,19 @@
     <widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
   </screen>
+  
   <!-- ProjectValerieSyncSettings -->
-  <screen name="ProjectValerieSyncSettings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncSettings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="settingsMenu" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040" />
+    <widget name="settingsMenu" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030" />
   </screen>
+  
   <!-- ProjectValerieSyncSettingsConfSettings -->
-  <screen name="ProjectValerieSyncSettingsConfSettings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncSettingsConfSettings" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="config" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040" />
+    <widget name="config" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030" />
     <!-- empty line -->
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="17,561" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="284,561" size="26,20" alphatest="blend" />
@@ -320,11 +326,12 @@
     <!-- widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1"/ -->
     <!-- widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1"/ -->
   </screen>
+  
   <!-- ProjectValerieSyncSettingsConfPaths -->
-  <screen name="ProjectValerieSyncSettingsConfPaths" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncSettingsConfPaths" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="pathsList" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040" />
+    <widget name="pathsList" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030" />
     <!-- empty line -->
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="17,561" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="284,561" size="26,20" alphatest="blend" />
@@ -335,11 +342,12 @@
     <widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
     <widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1" />
   </screen>
+  
   <!-- ProjectValerieSyncSettingsConfPathsAdd -->
-  <screen name="ProjectValerieSyncSettingsConfPathsAdd" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#a0404040">
+  <screen name="ProjectValerieSyncSettingsConfPathsAdd" position="center,center" size="1102,595" title=" " flags="wfNoBorder" backgroundColor="#20404040">
     <widget name="API" text="2" position="0,0" zPosition="0" size="1,1" />
     <widget source="Title" render="Label" transparent="1" zPosition="1" valign="center" position="17,12" size="1066,56" font="Modern;37" foregroundColor="#6ca4c5" />
-    <widget name="folderList" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#20404040" />
+    <widget name="folderList" zPosition="1" position="17,75" size="1066,462" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="#10303030" />
     <!-- empty line -->
     <ePixmap pixmap="skin_default/buttons/button_red.png" zPosition="1" position="17,561" size="26,20" alphatest="blend" />
     <ePixmap pixmap="skin_default/buttons/button_green.png" zPosition="1" position="284,561" size="26,20" alphatest="blend" />
@@ -350,6 +358,8 @@
     <!-- widget source="key_yellow" render="Label" position="586,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1"/ -->
     <!-- widget source="key_blue" render="Label" position="853,551" zPosition="1" size="231,37" font="Modern;22" halign="left" valign="top" transparent="1"/ -->
   </screen>
+  
+  
   <!-- PLUGINS -->
   <!-- PVMC_PicturePlayer -->
   <screen name="PVMC_PicturePlayer" position="center,center" size="1280,720" title=" " flags="wfNoBorder" transparent="0">
