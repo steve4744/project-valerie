@@ -21,7 +21,7 @@ utf8ToLatin = None
 config.plugins.pvmc.plugins.jamendo = ConfigSubsection()
 config.plugins.pvmc.plugins.jamendo.show = ConfigYesNo(default = False)
 
-gAvailable = True
+gAvailable = False
 
 class DMC_JamendoLibrary(DMC_Library):
 

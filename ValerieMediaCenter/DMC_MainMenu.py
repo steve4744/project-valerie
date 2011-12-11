@@ -396,14 +396,14 @@ class PVMC_MainMenu(Screen):
 		
 		self["actions"] = HelpableActionMap(self, "PVMC_MainMenuActions", 
 			{
-				"ok": self.okbuttonClick,
-				"left": self.left,
-				"right": self.right,
-				"up": self.up,
-				"down": self.down,
-				"power": self.power,
-				"info":  (self.onKeyInfo, "Shows information about PVMC"),
-			}, -1)
+				"ok":    (self.okbuttonClick, ""),
+				"left":  (self.left, ""),
+				"right": (self.right, ""),
+				"up":    (self.up, ""),
+				"down":  (self.down, ""),
+				"power": (self.power, ""),
+				"info":  (self.onKeyInfo, ""),
+			}, -2)
 		
 		if self.isAutostart is False and self.APILevel >= 2:
 			self["cancelActions"] = ActionMap(["SetupActions", "ColorActions"],
