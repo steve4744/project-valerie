@@ -1,3 +1,4 @@
+#!/bin/python
 
 import os
 
@@ -17,8 +18,8 @@ def scale():
 	replace = []
 	replace.append((str(int(orgX)) + "x" + str(int(orgY)), str(int(targetX)) + "x" + str(int(targetY)), ), )
 	
-	orgF = open("skin.xml", "r")
-	targetF = open("skin_" + str(int(targetX)) + "x" + str(int(targetY)) + ".xml", "w+")
+	orgF = open("720x576/skin.xml", "r")
+	targetF = open(str(int(targetX)) + "x" + str(int(targetY)) + "/skin.xml", "w+")
 	for line in orgF.readlines():
 		for rep in replace:
 			line = line.replace(rep[0], rep[1])

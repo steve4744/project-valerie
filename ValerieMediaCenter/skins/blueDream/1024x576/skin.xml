@@ -22,9 +22,9 @@
     <widget name="API" text="4" position="0,0" zPosition="0" size="1,1"/>
     <widget name="stillpicture_usedreamscene" text="/hdd/valerie/dreamscene/blueDream.mp4" position="0,0" zPosition="0" size="1,1" />
     <widget name="showiframe" position="0,0" zPosition="0" size="1024,576" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/background.m1v"/>
-    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="85,60" size="853,55" font="Modern;40" backgroundColor="#FF000000" foregroundColor="#006CA4C5" transparent="1" />
-    <widget name= "version" zPosition="1" halign="center" valign="top" position="85,110" size="853,30" backgroundColor="#FF000000" foregroundColor="#60424242" font="Modern;20" transparent="1" />
-    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="298,200" size="426,400" scrollbarMode="showOnDemand" backgroundColor="#FF000000" backgroundColorSelected="#FF000000" foregroundColor="#00A09292" foregroundColorSelected="#00FFFFFF">
+    <eLabel text="Project Valerie" zPosition="1" halign="center" valign="top" position="85,60" size="853,55" font="Modern;40" backgroundColor="#FF000000" foregroundColor="#007FC1E8" transparent="1" />
+    <widget name= "version" zPosition="1" halign="right" valign="top" position="42,500" size="938,30" backgroundColor="#FF000000" foregroundColor="#00FFFFFF" font="Modern;20" transparent="1" />
+    <widget source="menu" render="Listbox" enableWrapAround="True" zPosition="2" transparent="0" position="298,200" size="426,300" scrollbarMode="showOnDemand" backgroundColor="#FF000000" backgroundColorSelected="#FF000000" foregroundColor="#00c0b2b2" foregroundColorSelected="#00FFFFFF">
         <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0,0), size = (426,42), flags = RT_HALIGN_CENTER, text = 0) ],
             "fonts": [gFont("Modern", 32)],
@@ -52,19 +52,18 @@
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
     <widget source="listview" render="Listbox" zPosition="3" position="238,140" size="307,341" scrollbarMode="showNever" transparent="1" backgroundColorSelected="#00272727" foregroundColorSelected="#00FFFFFF">
         <convert type="TemplatedMultiContent">
-            {"template": [ MultiContentEntryText(pos = (25,0), size = (273,27), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-            MultiContentEntryPixmapAlphaTest(pos = (0,0), size = (25,26), png = 5) ],
+            {"template": [ MultiContentEntryText(pos = (0,0), size = (423,27), flags = RT_HALIGN_LEFT, text = 0) ],
             "fonts": [gFont("Modern", 20)],
             "itemHeight": 31,
             "scrollbarMode": "showNever"
             }
         </convert>
     </widget>
-    <widget name="current" transparent="0" zPosition="5" halign="left" position="256,520" size="199,24" font="Modern;14" foregroundColor="#FFFFFF"/>
-    <widget name="total" transparent="0" zPosition="5" halign="right" position="327,520" size="199,24" font="Modern;14" foregroundColor="#FFFFFF"/>
+    <widget name="current" transparent="1" zPosition="5" halign="left" position="256,520" size="199,24" font="Modern;14" foregroundColor="#FFFFFF"/>
+    <widget name="total" transparent="1" zPosition="5" halign="right" position="327,520" size="199,24" font="Modern;14" foregroundColor="#FFFFFF"/>
     <widget source="Title" render="Label" transparent="1" zPosition="5" halign="right" position="14,30" size="526,50" font="Modern;45" foregroundColor="#006CA4C5"/>
-    <widget name="title" transparent="0" zPosition="5" halign="right" position="14,90" size="526,40" font="Modern;30" foregroundColor="#00FFFFFF"/>
-    <widget name="tag" transparent="0" zPosition="5" halign="left" position="568,106" size="440,26" font="Modern;16" foregroundColor="#00FFFFFF"/>
+    <widget name="title" transparent="1" zPosition="5" halign="right" position="14,90" size="526,40" font="Modern;30" foregroundColor="#00FFFFFF"/>
+    <widget name="tag" transparent="1" zPosition="5" halign="left" position="568,106" size="440,26" font="Modern;16" foregroundColor="#00FFFFFF"/>
     <widget name="star0" transparent="1" zPosition="6" position="654,520" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1024x576/images/Star.png" alphatest="on"/>
     <widget name="star1" transparent="1" zPosition="6" position="678,520" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1024x576/images/Star.png" alphatest="on"/>
     <widget name="star2" transparent="1" zPosition="6" position="702,520" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1024x576/images/Star.png" alphatest="on"/>
@@ -87,12 +86,12 @@
     <widget name="nostar9" transparent="1" zPosition="5" position="871,520" size="24,24" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1024x576/images/NoStar.png" alphatest="on"/>
     <widget name="poster" transparent="1" zPosition="5" position="49,220" size="156,214"/>
     <ePixmap name="posterborder" position="14,185" zPosition="6" size="227,283" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1024x576/images/blackborders_video_thumbnail-fs8.png"/>
-    <widget name="quality" transparent="0" zPosition="5" halign="right" position="128,450" size="85,30" font="Modern;20" foregroundColor="#8BCAF6"/>
-    <widget name="sound" transparent="0" zPosition="5" halign="right" position="128,480" size="85,30" font="Modern;20" foregroundColor="#8BCAF6"/>
-    <widget name="year" transparent="0" zPosition="5" halign="left" position="568,140" size="270,30" font="Modern;20" foregroundColor="#8BCAF6"/>
-    <widget name="runtime" transparent="0" zPosition="5" halign="right" position="568,140" size="270,30" font="Modern;20" foregroundColor="#8BCAF6"/>
-    <widget name="genre" transparent="0" zPosition="5" halign="left" position="568,170" size="440,30" font="Modern;20" foregroundColor="#8BCAF6"/>    
-    <widget name="shortDescription" text="" transparent="0" zPosition="5" halign="left" position="568,200" size="440,310" font="Modern;18" foregroundColor="#FFFFFF"/>
+    <widget name="quality" transparent="1" zPosition="5" halign="right" position="128,450" size="85,30" font="Modern;20" foregroundColor="#8BCAF6"/>
+    <widget name="sound" transparent="1" zPosition="5" halign="right" position="128,480" size="85,30" font="Modern;20" foregroundColor="#8BCAF6"/>
+    <widget name="year" transparent="1" zPosition="5" halign="left" position="568,140" size="270,30" font="Modern;20" foregroundColor="#8BCAF6"/>
+    <widget name="runtime" transparent="1" zPosition="5" halign="right" position="568,140" size="270,30" font="Modern;20" foregroundColor="#8BCAF6"/>
+    <widget name="genre" transparent="1" zPosition="5" halign="left" position="568,170" size="440,30" font="Modern;20" foregroundColor="#8BCAF6"/>    
+    <widget name="shortDescription" text="" transparent="1" zPosition="5" halign="left" position="568,200" size="440,310" font="Modern;18" foregroundColor="#FFFFFF"/>
     <widget name="number_key_popup" zPosition="10" halign="center" valign="center" position="440,238" size="142,100" font="Modern;60" foregroundColor="#ffffff" backgroundColor="#20335472" />
 </screen>
 <!-- PVMC PosterView -->
