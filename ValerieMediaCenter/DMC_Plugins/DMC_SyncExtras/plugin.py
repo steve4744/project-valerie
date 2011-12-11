@@ -1328,8 +1328,8 @@ class ProjectValerieSync(Screen):
 			self.skin = self.skinDeprecated
 		
 		self["key_red"] = StaticText(_("Manage"))
-		self["key_green"] = StaticText(_("Synchronize"))
-		self["key_yellow"] = StaticText(_("Fast Synchronize"))
+		self["key_green"] = StaticText(_("Complete Sync"))
+		self["key_yellow"] = StaticText(_("Normal Sync"))
 		self["key_blue"] = StaticText(_("Settings"))
 		
 		self["console"] = ScrollLabel(_("Please press the green button to start synchronize!\n"))
@@ -1400,8 +1400,8 @@ class ProjectValerieSync(Screen):
 			self["key_yellow"].setText("")
 		else:
 			self["key_red"].setText(_("Manage"))
-			self["key_green"].setText(_("Synchronize"))
-			self["key_yellow"].setText(_("Fast Synchronize"))
+			self["key_green"].setText(_("Complete Sync"))
+			self["key_yellow"].setText(_("Normal Sync"))
 			
 			if self.autoSync and syncInfo.isFinished is True:
 				self.delayedTimer = eTimer()

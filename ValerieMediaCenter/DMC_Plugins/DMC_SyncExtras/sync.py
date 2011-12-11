@@ -481,7 +481,7 @@ class pyvalerie(Thread):
 								result.MediaType = MediaInfo.FAILEDSYNC
 								try:
 									db.insertMedia(result)
-								except Exception, ex:									
+								except Exception, ex:
 									printl("DB Insert Error ??", self, "W")
 					
 					#self.output("(" + str(i) + "/" + str(elementListFileCounter) + ")")
