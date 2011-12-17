@@ -49,7 +49,7 @@
     <widget name="textTop" transparent="1" zPosition="1" halign="center" valign="top" position="298,152" size="682,55" font="Modern;16" />
     <widget name="textCenter" transparent="1" zPosition="1" halign="center" valign="top" position="298,278" size="682,55" font="Modern;16" />
     <widget name="textBottom" transparent="1" zPosition="1" halign="center" valign="top" position="298,339" size="682,55" font="Modern;16" />
-    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="591,219" size="85,50" scrollbarMode="showNever">
+    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="548,219" size="170,150" scrollbarMode="showNever">
       <convert type="StringList" />
     </widget>
 	<widget name="config" position="590,218" zPosition="1" size="85,50" transparent="1" scrollbarMode="showNever" />
@@ -80,8 +80,6 @@
 	"fonts": [gFont("Dream", 30)],
 	"itemHeight": 40	}
     </convert>
-	<!-- buttons -->
-	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/buttons/info.png" zPosition="3" position="800,533" size="41,16" alphatest="blend" />
   </widget>
   <!--widget source="menu" render="Listbox" enableWrapAround="True" zPosition="9" transparent="0" position="-142,-100" size="14,10" scrollbarMode="showNever">
       <convert type="StringList"/>
@@ -96,6 +94,8 @@
     <!-- This is an invisible element, its only purpose it so we have the coordinates from where all evil originates -->
     <!--widget name="-3" transparent="1" zPosition="-2" halign="center" valign="top" position="-234,300" size="213,40" font="Dream;30" />
     <widget name="+3" transparent="1" zPosition="-2" halign="center" valign="top" position="1045,300" size="213,40" font="Dream;30" /-->
+	<!-- buttons -->
+	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1024x576/buttons/info.png" zPosition="3" position="924,533" size="58,16" alphatest="blend" />
   </screen>
   <!-- PVMC_Update -->
   <screen name="PVMC_Update" position="0,0" size="1024,576" title=" " backgroundColor="pvBackground" flags="wfNoBorder">

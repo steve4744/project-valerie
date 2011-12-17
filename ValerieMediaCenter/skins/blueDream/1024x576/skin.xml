@@ -10,7 +10,7 @@
     <widget name="textTop" transparent="1" zPosition="1" halign="center" valign="top" position="85,212" size="853,45" font="Regular;21"/>
     <widget name="textCenter" transparent="1" zPosition="1" halign="center" valign="top" position="85,278" size="853,45" font="Regular;21"/>
     <widget name="textBottom" transparent="1" zPosition="1" halign="center" valign="top" position="85,432" size="853,45" font="Regular;21"/>
-    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="469,264" size="85,50" scrollbarMode="showNever">
+    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="426,264" size="170,150" scrollbarMode="showNever">
         <convert type="StringList"/>
     </widget>
     <widget name="config" position="39,340" zPosition="1" size="85,50" transparent="1" scrollbarMode="showNever"/>

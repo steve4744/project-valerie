@@ -20,7 +20,7 @@ self["textCenter"].setText(" ")
 self["textBottom"].setText("Weiter mit der OK Taste")
 		</code>
 	</step>
-	<step id="checkforupdate" nextstep="preend">
+	<step id="checkforupdate" nextstep="language">
 		<text value="Update-Konfiguration" />
 		<list evaluation="checkforupdate" onselect="checkforupdate">
 			<listentry caption="Ja" step="yes" />
@@ -28,6 +28,22 @@ self["textBottom"].setText("Weiter mit der OK Taste")
 		</list>
 		<code>
 self["textTop"].setText("Soll Project Valerie beim Start automatisch nach Updates suchen ?")
+self["textCenter"].setText(" ")
+self["textBottom"].setText("Weiter mit der OK Taste")
+		</code>
+	</step>
+	<step id="language" nextstep="preend">
+		<text value="Sprache-Konfiguration" />
+		<list evaluation="language" onselect="language">
+			<listentry caption="Englisch" step="en" />
+			<listentry caption="Deutsch" step="de" />
+			<listentry caption="Italienisch" step="it" />
+			<listentry caption="Spanisch" step="es" />
+			<listentry caption="Französisch" step="fr" />
+			<listentry caption="Portugiesisch" step="pt" />
+		</list>
+		<code>
+self["textTop"].setText("Welche Sprache soll zum Sync von Filmen/Serien genutzt werden?")
 self["textCenter"].setText(" ")
 self["textBottom"].setText("Weiter mit der OK Taste")
 		</code>

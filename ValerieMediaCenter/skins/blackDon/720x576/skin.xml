@@ -49,7 +49,7 @@
     <widget name="textTop" transparent="1" zPosition="1" halign="center" valign="top" position="210,152" size="480,55" font="Modern;16" />
     <widget name="textCenter" transparent="1" zPosition="1" halign="center" valign="top" position="210,278" size="480,55" font="Modern;16" />
     <widget name="textBottom" transparent="1" zPosition="1" halign="center" valign="top" position="210,339" size="480,55" font="Modern;16" />
-    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="416,219" size="60,50" scrollbarMode="showNever">
+    <widget source="list" render="Listbox" transparent="1" zPosition="1" position="386,219" size="120,150" scrollbarMode="showNever">
       <convert type="StringList" />
     </widget>
 	<widget name="config" position="415,218" zPosition="1" size="60,50" transparent="1" scrollbarMode="showNever" />

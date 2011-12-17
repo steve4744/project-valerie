@@ -20,7 +20,7 @@ self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>
 	</step>
-	<step id="checkforupdate" nextstep="preend">
+	<step id="checkforupdate" nextstep="language">
 		<text value="Update configuration" />
 		<list evaluation="checkforupdate" onselect="checkforupdate">
 			<listentry caption="Yes" step="yes" />
@@ -28,6 +28,22 @@ self["textBottom"].setText("Press OK to continue")
 		</list>
 		<code>
 self["textTop"].setText("Should Project Valerie check for updates on start?")
+self["textCenter"].setText(" ")
+self["textBottom"].setText("Press OK to continue")
+		</code>
+	</step>
+	<step id="language" nextstep="preend">
+		<text value="Language configuration" />
+		<list evaluation="language" onselect="language">
+			<listentry caption="English" step="en" />
+			<listentry caption="German" step="de" />
+			<listentry caption="Italian" step="it" />
+			<listentry caption="Spanish" step="es" />
+			<listentry caption="French" step="fr" />
+			<listentry caption="Portuguese" step="pt" />
+		</list>
+		<code>
+self["textTop"].setText("Which language should be used to sync movies/tvshows?")
 self["textCenter"].setText(" ")
 self["textBottom"].setText("Press OK to continue")
 		</code>
