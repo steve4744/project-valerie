@@ -27,6 +27,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("Dreamnetcast"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("Dreamnetcast"), fnc=dreamnetstart, where=Plugin.MENU_MUSIC))
+	p.append(Plugin(id="dreamnetcast", name=_("Dreamnetcast"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="dreamnetcast", name=_("Dreamnetcast"), fnc=dreamnetstart, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)

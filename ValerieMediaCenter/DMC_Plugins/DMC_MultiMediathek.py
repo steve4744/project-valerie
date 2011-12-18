@@ -33,6 +33,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("MultiMediathek"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("MultiMediathek"), start=PVMC_MultiMediathek, where=Plugin.MENU_VIDEOS))
+	p.append(Plugin(id="multimediathek", name=_("MultiMediathek"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="multimediathek", name=_("MultiMediathek"), start=PVMC_MultiMediathek, where=Plugin.MENU_VIDEOS))
 	registerPlugin(p)

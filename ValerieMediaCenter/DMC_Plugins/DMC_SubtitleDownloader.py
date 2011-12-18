@@ -235,6 +235,6 @@ def autostart(session):
 	global gsubdown
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("SubtitleDownloader"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="subdown", name=_("SubtitleDownloader"), fnc=settings, where=Plugin.SETTINGS))
 	#registerPlugin(Plugin(name=_("SubtitleDownloader"), fnc=autostart, where=Plugin.AUTOSTART))
-	registerPlugin(Plugin(name=_("Download subtitles"), start=DMC_SubtitleDownloader, where=Plugin.MENU_MOVIES_PLUGINS))
+	registerPlugin(Plugin(id="subdown", name=_("Download subtitles"), start=DMC_SubtitleDownloader, where=Plugin.MENU_MOVIES_PLUGINS))

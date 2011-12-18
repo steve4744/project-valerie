@@ -117,6 +117,6 @@ def info_playback(d, flags):
 			gtrakt.send()
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("trakt.tv"), fnc=settings, where=Plugin.SETTINGS))
-	registerPlugin(Plugin(name=_("trakt.tv"), fnc=autostart, where=Plugin.AUTOSTART))
-	registerPlugin(Plugin(name=_("trakt.tv"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
+	registerPlugin(Plugin(id="trakt", name=_("trakt.tv"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="trakt", name=_("trakt.tv"), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="trakt", name=_("trakt.tv"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))

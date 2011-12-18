@@ -54,7 +54,7 @@ def startPlugin(session):
 		from Screens.MessageBox import MessageBox
 		session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
 
-registerPlugin(Plugin(name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
-registerPlugin(Plugin(name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=10))
+registerPlugin(Plugin(id="sync", name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
+registerPlugin(Plugin(id="sync", name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=10))
 if config.plugins.pvmc.plugins.sync.fastsynconautostart.value is True:
-	registerPlugin(Plugin(name=_("Synchronize"), fnc=autostartPlugin, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="sync", name=_("Synchronize"), fnc=autostartPlugin, where=Plugin.AUTOSTART))

@@ -359,8 +359,8 @@ class PVMC_MainMenu(Screen):
 			list.append((_("Live TV"),  "InfoBar", "menu_tv", "50"))
 			
 			if config.plugins.pvmc.showmovieandtvinmainmenu.value is True:
-				list.append((_("Movies"),   getPlugin(_("Movies"), Plugin.MENU_VIDEOS),"", "50"))
-				list.append((_("TV Shows"), getPlugin(_("TV Shows"), Plugin.MENU_VIDEOS), "", "50"))
+				list.append((_("Movies"),   getPlugin("movies", Plugin.MENU_VIDEOS),"", "50"))
+				list.append((_("TV Shows"), getPlugin("tvshows", Plugin.MENU_VIDEOS), "", "50"))
 			else:
 				plugins = getPlugins(where=Plugin.MENU_VIDEOS)
 				print plugins
@@ -893,8 +893,8 @@ def stop_e2(session):
 	except Exception, e:
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 
-registerPlugin(Plugin(name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
-registerPlugin(Plugin(name="", fnc=settings, where=Plugin.SETTINGS, weight=10))
-registerPlugin(Plugin(name=_("Expert"), fnc=settings_expert, where=Plugin.SETTINGS, weight=1000))
-registerPlugin(Plugin(name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=20))
-registerPlugin(Plugin(name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=30))
+registerPlugin(Plugin(id="stop",         name="Excecute stop.sh on e2 shutdown", fnc=stop_e2, where=Plugin.STOP_E2))
+registerPlugin(Plugin(id="settings", name="", fnc=settings, where=Plugin.SETTINGS, weight=10))
+registerPlugin(Plugin(id="expert",   name=_("Expert"), fnc=settings_expert, where=Plugin.SETTINGS, weight=1000))
+registerPlugin(Plugin(id="settings",     name=_("Settings"), start=PVMC_Settings, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=20))
+registerPlugin(Plugin(id="update",       name=_("Update"), start=PVMC_Update, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=30))

@@ -85,5 +85,5 @@ def settings():
 	return s
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("BackgroundDbLoader"), fnc=settings, where=Plugin.SETTINGS))
-	registerPlugin(Plugin(name=_("BackgroundDbLoader"), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="backgrounddbloader", name=_("BackgroundDbLoader"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="backgrounddbloader", name=_("BackgroundDbLoader"), fnc=autostart, where=Plugin.AUTOSTART))

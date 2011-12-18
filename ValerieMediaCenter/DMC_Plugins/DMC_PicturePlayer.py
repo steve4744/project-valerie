@@ -78,6 +78,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("PicturePlayer"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("PicturePlayer"), start=PVMC_PicturePlayer, where=Plugin.MENU_PICTURES))
+	p.append(Plugin(id="pictureplayer", name=_("PicturePlayer"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="pictureplayer", name=_("PicturePlayer"), start=PVMC_PicturePlayer, where=Plugin.MENU_PICTURES))
 	registerPlugin(p)

@@ -90,8 +90,8 @@ def info_playback(d, flags):
 			setSeen(id, True)
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
-	registerPlugin(Plugin(name=_("Seen"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
+	registerPlugin(Plugin(id="seen", name=_("Seen"), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="seen", name=_("Seen"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
 	#registerPlugin(Plugin(name=_("Seen"), fnc=is_Seen, where=Plugin.INFO_SEEN))
-	registerPlugin(Plugin(name=_("Mark as Seen"), fnc=markSeen, where=Plugin.MENU_MOVIES_PLUGINS))
-	registerPlugin(Plugin(name=_("Mark as Unseen"), fnc=markUnSeen, where=Plugin.MENU_MOVIES_PLUGINS))
+	registerPlugin(Plugin(id="seen", name=_("Mark as Seen"), fnc=markSeen, where=Plugin.MENU_MOVIES_PLUGINS))
+	registerPlugin(Plugin(id="unseen", name=_("Mark as Unseen"), fnc=markUnSeen, where=Plugin.MENU_MOVIES_PLUGINS))

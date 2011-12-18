@@ -24,6 +24,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("LastFM"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("LastFM"), fnc=StartFunction, where=Plugin.MENU_MUSIC))
+	p.append(Plugin(id="lastfm", name=_("LastFM"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="lastfm", name=_("LastFM"), fnc=StartFunction, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)

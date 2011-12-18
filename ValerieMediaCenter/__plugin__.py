@@ -63,9 +63,9 @@ def getPlugins(where=None):
 		print list
 		return list
 
-def getPlugin(name, where):
+def getPlugin(id, where):
 	for plugin in gPlugins:
-			if plugin.name == name and plugin.where == where:
+			if plugin.id == id and plugin.where == where:
 				return plugin
 	return None
 
@@ -94,6 +94,7 @@ class Plugin():
 	INFO_PLAYBACK = 100
 	#INFO_SEEN = 101
 
+	id = None
 	name  = None
 	desc = None
 	start = None
@@ -102,7 +103,8 @@ class Plugin():
 	weight = 100
 	supportStillPicture = False
 
-	def __init__(self, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False, weight=100):
+	def __init__(self, id, name=None, desc=None, start=None, fnc=None, where=None, supportStillPicture=False, weight=100):
+		self.id = id
 		self.name = name
 		if desc is None:
 			self.desc = self.name

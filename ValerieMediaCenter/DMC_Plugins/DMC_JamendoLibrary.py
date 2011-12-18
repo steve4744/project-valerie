@@ -230,7 +230,7 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("Jamendo"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_MUSIC))
-	#p.append(Plugin(name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_DEV))
+	p.append(Plugin(id="jamendo", name=_("Jamendo"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="jamendo", name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_MUSIC))
+	#p.append(Plugin(id="jamendo", name=_("Jamendo"), start=DMC_JamendoLibrary, where=Plugin.MENU_DEV))
 	registerPlugin(p)

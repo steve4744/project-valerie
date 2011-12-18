@@ -56,5 +56,5 @@ def sqliteCheck(session):
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("Sqlite Check"), fnc=sqliteCheck, where=Plugin.AUTOSTART))
+	p.append(Plugin(id="sqlitecheck", name=_("Sqlite Check"), fnc=sqliteCheck, where=Plugin.AUTOSTART))
 	registerPlugin(p)

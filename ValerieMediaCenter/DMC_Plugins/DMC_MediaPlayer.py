@@ -34,7 +34,7 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("MediaPlayer"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_VIDEOS))
-	p.append(Plugin(name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_MUSIC))
+	p.append(Plugin(id="mediaplyer", name=_("MediaPlayer"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="mediaplyer", name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_VIDEOS))
+	p.append(Plugin(id="mediaplyer", name=_("MediaPlayer"), start=PVMC_MediaPlayer, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)

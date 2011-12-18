@@ -83,6 +83,6 @@ def info_playback(d, flags):
 						gmy.send()
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("myepisodes"), fnc=settings, where=Plugin.SETTINGS))
-	registerPlugin(Plugin(name=_("myepisodes"), fnc=autostart, where=Plugin.AUTOSTART))
-	registerPlugin(Plugin(name=_("myepisodes"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))
+	registerPlugin(Plugin(id="myepisodes", name=_("myepisodes"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="myepisodes", name=_("myepisodes"), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="myepisodes", name=_("myepisodes"), fnc=info_playback, where=Plugin.INFO_PLAYBACK))

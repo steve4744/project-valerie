@@ -37,6 +37,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("MerlinMusicPlayer"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("MerlinMusicPlayer"), start=PVMC_MerlinMusicPlayer, where=Plugin.MENU_MUSIC))
+	p.append(Plugin(id="merlinmusicplayer", name=_("MerlinMusicPlayer"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="merlinmusicplayer", name=_("MerlinMusicPlayer"), start=PVMC_MerlinMusicPlayer, where=Plugin.MENU_MUSIC))
 	registerPlugin(p)

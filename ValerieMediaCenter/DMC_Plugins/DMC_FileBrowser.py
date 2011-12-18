@@ -23,6 +23,6 @@ def settings():
 
 if gAvailable is True:
 	p = []
-	p.append(Plugin(name=_("Filebrowser"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(name=_("Filebrowser"), fnc=StartFunction, where=Plugin.MENU_SYSTEM))
+	p.append(Plugin(id="filebrowser", name=_("Filebrowser"), fnc=settings, where=Plugin.SETTINGS))
+	p.append(Plugin(id="filebrowser", name=_("Filebrowser"), fnc=StartFunction, where=Plugin.MENU_SYSTEM))
 	registerPlugin(p)

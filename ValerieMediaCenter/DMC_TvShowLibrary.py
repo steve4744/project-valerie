@@ -296,4 +296,4 @@ class DMC_TvShowLibrary(DMC_Library):
 		return args
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("TV Shows"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS, weight=4))
+	registerPlugin(Plugin(id="tvshows", name=_("TV Shows"), start=DMC_TvShowLibrary, where=Plugin.MENU_VIDEOS, weight=4))

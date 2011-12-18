@@ -114,5 +114,5 @@ def settings():
 	return s
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("WebInterface"), fnc=settings, where=Plugin.SETTINGS))
-	registerPlugin(Plugin(name=_("WebInterface"), fnc=autostart, where=Plugin.AUTOSTART_E2))
+	registerPlugin(Plugin(id="webif", name=_("WebInterface"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="webif", name=_("WebInterface"), fnc=autostart, where=Plugin.AUTOSTART_E2))

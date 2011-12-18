@@ -121,5 +121,5 @@ def settings():
 	return s
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("InternetTime"), fnc=settings, where=Plugin.SETTINGS))
-	registerPlugin(Plugin(name=_("InternetTime"), fnc=autostart, where=Plugin.AUTOSTART))
+	registerPlugin(Plugin(id="internettime", name=_("InternetTime"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="internettime", name=_("InternetTime"), fnc=autostart, where=Plugin.AUTOSTART))

@@ -41,4 +41,4 @@ def start(session, args):
 		ytTrailer.showTrailer(args["Title"])
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("YTTrailer"), desc=_("View Trailer (YTTrailer by Dr. Best)"), fnc=start, where=Plugin.MENU_MOVIES_PLUGINS))
+	registerPlugin(Plugin(id="yttrailer", name=_("YTTrailer"), desc=_("View Trailer (YTTrailer by Dr. Best)"), fnc=start, where=Plugin.MENU_MOVIES_PLUGINS))

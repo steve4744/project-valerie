@@ -104,7 +104,7 @@ def settings():
 	return s
 
 if gAvailable is True:
-	registerPlugin(Plugin(name=_("AutoSync"), fnc=settings, where=Plugin.SETTINGS))
+	registerPlugin(Plugin(id="autosync", name=_("AutoSync"), fnc=settings, where=Plugin.SETTINGS))
 	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import ProjectValerieSync
-	registerPlugin(Plugin(name=_("AutoSync"), fnc=autostart, where=Plugin.AUTOSTART_DELAYED, weight=10000))
-	registerPlugin(Plugin(name=_("AutoSync"), fnc=wakeup, where=Plugin.WAKEUP))
+	registerPlugin(Plugin(id="autosync", name=_("AutoSync"), fnc=autostart, where=Plugin.AUTOSTART_DELAYED, weight=10000))
+	registerPlugin(Plugin(id="autosync", name=_("AutoSync"), fnc=wakeup, where=Plugin.WAKEUP))
