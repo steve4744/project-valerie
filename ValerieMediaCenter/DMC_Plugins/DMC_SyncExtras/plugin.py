@@ -36,6 +36,7 @@ from   MediaInfo import MediaInfo
 from   PathsConfig import PathsConfig
 from   sync import pyvalerie
 from   sync import checkDefaults as SyncCheckDefaults
+from   sync import Sync
 import Utf8
 import WebGrabber
 
@@ -1065,8 +1066,12 @@ class ProjectValerieSyncManagerInfo(Screen):
 				self.onLoad()
 
 	def update(self):
+		printl("->", self, "I")
 		if type(self.element) is MediaInfo:
-			element = self.manager.syncElement(None, None, None, None, self.element.isEpisode, self.element)
+			if self.element.isTypeEpisode():
+				self.element.setMediaType(self.element.SERIE)
+			
+			element = Sync().syncWithId(self.element)
 			if element is not None:
 				if len(element) == 2:
 					self.elementParent = element[0]
@@ -1076,6 +1081,7 @@ class ProjectValerieSyncManagerInfo(Screen):
 				self.onLoad()
 		else:
 			self.showAlternatives()
+		printl("<-", self, "I")
 
 	def save(self):
 		if self.elementParent is not None:
@@ -1350,7 +1356,7 @@ class ProjectValerieSync(Screen):
 			"yellow": self.gofast,
 			"red": self.manage,
 			"blue": self.menu,
-			"menu": self.menu,
+			"menu": self.update,
 			"cancel": self.close,
 		}, -1)
 		
@@ -1418,6 +1424,13 @@ class ProjectValerieSync(Screen):
 		syncInfo = getSyncInfoInstance()
 		if syncInfo.inProgress is False:
 			self.session.open(ProjectValerieSyncSettings)
+
+	def update(self):
+		syncInfo = getSyncInfoInstance()
+		if syncInfo.inProgress is False:
+			syncInfo.start(pyvalerie.UPDATE)
+		else:
+			syncInfo.abort()
 
 	def manage(self):
 		syncInfo = getSyncInfoInstance()

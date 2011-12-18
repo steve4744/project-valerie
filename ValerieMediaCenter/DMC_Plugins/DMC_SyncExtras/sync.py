@@ -213,6 +213,23 @@ class pyvalerie(Thread):
 
 		db = Database().getInstance()
 		
+		if self.mode == self.UPDATE:
+			from   Manager import Manager
+			Manager().updateAll(self.output, self.progress, self.range)
+			
+			self.output(_("Saving database"))
+			printl("Saving database", self)
+			db.save()
+			
+			
+			self.output(_("Done"))
+			printl("Done", self)
+			self.output("---------------------------------------------------")
+			self.output(_("Press Exit / Back"))
+			
+			self.finished(True)
+			return
+		
 		#temporarly - there are only failed, missing webif
 		#db.deleteMediaFilesNotOk()
 		
@@ -528,6 +545,7 @@ class pyvalerie(Thread):
 
 class Sync():
 	def syncWithId(self, elementInfo):
+		printl("->", self, "I")
 		if elementInfo.isTypeMovie():
 			# Ask TheMovieDB for the local title and plot
 			tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
@@ -557,7 +575,8 @@ class Sync():
 			if tmp is not None:
 				elementInfo = tmp
 				Arts().download(elementInfo)
-				
+			
+			printl("<- (return (elementInfo, ))", self, "I")
 			return (elementInfo, )
 		
 		elif elementInfo.isTypeSerie():
@@ -610,7 +629,9 @@ class Sync():
 				if tmp is not None:
 					elementInfoe = tmp
 					elementInfoe.LanguageOfPlot = userLang;
-					
+			
+			printl("<- (return (elementInfo, elementInfoe))", self, "I")
 			return (elementInfo, elementInfoe)
 		else:
+			printl("<- (return None)", self, "I")
 			return None

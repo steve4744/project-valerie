@@ -59,6 +59,7 @@ from MediaInfo import MediaInfo
 from MobileImdbComProvider import MobileImdbComProvider
 from sync import Sync
 from Arts import Arts
+import Utf8
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin
 
@@ -276,7 +277,7 @@ class Manager():
 			element.parse()
 			element.ImdbId = imdbid
 		else:
-			element = oldelement.copy()
+			element = oldelement #.copy()
 		
 		if istvshow:
 			element.setMediaType(MediaInfo.SERIE)
@@ -296,74 +297,44 @@ class Manager():
 			if results is not None:
 				return results
 		return None
-	
-	#not used anymore - replacement: update/insert media
-	#def replace(self, oldElement, newElement):
-	#	printl("", self)
-	#	# not consistent ...todo: update serie
-	#	if oldElement is not None:
-	#		printl("oldElement=" + str(oldElement), self)
-	#		if type(oldElement) is MediaInfo:
-	#			printl("RM " + str(self.db.remove(oldElement)), self)
-	#		#else:
-	#		#	self.db.removeFailed(oldElement)
-	#	
-	#	if newElement is not None:
-	#		if len(newElement) == 2:
-	#			printl("newElement=" + str(newElement[0]), self)
-	#			printl("ADD " + str(self.db.add(newElement[0])), self)
-	#			printl("newElement=" + str(newElement[1]), self)
-	#			printl("ADD " + str(self.db.add(newElement[1])), self)
-	#		else:
-	#			printl("newElement=" + str(newElement[0]), self)
-	#			printl("ADD " + str(self.db.add(newElement[0])), self)
 
-# self.dbHandler.deleteMedia(media.Id)
+	def updateAll(self, notifyOutput=None, notifyProgress=None, notifyRange=None):
+		episodes = self.getAll(self.TVSHOWSEPISODES)
+		total = len(episodes)
+		progress = 0
+		
+		if notifyRange is not None:
+				notifyRange(total)
+		
+		if notifyProgress is not None:
+				notifyProgress(0)
+		
+		for episode in episodes:
+			if episode.Title is None or episode.Season is None or episode.Episode is None:
+				continue
+			tvshow = self.getMedia(episode.ParentId)
+			if episode.Title == tvshow.Title:
+				printl("Episode has same title as tvshow so probably update needed (%s %dx%d)" % (episode.Title, episode.Season, episode.Episode) , self, "I")
+				if notifyOutput is not None:
+					notifyOutput(Utf8.utf8ToLatin("Updating %s %dx%d" % (episode.Title, episode.Season, episode.Episode)))
+				id = episode.Id
+				seen = self.isMediaSeen(episode.Id)
+				episode.setMediaType(episode.SERIE)
+				newElement = Sync().syncWithId(episode)
+				if newElement is not None:
+					if len(newElement) == 2:
+						episode = newElement[1]
+					else:
+						episode = newElement[0]
+					
+					self.deleteMedia(id)
+					ret = self.insertMedia(episode)
+					if seen:
+						self.MarkAsSeen(ret["id"])
+			progress = progress + 1
+			printl("Update progress %.2f (%d/%d)" % ((progress / total)*100.0, progress, total), self, "I")
+			if notifyProgress is not None:
+				notifyProgress(progress)
+		
+		notifyProgress(total)
 
-	#def getElement_ByUsingPrimaryKey(self, type, primary_key):
-	#	printl("", self)
-	#	printl("type=" + str(type), self)
-	#	printl("primary_key=" + str(primary_key), self)
-	#	element = None
-	#	if type == self.MOVIES and primary_key.has_key("imdbid"):
-	#		printl("is_Movie found", self)
-	#		imdbid = primary_key["imdbid"]
-	#		element = self.db.getMediaWithImdbId(imdbid)
-	#	
-	#	elif type == self.TVSHOWS and primary_key.has_key("thetvdbid"):
-	#		printl("is_TvShow found", self)
-	#		thetvdbid = primary_key["thetvdbid"]
-	#		element = self.db.getMediaWithTheTvDbId(thetvdbid)
-	#	
-	#	elif type == self.TVSHOWSEPISODES and primary_key.has_key("thetvdbid") and primary_key.has_key("season") and primary_key.has_key("episode"):
-	#		printl("is_Episode found", self)
-	#		thetvdbid = primary_key["thetvdbid"]
-	#		season = int(primary_key["season"])
-	#		episode = int(primary_key["episode"])
-	#		printl("Looking up episode", self, "D")
-	#		element = self.db.getSeriesEpisode(thetvdbid, season, episode)
-	#	
-	#	return element
-	
-	#NOT USED
-	#def getArtsByUsingPrimaryKey(self, type, primary_key, overwrite=False, backdrop=None, poster=None):
-	#	printl("start changing arts", self)
-	#	media = self.getElementByUsingPrimaryKey(type, primary_key)
-	#	if media is not None:
-	#		printl("element found ", self)
-	#		if backdrop is not None:
-	#			media.Backdrop = backdrop
-	#			printl("setting backdrop source", self)
-	#		if poster is not None:
-	#			media.Poster = poster
-	#			printl("setting poster source", self)
-	#		
-	#		if media.Backdrop is not None or media.Poster is not None:
-	#			printl("downloading arts", self)
-	#			Arts().download(media, overwrite)
-	#			return True
-	#		else:
-	#			return False
-	#	printl("no element found", self)
-	#	return False
-	#
