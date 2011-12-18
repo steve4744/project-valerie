@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 import os
 import re
 import socket
@@ -9,6 +10,8 @@ import urllib
 import urllib2
 import urlparse
 import xml.dom.minidom as minidom
+import gzip 
+from StringIO import StringIO 
 
 from   Components.config import config
 
@@ -24,6 +27,16 @@ cacheDir = baseDir + "/cache"
 downloadDir = config.plugins.pvmc.mediafolderpath.value
 
 RETRIES = 5
+
+def toHex(s):
+    lst = []
+    for ch in s:
+        hv = hex(ord(ch)).replace('0x', '')
+        if len(hv) == 1:
+            hv = '0'+hv
+        lst.append(hv)
+    
+    return reduce(lambda x,y:x+y, lst)
 
 def url_fix(s):
 	scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
@@ -126,19 +139,25 @@ def getXml(url, rawXml=None, cache=True):
 	except Exception, ex:
 		printl("minidom.parseString as utf-8 failed, retrieing as latin-1. Ex: " + str(ex), __name__, "W")
 		try:
-			decodedXml = minidom.parseString(rawXml.encode( "iso8859-1", 'ignore' ))
-			printl("encoded iso8859-1")
+			decodedXml = minidom.parseString(rawXml.encode( "latin-1", 'ignore' ))
+			printl("encoded latin-1")
 			return decodedXml
 		except Exception, ex:
-			printl("minidom.parseString as utf-8 failed, retrieing as utf-8. Ex: " + str(ex), __name__, "W")
+			printl("minidom.parseString as utf-8 failed, retrieing as windows-1252. Ex: " + str(ex), __name__, "W")
 			try:
-				decodedXml = minidom.parseString(rawXml.decode("cp1252").encode("utf-8"))
-				printl("encoded cp1252")
+				decodedXml = minidom.parseString(rawXml.encode( "windows-1252", 'ignore' ))
+				printl("encoded iso8859-1")
 				return decodedXml
 			except Exception, ex:
-				printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__, "E")
-				printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
-				printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
+				printl("minidom.parseString as utf-8 failed, retrieing as utf-8. Ex: " + str(ex), __name__, "W")
+				try:
+					decodedXml = minidom.parseString(rawXml.decode("cp1252").encode("utf-8"))
+					printl("encoded cp1252")
+					return decodedXml
+				except Exception, ex:
+					printl("minidom.parseString as utf-8 and latin-1 failed, ignoring. Ex: " + str(ex), __name__, "E")
+					printl("URL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
+					printl("<" + str(type(ex)) + "> Ex: " + str(ex), __name__, "E")
 	return None
 
 def getHtml(url, cache=True):
@@ -170,6 +189,7 @@ def getText(url, cache=True, fixurl=True):
 						fixedurl = url_fix(Utf8.utf8ToLatin(url))
 					opener = urllib2.build_opener()
 					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
+					#opener.addheaders = [('Accept-encoding', 'identity')]
 					if version_info[1] >= 6:
 						page = opener.open(fixedurl, timeout=10)
 					else:
@@ -181,15 +201,36 @@ def getText(url, cache=True, fixurl=True):
 					continue
 				
 				if page is not None:
-					rawPage = page.read()
+					rawPage = ""
+					#print page
+					#print page.info()
+					if page.info().get('Content-Encoding') == 'gzip':
+						buf = StringIO(page.read())
+						f = gzip.GzipFile(fileobj=buf)
+						rawPage = f.read()
+					else:
+						rawPage = page.read()
 					contenttype = page.headers['Content-type']
 					#print contenttype
-					if contenttype.find("charset=") >= 0:
-						encoding = page.headers['Content-type'].split('charset=')[1] # iso-8859-1
-						utfPage = rawPage.decode(encoding).encode('utf-8')
-					else:
-						utfPage = Utf8.stringToUtf8(rawPage)
-					
+					try:
+						if contenttype.find("charset=") >= 0:
+							encoding = page.headers['Content-type'].split('charset=')[1] # iso-8859-1
+							utfPage = rawPage.decode(encoding).encode('utf-8')
+						else:
+							utfPage = Utf8.stringToUtf8(rawPage)
+					except Exception, ex:
+						printl("Exception: " + str(ex), __name__, "W")
+						printl("Fallback to us-latin-1", __name__, "W")
+						#windows-1252
+						print "------ HEX -------"
+						print toHex(rawPage)
+						utfPage = rawPage.decode("latin-1")
+						print "------ CONVERTED -------"
+						print utfPage
+						utfPage = utfPage.encode('utf-8')
+						print "------ CONVERTED2 -------"
+						print utfPage
+						
 					if cache:
 						addCache(url, utfPage)
 					break
@@ -197,8 +238,8 @@ def getText(url, cache=True, fixurl=True):
 		printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
 		return utfPage
 	except Exception, ex:
-		printl("Exception (ef): " + str(ex), __name__)
-		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__)
+		printl("Exception (ef): " + str(ex), __name__ , "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
 	
 	return u""
 
