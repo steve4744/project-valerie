@@ -10,8 +10,8 @@ import urllib
 import urllib2
 import urlparse
 import xml.dom.minidom as minidom
-import gzip 
-from StringIO import StringIO 
+#import gzip 
+#from StringIO import StringIO 
 
 from   Components.config import config
 
@@ -189,7 +189,7 @@ def getText(url, cache=True, fixurl=True):
 						fixedurl = url_fix(Utf8.utf8ToLatin(url))
 					opener = urllib2.build_opener()
 					opener.addheaders = [('User-agent', 'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.7.62 Version/11.01')]
-					#opener.addheaders = [('Accept-encoding', 'identity')]
+					opener.addheaders = [('Accept-encoding', 'identity')]
 					if version_info[1] >= 6:
 						page = opener.open(fixedurl, timeout=10)
 					else:
@@ -204,12 +204,12 @@ def getText(url, cache=True, fixurl=True):
 					rawPage = ""
 					#print page
 					#print page.info()
-					if page.info().get('Content-Encoding') == 'gzip':
-						buf = StringIO(page.read())
-						f = gzip.GzipFile(fileobj=buf)
-						rawPage = f.read()
-					else:
-						rawPage = page.read()
+					#if page.info().get('Content-Encoding') == 'gzip':
+					#	buf = StringIO(page.read())
+					#	f = gzip.GzipFile(fileobj=buf)
+					#	rawPage = f.read()
+					#else:
+					rawPage = page.read()
 					contenttype = page.headers['Content-type']
 					#print contenttype
 					try:
