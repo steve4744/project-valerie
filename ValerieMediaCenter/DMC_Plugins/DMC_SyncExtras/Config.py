@@ -59,6 +59,30 @@ class SyncConfig(Xml2Dict):
 				printl("\t- OK", __name__)
 				save = True
 			elif self._dict is None and downloadIfNotFound is True:
+				# Create config folders if not existing
+				try:
+					printl("Check " + config.plugins.pvmc.tmpfolderpath.value, __name__)
+					os.makedirs(config.plugins.pvmc.tmpfolderpath.value) 
+				except OSError, e:
+					printl("\t- OK", __name__)
+				else:
+					printl("\t- Created", __name__)
+				try: 
+					printl("Check " + config.plugins.pvmc.tmpfolderpath.value + "cache", __name__)
+					os.makedirs(config.plugins.pvmc.tmpfolderpath.value + "cache") 
+				except OSError, e:
+					printl("\t- OK", __name__)
+				else:
+					printl("\t- Created", __name__)
+				
+				try: 
+					printl("Check " + config.plugins.pvmc.configfolderpath.value, __name__)
+					os.makedirs(config.plugins.pvmc.configfolderpath.value) 
+				except OSError, e:
+					printl("\t- OK", __name__)
+				else:
+					printl("\t- Created", __name__)
+			
 				printl("Check sync.xml and valerie.conf - Missing -> Downloading", __name__)
 				WebGrabber.getFile(DEFAULTURL+self._name, self._nameAbs)
 				printl("\t- Created", __name__)
