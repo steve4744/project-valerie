@@ -1254,12 +1254,14 @@ class ProjectValerieSyncManager(Screen):
 	def elementChanged(self, newElement):
 		printl("newElement: " + repr(newElement), self)
 		if newElement is not None:
+			#Think about this, if we have to then we should also check if the tvshow already exist
+			#Lets fix this after the xmas
 			if len(newElement) == 2:
 				testElement = newElement[1]
 			else:
 				testElement = newElement[0]
 			if testElement is not self.oldElement:
-				printl("elementChanged - Changed", self)
+				printl("elementChanged - Changed: " + str(testElement), self, "D")
 				#### will crash... repalce with insert/update media
 				#self.manager.replace(self.oldElement, newElement)
 				self.manager.deleteMedia(self.oldElement.Id)

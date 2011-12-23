@@ -165,83 +165,88 @@ class DMC_TvShowLibrary(DMC_Library):
 			tvshow  = self.manager.getMedia(params["Id"])
 			library = self.manager.getEpisodes(params["Id"], params["Season"])
 			for episode in library:
-				d = {}
-
-				d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
-				d["ArtPosterId"] = d["ArtBackdropId"]
+				try:
+					d = {}
+					d["ArtBackdropId"] = utf8ToLatin(tvshow.TheTvDbId)
+					d["ArtPosterId"] = d["ArtBackdropId"]
+						
+					d["Id"]  = episode.Id
+					d["TVShowId"]  = tvshow.Id
+					d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
+					d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
+					d["Tag"]     = utf8ToLatin(tvshow.Tag)
+					#d["Title"]   = "  %dx%02d: %s" % (episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
+					if episode.Season is None and episode.Disc is None and episode.Episode is not None: # 
+						# Only Episode
+						d["Title"]   = "  %s: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+					elif episode.Season is None and episode.Disc is not None and episode.Episode is None: 
+						# Only Disc
+						d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+					elif episode.Season is not None and episode.Disc is None and episode.Episode is not None and episode.EpisodeLast is not None: # 
+						# Without Disc, With Episode And EpisodeLast
+						d["Title"]   = "  %02d-%02d: %s" % (episode.Episode, episode.EpisodeLast, utf8ToLatin(episode.Title), )
+					elif episode.Season is not None and episode.Disc is None and episode.Episode is not None: # 
+						# Without Disc, With Episode
+						d["Title"]   = "  %02d: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+					elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is not None: # 
+						# With Disc,    With Episode And EpisodeLast
+						d["Title"]   = "  Disc %s: Episode %s - %s" % (episode.Disc, episode.Episode, episode.EpisodeLast, )
+					elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is None: # 
+						# With Disc,    Without EpisodeLast
+						d["Title"]   = "  Disc %s: Episode %s" % (episode.Disc, episode.Episode, )
+					elif episode.Season is not None and episode.Disc is not None and episode.Episode is None: # 
+						# With Disc,    Without Episode
+						d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+					else:
+						d["Title"]   = "  %s" % (utf8ToLatin(episode.Title), )
 					
-				d["Id"]  = episode.Id
-				d["TVShowId"]  = tvshow.Id
-				d["ImdbId"]  = utf8ToLatin(tvshow.ImdbId)
-				d["TheTvDbId"] = utf8ToLatin(episode.TheTvDbId)
-				d["Tag"]     = utf8ToLatin(tvshow.Tag)
-				#d["Title"]   = "  %dx%02d: %s" % (episode.Season, episode.Episode, utf8ToLatin(episode.Title), )
-				if episode.Season is None and episode.Disc is None and episode.Episode is not None: # 
-					# Only Episode
-					d["Title"]   = "  %s: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
-				elif episode.Season is None and episode.Disc is not None and episode.Episode is None: 
-					# Only Disc
-					d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
-				elif episode.Season is not None and episode.Disc is None and episode.Episode is not None and episode.EpisodeLast is not None: # 
-					# Without Disc, With Episode And EpisodeLast
-					d["Title"]   = "  %02d-%02d: %s" % (episode.Episode, episode.EpisodeLast, utf8ToLatin(episode.Title), )
-				elif episode.Season is not None and episode.Disc is None and episode.Episode is not None: # 
-					# Without Disc, With Episode
-					d["Title"]   = "  %02d: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
-				elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is not None: # 
-					# With Disc,    With Episode And EpisodeLast
-					d["Title"]   = "  Disc %s: Episode %s - %s" % (episode.Disc, episode.Episode, episode.EpisodeLast, )
-				elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is None: # 
-					# With Disc,    Without EpisodeLast
-					d["Title"]   = "  Disc %s: Episode %s" % (episode.Disc, episode.Episode, )
-				elif episode.Season is not None and episode.Disc is not None and episode.Episode is None: # 
-					# With Disc,    Without Episode
-					d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
-				else:
-					d["Title"]   = "  %s" % (utf8ToLatin(episode.Title), )
+					if episode.Season is None:
+						d["ScreenTitle"] = tvshow.Title + " - " + "Special"
+					else:
+						d["ScreenTitle"] = tvshow.Title + " - " + "Season %2d" % (episode.Season, )
 					
-				if episode.Season is None:
-					d["ScreenTitle"] = tvshow.Title + " - " + "Special"
-				else:
-					d["ScreenTitle"] = tvshow.Title + " - " + "Season %2d" % (episode.Season, )
-				d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
-				d["Year"]    = episode.Year
-				d["Month"]   = episode.Month
-				d["Day"]     = episode.Day
-				d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
-				d["Creation"] = episode.FileCreation
-				d["Season"]  = episode.Season
-				d["Episode"] = episode.Episode
-				d["Plot"]    = utf8ToLatin(episode.Plot)
-				d["Runtime"] = episode.Runtime
-				d["Popularity"] = episode.Popularity
-				d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
-				d["Resolution"]  = utf8ToLatin(episode.Resolution)
-				d["Sound"]  = utf8ToLatin(episode.Sound)
-				
-				if self.manager.isMediaSeen(d["Id"]):
-					image = seenPng
-					d["Seen"] = "Seen"
-				else:
-					image = unseenPng
-					d["Seen"] = "Unseen"
-				
-				d["ViewMode"] = "play"
-				_season = episode.Season
-				if _season is None:
-					_season=0
-				_disc = episode.Disc
-				if _disc is None:
-					_disc=0
-				_episode = episode.Episode
-				if _episode is None:
-					_episode=0
-				printl("DISC: " + repr(_disc), self)
-				_season  = int(_season)
-				_disc    = int(_disc)
-				_episode = int(_episode)
+					d["ScreenTitle"] = utf8ToLatin(d["ScreenTitle"])
+					d["Year"]    = episode.Year
+					d["Month"]   = episode.Month
+					d["Day"]     = episode.Day
+					d["Path"]    = utf8ToLatin(episode.Path + "/" + episode.Filename + "." + episode.Extension)
+					d["Creation"] = episode.FileCreation
+					d["Season"]  = episode.Season
+					d["Episode"] = episode.Episode
+					d["Plot"]    = utf8ToLatin(episode.Plot)
+					d["Runtime"] = episode.Runtime
+					d["Popularity"] = episode.Popularity
+					d["Genres"]  = utf8ToLatin(episode.Genres).split("|")
+					d["Resolution"]  = utf8ToLatin(episode.Resolution)
+					d["Sound"]  = utf8ToLatin(episode.Sound)
 					
-				parsedLibrary.append((d["Title"], d, _season * 100000 + _disc * 1000 + _episode, "50", image))
+					if self.manager.isMediaSeen(d["Id"]):
+						image = seenPng
+						d["Seen"] = "Seen"
+					else:
+						image = unseenPng
+						d["Seen"] = "Unseen"
+					
+					d["ViewMode"] = "play"
+					_season = episode.Season
+					if _season is None:
+						_season=0
+					_disc = episode.Disc
+					if _disc is None:
+						_disc=0
+					_episode = episode.Episode
+					if _episode is None:
+						_episode=0
+					printl("DISC: " + repr(_disc), self)
+					_season  = int(_season)
+					_disc    = int(_disc)
+					_episode = int(_episode)
+						
+					parsedLibrary.append((d["Title"], d, _season * 100000 + _disc * 1000 + _episode, "50", image))
+				except Exception, ex:
+					printl("Exception: " + str(ex), self, "E")
+					printl("episode: " + str(episode), self, "E")
+			
 			sort = [("Title", None, False), ("Popularity", "Popularity", True), ]
 			if self.checkFileCreationDate:
 				sort.append(("File Creation", "Creation", True))

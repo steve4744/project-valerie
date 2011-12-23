@@ -783,27 +783,27 @@ class MediaInfo(object):
 		ustr = u""
 		try:
 			ustr = self.Path + u" / " + self.Filename + u" . " + self.Extension
-			#printl("type(ustr): " + str(type(ustr)), self)
-			ustr += u"\n\tImdbId:	   " + self.ImdbId
-			ustr += u"\n\tTheTvDbId:	" + self.TheTvDbId
-			ustr += u"\n\tTitle:		" + self.Title
+			ustr += u"\n\tType:         " + self.strMediaType(self.getMediaType())
+			ustr += u"\n\tImdbId:       " + self.ImdbId
+			ustr += u"\n\tTheTvDbId:    " + self.TheTvDbId
+			ustr += u"\n\tTitle:        " + self.Title
 			ustr += u"\n\tSearchString: " + self.SearchString
-			ustr += u"\n\tYear:		 " + unicode(self.Year)
-			ustr += u"\n\tMonth:		" + unicode(self.Month)
-			ustr += u"\n\tDay:		  " + unicode(self.Day)
+			ustr += u"\n\tYear:         " + unicode(self.Year)
+			ustr += u"\n\tMonth:        " + unicode(self.Month)
+			ustr += u"\n\tDay:          " + unicode(self.Day)
 			ustr += u"\n\tResolution:   " + self.Resolution
-			ustr += u"\n\tSound:		" + self.Sound
-			#ustr += "\n\tAlternatives: " + unicode(self.Alternatives)
-			#ustr += "\n\tDirectors:	" + unicode(self.Directors)
-			#ustr += "\n\tWriters:	  " + unicode(self.Writers)
-			ustr += "\n\tRuntime:	  " + unicode(self.Runtime)
-			ustr += "\n\tGenres:	   " + unicode(self.Genres)
-			ustr += "\n\tTagLine:	  " + self.Tag
-			ustr += "\n\tPopularity:   " + unicode(self.Popularity)
-			ustr += "\n\tPlot:		 " + self.Plot
-			if self.isEpisode:
-				ustr += "\n\tSeason:	   " + unicode(self.Season)
-				ustr += "\n\tEpisode:	  " + unicode(self.Episode)
+			ustr += u"\n\tSound:        " + self.Sound
+			#ustr += "\n\tAlternatives:  " + unicode(self.Alternatives)
+			#ustr += "\n\tDirectors:     " + unicode(self.Directors)
+			#ustr += "\n\tWriters:       " + unicode(self.Writers)
+			ustr += "\n\tRuntime:       " + unicode(self.Runtime)
+			ustr += "\n\tGenres:        " + unicode(self.Genres)
+			ustr += "\n\tTagLine:       " + self.Tag
+			ustr += "\n\tPopularity:    " + unicode(self.Popularity)
+			ustr += "\n\tPlot:          " + self.Plot
+			if self.isTypeEpisode():
+				ustr += "\n\tSeason:        " + unicode(self.Season)
+				ustr += "\n\tEpisode:       " + unicode(self.Episode)
 			ustr += "\n\n"
 			#ustr += "\n\tPoster:	   " + unicode(self.Poster)
 			#ustr += "\n\tBackdrop:	 " + unicode(self.Backdrop)
@@ -815,7 +815,7 @@ class MediaInfo(object):
 		return Utf8.utf8ToLatin(ustr)
 
 
-	def getMediaType(self):		
+	def getMediaType(self):
 		#compatibility - for upgrade M1
 		if self.MediaType is None:
 			if self.isSerie:
@@ -828,7 +828,7 @@ class MediaInfo(object):
 		if self.MediaType is None:
 				self.MediaType = self.UNKNOWN
 		return self.MediaType
-	
+
 	def setMediaType(self, value):
 		printl("->", self)
 		self.MediaType = value
@@ -842,16 +842,29 @@ class MediaInfo(object):
 		#	self.isMovie = True
 		#elif self.MediaType == self.EPISODE:
 		#	self.isEpisode = True
-	
+
+	def strMediaType(self, mediaType):
+		if mediaType == self.SERIE:
+			return "SERIE"
+		elif mediaType == self.MOVIE:
+			return "MOVIE"
+		elif mediaType == self.EPISODE:
+			return "EPISODE"
+		else:
+				return "UNKNOWN"
+
 	def isTypeMovie(self):
 		return (self.getMediaType()==self.MOVIE)
+
 	def isTypeSerie(self):
 		return (self.getMediaType()==self.SERIE)
+
 	def isTypeEpisode(self):
 		return (self.getMediaType()==self.EPISODE)
+
 	def isTypeUnknown(self):
 		return (self.getMediaType()==self.UNKNOWN)
-		
+
 	def isStatusOk(self):
 		return (self.MediaStatus==self.STATUS_OK)
 
