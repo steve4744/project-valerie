@@ -50,53 +50,40 @@ class DMC_MovieLibrary(DMC_Library):
 					continue
 				d = {}
 				d["ArtBackdropId"] = utf8ToLatin(movie.ImdbId)
-				d["ArtPosterId"] = d["ArtBackdropId"]
+				d["ArtPosterId"]   = d["ArtBackdropId"]
 				
-				d["Id"]  = movie.Id
-				d["ImdbId"]  = utf8ToLatin(movie.ImdbId)
-				d["Title"]   = "  " + utf8ToLatin(movie.Title)
+				d["Id"]            = movie.Id
+				d["ImdbId"]        = utf8ToLatin(movie.ImdbId)
+				d["Title"]         = "  " + utf8ToLatin(movie.Title)
 				if d["Title"][2].upper() not in tmpAbc:
 					tmpAbc.append(d["Title"][2].upper())
-				d["Tag"]     = utf8ToLatin(movie.Tag)
-				d["Year"]    = movie.Year
-				d["Month"]   = movie.Month
-				d["Day"]     = movie.Day
-				# Yeah its a bit supersufficial as date is already in it
-				# But will allow the view to sort the list
-				# avoid crash if Null Values
-				yy=movie.Year
-				mm=movie.Month
-				dd=movie.Day
-				if yy is None:
-					yy=0
-				if mm is None:
-					mm=0
-				if dd is None:
-					dd=0
-				d["Date"]    = yy*10000 + mm*100 + dd
-				#d["Date"]    = movie.Year*10000 + movie.Month*100 + movie.Day
-				d["Filename"] = utf8ToLatin(movie.Filename).lower()
-				d["Path"]    = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
-				d["Creation"] = movie.FileCreation
-				d["Plot"]    = utf8ToLatin(movie.Plot)
-				d["Runtime"] = movie.Runtime
-				d["Popularity"] = movie.Popularity
-				d["Genres"]  = utf8ToLatin(movie.Genres).split("|")
+				d["Tag"]           = utf8ToLatin(movie.Tag)
+				d["Year"]          = movie.Year
+				d["Month"]         = movie.Month
+				d["Day"]           = movie.Day
+				d["Date"]          = movie.getDate()
+				d["Filename"]      = utf8ToLatin(movie.Filename).lower()
+				d["Path"]          = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
+				d["Creation"]      = movie.FileCreation
+				d["Plot"]          = utf8ToLatin(movie.Plot)
+				d["Runtime"]       = movie.Runtime
+				d["Popularity"]    = movie.Popularity
+				d["Genres"]        = utf8ToLatin(movie.Genres).split("|")
 				for genre in d["Genres"]:
 					if genre not in tmpGenres:
 						tmpGenres.append(genre)
-				d["Resolution"]  = utf8ToLatin(movie.Resolution)
-				d["Sound"]  = utf8ToLatin(movie.Sound)
+				d["Resolution"]    = utf8ToLatin(movie.Resolution)
+				d["Sound"]         = utf8ToLatin(movie.Sound)
 				
 				if self.manager.isMediaSeen(d["Id"]):
 					image = seenPng
-					d["Seen"] = "Seen"
+					d["Seen"]        = "Seen"
 				else:
 					image = unseenPng
-					d["Seen"] = "Unseen"
+					d["Seen"]        = "Unseen"
 				
-				d["ViewMode"] = "play"
-				d["ScreenTitle"] = utf8ToLatin(movie.Title)
+				d["ViewMode"]      = "play"
+				d["ScreenTitle"]   = utf8ToLatin(movie.Title)
 				
 				parsedLibrary.append((d["Title"], d, d["Title"].lower(), "50", image))
 			sort = [("Title", None, False), ("Popularity", "Popularity", True), ("Aired", "Date", True), ]
@@ -117,7 +104,10 @@ class DMC_MovieLibrary(DMC_Library):
 				filter.append(("Abc", ("Title", False, 1), tmpAbc))
 			
 			return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
-			
+		
+		elif params["ViewMode"] == "Tree":
+			pass
+		
 		elif params["ViewMode"]=="ShowGroup":
 			pass
 	

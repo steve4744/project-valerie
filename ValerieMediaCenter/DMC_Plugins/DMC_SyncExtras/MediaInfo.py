@@ -868,3 +868,16 @@ class MediaInfo(object):
 	def isStatusOk(self):
 		return (self.MediaStatus==self.STATUS_OK)
 
+	# Returns date as integer ddmmyyyy
+	def getDate(self):
+		yy = self.Year
+		mm = self.Month
+		dd = self.Day
+		if yy is None:
+			yy = 0
+		if mm is None:
+			mm = 0
+		if dd is None:
+			dd = 0
+		
+		return yy*10000 + mm*100 + dd

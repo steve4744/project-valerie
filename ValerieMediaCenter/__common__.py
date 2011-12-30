@@ -116,6 +116,9 @@ def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
 	elif verbLevel > VERB_TOLOG:
 		print '\033[0;36m' + "[PVMC] " + "only onScreen" + "  " + str(out) + '\033[1;m'
 
+def printl2cond (cond=True, string, parent=None, verbLevel=VERB_DEFAULT):
+	if cond:
+		printl2(string, parent, verbLevel)
 
 def writeToLog(type, out):
 	global gLogFile

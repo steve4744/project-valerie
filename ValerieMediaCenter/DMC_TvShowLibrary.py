@@ -96,8 +96,14 @@ class DMC_TvShowLibrary(DMC_Library):
 				tmpAbc.sort()
 				filter.append(("Abc", ("Title", False, 1), tmpAbc))
 				
-			return (parsedLibrary, ("ViewMode", "Id", ), None, None, sort, filter)
-			# (libraryArray, onEnterPrimaryKeys, onLeavePrimaryKeys, onLeaveSelectEntry
+			return (
+				parsedLibrary, #listViewList
+				("ViewMode", "Id", ), #onEnterPrimaryKeys
+				None, #onLeavePrimaryKeyValuePair
+				None, #onLeaveSelectKeyValuePair
+				sort, #onSortKeyValuePair
+				filter, #onFilterKeyValuePair
+			)
 		
 		# Display the Seasons Menu
 		elif params["ViewMode"]=="ShowSeasons":

@@ -136,7 +136,7 @@ class Manager():
 	def updateMediaWithDict(self, type, key_value_dict):
 		key_value_dict["MediaType"] = type
 		if not self.db.updateMediaWithDict(key_value_dict):
-			printl("Update Media - Failed", self)	
+			printl("Update Media - Failed", self)
 			return False
 		return True
 	
