@@ -67,6 +67,7 @@ class DMC_NewestEpisodes(DMC_Library):
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
 		start_time = time.time()
+		userId = config.plugins.pvmc.seenuserid.value
 		
 		# Diplay all TVShows
 		if primaryKeyValuePair is None:
@@ -134,7 +135,7 @@ class DMC_NewestEpisodes(DMC_Library):
 					d["Resolution"] = utf8ToLatin(episode.Resolution)
 					d["Sound"]      = utf8ToLatin(episode.Sound)
 					
-					if self.manager.isMediaSeen(d["Id"]):
+					if self.manager.isMediaSeen(d["Id"], userId):
 						image = seenPng
 						d["Seen"] = "Seen"
 					else:

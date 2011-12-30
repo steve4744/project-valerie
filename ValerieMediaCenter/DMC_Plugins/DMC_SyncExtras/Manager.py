@@ -198,8 +198,8 @@ class Manager():
 #
 ##########################           SEEN            ########################## 
 #
-	def isMediaSeen(self, id, Season=None):
-		return self.db.isMediaSeen(id)
+	def isMediaSeen(self, id, Season=None, user=9999):
+		return self.db.isMediaSeen(id, user)
 		#return self.isEntrySeen(primary_key)
 		#return self.isSeasonSeen(primary_key)
 		#return self.isShowSeen(primary_key)

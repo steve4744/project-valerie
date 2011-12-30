@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from Components.config import config
-from Components.config import ConfigPassword
-from Components.config import ConfigSubsection
-from Components.config import ConfigText
-from Components.config import ConfigYesNo
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
@@ -50,11 +46,12 @@ def setSeen(id, seen):
 	if manager is None:
 		from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		manager = Manager("DMC_SEEN")
+	userId = config.plugins.pvmc.seenuserid.value
 	if seen:
 	#	manager.MarkAsSeen(id, None)
-		manager.MarkAsSeen(id)
+		manager.MarkAsSeen(id,userId)
 	else:
-		manager.MarkAsUnseen(id)
+		manager.MarkAsUnseen(id,userId)
 	
 def autostart(session):
 	global progress

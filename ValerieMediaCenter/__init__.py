@@ -27,7 +27,7 @@ from Plugins.Extensions.ProjectValerie.DMC_Global import findSkin
 print "[PVMC STARTING] I  __init__:: Init Valerie"
 
 # the currentVersion should be renewed every major update
-currentVersion          = "r001"
+currentVersion          = "r1149"
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerie/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultConfigFolderPath = "/hdd/valerie/"
@@ -51,13 +51,14 @@ config.plugins.pvmc.onpowerpress      = ConfigSelection(default="DeepStandby", c
 config.plugins.pvmc.backdropquality   = ConfigSelection(default="High", choices = ["High", "Low", ])
 config.plugins.pvmc.uselocal          = ConfigYesNo(default = False)
 
-config.plugins.pvmc.version           = ConfigText(default = "r001")
+config.plugins.pvmc.version           = ConfigText(default = "r1149")
 config.plugins.pvmc.pluginfolderpath  = ConfigText(default = defaultPluginFolderPath)
 config.plugins.pvmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPath)
 
 config.plugins.pvmc.configfolderpath    = ConfigText(default = defaultConfigFolderPath)
 config.plugins.pvmc.mediafolderpath     = ConfigText(default = defaultMediaFolderPath)
 config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderPath)
+config.plugins.pvmc.seenuserid          = ConfigInteger(default = 1)
 config.plugins.pvmc.showseenforshow     = ConfigYesNo(default = False)
 config.plugins.pvmc.showseenforseason   = ConfigYesNo(default = False)
 

@@ -255,6 +255,7 @@ class Database(object):
 				#self.mm = self.session.open(Msg)		
 			printl("Importing Data to PickleV2", self)
 			# this will Open Pickle V1 and run upgrades if necessary
+			userId = config.plugins.pvmc.seenuserid.value
 			dbHandlerPickle = databaseHandlerPICKLE().getInstance("from importDataToPickleV2", None)
 			dbHandlerPickle.loadAll()
 			#Upgrade SeenDB
@@ -279,10 +280,10 @@ class Database(object):
 					
 				seen = records["Movies"][imdb]["Seen"]
 				if seen:
-					self.dbHandler.MarkAsSeenWithMedia(m)
+					self.dbHandler.MarkAsSeenWithMedia(m,userId)
 				else:
 					pass
-					#self.dbHandler.MarkAsUnseenWithMedia(m)
+					#self.dbHandler.MarkAsUnseenWithMedia(m,userId)
 				
 				cntNew += 1
 			
@@ -303,10 +304,10 @@ class Database(object):
 								if episode == ep.Episode:
 									EpisodeInserted = True
 									if seen:
-										self.dbHandler.MarkAsSeen(ep.Id)
+										self.dbHandler.MarkAsSeen(ep.Id,userId)
 									else:	
 										pass
-										#self.dbHandler.MarkAsUnseen(ep.Id)
+										#self.dbHandler.MarkAsUnseen(ep.Id,userId)
 						else:
 							#printl("NO SERIE: " + thetvdb, self)
 							pass
@@ -320,10 +321,10 @@ class Database(object):
 							m.Episode = episode
 							if seen:
 								#printl("SEEN 2: " + thetvdb, self)
-								self.dbHandler.MarkAsSeenWithMedia(m)
+								self.dbHandler.MarkAsSeenWithMedia(m,userId)
 							else:
 								#printl("UNSEEN 2: " + thetvdb, self)
-								#self.dbHandler.MarkAsUnseenWithMedia(m)
+								#self.dbHandler.MarkAsUnseenWithMedia(m,userId)
 								pass
 								
 						cntNew += 1
@@ -562,12 +563,21 @@ class Database(object):
 #	syncFailedCause = u""
 
 
-	def isMediaSeen(self, id):
-		return self.dbHandler.isMediaSeen(id)
+	def isMediaSeen(self, id, user=9999):
+		# if no userid is given read the default value from settings
+		if user == 9999:
+			user = config.plugins.pvmc.seenuserid.value
+		return self.dbHandler.isMediaSeen(id, user)
 	
 	def MarkAsSeen(self, id, user=9999):
+		# if no userid is given read the default value from settings
+		if user == 9999:
+			user = config.plugins.pvmc.seenuserid.value
 		self.dbHandler.MarkAsSeen(id, user)
 	
 	def MarkAsUnseen(self, id, user=9999):
+		# if no userid is given read the default value from settings
+		if user == 9999:
+			user = config.plugins.pvmc.seenuserid.value
 		self.dbHandler.MarkAsUnseen(id, user)
 	

@@ -6,6 +6,7 @@ from DMC_Library import DMC_Library
 
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 from Plugins.Extensions.ProjectValerie.__plugin__ import Plugin, registerPlugin
+from Components.config import config
 
 #------------------------------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ class DMC_MovieLibrary(DMC_Library):
 		if utf8ToLatin is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
 		
+		userId = config.plugins.pvmc.seenuserid.value
 		# Diplay all Movies
 		if params is None:
 			parsedLibrary = []
@@ -75,7 +77,7 @@ class DMC_MovieLibrary(DMC_Library):
 				d["Resolution"]    = utf8ToLatin(movie.Resolution)
 				d["Sound"]         = utf8ToLatin(movie.Sound)
 				
-				if self.manager.isMediaSeen(d["Id"]):
+				if self.manager.isMediaSeen(d["Id"], userId):
 					image = seenPng
 					d["Seen"]        = "Seen"
 				else:

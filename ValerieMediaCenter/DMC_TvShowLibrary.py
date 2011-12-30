@@ -39,7 +39,7 @@ class DMC_TvShowLibrary(DMC_Library):
 	
 		printl("", self)
 		printl("params=" + str(params), self)
-			
+		userId = config.plugins.pvmc.seenuserid.value	
 		# Diplay all TVShows
 		if params is None:
 			printl("Series", self)
@@ -73,7 +73,7 @@ class DMC_TvShowLibrary(DMC_Library):
 						tmpGenres.append(genre)
 				if config.plugins.pvmc.showseenforshow.value is True:
 					#if self.manager.is_Seen({"TheTvDbId": d["TheTvDbId"]}):
-					if self.manager.isMediaSeen(d["Id"]):
+					if self.manager.isMediaSeen(d["Id"], userId):
 						image = seenPng
 					else:
 						image = unseenPng
@@ -147,7 +147,7 @@ class DMC_TvShowLibrary(DMC_Library):
 					s["ArtPosterId"] = d["ArtBackdropId"] + "_s" + str(season)
 					
 					if config.plugins.pvmc.showseenforseason.value is True:
-						if self.manager.isMediaSeen(d["Id"], s["Season"]):
+						if self.manager.isMediaSeen(d["Id"], s["Season"], userId):
 							image = seenPng
 						else:
 							image = unseenPng
@@ -226,7 +226,7 @@ class DMC_TvShowLibrary(DMC_Library):
 					d["Resolution"]  = utf8ToLatin(episode.Resolution)
 					d["Sound"]  = utf8ToLatin(episode.Sound)
 					
-					if self.manager.isMediaSeen(d["Id"]):
+					if self.manager.isMediaSeen(d["Id"], userId):
 						image = seenPng
 						d["Seen"] = "Seen"
 					else:

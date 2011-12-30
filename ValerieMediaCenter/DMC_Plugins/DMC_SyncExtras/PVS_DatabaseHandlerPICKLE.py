@@ -1642,7 +1642,7 @@ class databaseHandlerPICKLE(object):
 			printl("Seen database not loaded yet. Loading ... ", self, "S")
 			self._loadSeenDB()
 				
-	def isMediaSeen(self, id):
+	def isMediaSeen(self, id, user=9999):
 		printl("-> for: " + repr(id), self, "S")
 		self._seenCheckLoaded()
 		try:
