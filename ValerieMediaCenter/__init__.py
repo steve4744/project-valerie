@@ -16,7 +16,7 @@ from Components.config import configfile
 from Components.config import ConfigYesNo
 from Components.config import ConfigPassword
 import Plugins.Plugin
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN
 
 #Cannot import log here cause config.pvmc not ready
 from Plugins.Extensions.ProjectValerie.__plugin__ import loadPlugins
@@ -58,7 +58,7 @@ config.plugins.pvmc.skinfolderpath    = ConfigText(default = defaultSkinFolderPa
 config.plugins.pvmc.configfolderpath    = ConfigText(default = defaultConfigFolderPath)
 config.plugins.pvmc.mediafolderpath     = ConfigText(default = defaultMediaFolderPath)
 config.plugins.pvmc.tmpfolderpath       = ConfigText(default = defaultTmpFolderPath)
-config.plugins.pvmc.seenuserid          = ConfigInteger(default = 1)
+config.plugins.pvmc.seenuserid          = ConfigInteger(default = 9999)
 config.plugins.pvmc.showseenforshow     = ConfigYesNo(default = False)
 config.plugins.pvmc.showseenforseason   = ConfigYesNo(default = False)
 
@@ -71,8 +71,8 @@ printl("__init__:: showwizard="     + str(config.plugins.pvmc.showwizard.value))
 printl("__init__:: autostart="      + str(config.plugins.pvmc.autostart.value))
 printl("__init__:: checkforupdate=" + str(config.plugins.pvmc.checkforupdate.value))
 printl("__init__:: updatetype="     + str(config.plugins.pvmc.updatetype.value))
-printl("__init__:: uselocal=" 		+ str(config.plugins.pvmc.uselocal.value))
-printl("__init__:: debugMode=" 		+ str(config.plugins.pvmc.debugMode.value))
+printl("__init__:: uselocal="       + str(config.plugins.pvmc.uselocal.value))
+printl("__init__:: debugMode="      + str(config.plugins.pvmc.debugMode.value))
 
 skins = []
 try:
@@ -82,6 +82,18 @@ try:
 except Exception, ex:
 	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
 	skins.append(defaultSkin)
+
+#Also check if a real enigma2 skin contains valerie screens
+try:
+	skinPath = resolveFilename(SCOPE_SKIN)
+	for skin in os.listdir(skinPath):
+		path = os.path.join(skinPath, skin)
+		if os.path.isdir(path):
+			xml = os.path.join(path, "skin_valerie.xml")
+			if os.path.isfile(xml):
+				skins.append("~" + skin)
+except Exception, ex:
+	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
 
 config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
 config.plugins.pvmc.url               = ConfigText(default = defaultURL)
@@ -101,8 +113,16 @@ dSize = getDesktop(0).size()
 # Load Skin, first try to find it, if not found reset to default skin
 skinLoaded = False
 try:
-	skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
-	loadSkin(skinPath + "skin.xml")
+	if config.plugins.pvmc.skin.value[0:1] == "~": #Enigma2 Skin
+		skinPath = resolveFilename(SCOPE_SKIN) + "/" + config.plugins.pvmc.skin.value[1:] + "/"
+		skinXml  = skinPath + "skin_valerie.xml"
+		config.plugins.pvmc.skinfolderpath.value = resolveFilename(SCOPE_SKIN) + "/"
+	else:
+		skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
+		skinXml  = skinPath + "skin.xml"
+		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
+	printl("__init__:: loading Skin " + skinXml, None, "I")
+	loadSkin(skinXml)
 	loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
 	skinLoaded = True
 except Exception, ex:
@@ -114,7 +134,9 @@ except Exception, ex:
 if skinLoaded == False:
 	try:
 		skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
-		loadSkin(skinPath + "skin.xml")
+		skinXml  = skinPath + "skin.xml"
+		printl("__init__:: loading Skin " + skinXml, None, "I")
+		loadSkin(skinXml)
 		loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
 		skinLoaded = True
 	except Exception, ex:
