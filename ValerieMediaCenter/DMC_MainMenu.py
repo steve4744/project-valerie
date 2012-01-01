@@ -70,10 +70,17 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		
 	ShowStillPicture = False
 
+	_hasChanged = False
+	_session = None
+
 	def __init__(self, session):
 		printl("->", self, "S")
 		from Components.Sources.StaticText import StaticText
 		Screen.__init__(self, session)
+		ConfigListScreen.__init__(self, [], on_change=self._changed)
+		
+		self._session = session
+		self._hasChanged = False
 		
 		self.APILevel = getAPILevel(self)
 		printl("APILevel=" + str(self.APILevel), self)
@@ -93,11 +100,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 		
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("Save"))
-
-		ConfigListScreen.__init__(self, [])
+		
 		self.initConfigList()
-		#config.mediaplayer.saveDirOnExit.addNotifier(self.initConfigList)
-
+		
 		self["setupActions"] = ActionMap(["SetupActions", "ColorActions"],
 		{
 			"green": self.keySave,
@@ -109,6 +114,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 
 	def setCustomTitle(self):
 		self.setTitle(_("Settings"))
+
+	def _changed(self):
+		self._hasChanged = True
 
 	def initConfigList(self, element=None):
 		printl("->", self, "S")
@@ -133,7 +141,17 @@ class PVMC_Settings(Screen, ConfigListScreen):
 
 	def keySave(self):
 		printl("->", self, "S")
-		ConfigListScreen.keySave(self)
+		self.saveAll()
+		if self._hasChanged:
+			self.session.openWithCallback(self.restartGUI, MessageBox, _("Some settings may need a GUI restart\nDo you want to Restart the GUI now?"), MessageBox.TYPE_YESNO)
+			#restartbox.setTitle(_("Restart GUI now?"))
+
+	def restartGUI(self, answer):
+		if answer is True:
+			from Screens.Standby import TryQuitMainloop
+			self.session.open(TryQuitMainloop, 3)
+		else:
+			self.close()
 
 class PVMC_Update(Screen):
 	skinDeprecated = """
