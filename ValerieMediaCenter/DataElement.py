@@ -48,15 +48,16 @@ class DataElement(Renderer):
 			skinName = screen.skinName
 		printl("screen=" + str(skinName) + " name=" + str(name), self)
 		try:
-			for entry in skin.dom_skins:
+			#for entry in skin.dom_skins:
+			for entry in reversed(skin.dom_skins):
 				#printl("entry=" + str(entry), self, "D")
 				#printl("entry[0]=" + str(entry[0]) + " - " + str(config.plugins.pvmc.skinfolderpath.value), self, "D")
-				if entry[0] is None or entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
-					for element in entry[1]:
-						if 'name' in element.keys() and element.get('name') == skinName:
-							for child in element:
-								if 'name' in child.keys() and child.get('name') == name:
-									return child.get('text')
+				#if entry[0] is None or entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
+				for element in entry[1]:
+					if 'name' in element.keys() and element.get('name') == skinName:
+						for child in element:
+							if 'name' in child.keys() and child.get('name') == name:
+								return child.get('text')
 		except Exception, ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			printl("maybe openPLI, trying ...", self , "H")
@@ -66,7 +67,7 @@ class DataElement(Renderer):
 				printl("myscreen=" + str(myscreen), self, "D")
 				printl("path=" + str(path), self, "D")
 				if myscreen is not None:
-					for child in myscreen:
+					for child in reversed(myscreen):
 						printl("child=" + str(child), self, "D")
 						printl("child.keys()=" + str(child.keys()), self, "D")
 						if 'name' in child.keys() and child.get('name') == name:

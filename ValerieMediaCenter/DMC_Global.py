@@ -56,27 +56,28 @@ def loadFonts():
 
 #------------------------------------------------------------------------------------------
 
-def findSkin():
+def findSkin(skinPath):
 	printl("(in DMC_Global)", "findSkin", "S")
 	try:
 		import skin
-		for entry in skin.dom_skins:
-			if entry[0].startswith(config.plugins.pvmc.skinfolderpath.value):
+		for entry in reversed(skin.dom_skins):
+			print entry
+			if entry[0].startswith(skinPath):
 				printl("element=" + str( entry[1]), "findSkin -> ")
 				return  entry[1]
 	except Exception, ex:
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin -> ", "W")
-		printl("maybe openPLI, trying ...", "findSkin ->", "H")
+		printl("maybe openPLI, trying ...", "findSkin ->", "W")
 		#Maybe OpenPli
 		try:
 			import skin
-			for key in skin.dom_screens.keys():
+			for key in reversed(skin.dom_screens.keys()):
 				printl("key=" + str(key), "findSkin")
 				printl("\tpath=" + str(skin.dom_screens[key][1]), "findSkin -> ")
 				printl("\telem=" + str(skin.dom_screens[key][0]), "findSkin -> ")
-				if skin.dom_screens[key][1].startswith(config.plugins.pvmc.skinfolderpath.value):
+				if skin.dom_screens[key][1].startswith(skinPath):
 					printl("element=" + str(skin.dom_screens[key][0]), "findSkin -> ")
-					return  skin.dom_screens[key][0]
+					return skin.dom_screens[key][0]
 		except Exception, ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), "findSkin -> ", "E")
 	

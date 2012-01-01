@@ -16,7 +16,7 @@ from Components.config import configfile
 from Components.config import ConfigYesNo
 from Components.config import ConfigPassword
 import Plugins.Plugin
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN, SCOPE_CURRENT_SKIN
 
 #Cannot import log here cause config.pvmc not ready
 from Plugins.Extensions.ProjectValerie.__plugin__ import loadPlugins
@@ -86,7 +86,9 @@ except Exception, ex:
 #Also check if a real enigma2 skin contains valerie screens
 try:
 	skinPath = resolveFilename(SCOPE_SKIN)
+	printl("__init__:: Current engiam2 skin " + resolveFilename(SCOPE_CURRENT_SKIN), None, "D")
 	for skin in os.listdir(skinPath):
+		#print skin
 		path = os.path.join(skinPath, skin)
 		if os.path.isdir(path):
 			xml = os.path.join(path, "skin_valerie.xml")
@@ -94,6 +96,8 @@ try:
 				skins.append("~" + skin)
 except Exception, ex:
 	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
+
+printl("__init__:: Found enigma2 skins \"%s\"" % str(skins), None, "D")
 
 config.plugins.pvmc.skin              = ConfigSelection(default = defaultSkin, choices = skins)
 config.plugins.pvmc.url               = ConfigText(default = defaultURL)
@@ -114,16 +118,14 @@ dSize = getDesktop(0).size()
 skinLoaded = False
 try:
 	if config.plugins.pvmc.skin.value[0:1] == "~": #Enigma2 Skin
-		skinPath = resolveFilename(SCOPE_SKIN) + "/" + config.plugins.pvmc.skin.value[1:] + "/"
+		skinPath = resolveFilename(SCOPE_SKIN) + config.plugins.pvmc.skin.value[1:] + "/"
 		skinXml  = skinPath + "skin_valerie.xml"
-		config.plugins.pvmc.skinfolderpath.value = resolveFilename(SCOPE_SKIN) + "/"
 	else:
 		skinPath = config.plugins.pvmc.skinfolderpath.value + config.plugins.pvmc.skin.value + "/" + str(dSize.width()) + "x" + str(dSize.height()) + "/"
 		skinXml  = skinPath + "skin.xml"
-		config.plugins.pvmc.skinfolderpath.value = defaultSkinFolderPath
 	printl("__init__:: loading Skin " + skinXml, None, "I")
 	loadSkin(skinXml)
-	loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
+	loadSingleSkinData(getDesktop(0), findSkin(skinPath), skinPath)
 	skinLoaded = True
 except Exception, ex:
 	printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
@@ -137,7 +139,7 @@ if skinLoaded == False:
 		skinXml  = skinPath + "skin.xml"
 		printl("__init__:: loading Skin " + skinXml, None, "I")
 		loadSkin(skinXml)
-		loadSingleSkinData(getDesktop(0), findSkin(), skinPath)
+		loadSingleSkinData(getDesktop(0), findSkin(skinPath), skinPath)
 		skinLoaded = True
 	except Exception, ex:
 		printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
