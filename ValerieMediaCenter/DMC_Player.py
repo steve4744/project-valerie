@@ -52,7 +52,7 @@ class PVMC_Player(MoviePlayer):
 			self.current = 0
 			firstPath = self.playlist[0][0]
 			firstName = self.playlist[0][1]
-			if firstPath.endswith(".ts"):
+			if firstPath.endswith(".ts") or firstPath.endswith(".m2ts"):
 				type = 1
 			else:
 				type = 4097
