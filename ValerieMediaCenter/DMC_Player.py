@@ -227,7 +227,7 @@ class PVMC_Player(MoviePlayer):
 			pluginSettingsList = plugin.fnc(args, self.flags)
 
 	def playFile(self, selectedPath, selectedName):
-		if selectedPath.endswith(".ts"):
+		if selectedPath.endswith(".ts") or selectedPath.endswith(".m2ts"):
 			type = 1
 		else:
 			type = 4097
