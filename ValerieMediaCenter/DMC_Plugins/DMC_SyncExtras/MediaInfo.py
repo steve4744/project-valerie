@@ -431,6 +431,23 @@ class MediaInfo(object):
 		
 		#################### DVD ######################
 		
+		#################### BDMV #####################
+		
+		if self.Extension.lower() == u"m2ts":
+			dirs = self.Path.split(u"/")
+			printl("dirs=" + str(dirs), self)
+			if dirs[len(dirs) - 1] == "STREAM":
+				if dirs[len(dirs) - 2] == "BDMV": #title/BDMV/STREAM/000000.m2ts
+					self.SearchString = dirs[len(dirs) - 3]
+				else: #title/STREAM/000000.m2ts
+					self.SearchString = dirs[len(dirs) - 2]
+				self.SearchString = self.SearchString.lower()
+				self.Resolution = u"1080p" # Are all bluray in 1080p?
+				self.Sound = u"dts" # Are all bluray in DTS
+				printl("BDMV: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
+		
+		#################### BDMV ######################
+		
 		### Replacements PRE
 		printl("Replacements PRE on " + str(self.SearchString), self, "I")
 		step = 1
