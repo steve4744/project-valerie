@@ -52,8 +52,10 @@ class PVMC_Player(MoviePlayer):
 			self.current = 0
 			firstPath = self.playlist[0][0]
 			firstName = self.playlist[0][1]
-			if firstPath.endswith(".ts") or firstPath.endswith(".m2ts"):
+			if firstPath.endswith(".ts"):
 				type = 1
+			elif firstPath.endswith(".m2ts"):
+				type = 3
 			else:
 				type = 4097
 			ref = eServiceReference(type, 0, firstPath)
@@ -227,8 +229,10 @@ class PVMC_Player(MoviePlayer):
 			pluginSettingsList = plugin.fnc(args, self.flags)
 
 	def playFile(self, selectedPath, selectedName):
-		if selectedPath.endswith(".ts") or selectedPath.endswith(".m2ts"):
+		if selectedPath.endswith(".ts"):
 			type = 1
+		elif selectedPath.endswith(".m2ts"):
+			type = 3
 		else:
 			type = 4097
 		
