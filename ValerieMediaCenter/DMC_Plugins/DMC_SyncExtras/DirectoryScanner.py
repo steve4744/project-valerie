@@ -82,7 +82,30 @@ class DirectoryScanner():
 	def _directoryHasChanged(self, directory, fileExtList, fileIgnoreRegex):
 		printl("directory=" + str(directory), self)
 		try:
-			for f in os.listdir(directory):
+			# Get all files and folders in "directory"
+			filesAndFolders = os.listdir(directory)
+			# Test if the folder should be ignored
+			if "ignore" in filesAndFolders:
+				printl("Ignoring folder " + str(directory), self, "I")
+				return
+			
+			if directory.endswith("STREAM"):
+				printl("BDMV", self, "I")
+				#Probably BDMV, so only add biggest file to the mix
+				sizes = []
+				for f in filesAndFolders:
+					file = os.path.join(directory, f)
+					if os.path.isfile(file):
+						(shortname, extension) = self.filenameToTulpe(f)
+						if extension == "m2ts":
+							sizes.append((os.path.getsize(file), f))
+				
+				sortedSizes = sorted(sizes, key=lambda x: x[0], reverse=True)
+				sortedSizes = sortedSizes[1:]
+				for f in sortedSizes:
+					filesAndFolders.remove(f[1])
+			
+			for f in filesAndFolders:
 				file = os.path.join(directory, f)
 				if os.path.isfile(file):
 					# File is f and path is directory
@@ -121,6 +144,22 @@ class DirectoryScanner():
 			if "ignore" in filesAndFolders:
 				printl("Ignoring folder " + str(directory), self, "I")
 				return
+			
+			if directory.endswith("STREAM"):
+				printl("BDMV", self, "I")
+				#Probably BDMV, so only add biggest file to the mix
+				sizes = []
+				for f in filesAndFolders:
+					file = os.path.join(directory, f)
+					if os.path.isfile(file):
+						(shortname, extension) = self.filenameToTulpe(f)
+						if extension == "m2ts":
+							sizes.append((os.path.getsize(file), f))
+				
+				sortedSizes = sorted(sizes, key=lambda x: x[0], reverse=True)
+				sortedSizes = sortedSizes[1:]
+				for f in sortedSizes:
+					filesAndFolders.remove(f[1])
 			
 			# Get change date of folder
 			self.folderList[self.directory][directory] = os.path.getmtime(directory)
