@@ -131,7 +131,7 @@
   <screen name="PVMC_ListView" position="0,0" size="720,576" title=" " flags="wfNoBorder" backgroundColor="pvBackground">
     <widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="210,20" size="480,28" font="Dream;30" foregroundColor="pvForeground" halign="right" />
 	<!-- params -->
-	<widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+	<widget name="API" text="7" position="0,0" zPosition="0" size="1,1" />
 	<!-- visu -->
 	<eLabel position="0,0" size="720,576" zPosition="1" backgroundColor="pvBackground" transparent="0" />
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/top.png" zPosition="7" position="0,0" size="720,52" alphatest="blend" />
@@ -140,8 +140,10 @@
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/vseparator.png" zPosition="5" position="265,120" size="8,576" alphatest="blend" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/bluerayCover.png" zPosition="3" position="276,148" size="157,283" alphatest="blend" />
     <!-- content -->
-    <widget name="listview_itemsperpage" text="12" position="0,0" zPosition="3" size="1,1" />
-    <widget source="listview" render="Listbox" zPosition="3" position="20,145" size="220,322" scrollbarMode="showNever" transparent="0" backgroundColor="pvBackground" backgroundColorSelected="pvBackgroundSelected"  foregroundColor="pvForeground" foregroundColorSelected="pvForegroundSelected" >
+    <widget name="listview_itemsperpage" text="14" position="0,0" zPosition="3" size="1,1" />
+    <widget name="seenPng" zPosition="9" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/images/seen.png" />
+    <widget name="unseenPng" zPosition="9" position="0,0" size="32,32" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/images/unseen.png" />  
+	<widget source="listview" render="Listbox" zPosition="3" position="20,145" size="220,322" scrollbarMode="showNever" transparent="0" backgroundColor="pvBackground" backgroundColorSelected="pvBackgroundSelected"  foregroundColor="pvForeground" foregroundColorSelected="pvForegroundSelected" >
       <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0, 0), size = (210, 26), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0) ],
             "fonts": [gFont("Modern", 16)],
@@ -197,7 +199,7 @@
   <screen name="PVMC_PosterView" position="0,0" size="720,576" title=" " flags="wfNoBorder" backgroundColor="pvTransp">
     <widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="210,20" size="480,28" font="Dream;30" backgroundColor="pvBackground" foregroundColor="pvForeground" halign="right" />
 	<!-- params -->
-	<widget name="API" text="6" position="0,0" zPosition="0" size="1,1" />
+	<widget name="API" text="7" position="0,0" zPosition="0" size="1,1" />
     <!-- visu -->
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/top.png" zPosition="2" position="0,0" size="720,52" alphatest="blend" />
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/bottom.png" zPosition="2" position="0,524" size="720,52" alphatest="blend" />
@@ -221,7 +223,17 @@
     <widget name="poster_+1" transparent="0" zPosition="5" position="431,270" size="110,214" alphatest="blend" />
     <widget name="poster_+2" transparent="0" zPosition="5" position="547,270" size="110,214" alphatest="blend" />
     <widget name="poster_+3" transparent="0" zPosition="5" position="663,270" size="110,214" alphatest="blend" />
-    <widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="63,260" size="594,234" backgroundColor="pvBackground" />
+    
+	<widget name="seenPng" zPosition="6" position="0,0" size="56,40" text="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/images/seen_poster.png" />
+    <widget name="seen_-3" transparent="0" zPosition="6" position="-94,337" size="195,267" alphatest="blend" />
+    <widget name="seen_-2" transparent="0" zPosition="6" position="112,337"  size="195,267" alphatest="blend" />
+    <widget name="seen_-1" transparent="0" zPosition="6" position="318,337" size="195,267" alphatest="blend" />
+    <widget name="seen_0"  transparent="0" zPosition="6" position="542,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+1" transparent="0" zPosition="6" position="766,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+2" transparent="0" zPosition="6" position="972,337" size="195,267" alphatest="blend" />
+    <widget name="seen_+3" transparent="0" zPosition="6" position="1178,337" size="195,267" alphatest="blend" />
+	
+	<widget name="shortDescriptionContainer" transparent="0" zPosition="8" position="63,260" size="594,234" backgroundColor="pvBackground" />
     <widget name="shortDescription" transparent="1" zPosition="9" halign="left" position="73,270" size="584,214" font="Modern;15" backgroundColor="pvBackground" foregroundColor="pvForeground" />
     <!-- buttons -->
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/720x576/buttons/red.png" zPosition="3" position="30,556" size="150,2" alphatest="blend" />
