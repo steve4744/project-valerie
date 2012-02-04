@@ -7,7 +7,8 @@ $(document).ready(function(){
 		"aaSorting": [[ 1, "asc" ]],
 		<!-- PAGINATION_FLAG -->
 		"bJQueryUI": true,
-		"sPaginationType": "full_numbers"
+		"sPaginationType": "full_numbers",
+		"sScrollY": ""
 	} );
 
 	if (params["mode"] == "error") {
