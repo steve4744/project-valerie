@@ -419,26 +419,31 @@ class databaseHandlerPICKLE(object):
 		
 		return element
 	
-	def _getMediaFiles(self, mediaType=None, statusOk=True): # for dump only
+	def _getMediaFiles(self, mediaType=None, statusOk=True, getAll=False): # for dump only
 		printl("->", self, "S")
 		newList	= {}
 		
 		self._mediaFilesCheckLoaded()
 		start_time = time.time()
 		addRecord = False
-		for key in self._dbMediaFiles:
-			if self._checkKeyValid(key):
-				#printl("compare*"+str(self._dbMediaFiles[key].getMediaType())+"*"+str(mediaType))
-				# check media type
-				if mediaType is not None and self._dbMediaFiles[key].getMediaType() != mediaType:
-					continue
-				#check Status
-				if statusOk and not self._dbMediaFiles[key].isStatusOk():
-					continue
-				if not statusOk and self._dbMediaFiles[key].isStatusOk():
-					continue
-						
+		
+		if (getAll):
+			for key in self._dbMediaFiles:
 				newList[key] = self._dbMediaFiles[key]
+		else:
+			for key in self._dbMediaFiles:
+				if self._checkKeyValid(key):
+					#printl("compare*"+str(self._dbMediaFiles[key].getMediaType())+"*"+str(mediaType))
+					# check media type
+					if mediaType is not None and self._dbMediaFiles[key].getMediaType() != mediaType:
+						continue
+					#check Status
+					if statusOk and not self._dbMediaFiles[key].isStatusOk():
+						continue
+					if not statusOk and self._dbMediaFiles[key].isStatusOk():
+						continue
+							
+					newList[key] = self._dbMediaFiles[key]
 
 		elapsed_time = time.time() - start_time
 		printl("Took: " + str(elapsed_time), self)
@@ -954,6 +959,32 @@ class databaseHandlerPICKLE(object):
 		f.write(str(self.getMediaPaths())) 
 		f.flush()
 		
+		f.write("\n\n")
+		f.write("-------------------------------\n")
+		f.write("-- MediaFiles - All Items -----\n")
+		f.write("-------------------------------\n")
+		f.write("\n")
+		f.write("Count\tKey   \tId   \tParent\tType  \tStatus \tErr No\tTitle\t\tFilename\t\tFailed Cause\n")		
+		f.write("\n")
+		cnt=0
+		s = u""
+		records = self._getMediaFiles(None, False, True)
+		for key in records:
+			cnt += 1
+			s = str(cnt) + "\t"			
+			if self._checkKeyValid(key):	
+				s += str(key) + "\t"
+				s += str(records[key].Id) + "\t"
+				s += str(records[key].ParentId) + "\t"
+				s += str(records[key].MediaType) + "\t"
+				s += str(records[key].MediaStatus) + "\t"
+				s += str(records[key].syncErrNo) + "\t"
+				s += str(records[key].Title) + "\t\t"
+				s += str(records[key].Filename) + "\t\t"
+				s += str(records[key].syncFailedCause) + "\t"
+			f.write(s+"\n")
+		f.write("\n\n")
+		f.flush()
 		return True			
 
 
