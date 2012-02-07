@@ -102,8 +102,15 @@ class Movies(Resource):
 			evtStream = self._streamMovie(mediaId, "isMovie")
 			evtPlay = self._playMovie(mediaId, "isMovie")
 			evtLoad = self._downloadMovie(mediaId, "isMovie")
+			evtFailed = self._moveToFailed(entry, "isMovie")
+			
+			if (entry.Seen == 1 or entry.Seen == "1"):
+				isSeen = ""
+			else:
+				isSeen = '<img src="/content/global/img/unseen.png" alt="unseen" title="unseen"></img>'
 			
 			tableBody += u"""   <tr>
+							<td>%s</td>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%s</td>
@@ -114,9 +121,10 @@ class Movies(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Movie" title="stream Movie" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Movie" title="play Movie" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Movie" title="download Movie" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/error.png" alt="move to failed" title="move to failed" /></a>
 							</td>
 						  </tr>
-					""" % (entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
+					""" % (isSeen, entry.ImdbId, entry.Title, entry.Year, entry.ImdbId, entry.ImdbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad, evtFailed)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -156,6 +164,17 @@ class Movies(Resource):
 	############################################	
 	def _downloadMovie (self, mediaId, mediaType):
 		onclick = "javascript: download('" + str(mediaId) + "','" + mediaType + "');"	
+	
+		return onclick
+	############################################	
+	def _moveToFailed (self, entry, type):
+		onclick = "javascript:if (confirm('Are you sure to move the selected record to the failed section?'))"
+		onclick += "{window.open('/action?type="
+		onclick += str(type) + "&"
+		onclick += "mode=moveToFailedSection&"
+		onclick += "Id=" + str(entry.Id) + "&"
+		onclick  += "ParentId=" + str(entry.ParentId)
+		onclick += "', '_self')} else { return};"
 	
 		return onclick
 		
@@ -280,8 +299,15 @@ class Episodes(Resource):
 			evtStream = self._streamEpisode(mediaId, "isEpisode")
 			evtPlay = self._playEpisode(mediaId, "isEpisode")
 			evtLoad = self._downloadEpisode(mediaId, "isEpisode")
+			evtFailed = self._moveToFailed(entry, "isEpisode")
+			
+			if (entry.Seen == 1 or entry.Seen == "1"):
+				isSeen = ""
+			else:
+				isSeen = '<img src="/content/global/img/unseen.png" alt="unseen" title="unseen"></img>'
 			
 			tableBody += u"""   <tr>
+							<td>%s</td>
 							<td><img src=\"/media/%s_poster_195x267.png\" width="78" height="107" alt="n/a"></img></td>
 							<td>%s</td>
 							<td>%s</td>
@@ -295,9 +321,10 @@ class Episodes(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/stream.png" alt="stream Episode" title="stream Episode" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/play-grey.png" alt="play Episode" title="play Episode" /></a>
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/download.png" alt="download Episode" title="download Episode" /></a>
+								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/error.png" alt="move to failed" title="move to failed" /></a>
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad)
+			""" % (isSeen, entry.TheTvDbId, entry.Title, entry.Season, entry.Episode, entry.Year, entry.ImdbId, entry.TheTvDbId, evtEdit, evtDelete, evtStream, evtPlay, evtLoad, evtFailed)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)
@@ -336,6 +363,17 @@ class Episodes(Resource):
 	############################################	
 	def _downloadEpisode (self, mediaId, mediaType):
 		onclick = "javascript: download('" + str(mediaId) + "','" + mediaType + "');"	
+	
+		return onclick
+	############################################	
+	def _moveToFailed (self, entry, type):
+		onclick = "javascript:if (confirm('Are you sure to move the selected record to the failed section?'))"
+		onclick += "{window.open('/action?type="
+		onclick += str(type) + "&"
+		onclick += "mode=moveToFailedSection&"
+		onclick += "Id=" + str(entry.Id) + "&"
+		onclick  += "ParentId=" + str(entry.ParentId)
+		onclick += "', '_self')} else { return};"
 	
 		return onclick
 	

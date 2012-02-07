@@ -3,9 +3,12 @@ $(document).ready(function(){
 	var params = get_params();
 	$('#main_table').dataTable( {
 		"aaSorting": [[ 1, "asc" ]],
-		<!-- PAGINATION_FLAG -->
 		"bJQueryUI": true,
-		"sPaginationType": "full_numbers"
+		"sPaginationType": "full_numbers",
+		"sScrollY": "",
+        "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+		<!-- PAGINATION_FLAG --> 
+		iDisplayStart: 0,
 	} );
 
 	if (params["showSave"] != "true") {

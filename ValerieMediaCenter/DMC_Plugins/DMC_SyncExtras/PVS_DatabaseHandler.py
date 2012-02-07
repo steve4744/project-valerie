@@ -97,21 +97,22 @@ try:
 except Exception, ex:
 	printl("PVS_DatabaseHandlerPICKLE V2 not Loaded :(   "+ str(ex), None, "H")
 		
-try:					   
-	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
-	from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
-	printl("PVS_DatabaseHandlerPICKLE Loaded :)", None, "H")
-	DATABASE_HANDLER_FOUND = True
-except Exception, ex:
-	printl("PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "H")
+#we do not need them anymore in my point of view
+#try:					   
+#	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+#	from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+#	printl("PVS_DatabaseHandlerPICKLE Loaded :)", None, "H")
+#	DATABASE_HANDLER_FOUND = True
+#except Exception, ex:
+#	printl("PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "H")
 	
-try:
-	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerTXD import databaseHandlerTXD
-	from PVS_DatabaseHandlerTXD import databaseHandlerTXD
-	printl("PVS_DatabaseHandlerTXD Loaded    :)", None, "H")
-	DATABASE_HANDLER_FOUND = True
-except Exception, ex:
-	printl("PVS_DatabaseHandlerTXD not Loaded :(   "+ str(ex), None, "H")
+#try:
+#	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerTXD import databaseHandlerTXD
+#	from PVS_DatabaseHandlerTXD import databaseHandlerTXD
+#	printl("PVS_DatabaseHandlerTXD Loaded    :)", None, "H")
+#	DATABASE_HANDLER_FOUND = True
+#except Exception, ex:
+#	printl("PVS_DatabaseHandlerTXD not Loaded :(   "+ str(ex), None, "H")
 	
 if DATABASE_HANDLER_FOUND != True:
 	printl("Exception: no DatabaseLoader installed :(   ", None, "E")
@@ -454,9 +455,9 @@ class Database(object):
 		printl("->", self, "S")
 		return self.dbHandler.insertMediaWithDict(key_value_dict)
 	
-	def updateMediaWithDict(self, key_value_dict):	#ID is Required
+	def updateMediaWithDict(self, key_value_dict,resetState=True):	#ID is Required
 		printl("->", self, "S")
-		return self.dbHandler.updateMediaWithDict(key_value_dict)
+		return self.dbHandler.updateMediaWithDict(key_value_dict, resetState)
 	
 	def deleteMedia(self, id):
 		printl("->", self, "S")

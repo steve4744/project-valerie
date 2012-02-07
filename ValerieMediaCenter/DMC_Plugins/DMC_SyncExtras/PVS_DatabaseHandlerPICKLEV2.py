@@ -647,13 +647,11 @@ class databaseHandlerPICKLEV2(object):
 		
 		return self.insertMedia(m)
 		
-	def updateMediaWithDict(self, key_value_dict):
+	def updateMediaWithDict(self, key_value_dict, resetState=True):
 		printl("->", self, "S")
 		if not "Id" in key_value_dict or key_value_dict['Id'] == u"":
 				printl("Id not defined", self, 5)
 				return False
-		#Not working for "change Type"
-		#type = key_value_dict["MediaType"]
 		
 		self._mediaFilesCheckLoaded()		
 		key = self._getMediaKeyWithId(key_value_dict['Id'])
@@ -662,8 +660,10 @@ class databaseHandlerPICKLEV2(object):
 		if m is None:
 			printl("Media not found on DB [Id:"+ str(key_value_dict['Id']) +"]", self, 5)
 			return False
+		
 		#reset status if in failed
-		key_value_dict["MediaStatus"] = MediaInfo.STATUS_OK
+		if (resetState):
+			key_value_dict["MediaStatus"] = MediaInfo.STATUS_OK
 
 		self.MediaFilesCommited = False
 		self._fillMediaInfo(m, key_value_dict)
@@ -928,8 +928,7 @@ class databaseHandlerPICKLEV2(object):
 		f.write("-- MediaFiles - All Items -----\n")
 		f.write("-------------------------------\n")
 		f.write("\n")
-		f.write("Count\tKey   \tId   \tParent\tType  \tStatus \tErr No\tTitle\t\tFilename\t\tFailed Cause\n")		
-		f.write("\n")
+		f.write("Count	\tKey   \tId   \tParent	\tMediaType  \tMediaStatus \tsyncErrNo	\tsyncFailedCause	\tImdbId	\tTheTvDbId	\tSeason	\tEpisode	\tCRC	\tCRCFile	\tFileCreation	\tFileSize	\tTitle	\tFilename\n")		
 		cnt=0
 		s = u""
 		records = self._getMediaFiles(None, False, True)
@@ -943,9 +942,17 @@ class databaseHandlerPICKLEV2(object):
 				s += str(records[key].MediaType) + "\t"
 				s += str(records[key].MediaStatus) + "\t"
 				s += str(records[key].syncErrNo) + "\t"
-				s += str(records[key].Title) + "\t\t"
-				s += str(records[key].Filename) + "\t\t"
 				s += str(records[key].syncFailedCause) + "\t"
+				s += str(records[key].ImdbId) + "\t"
+				s += str(records[key].TheTvDbId) + "\t"
+				s += str(records[key].Season) + "\t"
+				s += str(records[key].Episode) + "\t"
+				s += str(records[key].CRC) + "\t"
+				s += str(records[key].CRCFile) + "\t"
+				s += str(records[key].FileCreation) + "\t"
+				s += str(records[key].FileSize) + "\t"
+				s += str(records[key].Title) + "\t\t\t\t\t\t\t\t"
+				s += str(records[key].Filename) + "\t\t"
 			f.write(s+"\n")
 		f.write("\n\n")
 		f.flush()
@@ -956,30 +963,47 @@ class databaseHandlerPICKLEV2(object):
 ###################################  UTILS  ###################################
 	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
-		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'EpisodeLast', 'Seen', 'ShowUp', 'FileCreation']
-		
+		printl(key_value_dict, self)
+				
 		for key in key_value_dict.keys():
 			try:
-				printl("KEY: " + str(key), self)
-				if key in intFields:
+				typeOfValue = self._getTypeOfValue(key_value_dict[key])
+				if (typeOfValue == "int"):
 					# To avoid null Values
 					if key_value_dict[key] is None or key_value_dict[key] == "" or key_value_dict[key] == "None": 
 						value = None
 					else:
 						value = int(key_value_dict[key])
+				elif (typeOfValue == "none"):
+					pass
 				else:
 					# check is in Utf8
 					if not isinstance(key_value_dict[key], unicode):
 						try:
 							value = Utf8.stringToUtf8(key_value_dict[key])
 						except Exception, ex:
-							printl("Key convertion to Utf8 error: "+ repr(key) + " Ex: " + str(ex), self)
+							printl("Key conversion to Utf8 error: "+ repr(key) + " Ex: " + str(ex), self)
 							value = key_value_dict[key]
+					else:
+						value = key_value_dict[key]						
 				
+				printl("KEY: " + str(key) + " VALUE: " + str(value), self)
 				setattr(m, key, value)
 
 			except Exception, ex:
 				printl("Key error: "+ str(key) + " Ex: " + str(ex), self)
+	
+	def _getTypeOfValue (self, value):
+		if (value == None):
+			return "none"
+		else:
+			try:
+				int(value)
+				return "int"
+			except ValueError:
+				return "unknown"
+
+
 				
 	def checkDuplicateMF(self, path, filename, extension):
 		# Return: 	0 - notFound

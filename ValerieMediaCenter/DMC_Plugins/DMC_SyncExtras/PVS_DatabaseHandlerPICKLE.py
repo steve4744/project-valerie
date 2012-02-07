@@ -991,11 +991,11 @@ class databaseHandlerPICKLE(object):
 ###################################  UTILS  ###################################
 	def _fillMediaInfo(self, m, key_value_dict):
 		printl("->", self, "S")
-		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'Seen', 'ShowUp', 'FileCreation']
+		intFields = ['Id', 'ParentId', 'MediaType', 'MediaStatus', 'Year', 'Month', 'Day', 'Runtime', 'Popularity', 'Season', 'Disc', 'Episode', 'EpisodeLast', 'Seen', 'ShowUp', 'FileCreation', 'isEpisode', 'isXbmcNfo', 'isSerie', 'isMovie', 'syncErrNo', 'Resolution', 'TheTvDbId', 'Runtime', 'Month']
 		
 		for key in key_value_dict.keys():
 			try:
-				printl("KEY: " + str(key), self)
+
 				if key in intFields:
 					# To avoid null Values
 					if key_value_dict[key] is None or key_value_dict[key] == "" or key_value_dict[key] == "None": 
@@ -1011,6 +1011,7 @@ class databaseHandlerPICKLE(object):
 							printl("Key convertion to Utf8 error: "+ repr(key) + " Ex: " + str(ex), self)
 							value = key_value_dict[key]
 				
+				printl("KEY: " + str(key) + " VALUE: " + str(value), self)
 				setattr(m, key, value)
 
 			except Exception, ex:

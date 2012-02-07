@@ -140,7 +140,14 @@ class MediaForm(Resource):
 			nextMode = "showAddByImdbForm"
 			finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Add Media")	
 			mediainfo.SearchString = request.args["Title"][0]
-			results = Manager("WebIf:SubActions:MediaForm").searchAlternatives(mediainfo)			
+			results = Manager("WebIf:SubActions:MediaForm").searchAlternatives(mediainfo)
+		
+		#######################
+		# MOVETOFAILED
+		#######################	
+		elif currentMode == 'moveToFailed':
+			nextMode = "showAddByImdbForm"
+			#hier sollte mehr stehen lol
 		
 		if "Id" in request.args:
 			Id = request.args["Id"][0]
@@ -191,8 +198,9 @@ class MediaForm(Resource):
 			
 			seenCheck = ""
 			
-			if m.Seen == "1":
-				seenCheck = "checked"
+			printl("isSeen => " + str(m.Seen), self, "I")
+			if m.Seen == "1" or m.Seen == 1:
+				seenCheck = 'checked'
 			printl("nextMode = " + nextMode, self, "W")
 			
 			if m.ParentId == None:
@@ -420,9 +428,13 @@ class MediaActions(Resource):
 			for key in request.args.keys():
 			#	key_value_dict[key] = stringToUtf8(request.args[key][0])
 				key_value_dict[key] = request.args[key][0]
+				printl("Content: " + key + " => " + request.args[key][0], self, "I")	
 			
 			if not "Seen" in request.args:
 				key_value_dict["Seen"] = "0"
+			else:
+				if (request.args["Seen"][0] == "on"):
+					key_value_dict["Seen"] = "1"
 			
 			# edit movies		
 			if type == "isMovie":
@@ -568,6 +580,39 @@ class MediaActions(Resource):
 			elif request.args["return_to"][0] == "failed":
 				return WebHelper().redirectMeTo("/failed")
 
+		##########################
+		# MOVE TO FAILED SECTION
+		# Argument: 	request.args["mode"][0] == "moveToFailedSection"
+		# Subargument:  request.args["Id"][0] == Integer
+		##########################			
+		elif request.args["mode"][0] == "moveToFailedSection":
+			manager = Manager("WebIf:SubActions:MediaActions")
+			type = request.args["type"][0]
+			Id = request.args["Id"][0]
+			result = manager.moveToFailedSection(Id, type)
+			parentId = request.args["ParentId"][0]
+			
+			#delete movie
+			if type == "isMovie":
+				if result:
+					return WebHelper().redirectMeTo("/movies?mode=showDoneForm&showSave=true")
+				else:
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isMovie")
+				
+			# delete tvshowepisodes
+			elif type == "isEpisode":
+				if result:
+					return WebHelper().redirectMeTo("/episodes?mode=showDoneForm&ParentId=" + parentId + "&showSave=true")
+				else:
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&tpye=isEpisode&ParentId=" + parentId)
+				
+			# delete tvshow		
+			elif type == "isTvShow":
+				if result:
+					return WebHelper().redirectMeTo("/tvshows?mode=showDoneForm&showSave=true")
+				else:
+					return WebHelper().redirectMeTo("/mediaForm?mode=showErrorForm&type=isTvShow")
+				
 ##########################
 # CLASS:
 ##########################

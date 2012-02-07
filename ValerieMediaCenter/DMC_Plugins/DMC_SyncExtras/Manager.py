@@ -212,13 +212,48 @@ class Manager():
 #
 ###################################  UTILS  ###################################
 #
-		# for test 
 	def getDbDump(self):
 		return self.db.getDbDump()
 		
 	def dbIsCommited(self):
 		return self.db.dbIsCommited()
+	
+	def moveToFailedSection(self, id, type):
+		printl("move to failed section", self)
+		m = None
+		m = self.db.getMediaWithId(id)
 		
+		if m is None:
+			printl("Moving to failed section failed - DB Error - Not found", self)	
+			return False
+		
+		#convert MediaInfo object to dictionary
+		key_value_dict = m.__dict__		
+		
+		#remove some elements from dictionary - this results in error in (_fillMediaInfo)
+		Fields = ['Plot', 'Writers', 'Directors', 'SeasonPoster', 'Alternatives', 'Path', 'Extension', 'Poster']
+		for key in Fields: 
+			if key in key_value_dict:
+				key_value_dict.pop(key)
+		
+		#change needed values in dictionary
+		key_value_dict["MediaStatus"] = 3
+		key_value_dict["syncFailedCause"] = u"Info Not Found"
+		key_value_dict["syncErrNo"] = 3
+		key_value_dict["isMovie"] = 0
+		key_value_dict["isSerie"] = 0
+		key_value_dict["isEpisode"] = 0
+		key_value_dict["TmDbId"] = u""
+		key_value_dict["ImdbId"] = u""
+		key_value_dict["type"] = u""
+		key_value_dict["MediaType"] = 0
+		
+		#make some debug :-)
+		printl(key_value_dict, self)
+		
+		self.db.updateMediaWithDict(key_value_dict, False)
+		return True
+	
 	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
 		printl("start changing arts 2", self)
 		m = None

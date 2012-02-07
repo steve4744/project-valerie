@@ -50,7 +50,7 @@
 			<tr id="tr_extension" class="requiredlabel"><td>Extension:</td><td>
 				<input class="small requiredfield"  id="extension" name="Extension" type="text" maxlength="4" value="%s"></td><td></input>(without leading . => e.g. mkv)</td></tr>		
 			<tr id="tr_seen"><td>Seen</td><td>
-				<input id="seen" name="Seen" type="checkbox" value="1" %s></td><td></input></td></tr>		
+				<input id="seen" name="Seen" type="checkbox" %s></td><td></input></td></tr>		
 			<tr><td>
 			<tr><td>
 				<input type="submit" value="Save"></input>
