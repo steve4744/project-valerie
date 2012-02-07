@@ -88,6 +88,7 @@ def findSkin(skinPath):
 class Showiframe():
 	def __init__(self):
 		printl("->", self, "S")
+		
 		try:
 			self.load()
 		except Exception, ex: 
@@ -105,6 +106,7 @@ class Showiframe():
 			return False
 		
 		libname = "libshowiframe.so.0.0.0"
+		self.finishShowSinglePic = None
 		update = Update()
 		if update.getBoxtype()[0] == "Azbox":
 			libname = "libshowiframe.az.so.0.0.0"
@@ -133,7 +135,7 @@ class Showiframe():
 
 	def finishStillPicture(self):
 		printl("->", self, "S")
-		if self.ctypes is not None:
+		if self.ctypes is not None and self.finishShowSinglePic is not None:
 			self.ctypes.call_function(self.finishShowSinglePic, ())
 
 #------------------------------------------------------------------------------------------
