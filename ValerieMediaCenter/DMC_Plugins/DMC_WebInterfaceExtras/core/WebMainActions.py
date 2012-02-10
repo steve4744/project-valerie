@@ -223,7 +223,7 @@ class TvShows(Resource):
 								<a href="#" onclick="%s"><img class="action_img" src="/content/global/img/delete-grey.png" alt="delete" title="delete" /></a>						
 							</td>
 						    </tr>
-			""" % (entry.TheTvDbId, entry.Title, entry.Year, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtAddEpisode, evtDelete)
+			""" % (entry.TheTvDbId, entry.Title, entry.Id, entry.ImdbId, entry.TheTvDbId, entry.TheTvDbId, evtShowEpisodes, evtEdit, evtAddEpisode, evtDelete)
 		
 		finalOutput = finalOutput.replace("<!-- CUSTOM_THEAD -->", tableHeader)
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TBODY -->", tableBody)

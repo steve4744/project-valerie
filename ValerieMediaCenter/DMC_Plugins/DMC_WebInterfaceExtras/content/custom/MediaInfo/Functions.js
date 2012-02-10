@@ -97,6 +97,7 @@ function changeTable(table_type) {
 		$('#tr_episode').remove();
 		$('#tr_thetvdbid').remove();
 		$('#tr_tag').remove();
+		$('#tr_partentid').remove();
 	} else if (table_type == "isTvShow") {
 		$('#tr_tag').remove();
 		$('#tr_season').remove();

@@ -175,26 +175,26 @@ class MediaForm(Resource):
 		else:
 			if type == "isMovie":
 				if os.path.isfile(mediaFolderPath + m.ImdbId + "_poster_195x267.png"):
-					image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_poster_195x267.png")
+					image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + str(m.ImdbId) + "_poster_195x267.png")
 				else:
-					image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (m.ImdbId)
+					image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (str(m.ImdbId))
 				
-				if os.path.isfile(mediaFolderPath + m.ImdbId + "_backdrop_320x180.png"):
-					backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.ImdbId + "_backdrop_320x180.png")
+				if os.path.isfile(mediaFolderPath + str(m.ImdbId) + "_backdrop_320x180.png"):
+					backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + str(m.ImdbId) + "_backdrop_320x180.png")
 				else:
-					backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (m.ImdbId)
+					backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (str(m.ImdbId))
 				
 				
 			elif type == "isTvShow" or type == "isEpisode":
-				if os.path.isfile(mediaFolderPath + m.TheTvDbId + "_poster_195x267.png"):
-					image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_poster_195x267.png")
+				if os.path.isfile(mediaFolderPath + str(m.TheTvDbId) + "_poster_195x267.png"):
+					image = """<img id="duck_img" src="%s" width="78" height="107" alt="n/a"></img>""" % ("/media/" + str(m.TheTvDbId) + "_poster_195x267.png")
 				else:
-					image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (m.TheTvDbId)
+					image = """<img src=\"http://val.duckbox.info/convertImg2/poster/%s_195x267.png\" width="78" height="107" alt="n/a"></img>""" % (str(m.TheTvDbId))
 				
-				if os.path.isfile(mediaFolderPath + m.TheTvDbId + "_backdrop_320x180.png"):			
-					backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + m.TheTvDbId + "_backdrop_320x180.png")
+				if os.path.isfile(mediaFolderPath + str(m.TheTvDbId) + "_backdrop_320x180.png"):			
+					backdrop = """<img id="duck_backdrop_img" src="%s" width="160" height="90" alt="n/a"></img>""" % ("/media/" + str(m.TheTvDbId) + "_backdrop_320x180.png")
 				else:
-					backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (m.TheTvDbId)
+					backdrop = """<img src=\"http://val.duckbox.info/convertImg2/backdrop/%s_320x180.png\" width="160" height="90" alt="n/a">""" % (str(m.TheTvDbId))
 			
 			seenCheck = ""
 			

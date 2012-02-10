@@ -2,9 +2,9 @@
 			<input type="hidden" name="type" value=%s>
 			<input type="hidden" name="mode" value="%s">
 			<input type="hidden" Id="Id" name="Id" value="%s">
-			<input type="hidden" Id="ParentId" name="ParentId" value="%s">
 			
-			<tr><td></td></tr>
+			
+			<tr id="tr_partentid"><td>ParentId:</td><td><input type="text" Id="ParentId" name="ParentId" value="%s"></td><td>(identifies the tvshow of this episode)</td></tr>
 			<tr id="tr_type"><td>Type:</td><td id="td_type">
 				<input id="type" name="Type" type="text" size="10" value="%s" disabled="disabled"></input>
 				<input id="id2" name="id2" type="text" size="10" value="%s" disabled="disabled"></input> </td></tr> 
