@@ -81,6 +81,12 @@
 	"itemHeight": 50	}
     </convert>
   </widget>
+  <widget source="global.CurrentTime" render="Label" zPosition="9" position="0,670" size="270,28" font="Modern;20" halign="right" foregroundColor="pvForeground" transparent="1">
+	<convert type="ClockToText">Format: %A, %d.%m.%Y</convert>
+  </widget>
+  <widget source="global.CurrentTime" render="Label" zPosition="9" position="300,670" size="100,28" font="Modern;20" halign="right" foregroundColor="pvForeground" transparent="1">
+	<convert type="ClockToText">default</convert>
+  </widget>
   <!--widget source="menu" render="Listbox" enableWrapAround="True" zPosition="9" transparent="0" position="-177,-125" size="17,12" scrollbarMode="showNever">
       <convert type="StringList"/>
     </widget>
@@ -95,7 +101,7 @@
     <!--widget name="-3" transparent="1" zPosition="-2" halign="center" valign="top" position="-293,375" size="266,50" font="Dream;37" />
     <widget name="+3" transparent="1" zPosition="-2" halign="center" valign="top" position="1306,375" size="266,50" font="Dream;37" /-->
 	<!-- buttons -->
-	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/buttons/info.png" zPosition="3" position="1155,666" size="72,20" alphatest="blend" />
+	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/buttons/info.png" zPosition="3" position="1155,670" size="72,20" alphatest="blend" />
   </screen>
   <!-- PVMC_Update -->
   <screen name="PVMC_Update" position="0,0" size="1280,720" title=" " backgroundColor="pvBackground" flags="wfNoBorder">

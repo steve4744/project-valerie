@@ -81,6 +81,12 @@
 	"itemHeight": 40	}
     </convert>
   </widget>
+  <widget source="global.CurrentTime" render="Label" zPosition="9" position="0,533" size="270,28" font="Modern;16" halign="right" foregroundColor="pvForeground" transparent="1">
+	<convert type="ClockToText">Format: %A, %d.%m.%Y</convert>
+  </widget>
+  <widget source="global.CurrentTime" render="Label" zPosition="9" position="200,533" size="100,28" font="Modern;16" halign="right" foregroundColor="pvForeground" transparent="1">
+	<convert type="ClockToText">default</convert>
+  </widget>
   <!--widget source="menu" render="Listbox" enableWrapAround="True" zPosition="9" transparent="0" position="-142,-100" size="14,10" scrollbarMode="showNever">
       <convert type="StringList"/>
     </widget>
