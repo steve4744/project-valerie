@@ -1025,7 +1025,9 @@ class databaseHandlerPICKLEV2(object):
 		for key in self._dbMediaFiles:
 			if self._checkKeyValid(key):		# only for Pickle
 				m = self._dbMediaFiles[key]
-
+				
+				#for some reason m.Extension become sometimes int
+				m.Extension = str(m.Extension)
 					
 				# only if mediafile as no childs
 				if m.MediaType != MediaInfo.SERIE:
