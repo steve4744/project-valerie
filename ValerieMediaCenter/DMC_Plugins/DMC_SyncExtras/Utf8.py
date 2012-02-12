@@ -49,6 +49,7 @@ def stringToUtf8(rawString):
 # @param utfString: The UTF-8 string 
 # @return: The Latin-1 string or an empty string if conversion failed
 def utf8ToLatin(utfString):
+	utfString = str(utfString)
 	latinString = None
 	if utfString is not None:
 		#printl (repr (utfString ))

@@ -65,7 +65,7 @@ class DMC_MovieLibrary(DMC_Library):
 				d["Day"]           = movie.Day
 				d["Date"]          = movie.getDate()
 				d["Filename"]      = utf8ToLatin(movie.Filename).lower()
-				d["Path"]          = utf8ToLatin(movie.Path + "/" + movie.Filename + "." + movie.Extension)
+				d["Path"]          = utf8ToLatin(str(movie.Path) + "/" + str(movie.Filename) + "." + str(movie.Extension))
 				d["Creation"]      = movie.FileCreation
 				d["Plot"]          = utf8ToLatin(movie.Plot)
 				d["Runtime"]       = movie.Runtime
