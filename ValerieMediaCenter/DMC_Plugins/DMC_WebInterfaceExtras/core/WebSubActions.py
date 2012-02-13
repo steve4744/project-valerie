@@ -422,7 +422,8 @@ class MediaActions(Resource):
 			manager = Manager("WebIf:SubActions:MediaActions")
 			type = stringToUtf8(request.args["type"][0])
 			Id = request.args["Id"][0]
-			parentId = request.args["ParentId"][0]
+			if (type == "isEpisode"):
+				parentId = request.args["ParentId"][0]
 			
 			key_value_dict = {}				
 			for key in request.args.keys():
