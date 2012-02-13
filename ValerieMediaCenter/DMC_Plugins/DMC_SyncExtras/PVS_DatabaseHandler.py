@@ -97,7 +97,6 @@ try:
 except Exception, ex:
 	printl("PVS_DatabaseHandlerPICKLE V2 not Loaded :(   "+ str(ex), None, "H")
 		
-we do not need them anymore in my point of view
 try:					   
 	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
 	from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
