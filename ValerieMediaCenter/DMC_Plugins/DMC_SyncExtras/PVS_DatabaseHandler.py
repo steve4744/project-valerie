@@ -97,14 +97,14 @@ try:
 except Exception, ex:
 	printl("PVS_DatabaseHandlerPICKLE V2 not Loaded :(   "+ str(ex), None, "H")
 		
-#we do not need them anymore in my point of view
-#try:					   
-#	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
-#	from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
-#	printl("PVS_DatabaseHandlerPICKLE Loaded :)", None, "H")
-#	DATABASE_HANDLER_FOUND = True
-#except Exception, ex:
-#	printl("PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "H")
+we do not need them anymore in my point of view
+try:					   
+	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+	from PVS_DatabaseHandlerPICKLE import databaseHandlerPICKLE
+	printl("PVS_DatabaseHandlerPICKLE Loaded :)", None, "H")
+	DATABASE_HANDLER_FOUND = True
+except Exception, ex:
+	printl("PVS_DatabaseHandlerPICKLE not Loaded :(   "+ str(ex), None, "H")
 	
 #try:
 #	from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.PVS_DatabaseHandlerTXD import databaseHandlerTXD
