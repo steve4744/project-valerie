@@ -52,7 +52,7 @@ def startPlugin(session):
 		session.open(ProjectValerieSync)
 	else:
 		from Screens.MessageBox import MessageBox
-		session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
+		session.open(MessageBox,_("No internet connection available!"), MessageBox.TYPE_INFO, timeout=10)
 
 registerPlugin(Plugin(id="sync", name=_("Synchronize"), fnc=settings, where=Plugin.SETTINGS))
 registerPlugin(Plugin(id="sync", name=_("Synchronize"), fnc=startPlugin, where=Plugin.MENU_SYSTEM, supportStillPicture=True, weight=10))
