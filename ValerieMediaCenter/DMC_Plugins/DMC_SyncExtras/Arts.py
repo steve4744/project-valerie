@@ -51,10 +51,11 @@ class Arts():
 				fileInfo = file.strip().split('|')
 				printl("fileInfo=" + str(fileInfo), self, "D")
 				if len(fileInfo) == 2:
-					WebGrabber.getFile(self.URL + fileInfo[1], fileInfo[0], overwrite=overwrite)
+					printl("overwrite => " + str(overwrite), self, "I")
+					WebGrabber.getFile(self.URL + fileInfo[1], fileInfo[0], retry=3, fixurl=True, overwrite=overwrite)
 
 	def download(self, eInfo, overwrite=False):
-		printl("->", self, "D")
+		printl("overwrite => " + str(overwrite), self, "I")
 		
 		id = None
 		if eInfo.isTypeMovie():
@@ -77,6 +78,7 @@ class Arts():
 		printl("<-", self, "D")
 
 	def preSave(self, type, id, url, overwrite):
+		printl("overwrite => " + str(overwrite), self, "I")
 		printl("->", self, "D")
 		if type == "poster":
 			localFile = id + "_poster_" + self.posterResolution[0] + ".png"

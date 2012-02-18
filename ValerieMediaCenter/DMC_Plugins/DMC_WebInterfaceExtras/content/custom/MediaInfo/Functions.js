@@ -183,9 +183,9 @@ function changePictures(media_type) {
 	if (debug) {alert("area => mediainfo/function.js \nfnc => changePictures " + "\nmedia_type => " + media_type);}
 	
 	if (!debug) {
-		var reply = prompt("Please specify URL or PATH to the picture.", "user://http://my.url or user:///path/to/picture");
+		var reply = prompt("Please specify URL or PATH to the picture.", "http://my.url or /path/to/picture.extension");
 	} else {
-		var reply = prompt("Please specify URL or PATH to the picture.", "user://http://img138.imageshack.us/img138/7311/iamlegendposter02.jpg");
+		var reply = prompt("Please specify URL or PATH to the picture.", "http://img138.imageshack.us/img138/7311/iamlegendposter02.jpg");
 	}
 	var params = get_params();
 	var type = params["type"];

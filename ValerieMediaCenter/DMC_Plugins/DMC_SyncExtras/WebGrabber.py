@@ -244,6 +244,7 @@ def getText(url, cache=True, fixurl=True):
 	return u""
 
 def getFile(url, name, retry=3, fixurl=True, overwrite=False):
+	#printl("overwrite => " + str(overwrite), __name__, "I")
 	try:
 		if name[:1] == "/":
 			# Filename is absolut

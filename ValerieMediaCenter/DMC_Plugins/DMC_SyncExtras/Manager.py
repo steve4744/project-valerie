@@ -255,7 +255,7 @@ class Manager():
 		return True
 	
 	def changeMediaArts(self, type, id, overwrite=False, backdrop=None, poster=None):
-		printl("start changing arts 2", self)
+		printl("start changing arts", self, "I")
 		m = None
 		if type == self.MOVIES:
 			m = self.db.getMediaWithId(id)
@@ -281,6 +281,7 @@ class Manager():
 		
 		if m.Backdrop is not None or m.Poster is not None:
 			printl("downloading arts", self)
+			#printl("overwrite => " + str(overwrite), self, "I")
 			Arts().download(m, overwrite)
 			return True
 		else:

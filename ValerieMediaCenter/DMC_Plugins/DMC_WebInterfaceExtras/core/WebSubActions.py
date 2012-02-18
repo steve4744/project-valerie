@@ -525,6 +525,16 @@ class MediaActions(Resource):
 			media_type = request.args["media_type"][0]
 			Id = request.args["Id"][0]
 			
+			printl("media_source => " + media_source + ")", self, "I")
+			if (media_source[0:7] != "user://"):
+				if(media_source[0:7] == "http://" or media_source[0:8] == "https://" or media_source[0:1] == "/"):
+					media_source = "user://" + media_source
+					printl("media_source without user:// found => correcting to new value = " + media_source, self, "I")
+				else:
+					printl("media_source seems to have bad format at all - trying it anyway without warranty ;-)", self, "W")
+			else:
+				printl("media_source with user:// found => no changes needed", self, "I")	
+			
 			#change movie art
 			if type == "isMovie":
 				t = Manager.MOVIES
