@@ -1324,7 +1324,7 @@ class databaseHandlerPICKLE(object):
 			m.Filename = Utf8.stringToUtf8(m.Filename)
 		if not isinstance(m.Extension, unicode):
 			m.Extension = Utf8.stringToUtf8(m.Extension)
-		path = Utf8.utf8ToLatin(m.Path + u"/" + m.Filename + u"." + m.Extension)				
+		path = Utf8.utf8ToLatin(str(m.Path) + u"/" + str(m.Filename) + u"." + str(m.Extension))				
 
 		if os.path.exists(path):
 			try:
