@@ -185,24 +185,31 @@ class DMC_TvShowLibrary(DMC_Library):
 					if episode.Season is None and episode.Disc is None and episode.Episode is not None: # 
 						# Only Episode
 						d["Title"]   = "  %s: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+					
 					elif episode.Season is None and episode.Disc is not None and episode.Episode is None: 
 						# Only Disc
 						d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+					
 					elif episode.Season is not None and episode.Disc is None and episode.Episode is not None and episode.EpisodeLast is not None: # 
 						# Without Disc, With Episode And EpisodeLast
 						d["Title"]   = "  %02d-%02d: %s" % (episode.Episode, episode.EpisodeLast, utf8ToLatin(episode.Title), )
+					
 					elif episode.Season is not None and episode.Disc is None and episode.Episode is not None: # 
 						# Without Disc, With Episode
 						d["Title"]   = "  %02d: %s" % (episode.Episode, utf8ToLatin(episode.Title), )
+					
 					elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is not None: # 
 						# With Disc,    With Episode And EpisodeLast
-						d["Title"]   = "  Disc %s: Episode %s - %s" % (episode.Disc, episode.Episode, episode.EpisodeLast, )
+						d["Title"]   = "  D%sE%s-E%s: %s" % (episode.Disc, episode.Episode, episode.EpisodeLast, utf8ToLatin(episode.Title) )
+					
 					elif episode.Season is not None and episode.Disc is not None and episode.Episode is not None and episode.EpisodeLast is None: # 
 						# With Disc,    Without EpisodeLast
-						d["Title"]   = "  Disc %s: Episode %s" % (episode.Disc, episode.Episode, )
+						d["Title"]   = "  D%sE%s: %s" % (episode.Disc, episode.Episode, utf8ToLatin(episode.Title), )
+					
 					elif episode.Season is not None and episode.Disc is not None and episode.Episode is None: # 
 						# With Disc,    Without Episode
 						d["Title"]   = "  Disc %s: %s" % (episode.Disc, utf8ToLatin(episode.Title), )
+					
 					else:
 						d["Title"]   = "  %s" % (utf8ToLatin(episode.Title), )
 					
