@@ -376,7 +376,8 @@ class MediaActions(Resource):
 			
 			manager = Manager("WebIf:SubActions:MediaActions")	
 			type = request.args["type"][0]
-			parentId = request.args["ParentId"][0]
+			if (type == "isEpisode"):
+				parentId = request.args["ParentId"][0]
 			
 			key_value_dict = {}				
 			for key in request.args.keys():
@@ -477,7 +478,8 @@ class MediaActions(Resource):
 			manager = Manager("WebIf:SubActions:MediaActions")
 			id = request.args["Id"][0]
 			type = request.args["type"][0]
-			parentId = request.args["ParentId"][0]
+			if (type == "isEpisode"):
+				parentId = request.args["ParentId"][0]
 
 			result = manager.deleteMedia(id)
 			#delete movie
@@ -601,7 +603,8 @@ class MediaActions(Resource):
 			type = request.args["type"][0]
 			Id = request.args["Id"][0]
 			result = manager.moveToFailedSection(Id, type)
-			parentId = request.args["ParentId"][0]
+			if (type == "isEpisode"):
+				parentId = request.args["ParentId"][0]
 			
 			#delete movie
 			if type == "isMovie":
