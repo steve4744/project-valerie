@@ -331,7 +331,7 @@
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/images/top.png" zPosition="2" position="0,0" size="1280,65" alphatest="blend" />
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blackDon/1280x720/images/bottom.png" zPosition="2" position="0,655" size="1280,65" alphatest="blend" />
     <!-- content -->
-    <widget source="listview" render="Listbox" zPosition="1" position="71,73" size="1155,568" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="pvBackground">
+    <widget source="listview" render="Listbox" zPosition="5" position="71,73" size="1155,568" scrollbarMode="showOnDemand" transparent="0" enableWrapAround="1" backgroundColor="pvBackground" backgroundColorSelected="pvBackgroundSelected"  foregroundColor="pvForeground" foregroundColorSelected="pvForegroundSelected">
       <convert type="TemplatedMultiContent">
 				{"template": [  MultiContentEntryText(pos = (17,0),  size = (1013,37), font=0, flags = RT_HALIGN_LEFT,  text = 0),
 							MultiContentEntryText(pos = (0,37), size = (1013,30), font=1, flags = RT_HALIGN_RIGHT, text = 1) ],
