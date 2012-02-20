@@ -183,34 +183,41 @@ class PVMC_Update(Screen):
 		}, -1)
 		
 		self.onLayoutFinish.append(self.setCustomTitle)
-		self.onFirstExecBegin.append(self.startUpdate)
-
-
+		self.onFirstExecBegin.append(self.checkForUpdate)
+		
+			
 	def setCustomTitle(self):
 		self.setTitle(_("PVMC Update"))
 
-	def startUpdate(self):
+	def checkForUpdate(self):
 		printl("->", self, "S")
-		if isInetAvailable():
-			time.sleep(2)
-			self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
+		if isInetAvailable():	
+			time.sleep(2)		
+			version, remoteUrl = Update().checkForUpdate()
+			if version is None:
+				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
+				self.close()
+			else:
+				self.session.openWithCallback(self.startUpdate, MessageBox,_("Update to revision " + version + " found!\nDo you want to update now?"), MessageBox.TYPE_YESNO)
 		else:
 			self.session.openWithCallback(self.close, MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
 
+
+	def startUpdate(self, answer):
+		printl("->", self, "S")
+		if answer is True:
+			self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
+		else:
+			self.close()
+			
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
 	# RTV = 127 Binary not found
 	# RTV = 255 ERROR
-	def update(self, answer):
+	def update(self):
 		printl("->", self, "S")
-		if answer is True:
-			version, remoteUrl = Update().checkForUpdate()
-			if version is None:
-				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
-				return
-
-			self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
-			cmd = """
+		self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
+		cmd = """
 BIN=""
 opkg > /dev/null 2>/dev/null
 if [ $? == "1" ]; then
@@ -235,10 +242,9 @@ if [ $BIN != "" ]; then
  ( export OPKG_CONF_DIR=/tmp; $BIN install %s $OPARAM; )
 fi""" % str(remoteUrl)
 				
-			printl("cmd=" + str(cmd), self, "D")
-			self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
-		else:
-			self.close()
+		printl("cmd=" + str(cmd), self, "D")
+		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
+
 		
 	def finishupdate(self):
 		printl("->", self, "S")
