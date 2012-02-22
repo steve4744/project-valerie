@@ -493,13 +493,14 @@ class PVMC_MainMenu(Screen):
 		content += "\t Zuki\n"
 		content += "\t hellmaster\n\n"
 		content += "Your current version is " + config.plugins.pvmc.version.value + " "
-		version, remoteUrl = Update().checkForUpdate()
-		if version is not None:
-			behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
-			multiple = ""
-			if behind > 1:
-				multiple = "s"
-			content += (" - You are %d revision%s behind!\n") % (behind, multiple)
+		if isInetAvailable():
+			version, remoteUrl = Update().checkForUpdate()
+			if version is not None:
+				behind = int(version[1:]) - int(config.plugins.pvmc.version.value[1:])
+				multiple = ""
+				if behind > 1:
+					multiple = "s"
+				content += (" - You are %d revision%s behind!\n") % (behind, multiple)
 	
 		return content
 				
