@@ -395,6 +395,14 @@ class PVMC_MainMenu(Screen):
 				elif plugins is not None and len(plugins) > 1:
 					list.append((_("Videos"), plugins, "menu_videos", "50"))
 			
+			plugins = getPlugins(where=Plugin.MENU_WEATHER)
+			plugins = self.checkShow(plugins)
+			if plugins is not None and len(plugins) == 1:
+				list.append((_("Weather"), plugins[0], "menu_weather", "50"))
+			elif plugins is not None and len(plugins) > 1:
+				list.append((_("Weather"), plugins, "menu_weather", "50"))			
+			
+			
 			plugins = getPlugins(where=Plugin.MENU_PROGRAMS)
 			plugins = self.checkShow(plugins)
 			if plugins is not None and len(plugins) == 1:

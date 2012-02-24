@@ -12,6 +12,7 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 gPlugins = []
 
 def loadPlugins(dir, imp):
+	printl("Load Plugins ->", __name__, "I")
 	files = []
 	#go through all files and generate list
 	for p in os.listdir(dir):
@@ -34,9 +35,13 @@ def loadPlugins(dir, imp):
 				try:
 					m = __import__(imp + f)
 					alreadyLoaded.append(f)
+					#printl("Load Plugins -> " + str(m), __name__, "I")
 				except Exception, ex:
-					printl("Information (" + str(type(ex)) + "): " + str(ex), __name__, "I")
-					printl("\tf: " + str(f), __name__, "I")
+					printl(" ERROR: " + str(f), __name__, "I")
+					printl(" MORE INFORMATION (" + str(type(ex)) + "): " + str(ex), __name__, "I")
+
+	
+	printl("<- Load Plugins", __name__, "I")
 
 def registerPlugin(plugin):
 	#printl("name=" + str(plugin.name) + " where=" + str(plugin.where), __name__)
@@ -70,6 +75,7 @@ def getPlugin(id, where):
 	return None
 
 class Plugin():
+	MENU_WEATHER = 0
 	MENU_MAIN = 1
 	MENU_PICTURES = 2
 	MENU_MUSIC = 3
