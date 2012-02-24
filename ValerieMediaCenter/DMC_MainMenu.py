@@ -205,10 +205,10 @@ class PVMC_Update(Screen):
 
 	def startUpdate(self, answer):
 		printl("->", self, "S")
-		if answer is True:
-			self.session.openWithCallback(self.update, MessageBox,_("PVMC will be updated!\nDo you want to proceed now?"), MessageBox.TYPE_YESNO)
-		else:
-			self.close()
+			if answer is True:
+				self.update()
+			else:
+				self.close()
 			
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
@@ -417,7 +417,7 @@ class PVMC_MainMenu(Screen):
 		self["welcomemessage"] = StaticText("")
 		
 		self.inter = 0
-		
+
 		self["actions"] = HelpableActionMap(self, "PVMC_MainMenuActions", 
 			{
 				"ok":    (self.okbuttonClick, ""),
