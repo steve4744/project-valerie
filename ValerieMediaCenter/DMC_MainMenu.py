@@ -216,7 +216,7 @@ class PVMC_Update(Screen):
 	# RTV = 255 ERROR
 	def update(self):
 		printl("->", self, "S")
-		self["text"].setText(_("Updating ProjectValerie to %s...\n\n\nStay tuned :-)") % version)
+		self["text"].setText(_("Updating ProjectValerie \n\n\nStay tuned :-)"))
 		cmd = """
 BIN=""
 opkg > /dev/null 2>/dev/null
