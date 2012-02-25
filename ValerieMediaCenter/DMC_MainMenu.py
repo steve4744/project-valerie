@@ -217,6 +217,7 @@ class PVMC_Update(Screen):
 	def update(self):
 		printl("->", self, "S")
 		self["text"].setText(_("Updating ProjectValerie \n\n\nStay tuned :-)"))
+		remoteUrl = Update().checkForUpdate()
 		cmd = """
 BIN=""
 opkg > /dev/null 2>/dev/null
