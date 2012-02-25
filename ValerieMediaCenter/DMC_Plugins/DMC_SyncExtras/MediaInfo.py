@@ -887,14 +887,23 @@ class MediaInfo(object):
 
 	# Returns date as integer ddmmyyyy
 	def getDate(self):
-		yy = int(self.Year)
-		mm = int(self.Month)
-		dd = int(self.Day)
+		yy = self.Year
+		mm = self.Month
+		dd = self.Day
+		
 		if yy is None:
 			yy = 0
+		else:
+			yy = int(yy)
+		
 		if mm is None:
 			mm = 0
+		else:
+			mm = int(mm)
+		
 		if dd is None:
 			dd = 0
-		
+		else:
+			dd = int(dd)
+			
 		return yy*10000 + mm*100 + dd
