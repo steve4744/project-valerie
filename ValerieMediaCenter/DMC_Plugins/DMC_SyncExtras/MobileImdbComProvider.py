@@ -48,9 +48,13 @@ class MobileImdbComProvider():
 			entry = self.ResultEntry()
 			strEntry = htmlSplitter[0:pos]
 			
+			printl("strEntry = " + strEntry, self, "D")
+			
 			if u"TV series" in strEntry: #maybe also miniseries
+				printl("Found 'TV series'!", self, "D")
 				entry.IsTVSeries = True;
 			elif u"Video game" in strEntry:
+				printl("Entry classified as 'Video game'! => skipping...", self, "D")
 				continue
 			
 			mImdbId = re.search(r'/title/tt\d*/', strEntry)
@@ -59,6 +63,7 @@ class MobileImdbComProvider():
 				sImdbId = re.sub("/title/", "", sImdbId)
 				sImdbId = re.sub("/", "", sImdbId)
 				entry.ImdbId = sImdbId;
+				printl("=> Found mImdbId = " + entry.ImdbId, self, "D")
 			
 			mTitle = re.search(r'>.+</a>', strEntry)
 			if mTitle and mTitle.group():
@@ -66,15 +71,24 @@ class MobileImdbComProvider():
 				sTitle = re.sub("</a>", "", sTitle)
 				sTitle = re.sub(">", "", sTitle)
 				entry.Title = sTitle;
+				printl("=> Found mTitle = " + entry.Title, self, "D")
 			
 			mYear = re.search(r'\(\d{4}\s?', strEntry)
 			if mYear and mYear.group():
 				sYear = mYear.group()[1:].strip();
 				entry.Year = int(sYear);
+				printl("=> Found year at beginning: " + str(entry.Year), self, "D")
+			else:
+				mYear = re.search(r'\d{4}\)\s?', strEntry)
+				if mYear and mYear.group():
+					sYear = mYear.group()[0:4].strip()
+					entry.Year = int(sYear);
+					printl("=> Found year at the end: " + str(entry.Year), self, "D")
 			
 			#printl(entry.Title + " " + str(entry.Year), self)
 			
 			if entry.Year > 0: 
+				printl("Add result to list...", self, "D")
 				results.append(entry)
 		return results
 
