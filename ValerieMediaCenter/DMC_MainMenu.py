@@ -154,6 +154,9 @@ class PVMC_Settings(Screen, ConfigListScreen):
 			self.close()
 
 class PVMC_Update(Screen):
+	
+	g_remoteUrl = None
+	
 	skinDeprecated = """
 	<screen position="center,center" size="500,380" title="Software Update">
 	<widget name="text" position="10,10" size="480,360" font="Regular;22" halign="center" valign="center"/>
@@ -198,6 +201,7 @@ class PVMC_Update(Screen):
 				self.session.openWithCallback(self.callback, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
 				self.close()
 			else:
+				self.g_remoteUrl = remoteUrl
 				self.session.openWithCallback(self.startUpdate, MessageBox,_("Update to revision " + version + " found!\nDo you want to update now?"), MessageBox.TYPE_YESNO)
 		else:
 			self.session.openWithCallback(self.close, MessageBox,_("No internet connection available!"), MessageBox.TYPE_OK)
@@ -217,7 +221,7 @@ class PVMC_Update(Screen):
 	def update(self):
 		printl("->", self, "S")
 		self["text"].setText(_("Updating ProjectValerie \n\n\nStay tuned :-)"))
-		remoteUrl = Update().checkForUpdate()
+		remoteUrl = self.g_remoteUrl
 		cmd = """
 BIN=""
 opkg > /dev/null 2>/dev/null
@@ -242,7 +246,8 @@ if [ $BIN != "" ]; then
  fi
  ( export OPKG_CONF_DIR=/tmp; $BIN install %s $OPARAM; )
 fi""" % str(remoteUrl)
-				
+		
+		printl("remoteUrl=" + str(remoteUrl), self, "D")		
 		printl("cmd=" + str(cmd), self, "D")
 		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
 
