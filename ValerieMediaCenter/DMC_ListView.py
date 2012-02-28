@@ -197,7 +197,7 @@ class DMC_ListView(DMC_View):
 		self.setText("year", date)
 		self.setText("runtime", str(element["Runtime"]) + ' ' + _("min"))
 		
-		if element["Popularity"] is None: # To avoid null Values
+		if element["Popularity"] is None or element["Popularity"] == "": # To avoid null Values
 			popularity = 0
 		else:
 			popularity = int(element["Popularity"])
