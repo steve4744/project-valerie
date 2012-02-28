@@ -847,7 +847,7 @@ class MediaInfo(object):
 		return self.MediaType
 
 	def setMediaType(self, value):
-		printl("->", self)
+		printl("-> " + str(value), self)
 		self.MediaType = value
 		#compatibility
 		#self.isSerie   = False;
