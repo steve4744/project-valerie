@@ -47,9 +47,10 @@ class DMC_MovieLibrary(DMC_Library):
 			tmpAbc = []
 			tmpGenres = []
 			for movie in library:
-				if len(movie.Title) == 0: # or len(movie.ImdbId) == 0:
-					printl("Movie with empty Title in database!", self, "W")
-					continue
+				# not needed anymore in my point of view
+				#if len(str(movie.Title)) == 0: # or len(movie.ImdbId) == 0:
+				#	printl("Movie with empty Title in database!", self, "W")
+				#	continue
 				d = {}
 				d["ArtBackdropId"] = utf8ToLatin(movie.ImdbId)
 				d["ArtPosterId"]   = d["ArtBackdropId"]
