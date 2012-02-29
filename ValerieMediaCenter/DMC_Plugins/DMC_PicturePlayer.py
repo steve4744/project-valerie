@@ -9,13 +9,22 @@ config.plugins.pvmc.plugins.pictureplayer.show = ConfigYesNo(default = True)
 gAvailable = False
 try:
 	from Plugins.Extensions.PicturePlayer.plugin import picshow as PicturePlayer
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
-	from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
 	gAvailable = True
+	printl("PicturePlayer found and registered", "I")
 except:
 	printl("PicturePlayer not found", "I")
 	gAvailable = False
+	
+if gAvailable is True:
+	try:
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Setup as PicturePlayerSetup
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Full_View as PicturePlayerFullView
+		from Plugins.Extensions.PicturePlayer.plugin import Pic_Thumb as PicturePlayerThumbView
+		gAvailable = True
+		printl("registering additional modules for PicturePlayer", "I")
+	except:
+		printl("registering additional modules for PicturePlayer failed", "I")
+		gAvailable = False	
 
 class PVMC_PicturePlayer(PicturePlayer):
 

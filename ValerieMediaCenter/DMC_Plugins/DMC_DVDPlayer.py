@@ -12,6 +12,7 @@ gAvailable = False
 try:
 	from Plugins.Extensions.DVDPlayer.plugin import DVDPlayer
 	gAvailable = True
+	printl("DVD Player found and registered", "I")
 except:
 	printl("DVD Player not found", "I")
 	gAvailable = False
@@ -36,5 +37,5 @@ def settings():
 if gAvailable is True:
 	p = []
 	p.append(Plugin(id="dvdplayer", name=_("DVDPlayer"), fnc=settings, where=Plugin.SETTINGS))
-	p.append(Plugin(id="dvdplayer", name=_("DVDPlayer"), start=PVMC_DVDPlayer, where=Plugin.MENU_VIDEOS, weight=40))
+	p.append(Plugin(id="dvdplayer", name=_("DVDPlayer"), start=PVMC_DVDPlayer, where=Plugin.MENU_VIDEOS))
 	registerPlugin(p)
