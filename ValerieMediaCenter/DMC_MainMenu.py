@@ -471,12 +471,12 @@ class PVMC_MainMenu(Screen):
 	def checkShow(self, plugins):
 		l = []
 		for plugin in plugins:
-			settings = getPlugin(plugin.name, Plugin.SETTINGS)
+			settings = getPlugin(plugin.id, Plugin.SETTINGS) #issue #455 => pass plugin.id instead of (localised) plugin.name
 			show = True
 			if settings is not None:
 				settings = settings.fnc()
 				for setting in settings:
-					if setting[0] == _("Show"):
+					if setting[0] == "Show": #issue #455 => check for not localized string
 						show = setting[1].value
 			if show: 
 				l.append(plugin)
