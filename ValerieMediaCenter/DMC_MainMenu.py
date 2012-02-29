@@ -465,8 +465,10 @@ class PVMC_MainMenu(Screen):
 		self.onLayoutFinish.append(self.setCustomTitle)
 
 	def setCustomTitle(self):
+		printl("->", self)
 		self.setTitle(_("Project Valerie"))
 		self.showInfo(False)
+		printl("<-", self)
 
 	def checkShow(self, plugins):
 		l = []
@@ -483,7 +485,7 @@ class PVMC_MainMenu(Screen):
 		return l
 
 	def showInfo(self, visible):
-		printl("->", self, "S")
+		printl("->", self, "I")
 		self.isInfoHidden = visible
 		if self.APILevel >= 5:
 			printl("", self, "D")
@@ -492,10 +494,11 @@ class PVMC_MainMenu(Screen):
 				self["infoText"].show()
 			else:
 				self["infoContainer"].hide()
-				self["infoText"].hide()	
+				self["infoText"].hide()
+		printl("<-", self, "I")
 
 	def getInfoText(self):
-		printl("->", self, "S")
+		printl("->", self, "I")
 		version = None
 		content = ""
 		content += "Information\n\n"
@@ -515,7 +518,8 @@ class PVMC_MainMenu(Screen):
 				if behind > 1:
 					multiple = "s"
 				content += (" - You are %d revision%s behind!\n") % (behind, multiple)
-	
+		
+		printl("<-", self, "I")
 		return content
 				
 	def onExec(self):
