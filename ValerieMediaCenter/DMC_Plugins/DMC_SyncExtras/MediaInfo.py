@@ -437,14 +437,15 @@ class MediaInfo(object):
 			dirs = self.Path.split(u"/")
 			printl("dirs=" + str(dirs), self)
 			if dirs[len(dirs) - 1] == "STREAM":
-				if dirs[len(dirs) - 2] == "BDMV": #title/BDMV/STREAM/000000.m2ts
+				if dirs[len(dirs) - 2] == "BDMV": #title/BDMV/STREAM/00000.m2ts
 					self.SearchString = dirs[len(dirs) - 3]
-				else: #title/STREAM/000000.m2ts
+				else: #title/STREAM/00000.m2ts
 					self.SearchString = dirs[len(dirs) - 2]
 				self.SearchString = self.SearchString.lower()
 				self.Resolution = u"1080p" # Are all bluray in 1080p?
 				self.Sound = u"dts" # Are all bluray in DTS
 				printl("BDMV: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
+				
 		
 		#################### BDMV ######################
 		
