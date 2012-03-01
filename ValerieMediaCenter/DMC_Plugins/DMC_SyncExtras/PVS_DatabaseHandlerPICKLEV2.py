@@ -205,9 +205,14 @@ class databaseHandlerPICKLEV2(object):
 			return
 		start_time = time.time()
 		try:		
-			fd = open(self.MEDIAFILESDB, "wb")
+			fd = open(self.MEDIAFILESDB + ".new", "wb")
 			pickle.dump(self._dbMediaFiles, fd, pickle.HIGHEST_PROTOCOL)
 			fd.close()
+			
+			#Makes sure that if saveing fails that at least the db is not lost
+			os.remove(self.MEDIAFILESDB)
+			os.rename(self.MEDIAFILESDB + ".new", self.MEDIAFILESDB)
+			
 			self.MediaFilesCommited = True
 			
 		except Exception, ex:
@@ -1319,10 +1324,15 @@ class databaseHandlerPICKLEV2(object):
 			printl("Nothing to Commit", self)
 			return
 		start_time = time.time()
-		try:		
-			fd = open(self.TABLESDB, "wb")
+		try:
+			fd = open(self.TABLESDB + ".new", "wb")
 			pickle.dump(self._dbTables, fd, pickle.HIGHEST_PROTOCOL)
 			fd.close()
+			
+			#Makes sure that if saveing fails that at least the db is not lost
+			os.remove(self.TABLESDB)
+			os.rename(self.TABLESDB + ".new", self.TABLESDB)
+			
 			self.TablesCommited = True
 			
 		except Exception, ex:
