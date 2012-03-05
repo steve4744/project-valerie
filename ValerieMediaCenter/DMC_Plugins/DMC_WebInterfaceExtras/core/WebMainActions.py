@@ -93,8 +93,6 @@ class Movies(Resource):
 		entries = WebData().getData("movies")
 		finalOutput = finalOutput.replace("<!-- CUSTOM_TITLE -->", " - Movies")
 		
-		dmWebifUrl = commands.getoutput("ifconfig").split("\n")[1].split()[1][5:]
-		
 		for entry in entries:
 			mediaId = entry.Id
 			evtEdit = self._editMovie(entry, "isMovie")
