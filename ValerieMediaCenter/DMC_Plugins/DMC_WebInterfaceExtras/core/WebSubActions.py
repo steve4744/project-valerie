@@ -781,9 +781,9 @@ class SyncFunctions(Resource):
 		if MediaInfo is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.MediaInfo import MediaInfo
 		
-		printl("request: " + str(request), self)
-		printl("request.args: " + str(request.args), self)
-		printl("request.args[mode]: " + str(request.args["mode"]), self)	
+		#printl("request: " + str(request), self)
+		#printl("request.args: " + str(request.args), self)
+		#printl("request.args[mode]: " + str(request.args["mode"]), self)	
 			
 		##########################
 		# START NORMAL SYNC
