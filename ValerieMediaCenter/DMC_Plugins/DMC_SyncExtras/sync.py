@@ -321,23 +321,29 @@ class pyvalerie(Thread):
 					filename  = Utf8.stringToUtf8(element[1])
 					extension = Utf8.stringToUtf8(element[2])
 					
+					printl("*"*100, self, "I")
+					printl("* Next file to sync: " + Utf8.utf8ToLatin(path) + "/" + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self, "I")
+					printl("*"*100, self, "I")
 					
 					if self.doAbort:
 						break
 					
-					
 					if path is None or filename is None or extension is None:
+						printl("Path or filename or extension is None => skip!", self, "I")
 						continue
 					
 					if "RECYCLE.BIN" in path or ".AppleDouble" in path:
+						printl("Special directory => skip!", self, "I")
 						continue
 					
 					if (filename + u"." + extension) in Blacklist.get():
-						printl("File blacklisted", self)
+						printl("File is blacklisted => skip!", self, "I")
 						continue
 					#printl("testing 1", self)
 						
+					printl("Checking for duplicates...", self, "I")
 					retCheckDuplicate= db.checkDuplicate(path, filename, extension)
+
 					mediaInDb = retCheckDuplicate["mediafile"]
 					# if never sync with success delete db entry and resync
 					if mediaInDb is not None and retCheckDuplicate["mediafile"].syncErrNo == MediaInfo.STATUS_INFONOTFOUND: # exist
@@ -346,6 +352,7 @@ class pyvalerie(Thread):
 						mediaInDb = None
 						
 					if mediaInDb is not None:
+						printl("Media exists in database...", self, "I")
 						if retCheckDuplicate["reason"] == 1: # exist
 							m2 = retCheckDuplicate["mediafile"]
 							if m2.syncErrNo == 0 and m2.MediaStatus != MediaInfo.STATUS_OK:
@@ -358,7 +365,7 @@ class pyvalerie(Thread):
 								printl("Sync - Update Media 1", self)	
 								if not db.updateMediaWithDict(key_value_dict):
 									printl("Sync - Update Media 1 - Failed", self)	
-								
+						
 						elif retCheckDuplicate["reason"] == 2: # exist on other path, change record path
 							m2 = retCheckDuplicate["mediafile"]
 							if m2.syncErrNo == 0:
@@ -379,6 +386,7 @@ class pyvalerie(Thread):
 						
 						#printl("testing 2", self)
 						if Arts().isMissing(mediaInDb):
+							printl("=> Arts missing in Db!...", self, "I")
 							#self.output("Downloading missing poster")
 							tmp = None
 							if mediaInDb.isTypeMovie():
@@ -408,7 +416,7 @@ class pyvalerie(Thread):
 					outStr = "(" + str(i) + "/" + str(elementListFileCounter)  + ")"
 					
 					self.output(outStr + " -> " + getStringShrinked(Utf8.utf8ToLatin(path)) + " >> " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
-					printl("#"*60, self)
+					printl("#"*30, self)
 					printl("(" + str(i) + "/" + str(elementListFileCounter)  + ")", self)
 					printl("#"*6, self)
 					printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
@@ -432,18 +440,28 @@ class pyvalerie(Thread):
 					if elementInfo.isXbmcNfo == False:	
 						printl("isXbmcNfo == False => checking for E2 recorded TV show... ", self, "I")
 						if elementInfo.isTypeSerie() and elementInfo.isEnigma2MetaRecording:
-							printl("E2-recorded TV-Show => checking if season and episode already set... ", self, "I")
 							if elementInfo.Season == None or elementInfo.Episode == None:
 								printl("E2-recorded TV-Show => trying to get season and episode from E2 episodename... ", self, "I")
 								tmp = GoogleProvider().getSeasonAndEpisodeFromEpisodeName(elementInfo)
-								if tmp[0] is True and tmp[1] is None:
-									# seems to be no tvshows so lets parse as movie
-									printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
-									elementInfo.setMediaType(MediaInfo.MOVIE)
+								if (tmp[0] is True) and (tmp[1] is None):
+									#Issue #474 => Don't fall back if foldertype is not explicitely "MOVIE_AND_TV"
+									if folderType == u"MOVIE_AND_TV":
+										printl("E2-recording not recognized as TV show => trying to parse as movie... ", self, "I")
+										elementInfo.setMediaType(MediaInfo.MOVIE)
+									else:
+										elementInfo.MediaType = MediaInfo.UNKNOWN # avoid create serie
+										elementInfo.MediaStatus = MediaInfo.STATUS_INFONOTFOUND
+										elementInfo.syncErrNo   = 3
+										elementInfo.syncFailedCause = u"Info Not Found"# cause
+										printl("Failed to detect TV show and folder type set to 'TV' => adding media as failed...", self, "I")
+										db.insertMedia(elementInfo)
+										continue
 								elif tmp[0] is True:
 									# Issue #205, efo => use tmp[1] instead of tmp...
 									elementInfo = tmp[1]
 									printl("Result from google => Season=" + str(elementInfo.Season) + " / Episode=" + str(elementInfo.Episode), self, "I")
+							else:
+								printl("E2-recorded TV-Show: season and episode already set... ", self, "I")
 							searchStringSplitted = elementInfo.SearchString.split("::")
 							if len(searchStringSplitted) >= 2:
 								elementInfo.SearchString = searchStringSplitted[0]

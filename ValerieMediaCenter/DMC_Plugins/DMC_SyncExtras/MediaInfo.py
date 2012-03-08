@@ -554,6 +554,8 @@ class MediaInfo(object):
 					#printl("PARSE RESULT 1:"+str(str(m.group("disc")))+" "+str(m.group("episode"))+" "+str(m.group("episode2")), self)
 					self.setMediaType(self.SERIE)
 					
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					self.Season = int(m.group("season"))
 					self.Disc = int(m.group("disc"))
 					if m.group("episode") is not None:
@@ -591,6 +593,8 @@ class MediaInfo(object):
 					
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					if m.group("episode2") is not None:
 						self.EpisodeLast = int(m.group("episode2"))
 					
@@ -623,6 +627,8 @@ class MediaInfo(object):
 				if m and m.group("episode"):
 					self.setMediaType(self.SERIE)
 					
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					self.Season = 0
 					self.Episode = int(m.group("episode"))
 					if m.group("episode2") is not None:
@@ -639,6 +645,8 @@ class MediaInfo(object):
 					#printl("PARSE RESULT 3:", self)
 					self.setMediaType(self.SERIE)
 					
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					self.Season = 0
 					self.Disc = int(m.group("disc"))
 					self.Episode = 0
@@ -654,6 +662,8 @@ class MediaInfo(object):
 				if m and m.group("season") and m.group("episode"):
 					self.setMediaType(self.SERIE)
 					
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
 					
@@ -668,6 +678,8 @@ class MediaInfo(object):
 				if m and m.group("episode"):
 					self.setMediaType(self.SERIE)
 					
+					# Issue #474, efo
+					isSeasonEpisodeFromFilename = True
 					self.Season = int(0)
 					self.Episode = int(m.group("episode"))
 					
