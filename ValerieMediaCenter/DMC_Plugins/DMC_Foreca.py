@@ -10,7 +10,7 @@ config.plugins.pvmc.plugins.foreca.show = ConfigYesNo(default = True)
 
 gAvailable = False
 try:
-	from Plugins.Extensions.Foreca.plugin import start as StartFunction
+	from Plugins.Extensions.Foreca.plugin import main as StartFunction
 	gAvailable = True
 except:
 	printl("Foreca not found", "E")
