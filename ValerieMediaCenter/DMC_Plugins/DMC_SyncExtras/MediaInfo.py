@@ -739,18 +739,26 @@ class MediaInfo(object):
 			if e2info is not None:
 				printl("e2info: "+ str(Utf8.utf8ToLatin(e2info.MovieName)) + " - " + str(Utf8.utf8ToLatin(e2info.EpisodeName) + "," + str(e2info.IsMovie) + "," + str(e2info.IsEpisode)), self)
 				if e2info.IsMovie:
-					printl("Assuming Movie...", self, "I")
-					self.SearchString = e2info.MovieName
-					self.setMediaType(self.MOVIE) 
+					if self.getMediaType() == self.SERIE:
+						printl("E2-Info assumes 'MOVIE' - but foldertype is set to 'TV' => using 'TV'...", self, "I")
+						self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
+					else:
+						printl("Assuming Movie...", self, "I")
+						self.SearchString = e2info.MovieName
+						self.setMediaType(self.MOVIE) 
 				elif e2info.IsEpisode:
-					# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
-					self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
-					printl("Assuming TV-Show...", self, "I")
-					if isSeasonEpisodeFromFilename == False:
-						printl("Season / episode seem not to be retrieved from filename => resetting...", self, "I")
-						self.Season = None
-						self.Episode = None
-					self.setMediaType(self.SERIE)
+					if self.getMediaType() == self.MOVIE:
+						printl("E2-Info assumes 'TV' - but foldertype is set to 'MOVIE' => using 'MOVIE'...", self, "I")
+						self.SearchString = e2info.MovieName
+					else:
+						# Issue #205, efo => since we have dedicated name + episode name use quotes to enhance google search result
+						self.SearchString = "\"" + e2info.MovieName +"\"" +  ":: " + "\"" + e2info.EpisodeName + "\""
+						printl("Assuming TV-Show...", self, "I")
+						if isSeasonEpisodeFromFilename == False:
+							printl("Season / episode seem not to be retrieved from filename => resetting...", self, "I")
+							self.Season = None
+							self.Episode = None
+						self.setMediaType(self.SERIE)
 					
 				self.isEnigma2MetaRecording = True
 				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)

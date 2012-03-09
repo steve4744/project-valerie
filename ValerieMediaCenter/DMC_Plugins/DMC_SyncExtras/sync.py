@@ -430,6 +430,8 @@ class pyvalerie(Thread):
 						elementInfo.setMediaType(MediaInfo.MOVIE)
 					elif folderType == u"TV":
 						elementInfo.setMediaType(MediaInfo.SERIE)
+					else:
+						elementInfo.setMediaType(MediaInfo.UNKNOWN)
 					
 					result = elementInfo.parse(useFolder)
 					printl("TheTvDbId: " + elementInfo.TheTvDbId, self, "I")
