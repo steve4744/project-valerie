@@ -832,7 +832,7 @@ class SyncFunctions(Resource):
 		##########################	
 		elif request.args["mode"][0] == "getSyncLog":
 			row = int(request.args["row"][0])
-			printl("mode (getSyncLog)", self, "I")
+			#printl("mode (getSyncLog)", self, "I")
 			global utf8ToLatin
 			if utf8ToLatin is None:
 				from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Utf8 import utf8ToLatin
