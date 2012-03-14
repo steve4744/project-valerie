@@ -723,8 +723,6 @@ class MediaInfo(object):
 						
 						self.SearchString = re.sub(r'(?P<seasonepisode>\d{3,4}).*', u" ", nameConverted)
 		
-		if self.Season == 0:
-			self.Season = None
 		if self.Disc == 0:
 			self.Disc = None
 		if self.Episode == 0:
