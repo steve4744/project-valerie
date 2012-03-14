@@ -565,24 +565,34 @@ class pyvalerie(Thread):
 
 class Sync():
 	def syncWithId(self, elementInfo):
-		printl("->", self, "I")
+		printl("->", self, "S")
+		isUserLang = False
+		
 		if elementInfo.isTypeMovie():
 			# Ask TheMovieDB for the local title and plot
 			tmp = TheMovieDbProvider().getMovieByImdbID(elementInfo)
 			if tmp is not None:
 				elementInfo = tmp
 			
-			tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
-			if tmp is not None:
-				elementInfo = tmp
-			
+			tmp = None
 			userLang = SyncConfig().getInstance().get("local")
-			if userLang != u"en":
-				tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
-				if tmp is not None:
-					elementInfo = tmp
+			printl("Get movie for language: " + userLang, self, "I")
+			tmp = TheMovieDbProvider().getMovie(elementInfo, userLang)
+
+			if tmp == None:
+				printl("Nothing found => trying fallback: en", self, "I")
+				tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
+			else:
+				isUserLang = True	
+				
+			if tmp != None:
+				elementInfo = tmp
+				if isUserLang == True:
 					elementInfo.LanguageOfPlot = userLang;
-			
+			else:
+				printl("<- search in TMDb didn't succeed! => return 'None'...", self, "I")
+				return None
+						
 			if userLang != elementInfo.LanguageOfPlot:
 				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
 				if tmp is not None:
@@ -596,7 +606,7 @@ class Sync():
 				elementInfo = tmp
 				Arts().download(elementInfo)
 			
-			printl("<- (return (elementInfo, ))", self, "I")
+			printl("<- (return (elementInfo, ))", self, "C")
 			return (elementInfo, )
 		
 		elif elementInfo.isTypeSerie():
@@ -605,24 +615,33 @@ class Sync():
 				if tmp is not None:
 					elementInfo = tmp
 			
-			tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
-			if tmp is not None:
-				elementInfo = tmp
-				
+			tmp = None
 			userLang = SyncConfig().getInstance().get("local")
-			if userLang != u"en":
-				tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
-				if tmp is not None:
-					elementInfo = tmp
+			printl("Get serie for language: " + userLang, self, "I")
+			tmp = TheTvDbProvider().getSerie(elementInfo, userLang)
+			
+			if tmp == None:
+				printl("Nothing found => trying fallback: en", self, "I")
+				tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
+			else:
+				isUserLang = True	
+			
+			if tmp != None:
+				elementInfo = tmp
+				if isUserLang == True:
 					elementInfo.LanguageOfPlot = userLang;
+			else:
+				printl("<- search in TheTvDb didn't succeed! => return 'None'...", self, "I")
+				return None
 					
 			if userLang != elementInfo.LanguageOfPlot:
+				# printl("userLang: " + userLang + "!= LanguageOfPlot: " + elementInfo.LanguageOfPlot, self, "I")
 				tmp = LocalImdbProvider().getMoviesByImdbID(elementInfo, userLang)
 				if tmp is not None:
 					elementInfo = tmp
 					elementInfo.LanguageOfPlot = userLang;
 			###
-			
+			printl("Get Arts...", self, "I")
 			tmp = TheTvDbProvider().getArtByTheTvDbId(elementInfo)
 			if tmp is not None:
 				elementInfo = tmp
@@ -634,15 +653,24 @@ class Sync():
 			
 			###
 			
-			tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
-			if tmp is not None:
-				elementInfoe = tmp
+			tmp = None
+			isUserLang = False
+			printl("Get episode for language: " + userLang, self, "I")
+			tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
 			
-			if userLang != u"en":
-				tmp = TheTvDbProvider().getEpisode(elementInfoe, userLang)
-				if tmp is not None:
-					elementInfoe = tmp
+			if tmp == None:
+				printl("Nothing found => trying fallback: en", self, "I")
+				tmp = TheTvDbProvider().getEpisode(elementInfoe, u"en")
+			else:
+				isUserLang = True
+			
+			if tmp != None:
+				elementInfoe = tmp
+				if isUserLang == True:
 					elementInfoe.LanguageOfPlot = userLang;
+			else:
+				printl("<- search in TheTvDb didn't succeed! => return None...", self, "I")
+				return None
 			
 			if userLang != elementInfoe.LanguageOfPlot:
 				tmp = LocalImdbProvider().getEpisodeByImdbID(elementInfoe, userLang)
@@ -650,8 +678,8 @@ class Sync():
 					elementInfoe = tmp
 					elementInfoe.LanguageOfPlot = userLang;
 			
-			printl("<- (return (elementInfo, elementInfoe))", self, "I")
+			printl("<- (return (elementInfo, elementInfoe))", self, "C")
 			return (elementInfo, elementInfoe)
 		else:
-			printl("<- (return None)", self, "I")
+			printl("<- (return None)", self, "C")
 			return None
