@@ -398,6 +398,7 @@ class MediaInfo(object):
 		return ret
 
 	def parse(self, useParentFoldernameAsSearchstring=False):
+		printl("->", self, "S")
 		absFilename = self.Path + u"/" + self.Filename + u"." + self.Extension
 		name = self.Filename.lower()
 		self.SearchString = name
@@ -412,7 +413,7 @@ class MediaInfo(object):
 			valerieInfoSearchString = self.getValerieInfo(self.Path).strip()
 			printl("Found valerie.info containing: " + str(Utf8.utf8ToLatin(valerieInfoSearchString)), self)
 			if valerieInfoSearchString == u"ignore":
-				printl("=> found 'ignore'... Returning to sync process and skipping!", self, "I")
+				printl("<- found 'ignore'... Returning to sync process and skipping!", self, "I")
 				return False
 			if self.searchForImdbAndTvdbId(valerieInfoSearchString):
 				valerieInfoSearchString = None
@@ -488,7 +489,7 @@ class MediaInfo(object):
 				self.Runtime = result.Runtime
 				
 				if self.isXbmcNfo == True:
-					printl("XBMC-style nfo => return to sync()", self, "I")
+					printl("<- XBMC-style nfo found...", self, "I")
 					return True
 			else:
 				printl("Something went wrong while reading from nfo :-(", self, "I")
@@ -586,7 +587,10 @@ class MediaInfo(object):
 			#####
 			if self.Season == None or self.Episode == None:
 				#m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)[-]?\s?e?(?P<episode2>\d+)(\D|$)', self.SearchString)
-				m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
+				#Issue #494, efo => with the "\Ws" expression PVMC doesn't detect season / episodes if pattern is 
+				#located at the beginning of string, for example like "s01e02 - title.avi"
+				#m = re.search(r'\Ws(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
+				m = re.search(r'(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?(\D|$)', self.SearchString)
 				if m and m.group("season") and m.group("episode"):
 					#printl("PARSE RESULT 4:"+str(m.group("episode"))+" "+str(m.group("episode2")), self)
 					self.setMediaType(self.SERIE)
@@ -759,12 +763,12 @@ class MediaInfo(object):
 						self.setMediaType(self.SERIE)
 					
 				self.isEnigma2MetaRecording = True
-				printl("e2info:: Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
+				printl("<- Returning to sync process using E2 meta-file SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 				return True
 		
 		if valerieInfoSearchString is not None:
 			self.SearchString = valerieInfoSearchString
-			printl("Returning to sync process using SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
+			printl("<- Returning to sync process using valerie.info SearchString '" + str(Utf8.utf8ToLatin(self.SearchString)) + "'", self)
 			return True
 		
 		if not self.isTypeSerie():
@@ -811,7 +815,7 @@ class MediaInfo(object):
 				printl("Exception: " + str(ex), self, "E")
 		
 		self.SearchString = self.SearchString.strip()
-		printl("eof: SearchString:" + str(Utf8.utf8ToLatin(self.SearchString)), self)
+		printl("<- eof: SearchString:" + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
 		return True
 
