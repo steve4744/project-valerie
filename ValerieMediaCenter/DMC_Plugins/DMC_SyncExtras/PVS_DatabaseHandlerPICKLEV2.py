@@ -1330,7 +1330,9 @@ class databaseHandlerPICKLEV2(object):
 			fd.close()
 			
 			#Makes sure that if saveing fails that at least the db is not lost
-			os.remove(self.TABLESDB)
+			if os.path.exists(self.TABLESDB):
+				os.remove(self.TABLESDB)
+				
 			os.rename(self.TABLESDB + ".new", self.TABLESDB)
 			
 			self.TablesCommited = True
