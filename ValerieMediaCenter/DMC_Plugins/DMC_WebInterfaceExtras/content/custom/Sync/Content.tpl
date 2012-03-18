@@ -3,7 +3,7 @@
 	
 	<div class="text">
 	<br>
-	Please note that this page is static without any mechanism for refresh. If you want to see a new informtion regarding your sync just press "F5".
+	Please note that this page is refreshing the informations automatically.
 	<br>
 	</div>
 	<br>
