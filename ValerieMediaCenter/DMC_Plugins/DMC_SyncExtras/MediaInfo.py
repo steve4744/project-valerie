@@ -266,27 +266,28 @@ class MediaInfo(object):
 
 	def parseNfo(self, name):
 		try:
-			printl("About to read from nfo-file: " + name + u".nfo", self, "I")
+			printl("-> About to read from nfo-file: " + name + u".nfo", self, "I")
 			f = Utf8.Utf8(name + u".nfo", "r")
 			lines = f.read()
+			f.close()
 			if lines is not None:
 				printl("Checking type of file...", self, "I")
 				lines = lines.split(u"\n")
 				if len(lines) > 1:
 					lines[1] = lines[1].strip()
 					if lines[1].startswith("<movie") or lines[1].startswith("<episodedetails>"):
-						printl("Found xbmc-style nfo...", self, "I")
+						printl("<- Found xbmc-style nfo...", self, "I")
 						self.isXbmcNfo = True
-						f.close()
 						return self.parseNfoXbmc(lines)
 					else:
-						printl("Might be IMDb-ID nfo...", self, "I")
-						f.close()
+						printl("<- Multiple lines, but no xbmc-style nfo - checking for IMDb-ID nfo...", self, "I")
+						return self.getImdbIdFromNfo(lines)
+				elif len(lines) == 1:
+						printl("<- Might be IMDb-ID nfo...", self, "I")
 						return self.getImdbIdFromNfo(lines)
 				else:
-					f.close()
+					printl("<-", self, "C")
 					return None
-			f.close()
 			return None
 		except Exception, ex:
 			printl("Exception (ef): " + str(ex), self, "E")
