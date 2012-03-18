@@ -1,10 +1,7 @@
 $(document).ready(function(){
 
 	var isRunning = $('#isRunning').val();
-	var isFinished = $('#isFinished').val();
-	var currentProgress = $('#currentProgress').val();
-	var currentRange = $('#currentRange').val();
-	
+
 	if (isRunning == "False") { 
 		$("#cancelSync").hide();
 		$("#normalSync").show();
@@ -13,36 +10,79 @@ $(document).ready(function(){
 		$("#cancelSync").show();
 		$("#normalSync").hide();
 		$("#fastSync").hide();
-		showSyncProgress(currentRange);
-		showSyncLog();
+	    
+	   startLogViewClass();
 	}
 });
 
+function startLogViewClass() {
+	//global
+	var finished = "";
+ 	
+ 	//first run
+    showSyncProgress();
+	showSyncLog();
 
-function showSyncLog() {
-	dmurl = document.location.host;
-	var i=0;
-	for (i=0;i<=41;i++) { //because we have 40 lines of log
-		url = "http://" + dmurl + "/syncronize?mode=getSyncLog&row=" + i;
-		jQuery.get(url, function(data){
-			data = data + "<br>";
-			$("#syncLog").append(data);
-		});
+    //first + n run until we detect finish
+    var myTimer = setInterval(function() {
+    							getState();
+						        showSyncProgress();
+								showSyncLog();
+								if (finished == "True") {
+									clearInterval(myTimer);
+									$("#cancelSync").hide();
+									$("#normalSync").show();
+									$("#fastSync").show();	
+									}
+						    	}, 1000);
+
+
+	function getState() {
+		dmurl = document.location.host;
+		
+		$.ajax({
+			  url : "http://" + dmurl + "/syncronize?mode=getFinishedState",
+			  context: document.body,
+			  async: false,
+			  success: function(state){
+					finished = state;
+			  	}
+			});
 	}
+
+	function showSyncLog() {
+		dmurl = document.location.host;
+		var i=0;
+		for (i=0;i<=41;i++) { //because we have 40 lines of log
+			$.ajax({
+			  url : "http://" + dmurl + "/syncronize?mode=getSyncLog&row=" + i,
+			  context: document.body,
+			  async: false,
+			  success: function(data){
+				$("#logrow" + i).text(data);
+			  	}
+			});
+		}
+	}
+
+
+
+
+	function showSyncProgress() {
+		$("#uploadprogressbar").progressBar();
+		$("#uploadprogressbar").fadeIn();
+		
+		dmurl = document.location.host;
+		
+		$.ajax({
+			  url : "http://" + dmurl + "/syncronize?mode=getSyncPercentage",
+			  context: document.body,
+			  async: false,
+			  success: function(percentage){
+				$("#uploadprogressbar").progressBar(percentage);
+			  	}
+			});
+	}
+
+
 }
-
-function showSyncProgress(currentRange) {
-	dmurl = document.location.host;
-	url = "http://" + dmurl + "/syncronize?mode=getSyncPercentage";	
-	
-	$("#uploadprogressbar").progressBar();
-	$("#uploadprogressbar").fadeIn();
-
-	jQuery.get(url, function(currentProgress){
-		percentage = Math.round(currentProgress / (currentRange / 100));
-		$("#uploadprogressbar").progressBar(percentage);
-	});
-	
-	
-}
-
