@@ -811,7 +811,7 @@ class MediaInfo(object):
 				self.SearchString = folders[len(folders) - 1] 		# /DVDs/title/VIDEO_TS.ifo
 				if self.SearchString.upper() == u"VIDEO_TS":	
 					self.SearchString = folders[len(folders) - 2]	# /DVDs/title/VIDEO_TS/VIDEO_TS.ifo
-				
+				self.searchForImdbAndTvdbId(self.SearchString)
 			except Exception, ex:
 				printl("Exception: " + str(ex), self, "E")
 		
