@@ -23,15 +23,15 @@ class Arts():
 
 	def isMissing(self, eInfo):
 		if eInfo.isTypeMovie():
-			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_poster_" + self.posterResolution[0] + ".png") is False:
+			if path.isfile(WebGrabber.downloadDir + "/" + str(eInfo.ImdbId) + "_poster_" + self.posterResolution[0] + ".png") is False:
 				return True
-			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.ImdbId + "_backdrop.m1v") is False:
+			if path.isfile(WebGrabber.downloadDir + "/" + str(eInfo.ImdbId) + "_backdrop.m1v") is False:
 				return True
 		
 		elif eInfo.isTypeSerie() or eInfo.isTypeEpisode():
-			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_poster_" + self.posterResolution[0] + ".png") is False:
+			if path.isfile(WebGrabber.downloadDir + "/" + str(eInfo.TheTvDbId) + "_poster_" + self.posterResolution[0] + ".png") is False:
 				return True
-			if path.isfile(WebGrabber.downloadDir + "/" + eInfo.TheTvDbId + "_backdrop.m1v") is False:
+			if path.isfile(WebGrabber.downloadDir + "/" + str(eInfo.TheTvDbId) + "_backdrop.m1v") is False:
 				return True
 		return False
 
@@ -59,9 +59,9 @@ class Arts():
 		
 		id = None
 		if eInfo.isTypeMovie():
-			id = eInfo.ImdbId
+			id = str(eInfo.ImdbId)
 		elif eInfo.isTypeSerie() or eInfo.isTypeEpisode():
-			id = eInfo.TheTvDbId
+			id = str(eInfo.TheTvDbId)
 		else:
 			return None
 		
