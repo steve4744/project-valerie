@@ -237,7 +237,7 @@ class Update(object):
 	def _setUpdateXmlDict(self):
 		printl("->", self, "S")
 		if isInetAvailable():
-			boxType = self.getBoxtype()
+			boxType = getBoxtype()
 			self.url = config.plugins.pvmc.url.value + config.plugins.pvmc.updatexml.value
 			installedRevision = self.getInstalledRevision()
 			printl("Checking URL: " + str(self.url), self) 
@@ -259,7 +259,7 @@ class Update(object):
 	
 	def _setLatestRevisionAndUrl(self):
 		printl("->", self, "S")
-		boxType = self.getBoxtype()
+		boxType = getBoxtype()
 		updateXmlDict = self.getUpdateXmlDict()
 		updateType = self.getCurrentUpdateType()
 		for update in updateXmlDict["valerie"]["updates"]["update"]:
