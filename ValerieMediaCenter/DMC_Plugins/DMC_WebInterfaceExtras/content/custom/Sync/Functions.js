@@ -19,8 +19,11 @@ function startLogViewClass() {
 	//global
 	var finished = "";
  	
+ 	$("#uploadprogressbar").progressBar();
+	$("#uploadprogressbar").fadeIn();
+ 	
  	//first run
-    showSyncProgress();
+ 	showSyncProgress();
 	showSyncLog();
 
     //first + n run until we detect finish
@@ -69,9 +72,6 @@ function startLogViewClass() {
 
 
 	function showSyncProgress() {
-		$("#uploadprogressbar").progressBar();
-		$("#uploadprogressbar").fadeIn();
-		
 		dmurl = document.location.host;
 		
 		$.ajax({

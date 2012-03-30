@@ -10,7 +10,7 @@ from Screens.ChoiceBox import ChoiceBox
 from Screens.InfoBar import MoviePlayer
 from Tools.Directories import resolveFilename, fileExists, pathExists, createDir, SCOPE_MEDIA, SCOPE_SKIN_IMAGE, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, getBoxtype
 from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin, registerPlugin
 from Plugins.Extensions.ProjectValerie.DMC_Global import Update
 
@@ -326,7 +326,7 @@ class PVMC_Player(MoviePlayer):
 		print "doSeek", seekable
 		if seekable is None:
 			return
-		boxtype = Update().getBoxtype()
+		boxtype = getBoxtype()
 		if boxtype[2] == "sh4":
 			tenSec = 90000 * 10 #10sec
 			pts -= tenSec #10sec before

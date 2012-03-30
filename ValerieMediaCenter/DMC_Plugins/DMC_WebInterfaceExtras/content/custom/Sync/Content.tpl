@@ -1,6 +1,8 @@
 <div class="textheader">Sync</div>	
 	<div class="subheader">Information</div>
 	
+	<!-- SYNC_STATES -->
+	
 	<div class="text">
 	<br>
 	Please note that this page is refreshing the informations automatically.
@@ -69,8 +71,6 @@
 
 	<br><br><br>
 		
-	<!-- SYNC_STATES -->
-	
 	</div>
 
 </div>

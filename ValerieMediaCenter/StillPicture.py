@@ -6,7 +6,7 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
 from DMC_Global import Showiframe, Update
 
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, getBoxtype
 
 #------------------------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ class StillPicture(Renderer, InfoBarBase):
 		printl("", self)
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
-			boxtype = Update().getBoxtype()
+			boxtype = getBoxtype()
 			if boxtype[2] != "sh4" and service and service.seek():
 				service.seek().seekTo(0)
 			else:

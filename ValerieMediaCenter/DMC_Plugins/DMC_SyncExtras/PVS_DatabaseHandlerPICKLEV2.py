@@ -170,25 +170,35 @@ class databaseHandlerPICKLEV2(object):
 	def _loadMediaFilesDB(self):
 		printl("->", self, "S")
 		if self._dbMediaFiles is None:
-			start_time = time.time()
-			self._dbMediaFiles = {}
 			try:
 				if os.path.exists(self.MEDIAFILESDB):
-					fd = open(self.MEDIAFILESDB, "rb")
-					self._dbMediaFiles = pickle.load(fd)
-					fd.close()
+					printl("we found a commited version of medafilddb lets use this one ...", self, "I")
+					self._proceedMediaFileDb()
+
+				elif os.path.exists(self.MEDIAFILESDB + ".new"):
+					printl("we did not find a commited version of medafilddb but a uncommitted one, lets use this one ...", self, "I")
+					os.rename(self.MEDIAFILESDB + ".new", self.MEDIAFILESDB)
+					self._proceedMediaFileDb()
 				else:
-					self._setDBVersion(self._dbMediaFiles, 0)
-					
-				self._upgradeMediaFiles(self._dbMediaFiles)
-	
+					printl("mediafiledb not found => " + str(self.MEDIAFILESDB) + " maybe this is a new installation!", self, "W")
+
 			except Exception, ex:
 				print ex
 				print '-'*60
 				import sys, traceback
 				traceback.print_exc(file=sys.stdout)
 				print '-'*60
-					
+
+	def _proceedMediaFileDb(self):
+		printl("->", self, "S")
+		start_time = time.time()
+		self._dbMediaFiles = {}
+		try:
+			fd = open(self.MEDIAFILESDB, "rb")
+			self._dbMediaFiles = pickle.load(fd)
+			fd.close()
+			self._upgradeMediaFiles(self._dbMediaFiles)
+	
 			elapsed_time = time.time() - start_time
 			printl("LoadMediaFiles Took : " + str(elapsed_time), self)
 					
@@ -197,6 +207,13 @@ class databaseHandlerPICKLEV2(object):
 				#self.createMediaFilesIndexes()
 				elapsed_time = time.time() - start_time
 				printl("Indexing Took : " + str(elapsed_time), self)
+
+		except Exception, ex:
+			print ex
+			print '-'*60
+			import sys, traceback
+			traceback.print_exc(file=sys.stdout)
+			print '-'*60
 
 	def saveMediaFiles(self):		
 		printl("->", self, "S")
