@@ -89,7 +89,10 @@ class PVMC_Player(MoviePlayer):
 		if eof is False:
 			list.append((_("No, continue"), "continue"))
 		
-		self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
+		if len(list) == 1: #There is no need to show the choicbox if only one choice is possible
+			self.leavePlayerConfirmed(list[0])
+		else:
+			self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
 
 	def leavePlayerConfirmed(self, answer):
 		if answer is not None and len(answer) >= 2: # I dont get how ChoiceBox can return None, but well this has happend in Issue 88

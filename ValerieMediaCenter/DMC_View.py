@@ -566,7 +566,7 @@ class DMC_View(Screen, NumericalTextInput):
 				#if "play" in self.onEnterPrimaryKeys:
 				if selection[1]["ViewMode"] == "play":
 					printl("playEntry ->", self, "D")
-					self.playEntry(selection[1], self.libraryFlags)
+					self.playEntry(selection[1], self.libraryFlags, self.onEOF)
 					printl("playEntry <-", self, "D")
 					return
 				else:
@@ -597,6 +597,10 @@ class DMC_View(Screen, NumericalTextInput):
 			if isIndex:
 				self["listview"].setIndex(i)
 				break
+		self.refresh()
+
+	def onEOF(self):
+		self._load(self.currentKeyValuePair, ignoreSort=True, ignoreFilter=True)
 		self.refresh()
 
 	def _load(self, primaryKeys=None, ignoreSort=False, ignoreFilter=False):
@@ -698,8 +702,8 @@ class DMC_View(Screen, NumericalTextInput):
 	def _refresh(self, selection, changeBackdrop):
 		pass
 
-	def playEntry(self, entry, flags):
-		if self._playEntry(entry, flags) is False:
+	def playEntry(self, entry, flags, callback):
+		if self._playEntry(entry, flags, callback) is False:
 			title = _("Not found!\n")
 			text = entry["Path"] + _("\n\nPlease make sure that your drive is connected/mounted.")
 			self.session.open(MessageBox, title + text, type = MessageBox.TYPE_ERROR)

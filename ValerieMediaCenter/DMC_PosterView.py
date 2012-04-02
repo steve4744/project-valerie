@@ -172,9 +172,9 @@ class DMC_PosterView(DMC_View):
 			self.showiframe.finishStillPicture()
 		super(getViewClass(), self).close(arg)
 
-	def playEntry(self, entry, flags):
+	def playEntry(self, entry, flags, callback):
 		self.showiframe.finishStillPicture()
-		super(getViewClass(), self).playEntry(entry, flags)
+		super(getViewClass(), self).playEntry(entry, flags, callback)
 
 	def sort(self):
 		#text = "%s: %s" % (_("Sort"), _(self.activeSort[0])) #To little space

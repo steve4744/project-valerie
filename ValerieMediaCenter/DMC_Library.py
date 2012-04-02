@@ -123,8 +123,9 @@ class DMC_Library(Screen):
         return []
 
     # starts playback, is called by the view
-    def playEntry(self, entry, flags={}):
+    def playEntry(self, entry, flags={}, callback=None):
         printl("", self, "D")
+        self.callbackEOF = callback
         playbackPath = entry["Path"]
         if playbackPath[0] == "/" and os.path.isfile(playbackPath) is False:
             return False
@@ -179,7 +180,10 @@ class DMC_Library(Screen):
     def leaveMoviePlayer(self, flags={}): 
         self.notifyEntryStopped(flags)
         
-        self.session.nav.playService(None) 
+        self.session.nav.playService(None)
+        
+        if self.callbackEOF:
+            self.callbackEOF()
 
     # prototype fore playbacklist creation
     def getPlaybackList(self, entry):
