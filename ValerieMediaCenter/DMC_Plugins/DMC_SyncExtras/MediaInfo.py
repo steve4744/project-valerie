@@ -21,7 +21,7 @@ import re
 import replace
 import Utf8
 
-from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
+from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl, resub
 #------------------------------------------------------------------------------------------
 
 ## WORKAROUND
@@ -318,17 +318,17 @@ class MediaInfo(object):
 					line = line.replace("season", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Season = int(re.sub(r'\D+', '', line))
+					self.Season = int(resub(r'\D+', '', line))
 				elif line.startswith("<episode>"):
 					line = line.replace("episode", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Episode = int(re.sub(r'\D+', '', line))
+					self.Episode = int(resub(r'\D+', '', line))
 				elif line.startswith("<year>"):
 					line = line.replace("year", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Year = int(re.sub(r'\D+', '', line))
+					self.Year = int(resub(r'\D+', '', line))
 				elif line.startswith("<plot>"):
 					line = line.replace("plot", "")
 					line = line.replace("<>", "")
@@ -338,7 +338,7 @@ class MediaInfo(object):
 					line = line.replace("runtime", "")
 					line = line.replace("<>", "")
 					line = line.replace("</>", "")
-					self.Runtime = int(re.sub(r'\D+', '', line))
+					self.Runtime = int(resub(r'\D+', '', line))
 				elif line.startswith("<genre>"):
 					line = line.replace("genre", "")
 					line = line.replace("<>", "")
@@ -456,7 +456,7 @@ class MediaInfo(object):
 		step = 1
 		for replacement in replace.replacements(u"pre"):
 			old = self.SearchString
-			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
+			self.SearchString = resub(replacement[0], replacement[1], self.SearchString)
 			printl("\tStep %d: %s -> %s = %s -> %s" % (step, str(replacement[0].pattern), str(replacement[1]), old, self.SearchString), self, "I")
 			step = step + 1
 		
@@ -504,7 +504,7 @@ class MediaInfo(object):
 				if year > 1940 and year < 2012:
 					self.Year = year
 					# removing year from searchstring
-					#self.SearchString = re.sub(str(year), u" ", self.SearchString)
+					#self.SearchString = replace(str(year), u" ", self.SearchString)
 					#self.SearchString = name[:m.start()]
 		
 		printl(":0: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
@@ -565,7 +565,7 @@ class MediaInfo(object):
 					if m.group("episode2") is not None:
 						self.EpisodeLast = int(m.group("episode2"))
 					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+)\s?(e(?P<episode>\d+))?([-]e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
+					self.SearchString = resub(r's(?P<season>\d+)\s?d(?P<disc>\d+)\s?(e(?P<episode>\d+))?([-]e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
 			
 			#####
 			#####  s03d05 - Season 3 Disc 5
@@ -580,7 +580,7 @@ class MediaInfo(object):
 			#		self.Disc = int(m.group("disc"))
 			#		self.Episode = 0
 			#		
-			#		self.SearchString = re.sub(r's(?P<season>\d+)\s?d(?P<disc>\d+).*', u" ", self.SearchString)
+			#		self.SearchString = resub(r's(?P<season>\d+)\s?d(?P<disc>\d+).*', u" ", self.SearchString)
 			#
 			#####
 			#####  s03e05e06 s03e05-e06 s03e05-06 s03e05 06
@@ -603,7 +603,7 @@ class MediaInfo(object):
 					if m.group("episode2") is not None:
 						self.EpisodeLast = int(m.group("episode2"))
 					
-					self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
+					self.SearchString = resub(r's(?P<season>\d+)\s?e(?P<episode>\d+)([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)
 				
 			#####
 			#####  s03e05
@@ -620,7 +620,7 @@ class MediaInfo(object):
 			#		self.Episode = int(m.group("episode"))
 			#		
 			#		printl("PARSE RESULT 5: " + self.SearchString, self)
-			#		self.SearchString = re.sub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
+			#		self.SearchString = resub(r's(?P<season>\d+)\s?e(?P<episode>\d+).*', u" ", self.SearchString)
 			#		printl("PARSE RESULT 5: " + self.SearchString, self)
 			#
 			
@@ -640,7 +640,7 @@ class MediaInfo(object):
 						self.EpisodeLast = int(m.group("episode2"))
 					
 					
-					self.SearchString = re.sub(r's?(e(?P<episode>\d+))([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)			
+					self.SearchString = resub(r's?(e(?P<episode>\d+))([-]?\s?e?(?P<episode2>\d+))?.*', u" ", self.SearchString)			
 			#####
 			#####  d05 - Disc 5
 			#####			
@@ -656,7 +656,7 @@ class MediaInfo(object):
 					self.Disc = int(m.group("disc"))
 					self.Episode = 0
 					
-					self.SearchString = re.sub(r'd(?P<disc>\d+).*', u" ", self.SearchString)
+					self.SearchString = resub(r'd(?P<disc>\d+).*', u" ", self.SearchString)
 
 			#####
 			#####  3x05
@@ -672,7 +672,7 @@ class MediaInfo(object):
 					self.Season = int(m.group("season"))
 					self.Episode = int(m.group("episode"))
 					
-					self.SearchString = re.sub(r'(?P<season>\d+)x(?P<episode>\d+).*', u" ", self.SearchString)
+					self.SearchString = resub(r'(?P<season>\d+)x(?P<episode>\d+).*', u" ", self.SearchString)
 			
 			#####
 			#####  part 3
@@ -688,7 +688,7 @@ class MediaInfo(object):
 					self.Season = int(0)
 					self.Episode = int(m.group("episode"))
 					
-					self.SearchString = re.sub(r'(part|pt)\s?(?P<episode>\d+).*', u" ", self.SearchString)
+					self.SearchString = resub(r'(part|pt)\s?(?P<episode>\d+).*', u" ", self.SearchString)
 			
 			#####
 			#####  305
@@ -726,7 +726,7 @@ class MediaInfo(object):
 						self.Season = s
 						self.Episode = e
 						
-						self.SearchString = re.sub(r'(?P<seasonepisode>\d{3,4}).*', u" ", nameConverted)
+						self.SearchString = resub(r'(?P<seasonepisode>\d{3,4}).*', u" ", nameConverted)
 		
 		if self.Disc == 0:
 			self.Disc = None
@@ -788,8 +788,8 @@ class MediaInfo(object):
 		#print ":1: ", self.SearchString
 		### Replacements POST
 		printl("rpost: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
-		self.SearchString = re.sub(r'[-]', u" ", self.SearchString)
-		self.SearchString = re.sub(r' +', u" ", self.SearchString)
+		self.SearchString = resub(r'[-]', u" ", self.SearchString)
+		self.SearchString = resub(r' +', u" ", self.SearchString)
 		printl("rpost:: " + str(Utf8.utf8ToLatin(self.SearchString)), self)
 		
 		self.SearchString = self.SearchString.strip()
@@ -802,7 +802,7 @@ class MediaInfo(object):
 			
 		for replacement in replace.replacements(post):
 			#print "[" + post + "] ", replacement[0], " --> ", replacement[1]
-			self.SearchString = re.sub(replacement[0], replacement[1], self.SearchString)
+			self.SearchString = resub(replacement[0], replacement[1], self.SearchString)
 		
 		if useParentFoldernameAsSearchstring:
 			printl("Building search string from parent folder names...", self, "I")

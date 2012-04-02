@@ -2,6 +2,7 @@
 import datetime
 import os
 import sys
+import re
 
 from   Components.config import config
 #------------------------------------------------------------------------------------------
@@ -269,3 +270,14 @@ def _setBoxtype():
 		version = "duckbox"
 	
 	gBoxType = (manu, model, arch, version)
+
+# Wrapper to create a real global re.sub function
+def resub(pattern, replacement, input):
+	output = ""
+	tmpinput = input
+	while True:
+		output = re.sub(pattern, replacement, tmpinput)
+		if output == tmpinput:
+			break
+		tmpinput = output
+	return output
