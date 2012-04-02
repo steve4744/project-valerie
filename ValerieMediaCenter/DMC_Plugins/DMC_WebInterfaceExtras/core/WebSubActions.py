@@ -432,7 +432,7 @@ class MediaActions(Resource):
 				printl("Content: " + key + " => " + request.args[key][0], self, "I")	
 			
 			if not "Seen" in request.args:
-					WebData().getData("MediaInfo_markUnseen", Id)
+				WebData().getData("MediaInfo_markUnseen", Id)
 			else:
 				if (request.args["Seen"][0] == "on"):
 					WebData().getData("MediaInfo_markSeen", Id)
