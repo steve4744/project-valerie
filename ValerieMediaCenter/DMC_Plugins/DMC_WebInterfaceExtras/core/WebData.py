@@ -15,6 +15,10 @@ Manager = None
 utf8ToLatin = None
 # --- LAZY IMPORTS ---
 
+# +++ STATIC MEMBERS +++
+ManagerInstance = None
+# --- STATIC MEMBERS ---
+
 ##########################
 # THIS CLASS GETS THE DATA FROM VALERIE PYTHON PART
 # PARAMS:	type 	"movies" | "tvshows" | "episodes" | "EpisodesOfSerie" | "failed" |
@@ -28,32 +32,38 @@ class WebData():
 		if Manager is None:
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.Manager import Manager
 		
+		global ManagerInstance
+		if ManagerInstance is None:
+			ManagerInstance = Manager("WebIf:WebData")
+		
 		dataRows = []
 		
-		manager = Manager("WebIf:WebData")
 		printl("TYPE: " + type)
 		if type == "movies":
-			dataRows = manager.getMoviesValues()
+			dataRows = ManagerInstance.getMoviesValues()
 		elif type == "tvshows":
-			dataRows = manager.getSeriesValues()
+			dataRows = ManagerInstance.getSeriesValues()
 		elif type == "episodes":
 			if param != None:
-				dataRows = manager.getEpisodesWithTheTvDbId(param)				
+				dataRows = ManagerInstance.getEpisodesWithTheTvDbId(param)
 			else:
-				dataRows = manager.getEpisodes()				
+				dataRows = ManagerInstance.getEpisodes()
 		elif type == "EpisodesOfSerie":
-			dataRows = manager.getEpisodes(param)	
+			dataRows = ManagerInstance.getEpisodes(param)	
 		elif type == "failed":
-			dataRows = manager.getFailedValues()
+			dataRows = ManagerInstance.getFailedValues()
 
 		elif type == "MediaInfo_isMovie":
-			dataRows = manager.getMedia(param)
+			dataRows = ManagerInstance.getMedia(param)
 		elif type == "MediaInfo_isTvShow":
-			dataRows = manager.getMedia(param)
+			dataRows = ManagerInstance.getMedia(param)
 		elif type == "MediaInfo_isEpisode":
-			dataRows = manager.getMedia(param)
+			dataRows = ManagerInstance.getMedia(param)
 		elif type == "MediaInfo_isFailed":
-			dataRows = manager.getMedia(param)
+			dataRows = ManagerInstance.getMedia(param)
+		elif type == "MediaInfo_isSeen":
+			userId = config.plugins.pvmc.seenuserid.value
+			dataRows = ManagerInstance.isMediaSeen(param, userId)
 			
 		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin

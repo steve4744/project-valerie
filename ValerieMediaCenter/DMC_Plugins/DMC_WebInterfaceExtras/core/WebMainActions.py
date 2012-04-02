@@ -102,7 +102,7 @@ class Movies(Resource):
 			evtLoad = self._downloadMovie(mediaId, "isMovie")
 			evtFailed = self._moveToFailed(entry, "isMovie")
 			
-			if (entry.Seen == 1 or entry.Seen == "1"):
+			if WebData().getData("MediaInfo_isSeen", mediaId):
 				isSeen = ""
 			else:
 				isSeen = '<img src="/content/global/img/unseen.png" alt="unseen" title="unseen"></img>'
@@ -287,7 +287,7 @@ class Episodes(Resource):
 		tableBody = u""
 		
 		# get episodes of serie (parentid)
-		ParentId = request.args["ParentId"][0]		
+		ParentId = request.args["ParentId"][0]
 		entries = WebData().getData("EpisodesOfSerie", ParentId)
 		
 		for entry in entries:
@@ -299,7 +299,7 @@ class Episodes(Resource):
 			evtLoad = self._downloadEpisode(mediaId, "isEpisode")
 			evtFailed = self._moveToFailed(entry, "isEpisode")
 			
-			if (entry.Seen == 1 or entry.Seen == "1"):
+			if WebData().getData("MediaInfo_isSeen", mediaId):
 				isSeen = ""
 			else:
 				isSeen = '<img src="/content/global/img/unseen.png" alt="unseen" title="unseen"></img>'
