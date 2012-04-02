@@ -853,7 +853,10 @@ class SyncFunctions(Resource):
 			printl("mode (getSyncPercentage)", self, "I")
 			from Plugins.Extensions.ProjectValerie.DMC_Plugins.DMC_SyncExtras.plugin import getSyncInfoInstance
 			syncInfo = getSyncInfoInstance()
-			progress = syncInfo.progress
+			if syncInfo.range > 0:
+				progress = int((syncInfo.progress/syncInfo.range)*100.0)
+			else:
+				progress = 0
 			
 			return str(progress)
 			
