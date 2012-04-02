@@ -64,6 +64,12 @@ class WebData():
 		elif type == "MediaInfo_isSeen":
 			userId = config.plugins.pvmc.seenuserid.value
 			dataRows = ManagerInstance.isMediaSeen(param, userId)
+		elif type == "MediaInfo_markSeen":
+			userId = config.plugins.pvmc.seenuserid.value
+			dataRows = ManagerInstance.MarkAsSeen(param, userId)
+		elif type == "MediaInfo_markUnseen":
+			userId = config.plugins.pvmc.seenuserid.value
+			dataRows = ManagerInstance.MarkAsUnseen(param, userId)
 			
 		elif type == "options.global":
 			from Plugins.Extensions.ProjectValerie.__plugin__ import getPlugins, Plugin

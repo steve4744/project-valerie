@@ -198,8 +198,7 @@ class MediaForm(Resource):
 			
 			seenCheck = ""
 			
-			printl("isSeen => " + str(m.Seen), self, "I")
-			if m.Seen == "1" or m.Seen == 1:
+			if WebData().getData("MediaInfo_isSeen", m.Id):
 				seenCheck = 'checked'
 			printl("nextMode = " + nextMode, self, "W")
 			
@@ -433,10 +432,10 @@ class MediaActions(Resource):
 				printl("Content: " + key + " => " + request.args[key][0], self, "I")	
 			
 			if not "Seen" in request.args:
-				key_value_dict["Seen"] = "0"
+					WebData().getData("MediaInfo_markUnseen", Id)
 			else:
 				if (request.args["Seen"][0] == "on"):
-					key_value_dict["Seen"] = "1"
+					WebData().getData("MediaInfo_markSeen", Id)
 			
 			# edit movies		
 			if type == "isMovie":
