@@ -75,8 +75,9 @@ class DMC_View(Screen, NumericalTextInput):
 </screen>
 	"""
 
-	ON_CLOSED_CAUSE_CHANGE_VIEW = 1
-	ON_CLOSED_CAUSE_SAVE_DEFAULT = 2
+	ON_CLOSED_CAUSE_CHANGE_VIEW   = 1
+	ON_CLOSED_CAUSE_SAVE_DEFAULT  = 2
+	ON_CLOSED_CAUSE_SAVE_BOOKMARK = 3
 
 	FAST_STILLPIC = False
 
@@ -215,18 +216,7 @@ class DMC_View(Screen, NumericalTextInput):
 				filter = True
 			
 			self._load(self.select[0], ignoreSort=sort, ignoreFilter=filter)
-			keys = self.select[1].keys()
-			listViewList = self["listview"].list
-			for i in range(len(listViewList)):
-				entry = listViewList[i]
-				found = True
-				for key in keys:
-					if entry[1][key] != self.select[1][key]:
-						found = False
-						break
-				if found:
-					self["listview"].setIndex(i)
-					break
+			self.setSelection(self.select[1])
 			self.refresh()
 
 	def onKey1(self):
@@ -585,22 +575,13 @@ class DMC_View(Screen, NumericalTextInput):
 			return
 		
 		self._load(self.onLeavePrimaryKeyValuePair)
-		for i in range(len(self.listViewList)):
-			entry = self.listViewList[i][1]
-			print i, entry
-			isIndex = True
-			
-			for key in selectKeyValuePair.keys():
-				if entry[key] != selectKeyValuePair[key]:
-					isIndex = False
-					break
-			if isIndex:
-				self["listview"].setIndex(i)
-				break
+		self.setSelection(self.listViewList[i][1])
 		self.refresh()
 
 	def onEOF(self):
+		select = self.getCurrentSelectedElement()
 		self._load(self.currentKeyValuePair, ignoreSort=True, ignoreFilter=True)
+		self.setSelection(select[1])
 		self.refresh()
 
 	def _load(self, primaryKeys=None, ignoreSort=False, ignoreFilter=False):
@@ -679,6 +660,20 @@ class DMC_View(Screen, NumericalTextInput):
 		self["listview"].setList(listViewList)
 		self["listview"].setIndex(0)
 
+	def setSelection(self, selection):
+			keys = selection.keys()
+			listViewList = self["listview"].list
+			for i in range(len(listViewList)):
+				entry = listViewList[i]
+				found = True
+				for key in keys:
+					if entry[1][key] != selection[key]:
+						found = False
+						break
+				if found:
+					self["listview"].setIndex(i)
+					break
+
 	def setText(self, name, value, ignore=False, what=None):
 		try:
 			if self[name]:
@@ -708,10 +703,7 @@ class DMC_View(Screen, NumericalTextInput):
 			text = entry["Path"] + _("\n\nPlease make sure that your drive is connected/mounted.")
 			self.session.open(MessageBox, title + text, type = MessageBox.TYPE_ERROR)
 
-	def setDefaultView(self, unused=None, unused2=None):
-		# These allow us to get the correct list
-		#self.currentKeyValuePair
-		# But we also need the selected element
+	def getCurrentSelectedElement(self):
 		select = None
 		selection = self["listview"].getCurrent()
 		if selection is not None:
@@ -721,7 +713,15 @@ class DMC_View(Screen, NumericalTextInput):
 				if key != "play":
 					primaryKeyValuePair[key] = selection[1][key]
 			select = (self.currentKeyValuePair, primaryKeyValuePair)
+		return select
+
+	def setDefaultView(self, unused=None, unused2=None):
+		select = self.getCurrentSelectedElement()
 		self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT, select, self.activeSort, self.activeFilter))
+
+	#def setBookmarkView(self, unused=None, unused2=None):
+	#	select = self.getCurrentSelectedElement()
+	#	self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_BOOKMARK, select, self.activeSort, self.activeFilter))
 
 	def clearDefaultView(self, unused=None, unused2=None):
 		self.close((DMC_View.ON_CLOSED_CAUSE_SAVE_DEFAULT, ))
@@ -730,7 +730,9 @@ class DMC_View(Screen, NumericalTextInput):
 		pluginList = []
 		
 		pluginList.append((_("Set view as default"), Plugin("View", fnc=self.setDefaultView), ))
-		pluginList.append((_("Clear default view"), Plugin("View", fnc=self.clearDefaultView), ))
+		#pluginList.append((_("Add bookmark"),        Plugin("View", fnc=self.setBookmarkView), ))
+		#pluginList.append((_("Bookmark"),            Plugin("View", fnc=self.setBookmarkView), ))
+		pluginList.append((_("Clear default view"),  Plugin("View", fnc=self.clearDefaultView), ))
 		
 		plugins = getPlugins(where=Plugin.MENU_MOVIES_PLUGINS)
 		for plugin in plugins:
@@ -765,6 +767,3 @@ class DMC_View(Screen, NumericalTextInput):
 				choice[1].fnc(self.session, selection[1])
 				if choice[1].supportStillPicture is False and self.has_key("backdrop"):
 					self.refresh()
-
-#registerPlugin(Plugin(name=_("Set view as default"), fnc=setViewAsDefault, where=Plugin.MENU_MOVIES_PLUGINS))
-#registerPlugin(Plugin(name=_("Bookmark view"), fnc=bookmarkView, where=Plugin.MENU_MOVIES_PLUGINS))
