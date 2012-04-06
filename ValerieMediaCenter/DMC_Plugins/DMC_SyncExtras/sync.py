@@ -434,10 +434,11 @@ class pyvalerie(Thread):
 						elementInfo.setMediaType(MediaInfo.UNKNOWN)
 					
 					result = elementInfo.parse(useFolder)
-					printl("TheTvDbId: " + elementInfo.TheTvDbId, self, "I")
 						
 					if result == False:
 						continue
+					
+					printl("TheTvDbId: " + elementInfo.TheTvDbId, self, "I")
 					
 					if elementInfo.isXbmcNfo == False:	
 						printl("isXbmcNfo == False => checking for E2 recorded TV show... ", self, "I")

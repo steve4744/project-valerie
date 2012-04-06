@@ -297,73 +297,76 @@ class MediaInfo(object):
 		try:
 			for line in lines:
 				line = line.strip()
-				if line.startswith("<id>"):
-					line = line.replace("id", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					if lines[1].startswith("<movie"):
-						self.setMediaType(self.MOVIE)
-						
-						self.ImdbId = line
-					elif lines[1].startswith("<episodedetails>"):
-						self.setMediaType(self.SERIE)
-						
-						self.TheTvDbId = line
-				elif line.startswith("<title>"):
-					line = line.replace("title", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Title = line
-				elif line.startswith("<season>"):
-					line = line.replace("season", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Season = int(resub(r'\D+', '', line))
-				elif line.startswith("<episode>"):
-					line = line.replace("episode", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Episode = int(resub(r'\D+', '', line))
-				elif line.startswith("<year>"):
-					line = line.replace("year", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Year = int(resub(r'\D+', '', line))
-				elif line.startswith("<plot>"):
-					line = line.replace("plot", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Plot = line
-				elif line.startswith("<runtime>"):
-					line = line.replace("runtime", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Runtime = int(resub(r'\D+', '', line))
-				elif line.startswith("<genre>"):
-					line = line.replace("genre", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Genres = line
-				elif line.startswith("<rating>"):
-					line = line.replace("rating", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Popularity = int(round(float(line)))
-				elif line.startswith("<tagline>"):
-					line = line.replace("tagline", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Tag = line
-				elif line.startswith("<codec>"):
-					line = line.replace("codec", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Sound = line
-				elif line.startswith("<width>"):
-					line = line.replace("width", "")
-					line = line.replace("<>", "")
-					line = line.replace("</>", "")
-					self.Resolution = line
+				try:
+					if line.startswith("<id>"):
+						line = line.replace("id", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						if lines[1].startswith("<movie"):
+							self.setMediaType(self.MOVIE)
+							
+							self.ImdbId = line
+						elif lines[1].startswith("<episodedetails>"):
+							self.setMediaType(self.SERIE)
+							
+							self.TheTvDbId = line
+					elif line.startswith("<title>"):
+						line = line.replace("title", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Title = line
+					elif line.startswith("<season>"):
+						line = line.replace("season", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Season = int(resub(r'\D+', '', line))
+					elif line.startswith("<episode>"):
+						line = line.replace("episode", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Episode = int(resub(r'\D+', '', line))
+					elif line.startswith("<year>"):
+						line = line.replace("year", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Year = int(resub(r'\D+', '', line))
+					elif line.startswith("<plot>"):
+						line = line.replace("plot", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Plot = line
+					elif line.startswith("<runtime>"):
+						line = line.replace("runtime", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Runtime = int(resub(r'\D+', '', line))
+					elif line.startswith("<genre>"):
+						line = line.replace("genre", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Genres = line
+					elif line.startswith("<rating>"):
+						line = line.replace("rating", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Popularity = int(round(float(line)))
+					elif line.startswith("<tagline>"):
+						line = line.replace("tagline", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Tag = line
+					elif line.startswith("<codec>"):
+						line = line.replace("codec", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Sound = line
+					elif line.startswith("<width>"):
+						line = line.replace("width", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Resolution = line
+				except Exception, ex:
+					printl("Exception (in loop): " + str(ex), self, "E")
 			return self
 		
 		except Exception, ex:
@@ -489,7 +492,7 @@ class MediaInfo(object):
 				self.Genres = result.Genres
 				self.Runtime = result.Runtime
 				
-				if self.isXbmcNfo == True:
+				if self.isXbmcNfo == True and self.ImdbId is not None:
 					printl("<- XBMC-style nfo found...", self, "I")
 					return True
 			else:
