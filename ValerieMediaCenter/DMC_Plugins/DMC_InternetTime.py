@@ -117,7 +117,7 @@ def autostart(session):
 
 def settings():
 	s = []
-	s.append((_("Autosync time"), config.plugins.pvmc.plugins.internettime.autosync, ))
+	s.append((_("Sync time on start"), config.plugins.pvmc.plugins.internettime.autosync, ))
 	return s
 
 if gAvailable is True:
