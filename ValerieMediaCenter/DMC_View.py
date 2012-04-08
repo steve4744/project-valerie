@@ -575,7 +575,7 @@ class DMC_View(Screen, NumericalTextInput):
 			return
 		
 		self._load(self.onLeavePrimaryKeyValuePair)
-		self.setSelection(self.listViewList[i][1])
+		self.setSelection(selectKeyValuePair)
 		self.refresh()
 
 	def onEOF(self):
