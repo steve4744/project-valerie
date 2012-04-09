@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Project Valerie\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-06 09:01+0100\n"
+"POT-Creation-Date: 2012-04-09 10:54+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: JackDanie <JackDaniel@i-have-a-dreambox.com>\n"
 "Language-Team: IhaD <JackDaniel@i-have-a-dreambox.com>\n"
@@ -12,71 +12,71 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: AUSTRIA\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-Basepath: /Users/JackDaniel/Übersetzungen/ValerieMediaCenter/\n"
-"X-Poedit-SearchPath-0: /Users/JackDaniel/Übersetzungen/ValerieMediaCenter\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ../../..\n"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/__init__.py:42
+#: ../../../__init__.py:42
 msgid "English"
 msgstr "Englisch"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_BackdropView.py:60
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:82
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_PosterView.py:74
+#: ../../../DMC_BackdropView.py:60
+#: ../../../DMC_ListView.py:82
+#: ../../../DMC_PosterView.py:74
 msgid "Sort: "
 msgstr "Sortieren:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_BackdropView.py:60
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:82
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_PosterView.py:74
+#: ../../../DMC_BackdropView.py:60
+#: ../../../DMC_ListView.py:82
+#: ../../../DMC_PosterView.py:74
 msgid "Default"
 msgstr "standard"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_BackdropView.py:119
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:150
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_PosterView.py:153
+#: ../../../DMC_BackdropView.py:119
+#: ../../../DMC_ListView.py:150
+#: ../../../DMC_PosterView.py:153
 msgid "Overview"
 msgstr "Übersicht"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:83
+#: ../../../DMC_ListView.py:83
 msgid "Filter: "
 msgstr "Filter:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:83
+#: ../../../DMC_ListView.py:83
 msgid "None"
 msgstr "Keine"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:179
+#: ../../../DMC_ListView.py:179
 msgid "Genre"
 msgstr "Kategorie"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:198
+#: ../../../DMC_ListView.py:198
 msgid "min"
 msgstr "min"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:221
+#: ../../../DMC_ListView.py:221
 msgid "Total:"
 msgstr "Gesamt:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_ListView.py:222
+#: ../../../DMC_ListView.py:222
 msgid "Pages:"
 msgstr "Seite:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:101
+#: ../../../DMC_MainMenu.py:101
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:102
+#: ../../../DMC_MainMenu.py:102
 msgid "Save"
 msgstr "Speichern"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:116
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:338
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:351
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:918
+#: ../../../DMC_MainMenu.py:116
+#: ../../../DMC_MainMenu.py:350
+#: ../../../DMC_MainMenu.py:363
+#: ../../../DMC_MainMenu.py:943
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:146
+#: ../../../DMC_MainMenu.py:146
 msgid ""
 "Some settings may need a GUI restart\n"
 "Do you want to Restart the GUI now?"
@@ -84,44 +84,39 @@ msgstr ""
 "Einige Einstellungen benötigen einen GUI neustart\n"
 "Wollen Sie die GUI nun neu starten?"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:177
+#: ../../../DMC_MainMenu.py:180
 msgid "Checking for updates ..."
 msgstr "Prüfe ob Aktualisierungen vorhanden sind..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:190
+#: ../../../DMC_MainMenu.py:193
 msgid "PVMC Update"
 msgstr "PVMC Aktualisierung"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:196
-msgid ""
-"PVMC will be updated!\n"
-"Do you want to proceed now?"
-msgstr ""
-"Project Valerie muss aktualisiert werden !\n"
-"Soll das nun durchgeführt werden ?"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:198
-msgid "No internet connection available!"
-msgstr "Keine Internetverbindung verfügbar!"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:209
+#: ../../../DMC_MainMenu.py:201
 msgid "No update available"
 msgstr "Keine Aktualisierung verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:212
-#, python-format
+#: ../../../DMC_MainMenu.py:205
+msgid "Update to revision "
+msgstr "Aktualisieren auf Revision"
+
+#: ../../../DMC_MainMenu.py:207
+msgid "No internet connection available!"
+msgstr "Keine Internetverbindung verfügbar!"
+
+#: ../../../DMC_MainMenu.py:223
 msgid ""
-"Updating ProjectValerie to %s...\n"
+"Updating ProjectValerie \n"
 "\n"
 "\n"
 "Stay tuned :-)"
 msgstr ""
-"Aktualisiere Project Valerie auf %s ...\n"
+"Aktualisiere Project Valerie \n"
 "\n"
 "\n"
 "Bitte warten :-)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:246
+#: ../../../DMC_MainMenu.py:258
 msgid ""
 "Enigma2 must be restarted!\n"
 "Should Enigma2 now restart?"
@@ -129,73 +124,74 @@ msgstr ""
 "Enigma 2 muss neu gestartet werden.\n"
 "Soll Enigma 2 jetzt neu gestartet werden ?"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:336
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:345
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:354
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:380
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MovieLibrary.py:128
+#: ../../../DMC_MainMenu.py:348
+#: ../../../DMC_MainMenu.py:357
+#: ../../../DMC_MainMenu.py:366
+#: ../../../DMC_MainMenu.py:392
+#: ../../../DMC_MovieLibrary.py:129
 msgid "Movies"
 msgstr "Filme"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:337
+#: ../../../DMC_MainMenu.py:349
 msgid "TV"
 msgstr "TV"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:339
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:352
+#: ../../../DMC_MainMenu.py:351
+#: ../../../DMC_MainMenu.py:364
 msgid "Synchronize"
 msgstr "Synchronisieren"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:340
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:373
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:375
+#: ../../../DMC_MainMenu.py:352
+#: ../../../DMC_MainMenu.py:385
+#: ../../../DMC_MainMenu.py:387
 msgid "Music"
 msgstr "Musik"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:346
+#: ../../../DMC_MainMenu.py:358
 msgid "Series"
 msgstr "Serien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:353
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:377
+#: ../../../DMC_MainMenu.py:365
+#: ../../../DMC_MainMenu.py:389
 msgid "Live TV"
 msgstr "Live TV"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:355
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:381
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_TvShowLibrary.py:310
+#: ../../../DMC_MainMenu.py:367
+#: ../../../DMC_MainMenu.py:393
+#: ../../../DMC_TvShowLibrary.py:317
 msgid "TV Shows"
 msgstr "Serien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:366
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:368
+#: ../../../DMC_MainMenu.py:378
+#: ../../../DMC_MainMenu.py:380
 msgid "Pictures"
 msgstr "Bilder"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:388
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:390
+#: ../../../DMC_MainMenu.py:400
+#: ../../../DMC_MainMenu.py:402
 msgid "Videos"
 msgstr "Filme"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:395
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:397
+#: ../../../DMC_MainMenu.py:407
+#: ../../../DMC_MainMenu.py:409
+msgid "Weather"
+msgstr "Wetter"
+
+#: ../../../DMC_MainMenu.py:415
+#: ../../../DMC_MainMenu.py:417
 msgid "Programs"
 msgstr "Programme"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:402
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:404
+#: ../../../DMC_MainMenu.py:422
+#: ../../../DMC_MainMenu.py:424
 msgid "System"
 msgstr "System"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:448
+#: ../../../DMC_MainMenu.py:469
 msgid "Project Valerie"
 msgstr "Project Valerie"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:459
-msgid "Show"
-msgstr "Anzeigen"
-
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:540
+#: ../../../DMC_MainMenu.py:565
 #, python-format
 msgid ""
 "A new version of MediaCenter is available for download!\n"
@@ -206,12 +202,12 @@ msgstr ""
 "\n"
 "Version: %s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:550
+#: ../../../DMC_MainMenu.py:575
 #, python-format
 msgid "Update to %s available"
 msgstr "Aktualisierung auf %s verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:618
+#: ../../../DMC_MainMenu.py:643
 #, python-format
 msgid ""
 "UNEXPECTED ERROR:\n"
@@ -220,129 +216,129 @@ msgstr ""
 "Unerwarteter Fehler:\n"
 "%s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:637
+#: ../../../DMC_MainMenu.py:662
 msgid "Back"
 msgstr "Zurück"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:848
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:685
+#: ../../../DMC_MainMenu.py:873
+#: ../../../DMC_View.py:684
 msgid "Not available"
 msgstr "Nicht verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:850
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:687
+#: ../../../DMC_MainMenu.py:875
+#: ../../../DMC_View.py:686
 msgid "not available"
 msgstr "nicht verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:886
+#: ../../../DMC_MainMenu.py:911
 msgid "Show wizard on next start"
 msgstr "Assistent beim nächsten Start anzeigen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:887
+#: ../../../DMC_MainMenu.py:912
 msgid "Start Valerie on e2 start"
 msgstr "Project Valerie automatisch starten"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:888
+#: ../../../DMC_MainMenu.py:913
 msgid "Check for updates on Valerie start"
 msgstr "Beim Start auf Updates überprüfen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:889
+#: ../../../DMC_MainMenu.py:914
 msgid "Check for updates of type"
 msgstr "Welche Update-Version verwenden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:890
+#: ../../../DMC_MainMenu.py:915
 msgid "Skin"
 msgstr "Benutzeroberfläche"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:891
+#: ../../../DMC_MainMenu.py:916
 msgid "On Power press"
 msgstr "Funktion der Ein/Aus Taste"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:892
+#: ../../../DMC_MainMenu.py:917
 msgid "Show Movie and TVShow in main menu"
 msgstr "Filme und Serien im Hauptmenü anzeigen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:893
+#: ../../../DMC_MainMenu.py:918
 msgid "Seen / Unseen User ID"
 msgstr "Gesehen/Ungesehen Benutzer ID"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:894
+#: ../../../DMC_MainMenu.py:919
 msgid "Show Seen / Unseen for Shows"
 msgstr "Gesehen/Ungesehen anzeigen für Serien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:895
+#: ../../../DMC_MainMenu.py:920
 msgid "Show Seen / Unseen for Seasons"
 msgstr "Gesehen/Ungesehen anzeigen für Episoden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:900
+#: ../../../DMC_MainMenu.py:925
 msgid "Valerie Config folder (Database, ...)"
 msgstr "Valerie Konfigurationsordner (Datenbank, ...)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:901
+#: ../../../DMC_MainMenu.py:926
 msgid "Valerie media folder (Poster, Backdrops)"
 msgstr "Valerie Medienordner (Poster, Hintergründe)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:902
+#: ../../../DMC_MainMenu.py:927
 msgid "Valerie tmp folder (Logs, Cache)"
 msgstr "Valerie tmp Ordner (Logs, Cache) "
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:903
+#: ../../../DMC_MainMenu.py:928
 msgid "Valerie debug mode"
 msgstr "Valerie Debug Modus"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:917
+#: ../../../DMC_MainMenu.py:942
 msgid "Expert"
 msgstr "Experte"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_MainMenu.py:919
+#: ../../../DMC_MainMenu.py:944
 msgid "Update"
 msgstr "Aktualisierung"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Player.py:83
+#: ../../../DMC_Player.py:85
 msgid "Yes, but play next episode"
 msgstr "Ja, aber nächste Episode abspielen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Player.py:85
+#: ../../../DMC_Player.py:87
 msgid "Yes"
 msgstr "Ja"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Player.py:88
+#: ../../../DMC_Player.py:90
 msgid "No, continue"
 msgstr "Nein, Film fortsetzen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Player.py:90
+#: ../../../DMC_Player.py:95
 msgid "Stop playing this movie?"
 msgstr "Die Wiedergabe des Films stoppen ?"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:47
+#: ../../../DMC_View.py:47
 msgid "List"
 msgstr "Liste"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:48
+#: ../../../DMC_View.py:48
 msgid "Poster-Flow"
 msgstr "Posteransicht"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:49
+#: ../../../DMC_View.py:49
 msgid "Backdrop"
 msgstr "Hintergrund"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:390
+#: ../../../DMC_View.py:380
 msgid "Select sort"
 msgstr "Sortierung auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:454
+#: ../../../DMC_View.py:444
 msgid "Select filter"
 msgstr "Filter auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:494
+#: ../../../DMC_View.py:484
 msgid "Select view"
 msgstr "Ansicht auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:703
+#: ../../../DMC_View.py:702
 msgid "Not found!\n"
 msgstr "Nichts gefunden !\n"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:704
+#: ../../../DMC_View.py:703
 msgid ""
 "\n"
 "\n"
@@ -352,286 +348,305 @@ msgstr ""
 "\n"
 "Bitte stellen Sie sicher, dass Ihr Laufwerk angeschlossen und eingehängt ist."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:728
+#: ../../../DMC_View.py:732
 msgid "Set view as default"
 msgstr "Diese Ansicht als Standard verwenden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:729
+#: ../../../DMC_View.py:735
 msgid "Clear default view"
 msgstr "Standardansicht säubern"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:736
+#: ../../../DMC_View.py:742
 msgid "No plugins available"
 msgstr "Keine Erweiterungen verfügbar"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_View.py:739
+#: ../../../DMC_View.py:745
 msgid "Options"
 msgstr "Optionen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:50
+#: ../../../DMC_Plugins/DMC_AutoSync.py:50
 msgid "%H:%M"
 msgstr "%H:%M"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:102
+#: ../../../DMC_Plugins/DMC_AutoSync.py:102
 msgid "Autosync Database on start"
 msgstr "Datenbank automatisch beim Start aktualisieren"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:103
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_InternetTime.py:120
+#: ../../../DMC_Plugins/DMC_AutoSync.py:103
 msgid "Autosync time"
 msgstr "Aut. Synchronisierzeit"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:107
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:109
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_AutoSync.py:110
+#: ../../../DMC_Plugins/DMC_AutoSync.py:107
+#: ../../../DMC_Plugins/DMC_AutoSync.py:109
+#: ../../../DMC_Plugins/DMC_AutoSync.py:110
 msgid "AutoSync"
 msgstr "Aut. Synchronisieren"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_BackgroundDbLoader.py:84
+#: ../../../DMC_Plugins/DMC_BackgroundDbLoader.py:84
 msgid "Autoload Database on start"
 msgstr "Datenbank automatisch beim Start laden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_BackgroundDbLoader.py:88
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_BackgroundDbLoader.py:89
+#: ../../../DMC_Plugins/DMC_BackgroundDbLoader.py:88
+#: ../../../DMC_Plugins/DMC_BackgroundDbLoader.py:89
 msgid "BackgroundDbLoader"
 msgstr "BackgroundDbLoader"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_DreamNetcast.py:30
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_DreamNetcast.py:31
+#: ../../../DMC_Plugins/DMC_DreamNetcast.py:25
+#: ../../../DMC_Plugins/DMC_DVDPlayer.py:34
+#: ../../../DMC_Plugins/DMC_FileBrowser.py:21
+#: ../../../DMC_Plugins/DMC_Foreca.py:22
+#: ../../../DMC_Plugins/DMC_JamendoLibrary.py:228
+#: ../../../DMC_Plugins/DMC_LastFM.py:22
+#: ../../../DMC_Plugins/DMC_MediaPlayer.py:32
+#: ../../../DMC_Plugins/DMC_MerlinMusicPlayer.py:35
+#: ../../../DMC_Plugins/DMC_MultiMediathek.py:31
+msgid "Show"
+msgstr "Anzeigen"
+
+#: ../../../DMC_Plugins/DMC_DreamNetcast.py:30
+#: ../../../DMC_Plugins/DMC_DreamNetcast.py:31
 msgid "Dreamnetcast"
 msgstr "Dreamnetcast"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_DVDPlayer.py:38
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_DVDPlayer.py:39
+#: ../../../DMC_Plugins/DMC_DVDPlayer.py:39
+#: ../../../DMC_Plugins/DMC_DVDPlayer.py:40
 msgid "DVDPlayer"
 msgstr "DVDPlayer"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_FileBrowser.py:26
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_FileBrowser.py:27
+#: ../../../DMC_Plugins/DMC_FileBrowser.py:26
+#: ../../../DMC_Plugins/DMC_FileBrowser.py:27
 msgid "Filebrowser"
 msgstr "Dateimanager"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_InternetTime.py:124
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_InternetTime.py:125
+#: ../../../DMC_Plugins/DMC_Foreca.py:27
+#: ../../../DMC_Plugins/DMC_Foreca.py:28
+msgid "Foreca"
+msgstr "Foreca"
+
+#: ../../../DMC_Plugins/DMC_InternetTime.py:120
+msgid "Sync time on start"
+msgstr "Ziet beim Start synchronisieren"
+
+#: ../../../DMC_Plugins/DMC_InternetTime.py:124
+#: ../../../DMC_Plugins/DMC_InternetTime.py:125
 msgid "InternetTime"
 msgstr "Internetzeit"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_JamendoLibrary.py:233
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_JamendoLibrary.py:234
+#: ../../../DMC_Plugins/DMC_JamendoLibrary.py:233
+#: ../../../DMC_Plugins/DMC_JamendoLibrary.py:234
 msgid "Jamendo"
 msgstr "Jamendo"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_LastFM.py:27
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_LastFM.py:28
+#: ../../../DMC_Plugins/DMC_LastFM.py:27
+#: ../../../DMC_Plugins/DMC_LastFM.py:28
 msgid "LastFM"
 msgstr "LastFM"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MediaPlayer.py:37
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MediaPlayer.py:38
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MediaPlayer.py:39
+#: ../../../DMC_Plugins/DMC_MediaPlayer.py:37
+#: ../../../DMC_Plugins/DMC_MediaPlayer.py:38
+#: ../../../DMC_Plugins/DMC_MediaPlayer.py:39
 msgid "MediaPlayer"
 msgstr "MediaPlayer"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MerlinMusicPlayer.py:40
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MerlinMusicPlayer.py:41
+#: ../../../DMC_Plugins/DMC_MerlinMusicPlayer.py:40
+#: ../../../DMC_Plugins/DMC_MerlinMusicPlayer.py:41
 msgid "MerlinMusicPlayer"
 msgstr "MerlinMusicPlayer"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MultiMediathek.py:36
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MultiMediathek.py:37
+#: ../../../DMC_Plugins/DMC_MultiMediathek.py:36
+#: ../../../DMC_Plugins/DMC_MultiMediathek.py:37
 msgid "MultiMediathek"
 msgstr "MultiMediathek"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:45
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:45
 msgid "No Username"
 msgstr "Kein Benutzername"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:46
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:46
 msgid "No Password"
 msgstr "Kein Passwort"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:50
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_NewestEpisodes.py:195
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:50
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:51
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:51
 msgid "Username"
 msgstr "Benutzername"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:52
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:52
 msgid "Password"
 msgstr "Passwort"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:86
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:87
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_MyEpisodes.py:88
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:86
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:87
+#: ../../../DMC_Plugins/DMC_MyEpisodes.py:88
 msgid "myepisodes"
 msgstr "myepisodes"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_NewestEpisodes.py:196
+#: ../../../DMC_Plugins/DMC_NewestEpisodes.py:196
 msgid "days back"
 msgstr "Tage zurück"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_NewestEpisodes.py:200
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_NewestEpisodes.py:202
+#: ../../../DMC_Plugins/DMC_NewestEpisodes.py:200
+#: ../../../DMC_Plugins/DMC_NewestEpisodes.py:202
 msgid "Newest Episodes"
 msgstr "Neueste Folgen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_PicturePlayer.py:32
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_PicturePlayer.py:81
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_PicturePlayer.py:82
+#: ../../../DMC_Plugins/DMC_PicturePlayer.py:41
+#: ../../../DMC_Plugins/DMC_PicturePlayer.py:90
+#: ../../../DMC_Plugins/DMC_PicturePlayer.py:91
 msgid "PicturePlayer"
 msgstr "PicturePlayer"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_PicturePlayer.py:53
+#: ../../../DMC_Plugins/DMC_PicturePlayer.py:62
 msgid "PicturePlayer Setup"
 msgstr "PicturePlayer Setup"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Seen.py:90
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Seen.py:91
+#: ../../../DMC_Plugins/DMC_Seen.py:90
+#: ../../../DMC_Plugins/DMC_Seen.py:91
 msgid "Seen"
 msgstr "Gesehen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Seen.py:93
+#: ../../../DMC_Plugins/DMC_Seen.py:93
 msgid "Mark as Seen"
 msgstr "Als gesehen markieren"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Seen.py:94
+#: ../../../DMC_Plugins/DMC_Seen.py:94
 msgid "Mark as Unseen"
 msgstr "Als ungesehen markieren"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SqliteCheck.py:59
+#: ../../../DMC_Plugins/DMC_SqliteCheck.py:59
 msgid "Sqlite Check"
 msgstr "Sqlite Prüfung"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:79
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:79
 msgid "Provider"
 msgstr "Anbieter"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:80
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:80
 msgid "Language1"
 msgstr "Sprache 1"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:81
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:81
 msgid "Language2"
 msgstr "Sprache 2"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:82
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:82
 msgid "Language3"
 msgstr "Sprache 3"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:238
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:238
 msgid "SubtitleDownloader"
 msgstr "Untertitel-Laden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SubtitleDownloader.py:240
+#: ../../../DMC_Plugins/DMC_SubtitleDownloader.py:240
 msgid "Download subtitles"
 msgstr "Untertitel herunterladen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Sync.py:39
+#: ../../../DMC_Plugins/DMC_Sync.py:39
 msgid "Fast Sync on autostart"
 msgstr "Schnelle Synchronisation bei Autostart"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Trakt.py:120
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Trakt.py:121
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_Trakt.py:122
+#: ../../../DMC_Plugins/DMC_Trakt.py:120
+#: ../../../DMC_Plugins/DMC_Trakt.py:121
+#: ../../../DMC_Plugins/DMC_Trakt.py:122
 msgid "trakt.tv"
 msgstr "trakt.tv"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_WebInterface.py:112
+#: ../../../DMC_Plugins/DMC_WebInterface.py:114
 msgid "Port"
 msgstr "Port"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_WebInterface.py:113
-msgid "Use Pagination"
-msgstr "Seitenumbruch verwenden "
+#: ../../../DMC_Plugins/DMC_WebInterface.py:116
+msgid "Entry"
+msgstr "Eintrag"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_WebInterface.py:117
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_WebInterface.py:118
+#: ../../../DMC_Plugins/DMC_WebInterface.py:120
+#: ../../../DMC_Plugins/DMC_WebInterface.py:121
 msgid "WebInterface"
 msgstr "Webinterface"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_YTTrailer.py:44
+#: ../../../DMC_Plugins/DMC_YTTrailer.py:44
 msgid "YTTrailer"
 msgstr "YTTrailer"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_YTTrailer.py:44
+#: ../../../DMC_Plugins/DMC_YTTrailer.py:44
 msgid "View Trailer (YTTrailer by Dr. Best)"
 msgstr "Filmvorschau anzeigen (YTTrailer Erweiterung von Dr.Best)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:118
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:118
 msgid "Select"
 msgstr "Auswählen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:134
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:134
 msgid "Add Path"
 msgstr "Suchpfad hinzufügen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:229
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:229
 msgid "Remove"
 msgstr "Entfernen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:230
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:230
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:232
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:237
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:914
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:919
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:232
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:237
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:914
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:919
 msgid "More"
 msgstr "Mehr"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:234
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:234
 msgid "Toggle Type"
 msgstr "Typ ändern"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:235
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:235
 msgid "Toggle useFolder"
 msgstr "Ordner/Dateinamen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:257
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:257
 msgid "Searchpaths"
 msgstr "Suchpfade"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:425
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:425
 msgid "Language"
 msgstr "Sprache"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:428
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:428
 msgid "Delete database entry if file can not be found"
 msgstr "Film löschen wenn die Datei nicht gefunden werden kann "
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:489
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:489
 msgid "Change searchpaths"
 msgstr "Suchpfad ändern"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:490
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:490
 msgid "Change settings"
 msgstr "Einstellungen ändern"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:491
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:491
 msgid "Delete cache"
 msgstr "Cache löschen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:492
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:492
 msgid "Delete all posters/backdrops"
 msgstr "Alle Poster/Hintergrundbilder löschen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:493
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:493
 msgid "Delete database"
 msgstr "Datenbank löschen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:494
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:494
 msgid "Reset filter"
 msgstr "Filter zurücksetzen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:542
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:542
 msgid "Cache successfully deleted..."
 msgstr "Cache erfolgreich gelöscht ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:544
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:544
 #, python-format
 msgid ""
 "Error while deleting cache:\n"
@@ -640,11 +655,11 @@ msgstr ""
 "Fehler beim Cache löschen:\n"
 "%s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:548
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:548
 msgid "Arts successfully deleted..."
 msgstr "Poster/Hintergrundbilder erfolgreich gelöscht ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:550
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:550
 #, python-format
 msgid ""
 "Error while deleting arts:\n"
@@ -653,11 +668,11 @@ msgstr ""
 "Fehler beim Poster/Hintergrundbilder löschen:\n"
 "%s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:567
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:567
 msgid "Database successfully deleted..."
 msgstr "Datenbank erfolgreich gelöscht ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:569
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:569
 #, python-format
 msgid ""
 "Error while deleting database:\n"
@@ -666,11 +681,11 @@ msgstr ""
 "Fehler beim Datenbank löschen:\n"
 "%s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:591
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:591
 msgid "Filter successfully resetted..."
 msgstr "Filter erfolgreich zurückgesetzt ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:593
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:593
 #, python-format
 msgid ""
 "Error while resetting filter:\n"
@@ -679,137 +694,137 @@ msgstr ""
 "Fehler beim Filter zurücksetzen:\n"
 "%s"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:791
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:791
 msgid "Synchronize finished"
 msgstr "Synchronisierung beendet"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:807
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1372
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:807
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1372
 msgid "Sync Manager"
 msgstr "Synchronisierungsmanager "
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:911
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1054
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:911
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1054
 msgid "Alternatives"
 msgstr "Alternativen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:916
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:916
 msgid "IMDb ID"
 msgstr "IMDb ID "
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:917
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:917
 msgid "IMDb ID (TV)"
 msgstr "IMDb ID (TV)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:918
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:918
 msgid "Delete"
 msgstr "Löschen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:926
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:926
 msgid "Path:"
 msgstr "Pfad:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:927
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:927
 msgid "Filename:"
 msgstr "Dateiname:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:928
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:928
 msgid "Title:"
 msgstr "Titel:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:929
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1352
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:929
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1352
 msgid "Year:"
 msgstr "Jahr:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:930
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:930
 msgid "Season:"
 msgstr "Staffel:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:931
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:931
 msgid "Episode:"
 msgstr "Folge:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:952
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:952
 msgid "Info"
 msgstr "Info"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1011
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1011
 msgid "IMDb ID without tt"
 msgstr "IMDb ID ohne tt"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1026
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1026
 msgid "IMDb ID for TV Show without tt"
 msgstr "IMDb ID für Serien ohne tt"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1044
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1044
 msgid "No alternatives found"
 msgstr "Kein Alternativen gefunden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1146
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1181
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1190
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1195
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1200
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1146
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1181
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1190
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1195
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1200
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1148
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1148
 msgid "TVShows"
 msgstr "Serien "
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1150
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1150
 msgid "TVShows (All)"
 msgstr "Serien (Alle)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1185
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1185
 msgid "Failed (All)"
 msgstr "Fehlgeschlagene (Alle)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1338
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1410
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1338
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1410
 msgid "Manage"
 msgstr "Verwalten"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1339
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1411
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1339
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1411
 msgid "Complete Sync"
 msgstr "Synchronisieren (komp.)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1340
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1412
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1340
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1412
 msgid "Normal Sync"
 msgstr "Synchronisieren (normal)"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1343
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1343
 msgid "Please press the green button to start synchronize!\n"
 msgstr "Bitte drücken Sie die grüne Taste zum starten der Synchronisation !\n"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1349
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1349
 msgid "Log:"
 msgstr "Log:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1350
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1350
 msgid "Progress:"
 msgstr "Verlauf:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1351
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1351
 msgid "Last:"
 msgstr "Zuletzt:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1353
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1353
 msgid "Name:"
 msgstr "Name:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1406
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1406
 msgid "Hide"
 msgstr "Verbergen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/plugin.py:1407
+#: ../../../DMC_Plugins/DMC_SyncExtras/plugin.py:1407
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandler.py:254
+#: ../../../DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandler.py:254
 msgid ""
 "\n"
 "Converting data to V2.... \n"
@@ -821,7 +836,7 @@ msgstr ""
 "\n"
 "Bitte warten ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandlerPICKLE.py:1232
+#: ../../../DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandlerPICKLE.py:1286
 msgid ""
 "\n"
 "Converting data to version 5.... \n"
@@ -833,7 +848,7 @@ msgstr ""
 "\n"
 "Bitte warten ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandlerPICKLEV2.py:1090
+#: ../../../DMC_Plugins/DMC_SyncExtras/PVS_DatabaseHandlerPICKLEV2.py:1169
 msgid ""
 "\n"
 "Converting data to version 6.... \n"
@@ -845,62 +860,72 @@ msgstr ""
 "\n"
 "Bitte warten ..."
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:193
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:193
 msgid "Thread running"
 msgstr "Synchronisation gestartet"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:207
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:207
 msgid "Loading Config"
 msgstr "Lade Konfiguration"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:211
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:211
 msgid "Loading Data"
 msgstr "Lade Daten"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:220
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:508
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:220
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:529
 msgid "Saving database"
 msgstr "Speichern Datenbank"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:225
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:519
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:225
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:540
 msgid "Done"
 msgstr "Erledigt"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:228
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:522
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:228
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:543
 msgid "Press Exit / Back"
 msgstr "Zum beenden Exit/Back betätigen"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:244
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:244
 msgid "Loading Replacements"
 msgstr "Lade Ersatz"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:257
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:257
 msgid "Loading Filesystem"
 msgstr "Lade Dateisystem"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:266
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:266
 msgid "Extensions:"
 msgstr "Dateiformate:"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:269
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:269
 msgid "Searching for media files"
 msgstr "Suche nach Media-Dateien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:298
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:301
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:298
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:301
 msgid "Found"
 msgstr "Gefunden"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:298
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:301
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:298
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:301
 msgid "media files"
 msgstr "Media-Dateien"
 
-#: /Users/JackDaniel/Ãbersetzungen/ValerieMediaCenter/DMC_Plugins/DMC_SyncExtras/sync.py:512
+#: ../../../DMC_Plugins/DMC_SyncExtras/sync.py:533
 msgid "Saving Filesystem"
 msgstr "Speichern Dateisystem"
+
+#~ msgid ""
+#~ "PVMC will be updated!\n"
+#~ "Do you want to proceed now?"
+#~ msgstr ""
+#~ "Project Valerie muss aktualisiert werden !\n"
+#~ "Soll das nun durchgeführt werden ?"
+
+#~ msgid "Use Pagination"
+#~ msgstr "Seitenumbruch verwenden "
 
 #~ msgid "revisions"
 #~ msgstr "Versionen"
@@ -1052,9 +1077,6 @@ msgstr "Speichern Dateisystem"
 
 #~ msgid "History"
 #~ msgstr "Geschichte"
-
-#~ msgid "War"
-#~ msgstr "Kriegsfilm"
 
 #~ msgid "All"
 #~ msgstr "Alle"
