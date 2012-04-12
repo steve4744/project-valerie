@@ -50,7 +50,7 @@
     <ePixmap name="mb_bg" position="0,0" zPosition="1" size="1280,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1280x720/images/fanart_list_overlay-fs8.png"/>
     <!--ePixmap name="mb_bg_list" position="222,50" zPosition="2" size="533,670" alphatest="blend" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/ProjectValerie/skins/blueDream/1280x720/images/fanart_list_bg-fs8.png"/-->
     <widget name="listview_itemsperpage" text="11" position="0,0" zPosition="0" size="1,1"/>
-    <widget source="listview" render="Listbox" zPosition="3" position="298,175" size="384,426" scrollbarMode="showNever" transparent="1" backgroundColorSelected="#00272727" foregroundColorSelected="#00FFFFFF">
+    <widget source="listview" render="Listbox" zPosition="3" position="299,175" size="379,426" scrollbarMode="showNever" transparent="1" backgroundColorSelected="#00272727" foregroundColorSelected="#00FFFFFF">
         <convert type="TemplatedMultiContent">
             {"template": [ MultiContentEntryText(pos = (0,0), size = (529,33), flags = RT_HALIGN_LEFT, text = 0) ],
             "fonts": [gFont("Modern", 25)],
