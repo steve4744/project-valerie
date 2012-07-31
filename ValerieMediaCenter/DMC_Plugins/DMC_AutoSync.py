@@ -55,6 +55,8 @@ def autostart(session):
 	printl("->", "DMC_AutoSync::autostart", "I")
 	
 	current, planed = getPlanedTime()
+  current = int(current)
+  planed = int(planed)
 	planedMinusOneDay = (planed - 60*60*24)
 	
 	if planed in range(current - 60*10, current + 60*10) or \
