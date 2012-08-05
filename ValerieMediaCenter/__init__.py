@@ -22,7 +22,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN, SCOPE_
 from Plugins.Extensions.ProjectValerie.__plugin__ import loadPlugins
 from Plugins.Extensions.ProjectValerie.DMC_Global import findSkin
 
-#------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 
 print "[PVMC STARTING] I  __init__:: Init Valerie"
 
