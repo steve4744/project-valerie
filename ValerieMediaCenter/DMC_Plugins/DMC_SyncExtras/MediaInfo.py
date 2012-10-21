@@ -918,20 +918,33 @@ class MediaInfo(object):
 		mm = self.Month
 		dd = self.Day
 		
+		printl("-> yy" + str(yy), self)
+		printl("-> mm" + str(yy), self)
+		printl("-> dd" + str(yy), self)
+		
 		if yy is None or yy is "":
 			yy = 0
 		else:
-			yy = int(yy)
-		
+			try:
+				yy = int(yy)
+			except:
+				yy = 0
+				
 		if mm is None or mm is "":
 			mm = 0
 		else:
-			mm = int(mm)
+			try:
+				mm = int(mm)
+			except:
+				mm = 0
 		
 		if dd is None or mm is "":
 			dd = 0
 		else:
-			dd = int(dd)
+			try:
+				dd = int(dd)
+			except:
+				dd = 0
 		
 		try:
 			return yy*10000 + mm*100 + dd	
