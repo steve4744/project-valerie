@@ -70,6 +70,10 @@ class DMC_ListView(DMC_View):
 			self["quality"] = Label()
 			self["sound"] = Label()
 			
+		if self.APILevel >= 7:
+			self["studio"] = Label()
+			self["mpaa"] = Label()
+			
 		self.BackdropDynamic = 1 
 		if self.APILevel >= 6: 
 			try: 
@@ -171,6 +175,19 @@ class DMC_ListView(DMC_View):
 				self["sound"].setText(snd)
 			else:
 				self["sound"].setText(" ")
+				
+		if self.APILevel >= 7:
+			if selection[1].has_key("mpaa"):
+				mpaa = selection[1]["mpaa"]
+				self["mpaa"].setText(str(mpaa))
+			else:
+				self["mpaa"].setText(" ")
+			
+			if selection[1].has_key("studio"):
+				studio = selection[1]["studio"]
+				self["studio"].setText(str(studio))
+			else:
+				self["studio"].setText(" ")
 		
 		genres = ""
 		for genre in element["Genres"]:

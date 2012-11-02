@@ -365,6 +365,16 @@ class MediaInfo(object):
 						line = line.replace("<>", "")
 						line = line.replace("</>", "")
 						self.Resolution = line
+					elif line.startswith("<mpaa>"):
+						line = line.replace("mpaa", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Resolution = line
+					elif line.startswith("<studio>"):
+						line = line.replace("studio", "")
+						line = line.replace("<>", "")
+						line = line.replace("</>", "")
+						self.Resolution = line
 				except Exception, ex:
 					printl("Exception (in loop): " + str(ex), self, "E")
 			return self
