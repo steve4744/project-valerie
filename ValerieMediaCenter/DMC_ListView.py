@@ -71,6 +71,7 @@ class DMC_ListView(DMC_View):
 			self["sound"] = Label()
 			
 		if self.APILevel >= 7:
+			printl("we are at api level 7", self, "D")
 			self["studio"] = Label()
 			self["mpaa"] = Label()
 			

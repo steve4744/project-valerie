@@ -298,6 +298,7 @@ class MediaInfo(object):
 			for line in lines:
 				line = line.strip()
 				try:
+					print("starting xbmc nfo parsing", self, "D")
 					if line.startswith("<id>"):
 						line = line.replace("id", "")
 						line = line.replace("<>", "")
@@ -366,15 +367,17 @@ class MediaInfo(object):
 						line = line.replace("</>", "")
 						self.Resolution = line
 					elif line.startswith("<mpaa>"):
+						printl("found mpaa tag", self, "D")
 						line = line.replace("mpaa", "")
 						line = line.replace("<>", "")
 						line = line.replace("</>", "")
-						self.Resolution = line
+						self.mpaa = line
 					elif line.startswith("<studio>"):
+						printl("found studio tag")
 						line = line.replace("studio", "")
 						line = line.replace("<>", "")
 						line = line.replace("</>", "")
-						self.Resolution = line
+						self.studio = line
 				except Exception, ex:
 					printl("Exception (in loop): " + str(ex), self, "E")
 			return self
