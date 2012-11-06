@@ -194,7 +194,10 @@ def getBoxtype():
 
 def _setBoxtype():
 	global gBoxType
-	file = open("/proc/stb/info/model", "r")
+	try:
+		file = open("/proc/stb/info/model", "r")
+	except:
+		file = open("/hdd/model", "r")
 	box = file.readline().strip()
 	file.close()
 	manu = "Unknown"
@@ -263,13 +266,22 @@ def _setBoxtype():
 		arch = "sh4"
 	
 	if arch == "mipsel":
-		file = open(config.plugins.pvmc.pluginfolderpath.value + "oe.txt", "r")
-		version = file.readline().strip()
-		file.close()
+		version = getBoxArch()
 	else:
 		version = "duckbox"
 	
 	gBoxType = (manu, model, arch, version)
+
+def getBoxArch():
+	ARCH = "unknown"
+	
+	if (sys.version_info < (2, 6, 8) and sys.version_info > (2, 6, 6)):
+		ARCH = "oe16"
+			
+	if (sys.version_info < (2, 7, 4) and sys.version_info > (2, 7, 0)):
+		ARCH = "oe20"
+
+	return ARCH
 
 # Wrapper to create a real global re.sub function
 def resub(pattern, replacement, input):
