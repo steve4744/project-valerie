@@ -192,6 +192,7 @@ class pyvalerie(Thread):
 		self.mode = mode
 		self.output(_("Thread running"))
 		self.doAbort = False
+		self.dSize = getDesktop(0).size()
 
 	def abort(self):
 		self.doAbort = True
@@ -245,13 +246,12 @@ class pyvalerie(Thread):
 		printl("Loading Replacements", self)
 		replace.load()
 		
-		dSize = getDesktop(0).size()
 		posterSize = Arts.posterResolution[0]
-		if dSize.width() == 720 and dSize.height() == 576:
+		if self.dSize.width() == 720 and self.dSize.height() == 576:
 			posterSize = Arts.posterResolution[0]
-		elif dSize.width() == 1024 and dSize.height() == 576:
+		elif self.dSize.width() == 1024 and self.dSize.height() == 576:
 			posterSize = Arts.posterResolution[1]
-		elif dSize.width() == 1280 and dSize.height() == 720:
+		elif self.dSize.width() == 1280 and self.dSize.height() == 720:
 			posterSize = Arts.posterResolution[2]
 		
 		self.output(_("Loading Filesystem"))
