@@ -240,8 +240,16 @@ class TheMovieDbProvider(object):
 			printl(" <- None (result is None)", self) 
 			return None
 		eMovie = json.loads(result)
-		info.Poster = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300" + eMovie['poster_path']
-		info.Backdrop = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w1000" + eMovie['backdrop_path']
+		try:
+			info.Poster = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300" + eMovie['poster_path']
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+			info.Poster = ""
+		try:
+			info.Backdrop = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w1000" + eMovie['backdrop_path']
+		except Exception, ex:
+			printl("Exception: " + str(ex), self)
+			info.Backdrop = ""
 		
 		if len(info.Poster) > 0 or len(info.Backdrop) > 0:
 			return info
