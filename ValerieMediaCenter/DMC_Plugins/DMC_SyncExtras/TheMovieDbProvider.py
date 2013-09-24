@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import json
 
 import Genres
 import WebGrabber
@@ -11,10 +12,13 @@ from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
 class TheMovieDbProvider(object):
 
-	APIKEY = u"7bcd34bb47bc65d20a49b6b446a32866"
+	APIKEY = u"351217450d7c7865ca39c74a7e3a0a4b"
 	PLOT_MIN_LEN = 10
 	
-	apiImdbLookup = u"http://api.themoviedb.org/2.1/Movie.imdbLookup/<lang>/xml/" + APIKEY + u"/<imdbid>"
+	#http://api.themoviedb.org/3/movie/tt1411250?api_key=351217450d7c7865ca39c74a7e3a0a4b
+	
+	#apiImdbLookup = u"http://api.themoviedb.org/2.1/Movie.imdbLookup/<lang>/xml/" + APIKEY + u"/<imdbid>"
+	apiImdbLookup = u"http://api.themoviedb.org/3/movie/<imdbid>?api_key=" + APIKEY + u"&language=<lang>"
 	apiGetInfo = u"http://api.themoviedb.org/2.1/Movie.getInfo/<lang>/xml/" + APIKEY + u"/<tmdbid>"
 	PLOT_MIN_LEN = 10
 
@@ -29,9 +33,10 @@ class TheMovieDbProvider(object):
 
 	def getTmdbId(self, info, elem):
 		try:
-			eID = self.getElem(elem, "id")
-			if eID is not None and eID.data is not None and len(eID.data) > 0:
-				info.TmDbId = eID.data
+			eID = None
+			eID = elem['id']
+			if eID is not None and eID > 0:
+				info.TmDbId = eID
 				return info
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -39,9 +44,10 @@ class TheMovieDbProvider(object):
 
 	def getName(self, info, elem):
 		try:
-			eTitle = self.getElem(elem, "name")
-			if eTitle is not None and eTitle.data is not None and len(eTitle.data) > 0:
-				info.Title = eTitle.data
+			eTitle = None
+			eTitle = elem['title']
+			if eTitle is not None and len(eTitle) > 0:
+				info.Title = eTitle
 				return info
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -49,9 +55,10 @@ class TheMovieDbProvider(object):
 
 	def getOverview(self, info, elem):
 		try:
-			ePlot = self.getElem(elem, "overview")
-			if ePlot is not None and ePlot.data is not None and len(ePlot.data) > self.PLOT_MIN_LEN:
-				info.Plot = re.sub(u"\r\n", u" ", ePlot.data)
+			ePlot = None
+			ePlot = elem['overview']
+			if ePlot is not None and len(ePlot) > self.PLOT_MIN_LEN:
+				info.Plot = re.sub(u"\r\n", u" ", ePlot)
 				info.Plot = re.sub(u"\n", u" ", info.Plot)
 				info.Plot += u" [TMDB.ORG]" 
 				return info
@@ -61,9 +68,10 @@ class TheMovieDbProvider(object):
 
 	def getReleased(self, info, elem):
 		try:
-			eYear = self.getElem(elem, "released")
-			if eYear is not None and eYear.data is not None and len(eYear.data) > 0:
-				strImdb = eYear.data
+			eYear = None
+			eYear = elem['release_date']
+			if eYear is not None and len(eYear) > 0:
+				strImdb = eYear
 				date = strImdb.split(u"-")
 				info.Year = int(date[0])
 				info.Month = int(date[1])
@@ -75,9 +83,10 @@ class TheMovieDbProvider(object):
 
 	def getRuntime(self, info, elem):
 		try:
-			eRuntime = self.getElem(elem, "runtime")
-			if eRuntime is not None and eRuntime.data is not None and len(eRuntime.data) > 0:
-				info.Runtime = int(eRuntime.data.strip())
+			eRuntime = None
+			eRuntime = elem['runtime']
+			if eRuntime is not None and len(eRuntime) > 0:
+				info.Runtime = int(eRuntime)
 				return info
 		except Exception, ex:
 			printl("Exception: " + str(ex), self)
@@ -85,9 +94,10 @@ class TheMovieDbProvider(object):
 
 	def getRating(self, info, elem):
 		try:
-			eRating = self.getElem(elem, "rating")
-			if eRating is not None and eRating.data is not None and len(eRating.data) > 0:
-				strRating = eRating.data
+			eRating = None
+			eRating = str(elem['vote_average'])
+			if eRating is not None and len(eRating) > 0:
+				strRating = eRating
 				if strRating != u"0.0":
 					pos = strRating.find(u".")
 					if pos > 0:
@@ -101,11 +111,9 @@ class TheMovieDbProvider(object):
 	def getGenre(self, info, elem):
 		genre = u""
 		try:
-			genreList = elem.getElementsByTagName("categories")
+			genreList = elem['genres']
 			for genreListItem in genreList:
-				for eGenre in genreListItem.getElementsByTagName("category"):
-					if eGenre.getAttribute("type") == "genre":
-						genre += Genres.getGenre(eGenre.getAttribute("name")) + u"|"
+				genre += genreListItem['name'] + u"|"
 			if len(genre) > 0:
 				info.Genres = genre[:len(genre) - 1] # Remove the last pipe
 				return info
@@ -133,43 +141,39 @@ class TheMovieDbProvider(object):
 		url = self.apiImdbLookup
 		url = re.sub("<imdbid>", info.ImdbId, url)
 		url = re.sub("<lang>",   u"en",	   url)
-		xml = WebGrabber.getXml(url)
+		result = WebGrabber.getJson(url)
 		
-		if xml is None:
-			printl(" <- None (xml is None)", self) 
+		if result is None:
+			printl(" <- None (result is None)", self) 
 			return None
-		
-		movieList = xml.getElementsByTagName("movie")
-		for eMovie in movieList:
-			tmp = self.getTmdbId(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			#tmp = self.getImdbId(info, eMovie)
-			#if tmp is not None:
-			#	info = tmp
-			tmp = self.getName(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getOverview(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getReleased(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getRating(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getRuntime(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getGenre(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			
-			return info
-		
-		printl(" <- None (eof)", self) 
-		return None
+		eMovie = json.loads(result)
+		tmp = self.getTmdbId(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		#tmp = self.getImdbId(info, eMovie)
+		#if tmp is not None:
+		#	info = tmp
+		tmp = self.getName(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getOverview(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getReleased(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getRating(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getRuntime(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getGenre(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		printl(" <- None (eof)", self) 			
+		return info
+
 
 	def getMovie(self, info, lang):
 		if info.TmDbId == info.TmDbIdNull:
@@ -184,47 +188,43 @@ class TheMovieDbProvider(object):
 		url = self.apiImdbLookup
 		url = re.sub("<imdbid>", info.ImdbId, url)
 		url = re.sub("<lang>",   lang,		url)
-		xml = WebGrabber.getXml(url)
+		result = WebGrabber.getJson(url)
 		
-		if xml is None:
-			printl(" <- None (xml is None)", self) 
+		if result is None:
+			printl(" <- None (result is None)", self) 
 			return None
+		eMovie = json.loads(result)
 		
-		movieList = xml.getElementsByTagName("movie")
-		for eMovie in movieList:
-			
-			if self.getTranslated(eMovie) is False:
-				continue
-			
-			#tmp = self.getTmdbId(info, eMovie)
-			#if tmp is not None:
-			#	info = tmp
-			#tmp = self.getImdbId(info, eMovie)
-			#if tmp is not None:
-			#	info = tmp
-			tmp = self.getName(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getOverview(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getReleased(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getRating(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getRuntime(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			tmp = self.getGenre(info, eMovie)
-			if tmp is not None:
-				info = tmp
-			
-			return info
+		#if self.getTranslated(eMovie) is False:
+		#	continue
 		
-		printl(" <- None (eof)", self)
-		return None
+		#tmp = self.getTmdbId(info, eMovie)
+		#if tmp is not None:
+		#	info = tmp
+		#tmp = self.getImdbId(info, eMovie)
+		#if tmp is not None:
+		#	info = tmp
+		tmp = self.getName(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getOverview(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getReleased(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getRating(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getRuntime(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		tmp = self.getGenre(info, eMovie)
+		if tmp is not None:
+			info = tmp
+		
+		printl(" <- None (eof)", self)		
+		return info
 
 	def getArtByImdbId(self, info):
 		if info.ImdbId == info.ImdbIdNull:
@@ -234,28 +234,14 @@ class TheMovieDbProvider(object):
 		url = self.apiImdbLookup
 		url = re.sub("<imdbid>", info.ImdbId, url)
 		url = re.sub("<lang>",   u"en",	   url)
-		xml = WebGrabber.getXml(url)
+		result = WebGrabber.getJson(url)
 		
-		if xml is None:
-			printl(" <- None (xml is None)", self)
+		if result is None:
+			printl(" <- None (result is None)", self) 
 			return None
-		
-		movieList = xml.getElementsByTagName("movie")
-		
-		# The best picture is always the first, we may need to check addidonal languages
-		for eMovie in movieList:
-			for p in eMovie.getElementsByTagName("image"):
-				if p.getAttribute("type") == "poster" and p.getAttribute("size") == "original":
-					info.Poster = p.getAttribute("url")
-					if len(info.Poster) > 0:
-						break
-		
-		for eMovie in movieList:
-			for p in eMovie.getElementsByTagName("image"):
-				if p.getAttribute("type") == "backdrop" and p.getAttribute("size") == "original":
-					info.Backdrop = p.getAttribute("url")
-					if len(info.Backdrop) > 0:
-						break
+		eMovie = json.loads(result)
+		info.Poster = eMovie['poster_path']
+		info.Backdrop = eMovie['backdrop_path']
 		
 		if len(info.Poster) > 0 or len(info.Backdrop) > 0:
 			return info

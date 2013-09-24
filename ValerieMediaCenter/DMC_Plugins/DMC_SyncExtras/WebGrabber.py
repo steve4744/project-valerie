@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 import os
 import re
 import socket
@@ -9,6 +7,7 @@ from   sys import version_info
 import urllib
 import urllib2
 import urlparse
+import httplib
 import xml.dom.minidom as minidom
 
 haveGZip = False
@@ -129,6 +128,91 @@ def addCache(url, text):
 	except Exception, ex:
 		printl("Exception (ef): " + str(ex), __name__, "E")
 		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
+
+
+def getJson(url):
+	#resultAsJson = doRequest(url)
+	printl("url: " + str(url), __name__, "D")
+	resultAsJson = doRequest(url)
+	printl("resultAsJson: " + str(resultAsJson), __name__, "D")
+	return resultAsJson
+
+#============================================================================
+# 
+#============================================================================
+def doRequest(url,cache=False): # CHECKED
+	'''
+	'''
+	printl("", __name__, "S")
+	try:
+		if cache:
+			utfPage = checkCache(url)
+		else:
+			utfPage = None
+		if utfPage is None:
+			for i in range(RETRIES):
+				printl("-> (" + str(i) + ") " + str(Utf8.utf8ToLatin(url)), __name__)
+				page = None
+				kwargs = {}
+				try:
+					fixedurl = url
+					opener = urllib2.build_opener()
+					opener.addheaders = [('Accept', 'application/json')]
+					if version_info[1] >= 6:
+						page = opener.open(fixedurl, timeout=10)
+					else:
+						socket.setdefaulttimeout(10)
+						page = opener.open(fixedurl)
+				
+				except IOError, ex:
+					printl("IOError: " +  str(ex), __name__)
+					continue
+				
+				if page is not None:
+					rawPage = ""
+					#print page
+					#print page.info()
+					if haveGZip:
+						if page.info().get('Content-Encoding') == 'gzip':
+							buf = StringIO(page.read())
+							f = gzip.GzipFile(fileobj=buf)
+							rawPage = f.read()
+						else:
+							rawPage = page.read()
+					else: # No gzip
+						rawPage = page.read()
+					contenttype = page.headers['Content-type']
+					#print contenttype
+					try:
+						if contenttype.find("charset=") >= 0:
+							encoding = page.headers['Content-type'].split('charset=')[1] # iso-8859-1
+							utfPage = rawPage.decode(encoding).encode('utf-8')
+						else:
+							utfPage = Utf8.stringToUtf8(rawPage)
+					except Exception, ex:
+						printl("Exception: " + str(ex), __name__, "W")
+						printl("Fallback to us-latin-1", __name__, "W")
+						#windows-1252
+						print "------ HEX -------"
+						print toHex(rawPage)
+						utfPage = rawPage.decode("latin-1")
+						print "------ CONVERTED -------"
+						print utfPage
+						utfPage = utfPage.encode('utf-8')
+						print "------ CONVERTED2 -------"
+						print utfPage
+						
+					if cache:
+						addCache(url, utfPage)
+					break
+		
+		printl("<- " + str(type(utfPage)) + " " + str(Utf8.utf8ToLatin(url)), __name__)
+		return utfPage
+	except Exception, ex:
+		printl("Exception (ef): " + str(ex), __name__ , "E")
+		printl("\tURL: " + str(Utf8.utf8ToLatin(url)), __name__, "E")
+	
+	return u""
 
 def getXml(url, rawXml=None, cache=True):
 	if rawXml is None:

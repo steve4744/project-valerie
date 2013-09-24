@@ -317,13 +317,17 @@ class pyvalerie(Thread):
 					i += 1
 					self.progress(i)
 					
-					path      = Utf8.stringToUtf8(element[0]).replace("\\", "/")
-					filename  = Utf8.stringToUtf8(element[1])
-					extension = Utf8.stringToUtf8(element[2])
+					pathOrig      = element[0].replace("\\", "/")
+					filenameOrig  = element[1]
+					extensionOrig = element[2]
 					
 					printl("*"*100, self, "I")
-					printl("* Next file to sync: " + Utf8.utf8ToLatin(path) + "/" + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self, "I")
+					printl("* Next file to sync: " + str(pathOrig) + "/" + str(filenameOrig) + "." + str(extensionOrig), self, "I")
 					printl("*"*100, self, "I")
+					
+					path      = Utf8.stringToUtf8(pathOrig)
+					filename  = Utf8.stringToUtf8(filenameOrig)
+					extension = Utf8.stringToUtf8(extensionOrig)
 					
 					if self.doAbort:
 						break
@@ -415,11 +419,11 @@ class pyvalerie(Thread):
 					
 					outStr = "(" + str(i) + "/" + str(elementListFileCounter)  + ")"
 					
-					self.output(outStr + " -> " + getStringShrinked(Utf8.utf8ToLatin(path)) + " >> " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension))
+					self.output(outStr + " -> " + getStringShrinked(pathOrig) + " >> " + filenameOrig + "." + extensionOrig)
 					printl("#"*30, self)
 					printl("(" + str(i) + "/" + str(elementListFileCounter)  + ")", self)
 					printl("#"*6, self)
-					printl("  -> " + Utf8.utf8ToLatin(path) + "\n    " + Utf8.utf8ToLatin(filename) + "." + Utf8.utf8ToLatin(extension), self)
+					printl("  -> " + pathOrig + "\n    " + filenameOrig + "." + extensionOrig, self)
 					
 					elementInfo = MediaInfo(path, filename, extension)
 					
