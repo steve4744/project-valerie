@@ -94,7 +94,7 @@ def callback():
 	PowerManagement(gSession).standby()
 
 def wakeup():
-	if config.plugins.pvmc.plugins.autosync.onstart.value is False:
+	if config.plugins.pvmc.plugins.autosync.onstart.value == False:
 		return -1
 	
 	return getPlanedTime()[1]
