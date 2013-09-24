@@ -240,8 +240,8 @@ class TheMovieDbProvider(object):
 			printl(" <- None (result is None)", self) 
 			return None
 		eMovie = json.loads(result)
-		info.Poster = eMovie['poster_path']
-		info.Backdrop = eMovie['backdrop_path']
+		info.Poster = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300" + eMovie['poster_path']
+		info.Backdrop = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w1000" + eMovie['backdrop_path']
 		
 		if len(info.Poster) > 0 or len(info.Backdrop) > 0:
 			return info
