@@ -84,7 +84,7 @@ class TheMovieDbProvider(object):
 	def getRuntime(self, info, elem):
 		try:
 			eRuntime = None
-			eRuntime = elem['runtime']
+			eRuntime = str(elem['runtime'])
 			if eRuntime is not None and len(eRuntime) > 0:
 				info.Runtime = int(eRuntime)
 				return info
