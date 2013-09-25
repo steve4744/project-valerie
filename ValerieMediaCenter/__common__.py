@@ -1,199 +1,312 @@
 # -*- coding: utf-8 -*-
+'''
+Project Valerie is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+DreamPlex Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+'''
+#===============================================================================
+# IMPORT
+#===============================================================================
 import datetime
 import os
 import sys
 import re
 
-from   Components.config import config
-#------------------------------------------------------------------------------------------
+from DMC_Singleton import Singleton
 
+from Components.config import config
+
+#===============================================================================
+# GLOBAL
+#===============================================================================
+gConnectivity = None
 gLogFile = None
+gBoxType = None
 
-#########################################
-#Black       0;30     Dark Gray     1;30#
-#Blue        0;34     Light Blue    1;34#
-#Green       0;32     Light Green   1;32#
-#Cyan        0;36     Light Cyan    1;36#
-#Red         0;31     Light Red     1;31#
-#Purple      0;35     Light Purple  1;35#
-#Brown       0;33     Yellow        1;33#
-#Light Gray  0;37     White         1;37#
-#########################################
-
-# ****************************** VERBOSITY Level *******************************
-VERB_ERROR       = 1  # "E" shows error
-VERB_WARNING     = 2  # "W" shows warning
-VERB_STARTING    = 3  # "S" shows started functions/classes etc.
-VERB_HIGHLIGHT   = 4  # "H" shows important hightlights to have better overview if somehtings really happening or not
-VERB_ADDITIONAL  = 5  # "A" shows additional information for better debugging
-VERB_CLOSING     = 6  # "C" shows closing functions/classes etc.
-VERB_DEFAULT     = 10 # "I" default verbose level when not specified
-VERB_TOLOG       = 20 # " " max verbose level that shows up in normal log
-
-##
+STARTING_MESSAGE	= ">>>>>>>>>>"
+CLOSING_MESSAGE		= "<<<<<<<<<<"
+#===============================================================================
 # 
-##
-def printl2 (string, parent=None, verbLevel=VERB_DEFAULT):
-	############
+#===============================================================================
+def printl2 (string, parent=None, dmode= "U", obfuscate = False, steps = 4):
+	'''
+	@param string: 
+	@param parent:
+	@param dmode: default = "U" undefined 
+							"E" shows error
+							"W" shows warning
+							"I" shows important information to have better overview if something really happening or not
+							"D" shows additional debug information for better debugging
+							"S" shows started functions/classes etc.
+							"C" shows closing functions/classes etc.
+	@return: none
+	'''
+
 	debugMode = config.plugins.pvmc.debugMode.value
-	############
-	type = "I"
 	
-	if verbLevel == "E":
-		verbLevel = 1
-		type = "E"
-	
-	elif verbLevel == "W":
-		verbLevel = 2
-		type = "W"
-	
-	elif verbLevel == "S":
-		verbLevel = 3
-		type = "S"
-	
-	elif verbLevel == "H":
-		verbLevel = 4
-		type = "H"
+	if debugMode:
 		
-	elif verbLevel == "A":
-		verbLevel = 5
-		type = "A"
-	
-	elif verbLevel == "C":
-		verbLevel = 6
-		type = "C"
-	
-	elif verbLevel == "I":
-		verbLevel = 10
-		type = "I"
-		
-	out = ""
-	if parent is None:
-		out = str(string)
-	else:
-		classname = str(parent.__class__).rsplit(".", 1)
-		if len(classname) == 2:
-			classname = classname[1]
-			classname = classname.rstrip("\'>")
-			classname += "::"
-			out = str(classname) + str(sys._getframe(1).f_code.co_name) +" " + str(string)
+		out = ""
+		if obfuscate is True:
+			string = string[:-steps]
+			for i in range(steps):
+				string += "*"
+			
+		if parent is None:
+			out = str(string)
 		else:
-			classname = ""
-			out = str(parent) + str(string)
-
-	if verbLevel == VERB_ERROR:
-		print '\033[1;41m' + "[PVMC] " + "E" + "  " + str(out) + '\033[1;m'
-		writeToLog(type, out)
+			classname = str(parent.__class__).rsplit(".", 1)
+			if len(classname) == 2:
+				classname = classname[1]
+				classname = classname.rstrip("\'>")
+				classname += "::"
+				out = str(classname) + str(sys._getframe(1).f_code.co_name) +" -> " + str(string)
+			else:
+				classname = ""
+				out = str(parent) + " -> " + str(string)
 	
-	elif verbLevel == VERB_WARNING:
-		print '\033[1;33m' + "[PVMC] " + "W" + "  " + str(out) + '\033[1;m'
-		writeToLog(type, out)
-	
-	elif verbLevel == VERB_STARTING and debugMode == "High": #only in debugMode high
-		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "S" + "  " + str(out) + '\033[1;m'
-		if debugMode != "Silent":
-			writeToLog(type, out)
-	
-	elif verbLevel == VERB_HIGHLIGHT and debugMode == "High": #only in debugMode high
-		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;37m' + "H" + "  " + str(out) + '\033[1;m'	
-		if debugMode != "Silent":
-			writeToLog(type, out)
-	
-	elif verbLevel == VERB_ADDITIONAL and debugMode == "High": #only in debugMode high
-		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "A" + "  " + str(out) + '\033[1;m'	
-		if debugMode != "Silent":
-			writeToLog(type, out)
+		if dmode == "E" :
+			print "[PVMC] " + "E" + "  " + str(out)
+			writeToLog(dmode, out)
 		
-	elif verbLevel == VERB_CLOSING and debugMode == "High": #only in debugMode high
-		print '\033[0;36m' + "[PVMC] " + '\033[1;m' + '\033[1;32m' + "C" + "  " + str(out) + '\033[1;m'	
-		if debugMode != "Silent":
-			writeToLog(type, out)
-	
-	elif verbLevel <= VERB_TOLOG:
-		print '\033[0;36m' + "[PVMC] " + "I" + "  " + '\033[1;m' + str(out) 
-		if debugMode != "Silent":
-			writeToLog(type, out)
-	
-	elif verbLevel > VERB_TOLOG:
-		print '\033[0;36m' + "[PVMC] " + "only onScreen" + "  " + str(out) + '\033[1;m'
+		elif dmode == "W":
+			print "[PVMC] " + "W" + "  " + str(out)
+			writeToLog(dmode, out)
+		
+		elif dmode == "I":
+			print "[PVMC] " + "I" + "  " + str(out)
+			writeToLog(dmode, out)
+		
+		elif dmode == "D":
+			print "[PVMC] " + "D" + "  " + str(out)	
+			writeToLog(dmode, out)
+		
+		elif dmode == "S":
+			print "[PVMC] " + "S" + "  " + str(out) + STARTING_MESSAGE
+			writeToLog(dmode, out + STARTING_MESSAGE)
+		
+		elif dmode == "C":
+			print "[PVMC] " + "C" + "  " + str(out) +  CLOSING_MESSAGE
+			writeToLog(dmode, out +  CLOSING_MESSAGE)
+		
+		elif dmode == "U":
+			print "[PVMC] " + "U  specify me!!!!!" + "  " + str(out)
+			writeToLog(dmode, out)
+			
+		elif dmode == "X":
+			print "[PVMC] " + "D" + "  " + str(out)	
+			writeToLog(dmode, out)
+			
+		else:
+			print "[PVMC] " + "OLD CHARACTER CHANGE ME !!!!!" + "  " + str(out)
 
-def printl2cond (cond, string, parent=None, verbLevel=VERB_DEFAULT):
+#===============================================================================
+# 
+#===============================================================================
+def printl2cond (cond, string, parent=None, verbLevel=None):
+	'''
+	TODO: check if this is really needed
+	'''
+	printl2("", "__common__::printl2cond", "S")
+	
 	if cond:
-		printl2(string, parent, verbLevel)
-
-def writeToLog(type, out):
-	global gLogFile
-
-	if gLogFile is None:
-		openLogFile()
+		printl2(string, parent)
+	
+	printl2("", "__common__::printl2cond", "C")
 		
-	now = datetime.datetime.now()
-	gLogFile.write("%02d:%02d:%02d.%07d " % (now.hour, now.minute, now.second, now.microsecond) + str(type) + "  " + str(out) + "\n")
-	gLogFile.flush()	
+#===============================================================================
+# 
+#===============================================================================
+def writeToLog(dmode, out):
+	'''
+	singleton handler for the log file
+	
+	@param dmode: E, W, S, H, A, C, I
+	@param out: message string
+	@return: none
+	'''
+	try:
+		instance = Singleton()
+		if instance.getLogFileInstance() is "":
+			openLogFile()
+			gLogFile = instance.getLogFileInstance()
+			gLogFile.truncate()
+		else:
+			gLogFile = instance.getLogFileInstance()
+			
+		now = datetime.datetime.now()
+		gLogFile.write("%02d:%02d:%02d.%07d " % (now.hour, now.minute, now.second, now.microsecond) + " >>> " + str(dmode) + " <<<  " + str(out) + "\n")
+		gLogFile.flush()
+	
+	except Exception, ex:
+		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::writeToLog", "E")
 
+#===============================================================================
+# 
+#===============================================================================
 def openLogFile():
-	global gLogFile
+	'''
+	singleton instance for logfile
+	
+	@param: none
+	@return: none
+	'''
+	#printl2("", "openLogFile", "S")
+	
 	baseDir = config.plugins.pvmc.tmpfolderpath.value
 	logDir = baseDir + "/log"
 	
 	now = datetime.datetime.now()
+	try:
+		if os.path.exists(logDir + "valerie_former.log"):
+			os.remove(logDir + "valerie_former.log")
+			
+		if os.path.exists(logDir + "valerie.log"):
+			shutil.copy2(logDir + "valerie.log", logDir + "valerie_former.log")
+		
+		instance = Singleton()
+		instance.getLogFileInstance(open(logDir + "valerie.log", "w"))
+		
+	except Exception, ex:
+		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "openLogFile", "E")
 	
-	try: 
-		os.makedirs(baseDir)
-	except OSError, e:
-		pass
-	
-	try: 
-		os.makedirs(logDir)
-	except OSError, e:
-		pass
-	
-	gLogFile = open(logDir + "/valerie_%04d%02d%02d_%02d%02d.log" % (now.year, now.month, now.day, now.hour, now.minute, ), "w")
+	#printl2("", "openLogFile", "C")
 
-#------------------------------------------------------------------------------------------
-
-gConnectivity = None
-
+#===============================================================================
+# 
+#===============================================================================
 def isInetAvailable():
+	printl2("", "__common__::isInetAvailable", "S")
+	
 	global gConnectivity
 	if gConnectivity is None:
 		gConnectivity = testInetConnectivity()
 	
+	printl2("", "__common__::isInetAvailable", "C")
 	return gConnectivity
 
-def testInetConnectivity():
+#===============================================================================
+# 
+#===============================================================================
+def testInetConnectivity(target = "http://www.google.com"):
+	'''
+	test if we get an answer from the specified url
+	
+	@param url:
+	@return: bool
+	'''
+	printl2("", "__common__::testInetConnectivity", "S")
+	
 	import urllib2
 	from   sys import version_info
 	import socket
+	
 	try:
 		opener = urllib2.build_opener()
 		page = None
 		if version_info[1] >= 6:
-			page = opener.open("http://www.google.com", timeout=2)
+			page = opener.open(target, timeout=2)
 		else:
 			socket.setdefaulttimeout(2)
-			page = opener.open("http://www.google.com")
+			page = opener.open(target)
 		if page is not None:
+			
+			printl2("","__common__::testInetConnectivity", "C")
 			return True
 		else:
+			
+			printl2("","__common__::testInetConnectivity", "C")
 			return False
 	except:
+		
+		printl2("", "__common__::testInetConnectivity", "C")
 		return False
 
+#===============================================================================
+# 
+#===============================================================================
+def checkValerieEnvironment(): # TODO implement me
+	'''
+	checks needed file structure for valerie
 	
-gBoxType = None
+	@param: none 
+	@return none	
+	'''
+	printl2("","__common__::checkPlexEnvironment", "S")
+	
+	playerTempFolder = config.plugins.pvmc.playerTempPath.value
+	logFolder = config.plugins.pvmc.logfolderpath.value
+	mediaFolder = config.plugins.pvmc.mediafolderpath.value
+	configFolder = config.plugins.pvmc.configfolderpath.value
+	
+	checkDirectory(playerTempFolder)
+	checkDirectory(logFolder)
+	checkDirectory(mediaFolder)
+	checkDirectory(configFolder)
+	
+	printl2("","__common__::checkPlexEnvironment", "C")
+	
+#===============================================================================
+# 
+#===============================================================================
+def checkDirectory(directory):
+	'''
+	checks if dir exists. if not it is added
+	
+	@param directory: e.g. /media/hdd/
+	@return: none
+	'''
+	printl2("", "__common__::checkDirectory", "S")
+	printl2("checking ... " + directory, "__common__::checkDirectory", "D")
+	
+	try:
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+			printl2("directory not found ... added", "__common__::checkDirectory", "D")
+		else:
+			printl2("directory found ... nothing to do", "__common__::checkDirectory", "D")
+		
+	except Exception, ex:
+		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::checkDirectory", "E")
+	
+	printl2("","__common__::checkDirectory", "C")
 
+#===============================================================================
+# 
+#===============================================================================
 def getBoxtype():
+	'''
+	'''
+	printl2("", "__common__::getBoxtype", "C")
 	global gBoxType
 
 	if gBoxType is not None:
+		
+		printl2("", "__common__::getBoxtype", "C")
 		return gBoxType
 	else:
-		_setBoxtype()
+		setBoxType()
+		
+		printl2("", "__common__::getBoxtype", "C")
 		return gBoxType
 
-def _setBoxtype():
+#===============================================================================
+# 
+#===============================================================================
+def setBoxType():
+	'''
+	'''
+	printl2("", "__common__::_setBoxtype", "C")
 	global gBoxType
+	
 	try:
 		file = open("/proc/stb/info/model", "r")
 	except:
@@ -202,7 +315,7 @@ def _setBoxtype():
 	file.close()
 	manu = "Unknown"
 	model = box #"UNKNOWN" # Fallback to internal string
-	arch = "sh4" # "unk" # Its better so set the arch by default to unkown so no wrong updateinformation will be displayed
+	arch = "sh4" # "unk" # Its better so set the arch by default to unkown so no wrong update information will be displayed
 	version = ""
 	if box == "ufs910":
 		manu = "Kathrein"
@@ -271,25 +384,44 @@ def _setBoxtype():
 		version = "duckbox"
 	
 	gBoxType = (manu, model, arch, version)
+	printl2("", "__common__::_setBoxtype", "C")
 
+#===============================================================================
+# 
+#===============================================================================
 def getBoxArch():
-	ARCH = "unknown"
+	'''
+	'''
+	printl2("", "__common__::getBoxArch", "S")
 	
+	ARCH = "unknown"
+
 	if (sys.version_info < (2, 6, 8) and sys.version_info > (2, 6, 6)):
 		ARCH = "oe16"
-			
+				   
 	if (sys.version_info < (2, 7, 4) and sys.version_info > (2, 7, 0)):
 		ARCH = "oe20"
-
+			
+	printl2("", "__common__::getBoxArch", "C")
 	return ARCH
 
-# Wrapper to create a real global re.sub function
+#===============================================================================
+# 
+#===============================================================================
 def resub(pattern, replacement, input):
+	'''
+	Wrapper to create a real global re.sub function
+	'''
+	printl2("", "__common__::resub", "S")
+	
 	output = ""
 	tmpinput = input
+	
 	while True:
 		output = re.sub(pattern, replacement, tmpinput)
 		if output == tmpinput:
 			break
 		tmpinput = output
+	
+	printl2("", "__common__::resub", "C")
 	return output
