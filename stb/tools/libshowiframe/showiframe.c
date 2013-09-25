@@ -111,6 +111,7 @@ int showSinglePic(const char *filename)
                 int seq_end_avail = 0;
                 size_t pos = 0;
                 unsigned char pes_header[] = {0x0, 0x0, 0x1, 0xe0, 0x00, 0x00, 0x80, 0x80, 0x5, 0x21, 0x0, 0x1, 0x0, 0x1};
+                unsigned char seq_end[] = { 0x00, 0x00, 0x01, 0xB7 };
                 unsigned char iframe[s.st_size];
                 unsigned char stuffing[8192];
 
