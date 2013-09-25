@@ -468,7 +468,7 @@ class MediaInfo(object):
 		#################### BDMV ######################
 		
 		### Replacements PRE
-		printl("Replacements PRE on " + str(self.SearchString), self, "I")
+		printl("Replacements PRE on " + self.SearchString, self, "I")
 		step = 1
 		for replacement in replace.replacements(u"pre"):
 			old = self.SearchString

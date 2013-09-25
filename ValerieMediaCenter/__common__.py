@@ -26,6 +26,15 @@ from DMC_Singleton import Singleton
 from Components.config import config
 
 #===============================================================================
+# 
+#===============================================================================
+# we need this to work also in openPLiPc
+encoding = sys.getdefaultencoding()
+
+if encoding != "utf8":
+	reload(sys)
+	sys.setdefaultencoding('utf-8')
+#===============================================================================
 # GLOBAL
 #===============================================================================
 gConnectivity = None
@@ -114,14 +123,14 @@ def printl2 (string, parent=None, dmode= "U", obfuscate = False, steps = 4):
 #===============================================================================
 def printl2cond (cond, string, parent=None, verbLevel=None):
 	'''
-	TODO: check if this is really needed
+	is used for xml - very chatty - we should get rid off it
 	'''
-	printl2("", "__common__::printl2cond", "S")
+	#printl2("", "__common__::printl2cond", "S")
 	
 	if cond:
 		printl2(string, parent)
 	
-	printl2("", "__common__::printl2cond", "C")
+	#printl2("", "__common__::printl2cond", "C")
 		
 #===============================================================================
 # 

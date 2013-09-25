@@ -1,54 +1,54 @@
 # -*- coding: utf-8 -*-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-#   sync.py
-#   Project Valerie - Syncronization module
-#
-#   Created by user on 00/00/0000.
-#   Sync
-#   
-#   Revisions:
-#   v1 - 15/07/2011 - Zuki - reduce size of output messages during sync
-#
-#   v
-#
-#   v
-#
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+'''
+Project Valerie is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
 
+DreamPlex Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+'''
+#===============================================================================
+# IMPORT
+#===============================================================================
 import os
-from   os import environ
 import sys
-from   threading import Thread
-import time
-
-from   enigma import getDesktop
-from   Components.Language import language
-from   Components.config import config
 import gettext
-from   Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
-
-from   Arts import Arts
+import time
 import Blacklist
-from   Config import SyncConfig
-from   PVS_DatabaseHandler import Database
 import DirectoryScanner
-#from   FailedEntry import FailedEntry
-from   GoogleProvider import GoogleProvider
-from   LocalImdbProvider import LocalImdbProvider
-from   MediaInfo         import MediaInfo
-from   MobileImdbComProvider import MobileImdbComProvider
 import replace
-from   PathsConfig import PathsConfig
-from   TheMovieDbProvider import TheMovieDbProvider
-from   TheTvDbProvider import TheTvDbProvider
 import Utf8
 import WebGrabber
 import copy
 
+from os import environ
+from threading import Thread
+from enigma import getDesktop
+from Components.Language import language
+from Components.config import config
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
+from Config import SyncConfig
+
+from Arts import Arts
+from GoogleProvider import GoogleProvider
+from LocalImdbProvider import LocalImdbProvider
+from MediaInfo		 import MediaInfo
+from MobileImdbComProvider import MobileImdbComProvider
+from PathsConfig import PathsConfig
+from TheMovieDbProvider import TheMovieDbProvider
+from TheTvDbProvider import TheTvDbProvider
+from PVS_DatabaseHandler import Database
+
 from Plugins.Extensions.ProjectValerie.__common__ import printl2 as printl
 
+#===============================================================================
+# 
+#===============================================================================
 def localeInit():
 	lang = language.getLanguage()
 	environ["LANGUAGE"] = lang[:2]
@@ -56,6 +56,9 @@ def localeInit():
 	gettext.textdomain("enigma2")
 	gettext.bindtextdomain("ProjectValerie", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/ProjectValerie/locale/"))
 
+#===============================================================================
+# 
+#===============================================================================
 def _(txt):
 	t = gettext.dgettext("ProjectValerie", txt)
 	if t == txt:
@@ -65,115 +68,132 @@ def _(txt):
 localeInit()
 language.addCallback(localeInit)
 
+#===============================================================================
+# 
+#===============================================================================
 def checkDefaults():
+	printl ("", __name__, "S")
 	
 	try:
-		printl("Check " + config.plugins.pvmc.tmpfolderpath.value, __name__)
+		printl("Check " + config.plugins.pvmc.tmpfolderpath.value, __name__, "I")
 		os.makedirs(config.plugins.pvmc.tmpfolderpath.value) 
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
+		printl("\t- Created", __name__, "I")
+	
 	try: 
-		printl("Check " + config.plugins.pvmc.tmpfolderpath.value + "cache", __name__)
+		printl("Check " + config.plugins.pvmc.tmpfolderpath.value + "cache", __name__, "I")
 		os.makedirs(config.plugins.pvmc.tmpfolderpath.value + "cache") 
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
+		printl("\t- Created", __name__, "I")
+	
 	
 	try: 
-		printl("Check " + config.plugins.pvmc.configfolderpath.value, __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value, __name__, "I")
 		os.makedirs(config.plugins.pvmc.configfolderpath.value) 
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
+		printl("\t- Created", __name__, "I")
 	
 	try: 
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "dreamscene", __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "dreamscene", __name__, "I")
 		os.makedirs(config.plugins.pvmc.configfolderpath.value + "dreamscene") 
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
+		printl("\t- Created", __name__, "I")
 	
 	try: 
-		printl("Check " + config.plugins.pvmc.mediafolderpath.value, __name__)
+		printl("Check " + config.plugins.pvmc.mediafolderpath.value, __name__, "I")
 		os.makedirs(config.plugins.pvmc.mediafolderpath.value)
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
+		printl("\t- Created", __name__, "I")
 	
 	DEFAULTURL = "http://project-valerie.googlecode.com/svn/trunk/default/"
 	
-	printl("Check " + config.plugins.pvmc.mediafolderpath.value + "*", __name__)
+	printl("Check " + config.plugins.pvmc.mediafolderpath.value + "*", __name__, "I")
+	
 	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultbackdrop.m1v", os.F_OK) is False:
-		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__)
+		printl("Check defaultbackdrop.m1v - Missing -> Downloading", __name__, "I")
 		WebGrabber.getFile(DEFAULTURL+"defaultbackdrop.m1v", "defaultbackdrop.m1v")
 	
 	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter.png", os.F_OK) is False:
-		printl("Check defaultposter.png - Missing -> Downloading", __name__)
+		printl("Check defaultposter.png - Missing -> Downloading", __name__, "I")
 		WebGrabber.getFile(DEFAULTURL+"defaultposter.png", "defaultposter.png")
+	
 	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_110x214.png", os.F_OK) is False:
-		printl("Check defaultposter_110x214.png - Missing -> Downloading", __name__)
+		printl("Check defaultposter_110x214.png - Missing -> Downloading", __name__, "I")
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_110x214.png", "defaultposter_110x214.png")
+	
 	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_156x214.png", os.F_OK) is False:
-		printl("Check defaultposter_156x214.png - Missing -> Downloading", __name__)
+		printl("Check defaultposter_156x214.png - Missing -> Downloading", __name__, "I")
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_156x214.png", "defaultposter_156x214.png")
+	
 	if os.access(config.plugins.pvmc.mediafolderpath.value + "defaultposter_195x267.png", os.F_OK) is False:
-		printl("Check defaultposter_195x267.png - Missing -> Downloading", __name__)
+		printl("Check defaultposter_195x267.png - Missing -> Downloading", __name__, "I")
 		WebGrabber.getFile(DEFAULTURL+"defaultposter_195x267.png", "defaultposter_195x267.png")
 	
 	try: 
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "episodes", __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "episodes", __name__, "I")
 		os.makedirs(config.plugins.pvmc.configfolderpath.value + "episodes")
 	except OSError, e:
-		printl("\t- OK", __name__)
+		printl("\t- OK", __name__, "I")
 	else:
-		printl("\t- Created", __name__)
-	
-	###
+		printl("\t- Created", __name__, "I")
 	
 	try:
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "pre.conf", __name__, "I")
 		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "pre.conf") is False:
-			printl("Check pre.conf - Missing -> Downloading", __name__)
+			printl("Check pre.conf - Missing -> Downloading", __name__, "I")
 			WebGrabber.getFile(DEFAULTURL+"pre.conf", config.plugins.pvmc.configfolderpath.value + "pre.conf")
-			printl("\t- Created", __name__)
+			printl("\t- Created", __name__, "I")
 		else:
-			printl("\t- OK", __name__)
+			printl("\t- OK", __name__, "I")
 	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
+		printl("Exception: " + str(ex), __name__, "I")
 	
 	try:
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_movie.conf", __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_movie.conf", __name__, "I")
 		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "post_movie.conf") is False:
-			printl("Check post_movie.conf - Missing -> Downloading", __name__)
+			printl("Check post_movie.conf - Missing -> Downloading", __name__, "I")
 			WebGrabber.getFile(DEFAULTURL+"post_movie.conf", config.plugins.pvmc.configfolderpath.value + "post_movie.conf")
-			printl("\t- Created", __name__)
+			printl("\t- Created", __name__, "I")
 		else:
-			printl("\t- OK", __name__)
+			printl("\t- OK", __name__, "I")
 	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
+		printl("Exception: " + str(ex), __name__, "I")
 	
 	try:
-		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_tv.conf", __name__)
+		printl("Check " + config.plugins.pvmc.configfolderpath.value + "post_tv.conf", __name__, "I")
 		if os.path.isfile(config.plugins.pvmc.configfolderpath.value + "post_tv.conf") is False:
-			printl("Check post_tv.conf - Missing -> Downloading", __name__)
+			printl("Check post_tv.conf - Missing -> Downloading", __name__, "I")
 			WebGrabber.getFile(DEFAULTURL+"post_tv.conf", config.plugins.pvmc.configfolderpath.value + "post_tv.conf")
-			printl("\t- Created", __name__)
+			printl("\t- Created", __name__, "I")
 		else:
-			printl("\t- OK", __name__)
+			printl("\t- OK", __name__, "I")
 	except Exception, ex:
-		printl("Exception: " + str(ex), __name__)
+		printl("Exception: " + str(ex), __name__, "I")
+		
+	printl ("", __name__, "C")
 
+#===============================================================================
+# 
+#===============================================================================
 def getStringShrinked(value):
+	printl ("", __name__, "S")
+	
 	dif = 16 - len(value)
 	result = value
 	if dif < 0:
 		result = value[:8] + "..." + value[-8:]
+	
+	printl ("", __name__, "C")
 	return result
 
 class pyvalerie(Thread):
@@ -199,9 +219,6 @@ class pyvalerie(Thread):
 		self.output("Aborting sync! Saving and cleaning up!")
 
 	def run(self):
-		#reload(sys)
-		#sys.setdefaultencoding( "latin-1" )
-		#sys.setdefaultencoding( "utf-8" )
 		
 		self.doAbort = False
 		
@@ -317,7 +334,7 @@ class pyvalerie(Thread):
 					i += 1
 					self.progress(i)
 					
-					pathOrig      = element[0].replace("\\", "/")
+					pathOrig	  = element[0].replace("\\", "/")
 					filenameOrig  = element[1]
 					extensionOrig = element[2]
 					
@@ -325,7 +342,7 @@ class pyvalerie(Thread):
 					printl("* Next file to sync: " + str(pathOrig) + "/" + str(filenameOrig) + "." + str(extensionOrig), self, "I")
 					printl("*"*100, self, "I")
 					
-					path      = Utf8.stringToUtf8(pathOrig)
+					path	  = Utf8.stringToUtf8(pathOrig)
 					filename  = Utf8.stringToUtf8(filenameOrig)
 					extension = Utf8.stringToUtf8(extensionOrig)
 					
@@ -364,7 +381,7 @@ class pyvalerie(Thread):
 								key_value_dict = {}
 								key_value_dict["Id"] = m2.Id
 								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
-								#key_value_dict["syncErrNo"]    = 0
+								#key_value_dict["syncErrNo"]	= 0
 								key_value_dict["syncFailedCause"] = u""
 								printl("Sync - Update Media 1", self)	
 								if not db.updateMediaWithDict(key_value_dict):
@@ -378,7 +395,7 @@ class pyvalerie(Thread):
 								key_value_dict["Id"] = m2.Id
 								key_value_dict["Path"] = path
 								key_value_dict["MediaStatus"]  = MediaInfo.STATUS_OK
-								#key_value_dict["syncErrNo"]    = 0
+								#key_value_dict["syncErrNo"]	= 0
 								key_value_dict["syncFailedCause"] = u""
 								printl("Sync - Update Media 2", self)	
 								if not db.updateMediaWithDict(key_value_dict):
@@ -423,7 +440,7 @@ class pyvalerie(Thread):
 					printl("#"*30, self)
 					printl("(" + str(i) + "/" + str(elementListFileCounter)  + ")", self)
 					printl("#"*6, self)
-					printl("  -> " + pathOrig + "\n    " + filenameOrig + "." + extensionOrig, self)
+					printl("  -> " + pathOrig + "\n	" + filenameOrig + "." + extensionOrig, self)
 					
 					elementInfo = MediaInfo(path, filename, extension)
 					
@@ -568,9 +585,17 @@ class pyvalerie(Thread):
 					printl("no enconding succeeded")
 		return None
 
+#===============================================================================
+# 
+#===============================================================================
 class Sync():
+	
+	#===============================================================================
+	# 
+	#===============================================================================
 	def syncWithId(self, elementInfo):
-		printl("->", self, "S")
+		printl ("", self, "S")
+		
 		isUserLang = False
 		
 		if elementInfo.isTypeMovie():
@@ -588,7 +613,7 @@ class Sync():
 				printl("Nothing found => trying fallback: en", self, "I")
 				tmp = TheMovieDbProvider().getMovie(elementInfo, u"en")
 			else:
-				isUserLang = True	
+				isUserLang = True   
 				
 			if tmp != None:
 				elementInfo = tmp
@@ -612,6 +637,8 @@ class Sync():
 				Arts().download(elementInfo)
 			
 			printl("<- (return (elementInfo, ))", self, "C")
+			
+			printl ("", self, "C")
 			return (elementInfo, )
 		
 		elif elementInfo.isTypeSerie():
@@ -629,7 +656,7 @@ class Sync():
 				printl("Nothing found => trying fallback: en", self, "I")
 				tmp = TheTvDbProvider().getSerie(elementInfo, u"en")
 			else:
-				isUserLang = True	
+				isUserLang = True   
 			
 			if tmp != None:
 				elementInfo = tmp
@@ -637,6 +664,8 @@ class Sync():
 					elementInfo.LanguageOfPlot = userLang;
 			else:
 				printl("<- search in TheTvDb didn't succeed! => return 'None'...", self, "I")
+				
+				printl ("", self, "C")
 				return None
 					
 			if userLang != elementInfo.LanguageOfPlot:
@@ -675,6 +704,8 @@ class Sync():
 					elementInfoe.LanguageOfPlot = userLang;
 			else:
 				printl("<- search in TheTvDb didn't succeed! => return None...", self, "I")
+				
+				printl ("", self, "C")
 				return None
 			
 			if userLang != elementInfoe.LanguageOfPlot:
@@ -684,7 +715,11 @@ class Sync():
 					elementInfoe.LanguageOfPlot = userLang;
 			
 			printl("<- (return (elementInfo, elementInfoe))", self, "C")
+			
+			printl ("", self, "C")
 			return (elementInfo, elementInfoe)
 		else:
 			printl("<- (return None)", self, "C")
+			
+			printl ("", self, "C")
 			return None
