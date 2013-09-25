@@ -19,6 +19,7 @@ import datetime
 import os
 import sys
 import re
+import shutil
 
 from DMC_Singleton import Singleton
 
@@ -98,7 +99,7 @@ def printl2 (string, parent=None, dmode= "U", obfuscate = False, steps = 4):
 			writeToLog(dmode, out +  CLOSING_MESSAGE)
 		
 		elif dmode == "U":
-			print "[PVMC] " + "U  specify me!!!!!" + "  " + str(out)
+			print "[PVMC] " + "UNKNOWN" + "  " + str(out)
 			writeToLog(dmode, out)
 			
 		elif dmode == "X":
