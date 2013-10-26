@@ -203,8 +203,8 @@ class Update(object):
 		printl("->", self, "S")
 		self._setInstalledRevision()
 		self._setCurrentUpdateType()
-		self._setUpdateXmlDict()
-		self._setLatestRevisionAndUrl()
+		if self._setUpdateXmlDict():
+			self._setLatestRevisionAndUrl()
 		printl("<-", self, "C")
 		
 	def checkForUpdate(self):
@@ -235,6 +235,7 @@ class Update(object):
 		printl("<-", self, "C")
 	
 	def _setUpdateXmlDict(self):
+		rtv = False
 		printl("->", self, "S")
 		if isInetAvailable():
 			boxType = getBoxtype()
@@ -251,11 +252,13 @@ class Update(object):
 				updateXml = Xml2Dict("")
 				updateXml.parse(html)
 				self.updateXmlDict = updateXml.get()
+				rtv = True
 			except Exception, e:
 				printl("""Could not download HTTP Page (%s)""" % (e), self, "E")
 		else:
 			printl("no internet connection was detected!", self, "W")
-		printl("<-", self, "C")	
+		printl("<-", self, "C")
+		return rtv
 	
 	def _setLatestRevisionAndUrl(self):
 		printl("->", self, "S")
