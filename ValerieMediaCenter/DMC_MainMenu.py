@@ -212,7 +212,7 @@ class PVMC_Update(Screen):
 		if answer is True:
 			self.update()
 		else:
-			self.close() 
+			self.close()
 			
 	# RTV = 0 opkg install successfull
 	# RTV = 1 bianry found but no cmdline given
