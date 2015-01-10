@@ -22,7 +22,11 @@ import os
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
 
 def localeInit():
-	lang = language.getLanguage()
+	if lang is not None:
+		lang = language.getLanguage()
+	else
+		lang = "de"
+	
 	os.environ["LANGUAGE"] = lang[:2]
 	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
 	gettext.textdomain("enigma2")

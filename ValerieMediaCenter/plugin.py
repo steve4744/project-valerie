@@ -77,7 +77,9 @@ def Plugins(**kwargs):
 	if config.plugins.pvmc.autostart.value == True:
 		list.append(PluginDescriptor(name = "Project Valerie", description = "Project Valerie", where = PluginDescriptor.WHERE_WIZARD, fnc=(63, PVMC_MainMenuAutostart)))
 	
-	if config.plugins.pvmc.plugins.autosync.onstart.value == True:
-		list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc=autostart, wakeupfnc=getNextWakeup))
-	
+	try:
+		if config.plugins.pvmc.plugins.autosync.onstart.value == True:
+			list.append(PluginDescriptor(where = [PluginDescriptor.WHERE_SESSIONSTART, PluginDescriptor.WHERE_AUTOSTART], fnc=autostart, wakeupfnc=getNextWakeup))
+	except Exception, ex:
+		printl("__init__:: Exception(" + str(type(ex)) + "): " + str(ex), None, "W")
 	return list
