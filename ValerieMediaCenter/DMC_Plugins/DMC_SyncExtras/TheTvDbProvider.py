@@ -17,7 +17,7 @@ class TheTvDbProvider(object):
 	apiSearchEpisode = u"http://www.thetvdb.com/api/" + APIKEY + u"/series/<seriesid>/default/<season>/<episode>/<lang>.xml";
 	apiSearchAllEpisodes = u"http://www.thetvdb.com/api/" + APIKEY + u"/series/<seriesid>/all/<lang>.xml";
 	apiArt = u"http://www.thetvdb.com/banners/";
-	apiSeriesByID = u"http://www.thetvdb.com/data/series/<seriesid>/<lang>.xml";
+	apiSeriesByID = u"http://thetvdb.com/api/" + APIKEY + u"/series/<seriesid>/<lang>.xml";
 	apiSeriesByImdbID = u"http://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid="
 	
 	PLOT_MIN_LEN = 10
