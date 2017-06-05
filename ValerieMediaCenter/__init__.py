@@ -42,14 +42,15 @@ from Plugins.Extensions.ProjectValerie.DMC_Global import findSkin
 print "[PVMC STARTING] I  __init__:: Init Valerie"
 
 # the currentVersion should be renewed every major update
-currentVersion          = "r001"
+currentVersion          = "r1280"
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/ProjectValerie/")
 defaultSkinFolderPath   = defaultPluginFolderPath + "skins/"
 defaultConfigFolderPath = "/hdd/valerie/"
 defaultMediaFolderPath  = defaultConfigFolderPath + "media/"
 defaultTmpFolderPath    = "/tmp/valerie/"
 defaultSkin             = "blackSwan"
-defaultURL              = "http://val.duckbox.info/"
+#defaultURL              = "http://val.duckbox.info/"
+defaultURL              = "http://php-steve4744.rhcloud.com/valerie/"
 defaultUpdateXML        = "update.php"
 
 config.plugins.pvmc = ConfigSubsection()
@@ -57,7 +58,7 @@ config.plugins.pvmc = ConfigSubsection()
 config.plugins.pvmc.language          = ConfigSelection(default="EN", choices = [("EN", _("English"))])
 config.plugins.pvmc.showwizard        = ConfigYesNo(default = True)
 config.plugins.pvmc.autostart         = ConfigYesNo(default = True)
-config.plugins.pvmc.checkforupdate    = ConfigSelection(default = "Passive", choices = ["Active", "Passive", "Off", ])
+config.plugins.pvmc.checkforupdate    = ConfigSelection(default = "Off", choices = ["Active", "Passive", "Off", ])
 config.plugins.pvmc.updatetype        = ConfigSelection(default = "Release", choices = ["Release", "Nightly", ])
 config.plugins.pvmc.debugMode         = ConfigYesNo(default = False)
 

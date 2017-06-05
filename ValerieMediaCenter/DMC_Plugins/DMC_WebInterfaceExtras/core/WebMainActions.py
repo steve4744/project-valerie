@@ -44,14 +44,19 @@ class Home(Resource):
 			
 		finalOutput = WebHelper().getHtmlCore("Home")
 		
-		currentVersion = Update().getInstalledRevision()
+		# update checker broken so set fixed values - steve4744
+		#currentVersion = Update().getInstalledRevision()
+		currentVersion = "r1280"
 		manager = Manager("WebIf:MainActions")
 		movieCount = str(manager.getMoviesCount())
 		tvShowCount = str(manager.getSeriesCount())
 		episodeCount = str(manager.getEpisodesCount())
 		
-		updateType = Update().getCurrentUpdateType()
-		latestRevision = Update().getLatestRevision()
+		# update checker broken so set fixed values - steve4744
+		#updateType = Update().getCurrentUpdateType()
+		#latestRevision = Update().getLatestRevision()
+		updateType = "Release"
+		latestRevision = "r1280"
 		
 		finalOutput = finalOutput.replace("<!-- MOVIE_COUNT -->", movieCount)
 		finalOutput = finalOutput.replace("<!-- TVSHOW_COUNT -->", tvShowCount)
