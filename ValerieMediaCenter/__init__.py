@@ -50,7 +50,7 @@ defaultMediaFolderPath  = defaultConfigFolderPath + "media/"
 defaultTmpFolderPath    = "/tmp/valerie/"
 defaultSkin             = "blackSwan"
 #defaultURL              = "http://val.duckbox.info/"
-defaultURL              = "http://php-steve4744.rhcloud.com/valerie/"
+defaultURL              = "http://php-steve4744.herokuapp.com/valerie/"
 defaultUpdateXML        = "update.php"
 
 config.plugins.pvmc = ConfigSubsection()
